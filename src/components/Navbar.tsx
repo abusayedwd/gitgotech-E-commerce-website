@@ -5,6 +5,7 @@ import { Heart, ShoppingCart, MessageSquare, Bell, User, Search, Menu, X } from 
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
+import FashionSearchNav from './FilterProduct';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -171,6 +172,7 @@ export default function Navbar() {
           </button>
         </div>
       </div>
+      <FashionSearchNav />
     </nav>
   );
 }
