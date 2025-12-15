@@ -1,6 +1,10 @@
 import { Star, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function HotDealsSection() {
+ 
+    const router = useRouter();
+
   const products = [
     {
       id: 1,
@@ -50,7 +54,9 @@ export default function HotDealsSection() {
 
   return (
     <div className="bg-black py-6 sm:py-8 md:py-10 px-2 sm:px-4">
-      <div className="container mx-auto">
+      <div 
+      onClick={() => router.push("/product/details")}
+      className="container mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
           <h2 className="text-white text-xl sm:text-2xl font-semibold mb-2 sm:mb-0">Hot Deals</h2>
