@@ -55,7 +55,7 @@ export default function VendorsPage() {
   ];
 
   return (
-    <div className="bg-gradient-to-b mt-24 from-gray-900 via-black to-gray-900 min-h-screen py-8 sm:py-10 md:py-12 px-2 sm:px-4">
+    <div className="bg-gradient-to-b mt-16 md:mt-24 from-[#181327] via-black to-gray-900 min-h-screen py-8 sm:py-10 md:py-12 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">

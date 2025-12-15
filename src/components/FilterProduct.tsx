@@ -205,7 +205,7 @@ const FashionSearchNav = () => {
     >
       <div className="container mx-auto">
         {/* Search Bar Section */}
-        <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-6">
+        <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-2 sm:py-6">
           <div className="flex-1 max-w-4xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
             {/* Search Input */}
             <div className="flex-1 relative">

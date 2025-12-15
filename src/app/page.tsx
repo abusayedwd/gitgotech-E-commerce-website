@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <div className="">
          <BannerSection />
-         {/* <CategoryMarquee /> */}
+         <CategoryMarquee />
          <HotDealsSection />
          <TopRated />
        

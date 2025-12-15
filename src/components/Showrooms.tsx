@@ -1,6 +1,7 @@
 "use client";
 import { Search, Store, Grid3x3 } from 'lucide-react';
 import { useState } from 'react';
+import { FaLocationDot } from 'react-icons/fa6';
 
 export default function ShowroomsPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,7 +26,7 @@ export default function ShowroomsPage() {
       id: 3,
       name: "Luxuries Showroom",
       branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80",
+      image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&q=80",
       logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
     },
     {
@@ -39,7 +40,7 @@ export default function ShowroomsPage() {
       id: 5,
       name: "Luxuries Showroom",
       branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80",
+      image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&q=80",
       logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
     },
     {
@@ -66,8 +67,8 @@ export default function ShowroomsPage() {
   ];
 
   return (
-    <div className="bg-gradient-to-b mt-24 from-gray-900 via-black to-gray-900 min-h-screen py-12 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-b mt-20 md:mt-24 from-gray-900 via-black to-gray-900 min-h-screen py-12 px-4">
+      <div className="container mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">
           <h1 className="text-white text-3xl md:text-4xl font-serif mb-3">
@@ -80,7 +81,7 @@ export default function ShowroomsPage() {
 
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <div className="flex-1 relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
@@ -112,10 +113,10 @@ export default function ShowroomsPage() {
             {showrooms.map((showroom) => (
               <div
                 key={showroom.id}
-                className="bg-gray-800/30 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-gray-800/50 transition-all border border-gray-700/50"
+                className="bg-gray-800/30 backdrop-blur-sm h-[380px] rounded-xl overflow-hidden group hover:bg-gray-800/50 transition-all border border-gray-700/50"
               >
                 {/* Showroom Image with Logo Overlay */}
-                <div className="relative aspect-square overflow-hidden">
+                <div className="relative h-[210px] overflow-hidden">
                   <img
                     src={showroom.image}
                     alt={showroom.name}
@@ -123,21 +124,24 @@ export default function ShowroomsPage() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                   
-               
                   
                 </div>
 
                 {/* Showroom Info */}
-                <div className="p-4">
+                <div className="p-4 flex flex-col h-[170px]">
                   <h3 className="text-white font-semibold text-base mb-1">
                     {showroom.name}
                   </h3>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <p className="text-gray-400 text-sm mb-1">
                     • {showroom.branch}
+                  </p>
+                  <p className="text-gray-400 text-sm mb-4">
+                    <FaLocationDot className="inline-block w-4 h-4 mr-1 mb-0.5 text-gray-400" />
+                    1.2 km away
                   </p>
 
                   {/* View Showroom Button */}
-                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm">
+                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm mt-auto">
                     <Store className="w-4 h-4" />
                     View Showroom
                   </button>

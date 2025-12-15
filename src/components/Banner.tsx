@@ -168,9 +168,13 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+ 
 
 export default function BannerSection() {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const router = useRouter();
 
   const slides = [
     {
@@ -206,7 +210,7 @@ export default function BannerSection() {
   };
 
   return (
-    <div className="bg-black py-4 px-4 mt-52">
+    <div className="bg-black py-4 px-4 mt-56">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Column - Top Vendors & Top Products */}
@@ -220,7 +224,8 @@ export default function BannerSection() {
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
+
+              <div onClick={() => router.push('/vendors')} className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded"> 
                 <h3 className="text-white text-lg font-semibold">Top Vendors</h3>
               </div>
             </div>
@@ -234,7 +239,9 @@ export default function BannerSection() {
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
+              <div 
+              onClick={() => router.push('/top-products')}
+              className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">Top Products</h3>
               </div>
             </div>
@@ -249,7 +256,7 @@ export default function BannerSection() {
                   backgroundImage: "url('/images/bgbanner.png')"
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-900/95 via-purple-800/90 to-pink-900/95" />
+              <div className="absolute inset-0 " />
 
               {/* Slider Content */}
               <div className="relative h-full flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 text-center">
@@ -306,7 +313,9 @@ export default function BannerSection() {
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
+              <div
+                onClick={() => router.push('/hotdeals')}
+              className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">Hot Deals</h3>
               </div>
             </div>
@@ -320,7 +329,7 @@ export default function BannerSection() {
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
+              <div className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">New Arrivals</h3>
               </div>
             </div>
