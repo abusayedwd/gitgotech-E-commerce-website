@@ -49,19 +49,19 @@ export default function TopRated() {
   ];
 
   return (
-    <div className="bg-black py-8 px-4">
+    <div className="bg-black py-6 sm:py-8 md:py-10 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-white text-2xl font-semibold">Top Rated</h2>
-          <button className="flex items-center text-purple-500 hover:text-purple-400 transition-colors text-sm font-medium">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+          <h2 className="text-white text-xl sm:text-2xl font-semibold mb-2 sm:mb-0">Top Rated</h2>
+          <button className="flex items-center text-purple-500 hover:text-purple-400 transition-colors text-xs sm:text-sm font-medium">
             View All
-            <ChevronRight className="w-4 h-4 ml-1" />
+            <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4 ml-1" />
           </button>
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {products.map((product) => (
             <div
               key={product.id}
@@ -75,46 +75,46 @@ export default function TopRated() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 {/* Discount Badge */}
-                <div className="absolute top-3 left-3 bg-purple-600 text-white px-3 py-1 rounded text-xs font-semibold">
+                <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-purple-600 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
                   {product.discount}% OFF
                 </div>
                 {/* Best Seller Badge */}
-                <div className="absolute top-3 right-3 bg-blue-500 text-white px-3 py-1 rounded text-xs font-semibold">
+                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-blue-500 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
                   {product.tag}
                 </div>
               </div>
 
               {/* Product Info */}
-              <div className="p-4">
+              <div className="p-3 sm:p-4">
                 {/* Price */}
-                <div className="text-white text-lg font-bold mb-2">
+                <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
                   ${product.price.toFixed(2)}
                 </div>
 
                 {/* Rating */}
-                <div className="flex items-center mb-2">
+                <div className="flex items-center mb-1 sm:mb-2">
                   {[...Array(5)].map((_, index) => (
                     <Star
                       key={index}
-                      className={`w-4 h-4 ${
+                      className={`w-3 sm:w-4 h-3 sm:h-4 ${
                         index < Math.floor(product.rating)
                           ? 'fill-yellow-400 text-yellow-400'
                           : 'fill-gray-600 text-gray-600'
                       }`}
                     />
                   ))}
-                  <span className="text-gray-400 text-xs ml-2">
+                  <span className="text-gray-400 text-[10px] sm:text-xs ml-1 sm:ml-2">
                     {product.reviews} Reviews
                   </span>
                 </div>
 
                 {/* Product Name */}
-                <h3 className="text-white font-medium mb-1 line-clamp-1">
+                <h3 className="text-white font-medium text-sm sm:text-base mb-1 line-clamp-1">
                   {product.name}
                 </h3>
 
                 {/* Brand */}
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 text-xs sm:text-sm">
                   By {product.brand}
                 </p>
               </div>

@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Providers from "@/redux/Providers";
+import RouteConditionalNav from "@/components/RouteConditionalNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,10 +32,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar />
-        <main>
-      
+        <RouteConditionalNav />
+        <main className="">
+
          <Providers>{children}</Providers>
-      
+
         </main>
         <Footer />
       </body>

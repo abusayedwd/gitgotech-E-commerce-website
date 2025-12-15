@@ -1,3 +1,171 @@
+// import { useState, useEffect } from 'react';
+// import { ChevronLeft, ChevronRight } from 'lucide-react';
+
+// export default function BannerSection() {
+//   const [currentSlide, setCurrentSlide] = useState(0);
+
+//   const slides = [
+//     {
+//       title: "SleekKnit",
+//       heading: "Where Global Fashion Meets Modern Luxury.",
+//       description: "Shop premium designs or create your own — connect directly with expert tailors from around the world, all in one elegant platform."
+//     },
+//     {
+//       title: "TechStyle",
+//       heading: "Innovation Meets Fashion Excellence.",
+//       description: "Discover cutting-edge designs and premium craftsmanship from world-class designers."
+//     },
+//     {
+//       title: "ElegantWear",
+//       heading: "Timeless Style, Modern Approach.",
+//       description: "Experience luxury fashion with personalized service and unmatched quality."
+//     }
+//   ];
+
+//   useEffect(() => {
+//     const timer = setInterval(() => {
+//       setCurrentSlide((prev) => (prev + 1) % slides.length);
+//     }, 5000);
+//     return () => clearInterval(timer);
+//   }, [slides.length]);
+
+//   const nextSlide = () => {
+//     setCurrentSlide((prev) => (prev + 1) % slides.length);
+//   };
+
+//   const prevSlide = () => {
+//     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
+//   };
+
+//   return (
+//     <div className="bg-black py-4 px-4 h-44 md:mt-60 sm:h-52 md:h-64 lg:h-72 mb-0">
+//       <div className="container mx-auto">
+//         <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-4">
+//           {/* Left Column - Top Vendors & Top Products */}
+//           <div className="md:col-span-3 h-32 sm:h-40 md:h-48 lg:h-56">
+//             {/* Top Vendors */}
+//             <div className="relative overflow-hidden rounded-lg group cursor-pointer h-14 sm:h-20 md:h-24 lg:h-32">
+//               <div
+//                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+//                 style={{
+//                   backgroundImage: "url('/images/vendor.png')"
+//                 }}
+//               />
+//               <div className="absolute inset-0 bg-black/40" />
+//               <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-gradient-to-r from-[#6100FF] w-full to-[#01010100] px-2 sm:px-4 py-1 sm:py-2 rounded">
+//                 <h3 className="text-white text-xs sm:text-sm md:text-lg font-semibold">Top Vendors</h3>
+//               </div>
+//             </div>
+
+//             {/* Top Products */}
+//             <div className="relative overflow-hidden rounded-lg group cursor-pointer h-14 sm:h-20 md:h-24 lg:h-32 mt-2 sm:mt-4">
+//               <div
+//                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+//                 style={{
+//                   backgroundImage: "url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80')"
+//                 }}
+//               />
+//               <div className="absolute inset-0 bg-black/40" />
+//               <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-gradient-to-r from-[#6100FF] w-full px-2 sm:px-4 py-1 sm:py-2 rounded">
+//                 <h3 className="text-white text-xs sm:text-sm md:text-lg font-semibold">Top Products</h3>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Center Slider */}
+//           <div className="md:col-span-6">
+//             <div className="relative overflow-hidden rounded-lg h-32 sm:h-40 md:h-48 lg:h-68">
+//               <div
+//                 className="absolute inset-0 bg-cover bg-center transition-all duration-700"
+//                 style={{
+//                   backgroundImage: "url('/images/bgbanner.png')",
+
+
+//                 }}
+//               />
+//               <div className="absolute inset-0" />
+
+//               {/* Slider Content */}
+//               <div className="relative h-full flex flex-col items-center justify-center px-2 sm:px-4 lg:px-8 xl:px-12 text-center">
+//                 <h4 className="text-purple-300 text-xs sm:text-sm md:text-[16px] lg:text-[22px] font-medium mb-1 sm:mb-2 lg:mb-3 tracking-wide">
+//                   {slides[currentSlide].title}
+//                 </h4>
+//                 <h2 className="text-white text-lg sm:text-xl md:text-2xl lg:text-4xl xl:text-5xl font-serif font-normal mb-2 sm:mb-3 lg:mb-4 max-w-full sm:max-w-2xl leading-tight">
+//                   {slides[currentSlide].heading}
+//                 </h2>
+//                 <p className="text-gray-300 text-xs sm:text-sm md:text-base max-w-full sm:max-w-2xl leading-relaxed">
+//                   {slides[currentSlide].description}
+//                 </p>
+
+//                 {/* Navigation Arrows */}
+//                 <button
+//                   onClick={prevSlide}
+//                   className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-6 sm:h-8 rounded bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-colors"
+//                 >
+//                   <ChevronLeft className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
+//                 </button>
+//                 <button
+//                   onClick={nextSlide}
+//                   className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-6 sm:w-8 h-6 sm:h-8 rounded bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-colors"
+//                 >
+//                   <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
+//                 </button>
+
+//                 {/* Dots Indicator */}
+//                 <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex space-x-1 sm:space-x-2">
+//                   {slides.map((_, index) => (
+//                     <button
+//                       key={index}
+//                       onClick={() => setCurrentSlide(index)}
+//                       className={`transition-all ${
+//                         index === currentSlide
+//                           ? 'w-4 sm:w-6 h-1 sm:h-1.5 bg-white rounded-full'
+//                           : 'w-1 sm:w-1.5 h-1 sm:h-1.5 bg-white/50 rounded-full hover:bg-white/70'
+//                       }`}
+//                     />
+//                   ))}
+//                 </div>
+//               </div>
+//             </div>
+//           </div>
+
+//           {/* Right Column - Hot Deals & New Arrivals */}
+//           <div className="md:col-span-3 space-y-2 sm:space-y-4">
+//             {/* Hot Deals */}
+//             <div className="relative overflow-hidden rounded-lg group cursor-pointer h-14 sm:h-20 md:h-24 lg:h-32">
+//               <div
+//                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+//                 style={{
+//                   backgroundImage: "url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80')"
+//                 }}
+//               />
+//               <div className="absolute inset-0 bg-black/40" />
+//               <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-gradient-to-r from-[#6100FF] w-full px-2 sm:px-4 py-1 sm:py-2 rounded">
+//                 <h3 className="text-white text-xs sm:text-sm md:text-lg font-semibold">Hot Deals</h3>
+//               </div>
+//             </div>
+
+//             {/* New Arrivals */}
+//             <div className="relative overflow-hidden rounded-lg group cursor-pointer h-14 sm:h-20 md:h-24 lg:h-32">
+//               <div
+//                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+//                 style={{
+//                   backgroundImage: "url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80')"
+//                 }}
+//               />
+//               <div className="absolute inset-0 bg-black/40" />
+//               <div className="absolute top-2 sm:top-4 left-2 sm:left-4 bg-gradient-to-r from-[#6100FF] w-full px-2 sm:px-4 py-1 sm:py-2 rounded">
+//                 <h3 className="text-white text-xs sm:text-sm md:text-lg font-semibold">New Arrivals</h3>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -38,35 +206,35 @@ export default function BannerSection() {
   };
 
   return (
-    <div className="bg-black py-4 px-4 h-44 lg:h-52">
+    <div className="bg-black py-4 px-4 mt-52">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Column - Top Vendors & Top Products */}
-          <div className="lg:col-span-3 h-48 lg:h-64">
+          <div className="lg:col-span-3 space-y-4">
             {/* Top Vendors */}
-            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-24 lg:h-32">
-              <div 
+            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-36 lg:h-36">
+              <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                 style={{
                   backgroundImage: "url('/images/vendor.png')"
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full to-[#01010100] px-4 py-2 rounded">
+              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">Top Vendors</h3>
               </div>
             </div>
 
             {/* Top Products */}
-            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-24 lg:h-32 mt-4">
-              <div 
+            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-36 lg:h-36">
+              <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                 style={{
                   backgroundImage: "url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80')"
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
+              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">Top Products</h3>
               </div>
             </div>
@@ -74,52 +242,50 @@ export default function BannerSection() {
 
           {/* Center Slider */}
           <div className="lg:col-span-6">
-            <div className="relative overflow-hidden  rounded-lg h-48 lg:h-68">
-              <div 
+            <div className="relative overflow-hidden rounded-lg lg:h-76 h-60">
+              <div
                 className="absolute inset-0 bg-cover bg-center transition-all duration-700"
                 style={{
-                  backgroundImage: "url('/images/bgbanner.png')",
-                  
-                   
+                  backgroundImage: "url('/images/bgbanner.png')"
                 }}
               />
-              <div className="absolute inset-0" />
-              
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-900/95 via-purple-800/90 to-pink-900/95" />
+
               {/* Slider Content */}
-              <div className="relative h-full flex flex-col items-center justify-center px-8 lg:px-12 text-center">
-                <h4 className="text-purple-300 text-[22px] font-medium mb-3 tracking-wide">
+              <div className="relative h-full flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 text-center">
+                <h4 className="text-purple-300 text-xs sm:text-sm font-medium mb-2 sm:mb-3 tracking-wide">
                   {slides[currentSlide].title}
                 </h4>
-                <h2 className="text-white text-3xl md:text-4xl lg:text-5xl font-serif font-normal mb-4 max-w-2xl leading-tight">
+                <h2 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal mb-3 sm:mb-4 max-w-2xl leading-tight px-2">
                   {slides[currentSlide].heading}
                 </h2>
-                <p className="text-gray-300 text-sm md:text-base max-w-2xl leading-relaxed">
+                <p className="text-gray-300 text-xs sm:text-sm md:text-base max-w-2xl leading-relaxed px-2">
                   {slides[currentSlide].description}
                 </p>
 
                 {/* Navigation Arrows */}
-                <button 
+                <button
                   onClick={prevSlide}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-colors"
+                  className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-7 sm:w-8 h-7 sm:h-8 rounded bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-colors"
                 >
-                  <ChevronLeft className="w-5 h-5 text-white" />
+                  <ChevronLeft className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
                 </button>
-                <button 
+                <button
                   onClick={nextSlide}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 rounded bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-colors"
+                  className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-7 sm:w-8 h-7 sm:h-8 rounded bg-white/10 hover:bg-white/20 backdrop-blur-sm flex items-center justify-center transition-colors"
                 >
-                  <ChevronRight className="w-5 h-5 text-white" />
+                  <ChevronRight className="w-4 sm:w-5 h-4 sm:h-5 text-white" />
                 </button>
 
                 {/* Dots Indicator */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2">
+                <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 flex space-x-1.5 sm:space-x-2">
                   {slides.map((_, index) => (
                     <button
                       key={index}
                       onClick={() => setCurrentSlide(index)}
                       className={`transition-all ${
-                        index === currentSlide 
-                          ? 'w-6 h-1.5 bg-white rounded-full' 
+                        index === currentSlide
+                          ? 'w-5 sm:w-6 h-1.5 bg-white rounded-full'
                           : 'w-1.5 h-1.5 bg-white/50 rounded-full hover:bg-white/70'
                       }`}
                     />
@@ -132,29 +298,29 @@ export default function BannerSection() {
           {/* Right Column - Hot Deals & New Arrivals */}
           <div className="lg:col-span-3 space-y-4">
             {/* Hot Deals */}
-            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-24 lg:h-32">
-              <div 
+            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-36 lg:h-36">
+              <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                 style={{
                   backgroundImage: "url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80')"
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
+              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">Hot Deals</h3>
               </div>
             </div>
 
             {/* New Arrivals */}
-            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-24 lg:h-32">
-              <div 
+            <div className="relative overflow-hidden rounded-lg group cursor-pointer h-36 lg:h-36">
+              <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                 style={{
                   backgroundImage: "url('https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80')"
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
+              <div className="absolute top-4 left-4 bg-purple-700 px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">New Arrivals</h3>
               </div>
             </div>

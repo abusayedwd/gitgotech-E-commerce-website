@@ -2,7 +2,7 @@
 import { Search, Store } from 'lucide-react';
 
 export default function VendorsPage() {
-    
+
   const vendors = [
     {
       id: 1,
@@ -55,29 +55,29 @@ export default function VendorsPage() {
   ];
 
   return (
-    <div className="bg-gradient-to-b from-gray-900 via-black to-gray-900 min-h-screen py-12 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="bg-gradient-to-b mt-24 from-gray-900 via-black to-gray-900 min-h-screen py-8 sm:py-10 md:py-12 px-2 sm:px-4">
+      <div className="container mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-white text-4xl md:text-5xl font-serif mb-4">
+        <div className="text-center mb-8 sm:mb-10 md:mb-12">
+          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif mb-2 sm:mb-3 md:mb-4">
             Meet our Vendors
           </h1>
-          <p className="text-gray-400 text-sm md:text-base mb-8">
+          <p className="text-gray-400 text-xs sm:text-sm md:text-base mb-4 sm:mb-6 md:mb-8">
             Discover Talented Designers creating worldwide Fashions
           </p>
 
           {/* Search Bar */}
-          <div className="max-w-2xl mx-auto">
-            <div className="flex items-center gap-3">
-              <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="max-w-full sm:max-w-2xl mx-auto px-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+              <div className="flex-1 relative w-full">
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Find your perfect tailor, design, or outfit"
-                  className="w-full bg-gray-800 text-white rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500"
+                  className="w-full bg-gray-800 text-white rounded-lg pl-10 pr-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500"
                 />
               </div>
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+              <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg font-medium transition-colors w-full sm:w-auto">
                 Search
               </button>
             </div>
@@ -85,37 +85,37 @@ export default function VendorsPage() {
         </div>
 
         {/* All Vendors Section */}
-        <div className="mb-8">
-          <h2 className="text-white text-2xl font-semibold mb-6">All Vendors</h2>
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-white text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 px-2">All Vendors</h2>
 
           {/* Vendors Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {vendors.map((vendor) => (
               <div
                 key={vendor.id}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden group hover:bg-gray-800 transition-all"
+                className="bg-gray-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl overflow-hidden group hover:bg-gray-800 transition-all"
               >
                 {/* Vendor Image */}
                 <div className="aspect-square overflow-hidden">
                   <img
                     src={vendor.image}
                     alt={vendor.name}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-full h-full group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
 
                 {/* Vendor Info */}
-                <div className="p-5">
-                  <h3 className="text-white font-semibold text-lg mb-2">
+                <div className="p-3 sm:p-4 md:p-5">
+                  <h3 className="text-white font-semibold text-base sm:text-lg mb-1 sm:mb-2">
                     {vendor.name}
                   </h3>
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-3 leading-relaxed">
+                  <p className="text-gray-400 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-3 leading-relaxed">
                     {vendor.description}
                   </p>
 
                   {/* View Showroom Button */}
-                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
-                    <Store className="w-4 h-4" />
+                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm">
+                    <Store className="w-3 sm:w-4 h-3 sm:h-4" />
                     View Showroom
                   </button>
                 </div>

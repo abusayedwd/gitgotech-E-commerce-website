@@ -38,16 +38,16 @@ export default function CategoryMarquee() {
   const duplicatedCategories = [...categories, ...categories];
 
   return (
-    <div className=" py-12 mt-16 overflow-hidden">
-      <div className="container mx-auto w-[80%]">
+    <div className="py-8 sm:py-10 md:py-12 mt-4 sm:mt-6 md:mt-8 overflow-hidden">
+      <div className="container mx-auto w-full sm:w-[90%] md:w-[80%] px-4">
         {/* Marquee Container */}
         <div className="flex container mx-auto animate-marquee hover:pause">
           {duplicatedCategories.map((category, index) => (
             <div
               key={index}
-              className="flex-shrink-0 mx-4 group cursor-pointer"
+              className="flex-shrink-0 mx-2 sm:mx-3 md:mx-4 group cursor-pointer"
             >
-              <div className="relative w-32 h-32 rounded-2xl overflow-hidden transition-transform duration-300 group-hover:scale-110">
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-xl sm:rounded-2xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
                 <img
                   src={category.image}
                   alt={category.name}
@@ -55,7 +55,7 @@ export default function CategoryMarquee() {
                 />
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
               </div>
-              <p className="text-white text-center mt-3 text-sm font-medium">
+              <p className="text-white text-center mt-2 sm:mt-3 text-xs sm:text-sm md:text-base font-medium">
                 {category.name}
               </p>
             </div>
