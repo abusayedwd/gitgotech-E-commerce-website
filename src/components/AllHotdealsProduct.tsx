@@ -1,5 +1,7 @@
 import BackButton from '@/customComponent/BackButton';
 import { Star, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import OfferBanner from './OfferBanner';
 
 export default function AllHotdealsProduct() {
   const products = [
@@ -94,14 +96,23 @@ export default function AllHotdealsProduct() {
   ];
 
   return (
-    <div className="bg-black py-6 mt-16 sm:py-8 md:py-10 px-2 sm:px-4">
+    <div className="bg-black py-6 mt-28 sm:py-8 md:py-10 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+        <h1 className='text-white flex items-center gap-2 text-2xl font-bold mb-4 mt-24'>
+        <BackButton /> All Hot Deals Products
+            
+        </h1>
+         <Image alt="banner" src="/images/dicount.png" width={1200} height={300} className="w-full h-auto mb-6 rounded-lg"/>
+         
+        {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
           <h2 className="text-white text-xl flex gap-1.5 sm:text-2xl font-semibold mb-2 sm:mb-0">
-            <BackButton />  Hot Deals</h2>
+             Hot Deals</h2>
           
-        </div>
+        </div> */}
+          
+          {/* <OfferBanner /> */}
+
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">

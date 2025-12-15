@@ -1,10 +1,10 @@
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import RouteConditionalNav from "@/customComponent/RouteConditionalNav";
+import Providers from "@/redux/Providers";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Providers from "@/redux/Providers";
-import RouteConditionalNav from "@/components/RouteConditionalNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,7 +18,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "GitGoTech - Digital Solutions for Your Business",
-  description: "Transform your digital presence with cutting-edge web and app development",
+  description:
+    "Transform your digital presence with cutting-edge web and app development",
 };
 
 export default function RootLayout({
@@ -34,9 +35,7 @@ export default function RootLayout({
         <Navbar />
         <RouteConditionalNav />
         <main className="">
-
-         <Providers>{children}</Providers>
-
+          <Providers>{children}</Providers>
         </main>
         <Footer />
       </body>

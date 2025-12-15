@@ -329,7 +329,9 @@ export default function BannerSection() {
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
-              <div className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
+              <div 
+                onClick={() => router.push('/new-arrivals')}
+               className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
                 <h3 className="text-white text-lg font-semibold">New Arrivals</h3>
               </div>
             </div>
