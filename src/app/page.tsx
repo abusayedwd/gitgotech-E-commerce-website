@@ -2,6 +2,8 @@
 
 import BannerSection from '@/components/Banner';
 import CategoryMarquee from '@/components/CategoryMarquee';
+import SimpleFAQ from '@/components/FaQuestion';
+ 
 import HotDealsSection from '@/components/HotDeals';
 import TopRated from '@/components/TopRated';
  
@@ -16,6 +18,7 @@ export default function Home() {
          <CategoryMarquee />
          <HotDealsSection />
          <TopRated />
+         <SimpleFAQ />
        
     </div>
   );
