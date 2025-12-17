@@ -1,9 +1,10 @@
+import SignUpPage from '@/components/auth/SignUp';
 import React from 'react';
 
 const page = () => {
     return (
         <div>
-            <h1 className="text-3xl font-bold text-white text-center mt-20">Sign Up</h1>
+             <SignUpPage />
         </div>
     );
 };
