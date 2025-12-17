@@ -226,7 +226,7 @@ export default function Navbar() {
   };
 
   // Auth logic - Replace with your actual authentication
-  const isLoggedIn = false; // Set to false to see login button
+  const isLoggedIn = true; // Set to false to see login button
   const userRole = 'customer'; // Can be 'customer' or 'vendor'
 
   return (
@@ -293,9 +293,11 @@ export default function Navbar() {
               )}
 
               {/* Common icons for both customer and vendor */}
+              <Link href="/messaging">
               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                 <MessageSquare className="w-5 h-5 text-gray-400" />
               </button>
+              </Link>
 
               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                 <User className="w-5 h-5 text-gray-400" />
