@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import FashionSearchNav from "../components/FilterProduct";
+import FashionSearchNav from "../components/landingPage/FilterProduct";
 
 const RouteConditionalNav = () => {
   const pathname = usePathname();

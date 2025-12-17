@@ -1,13 +1,11 @@
-import AllHotdealsProduct from '@/components/AllHotdealsProduct';
- 
-import React from 'react';
+import AllHotdealsProduct from "@/components/landingPage/AllHotdealsProduct";
 
 const page = () => {
-    return (
-        <div>
-             <AllHotdealsProduct />
-        </div>
-    );
+  return (
+    <div>
+      <AllHotdealsProduct />
+    </div>
+  );
 };
 
 export default page;

@@ -1,12 +1,11 @@
-import NewArrivals from '@/components/NewArrivals';
-import React from 'react';
+import NewArrivals from "@/components/landingPage/NewArrivals";
 
 const page = () => {
-    return (
-        <div>
-            <NewArrivals />
-        </div>
-    );
+  return (
+    <div>
+      <NewArrivals />
+    </div>
+  );
 };
 
 export default page;

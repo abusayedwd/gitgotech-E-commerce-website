@@ -1,4 +1,4 @@
- import ShowroomsPage from '@/components/Showrooms';
+ import ShowroomsPage from '@/components/landingPage/Showrooms';
 import React from 'react';
  
  const page = () => {

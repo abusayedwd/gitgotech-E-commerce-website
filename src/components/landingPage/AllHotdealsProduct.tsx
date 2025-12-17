@@ -1,118 +1,129 @@
-import BackButton from '@/customComponent/BackButton';
-import { Star, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
-import OfferBanner from './OfferBanner';
+import BackButton from "@/customComponent/BackButton";
+import { Star } from "lucide-react";
+import Image from "next/image";
 
 export default function AllHotdealsProduct() {
   const products = [
     {
       id: 1,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
+      tag: "BEST SELLER",
     },
     {
       id: 2,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
+      tag: "BEST SELLER",
     },
     {
       id: 3,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
+      tag: "BEST SELLER",
     },
     {
       id: 4,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
+      tag: "BEST SELLER",
     },
     {
       id: 3,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
+      tag: "BEST SELLER",
     },
     {
       id: 4,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
+      tag: "BEST SELLER",
     },
     {
       id: 3,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
+      tag: "BEST SELLER",
     },
     {
       id: 4,
       name: "Men's Bomber Jacket",
-      price: 28.00,
+      price: 28.0,
       rating: 4.5,
       reviews: 23,
       brand: "PRINCE OF JAIPUR",
-      image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
+      image:
+        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&q=80",
       discount: 40,
-      tag: "BEST SELLER"
-    }
+      tag: "BEST SELLER",
+    },
   ];
 
   return (
     <div className="bg-black py-6 mt-28 sm:py-8 md:py-10 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
-        <h1 className='text-white flex items-center gap-2 text-2xl font-bold mb-4 mt-24'>
-        <BackButton /> All Hot Deals Products
-            
+        <h1 className="text-white flex items-center gap-2 text-2xl font-bold mb-4 mt-24">
+          <BackButton /> All Hot Deals Products
         </h1>
-         <Image alt="banner" src="/images/dicount.png" width={1200} height={300} className="w-full h-auto mb-6 rounded-lg"/>
-         
+        <Image
+          alt="banner"
+          src="/images/dicount.png"
+          width={1200}
+          height={300}
+          className="w-full h-auto mb-6 rounded-lg"
+        />
+
         {/* <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
           <h2 className="text-white text-xl flex gap-1.5 sm:text-2xl font-semibold mb-2 sm:mb-0">
              Hot Deals</h2>
           
         </div> */}
-          
-          {/* <OfferBanner /> */}
 
+        {/* <OfferBanner /> */}
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -152,8 +163,8 @@ export default function AllHotdealsProduct() {
                       key={index}
                       className={`w-3 sm:w-4 h-3 sm:h-4 ${
                         index < Math.floor(product.rating)
-                          ? 'fill-yellow-400 text-yellow-400'
-                          : 'fill-gray-600 text-gray-600'
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "fill-gray-600 text-gray-600"
                       }`}
                     />
                   ))}

@@ -1,4 +1,4 @@
- import VendorsPage from '@/components/Vendors';
+ import VendorsPage from '@/components/landingPage/Vendors';
 import React from 'react';
  
  const page = () => {

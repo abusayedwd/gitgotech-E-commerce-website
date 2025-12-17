@@ -1,7 +1,8 @@
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
+import Footer from "@/components/landingPage/Footer";
+import Navbar from "@/components/landingPage/Navbar";
 import RouteConditionalNav from "@/customComponent/RouteConditionalNav";
 import Providers from "@/redux/Providers";
+import SupportMessage from "@/components/landingPage/SupportMessage";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <Providers>{children}</Providers>
         </main>
         <Footer />
+        <SupportMessage />
       </body>
     </html>
   );

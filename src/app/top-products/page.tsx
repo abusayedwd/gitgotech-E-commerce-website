@@ -1,4 +1,4 @@
-import TopPoduct from '@/components/TopPoduct';
+import TopPoduct from '@/components/landingPage/TopPoduct';
 import React from 'react';
 
 const page = () => {
