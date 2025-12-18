@@ -1,5 +1,8 @@
+"use client";
+
 import { useState } from 'react';
 import Link from 'next/link';
+import BackButton from '@/customComponent/BackButton';
 
 export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState('delivery');
@@ -33,16 +36,10 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-4 md:p-8">
+    <div className="min-h-screen md:mt-16 mt-16 bg-black text-white p-4 md:p-8">
       {/* Back Button */}
-      <div className="max-w-7xl mx-auto mb-6">
-        <button className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/20 flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </div>
-        </button>
+      <div className="container mx-auto">
+        <BackButton label='Back to checkout' />
       </div>
 
       {/* Header */}

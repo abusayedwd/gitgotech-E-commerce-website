@@ -2,10 +2,13 @@
 
 import BackButton from '@/customComponent/BackButton';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
  
 import { useState } from 'react';
 
 export default function ShoppingCart() {
+
+    const router = useRouter();
   const [cartItems, setCartItems] = useState([
     {
       id: 1,
@@ -55,10 +58,16 @@ export default function ShoppingCart() {
   };
 
   return (
-    <div className=" container mx-auto mt-16 md:mt-20 bg-black text-white p-4 md:p-8">
+    <div className="mt-16 md:mt-20 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto mb-6">
-        <BackButton label="Continue Shopping" fallbackUrl="/landing-page" />
+       <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </div>
+        </button>
       </div>
 
       {/* Header */}
@@ -73,9 +82,9 @@ export default function ShoppingCart() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl p-4 md:p-6">
+          <div className="bg-gradient-to-br from-purple-900/10 to-gray-900/50 border-[#B8B8B8] border  rounded-2xl p-4 md:p-6">
             {/* Table Header */}
-            <div className="hidden md:grid grid-cols-12 gap-4 mb-4 pb-4 border-b border-gray-800 text-sm text-gray-400">
+            <div className="hidden md:grid grid-cols-12 gap-4 mb-4 pb-4 border-b  text-sm text-gray-400">
               <div className="col-span-5">PRODUCT</div>
               <div className="col-span-2 text-center">PRICE</div>
               <div className="col-span-3 text-center">QUANTITY</div>
@@ -83,11 +92,11 @@ export default function ShoppingCart() {
             </div>
 
             {/* Cart Items */}
-            <div className="space-y-4">
+            <div className="space-y-4 ">
               {cartItems.map((item) => (
                 <div 
                   key={item.id}
-                  className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-purple-900/10 rounded-xl p-4 border border-gray-800/50"
+                  className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-purple-900/10 p-4 border-[#B8B8B8] border-b"
                 >
                   {/* Product */}
                   <div className="md:col-span-5 flex items-center gap-4">
@@ -111,12 +120,13 @@ export default function ShoppingCart() {
 
                   {/* Quantity */}
                   <div className="md:col-span-3 flex justify-start md:justify-center">
-                    <div className="flex items-center gap-3 bg-gray-900 rounded-lg px-3 py-2">
+                    <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-3">
                       <button
                         onClick={() => updateQuantity(item.id, -1)}
                         className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
                       >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
                         </svg>
                       </button>
@@ -169,7 +179,7 @@ export default function ShoppingCart() {
               </div>
             </div>
 
-           <Link href="/login">
+           <Link href="/checkout">
             <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700   rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
               Proceed to Checkout
             </button>

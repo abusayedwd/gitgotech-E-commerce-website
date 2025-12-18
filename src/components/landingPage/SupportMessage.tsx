@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { MessageCircle, X, Send, User } from 'lucide-react';
+import Image from 'next/image';
 
 interface Message {
   id: number;
@@ -71,10 +72,15 @@ export default function SupportMessage() {
       {/* Floating support icon */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-36 right-6 bg-purple-600 text-white p-4 rounded-full shadow-lg z-50 hover:bg-purple-700 transition-all duration-300 transform hover:scale-110"
+        className="fixed top-36 right-10 text-white p-4 rounded-full shadow-lg z-50 hover:bg-purple-700 transition-all duration-300 transform hover:scale-110"
         aria-label="Open support chat"
       >
-        <MessageCircle className="w-6 h-6 animate-bounce" />
+        <Image 
+          src="/images/messageicon.png"
+          alt="Support"
+          width={50}
+          height={50}
+        />  
       </button>
 
       {/* Support modal */}
