@@ -1,3 +1,4 @@
+'use client';
 import { Star, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 

@@ -282,13 +282,15 @@ export default function Navbar() {
                   <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                     <Heart className="w-5 h-5 text-gray-400" />
                   </button>
-
+                   
+                   <Link href="/shopping-cart">
                   <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors relative">
                     <ShoppingCart className="w-5 h-5 text-gray-400" />
                     <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                       2
                     </span>
                   </button>
+                  </Link>
                 </>
               )}
 
@@ -298,18 +300,23 @@ export default function Navbar() {
                 <MessageSquare className="w-5 h-5 text-gray-400" />
               </button>
               </Link>
-
+              <Link href="/profile">
               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                 <User className="w-5 h-5 text-gray-400" />
               </button>
+              </Link>
 
+              <Link href="/notification">
               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                 <Bell className="w-5 h-5 text-gray-400" />
               </button>
+              </Link>
 
-              <button className="bg-purple-600 hover:bg-purple-700 text-white px-5 xl:px-6 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base">
+              <Link href="/customer-dashboard">
+              <button className="bg-purple-600 cursor-pointer hover:bg-purple-700 text-white px-5 xl:px-6 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base">
                 Dashboard
               </button>
+              </Link>
             </>
           ) : (
             /* Show Login button when not logged in */
@@ -396,17 +403,25 @@ export default function Navbar() {
                 )}
 
                 {/* Common icons for both */}
+                <Link href="/messaging">
                 <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                   <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </button>
+                </Link>
+
+                <Link href="/profile">
 
                 <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                   <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </button>
+                </Link>
+
+                <Link href="/notification">
 
                 <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
                   <Bell className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </button>
+                </Link>
 
                 {/* Search icon - Only for customers */}
                 {userRole === 'customer' && (
@@ -417,9 +432,11 @@ export default function Navbar() {
               </div>
 
               {/* Mobile Dashboard Button */}
+              <Link href="/customer-dashboard">
               <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base">
                 Dashboard
               </button>
+              </Link>
             </>
           ) : (
             /* Mobile Login Button */

@@ -205,14 +205,13 @@
 // }
 
 
-
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 
 export default function MessagesPage() {
   const [selectedUser, setSelectedUser] = useState<string | null>(null);
+  const [showSidebar, setShowSidebar] = useState<boolean>(true);
   const [messages, setMessages] = useState<Record<string, any[]>>({
     RAkib: [
       { id: 1, text: "Thank you for reaching out. I'll get back to you shortly.", sender: 'me', time: '10:45 AM' },
@@ -271,6 +270,21 @@ export default function MessagesPage() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Handle mobile view - hide sidebar when user is selected
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setShowSidebar(true);
+      } else if (selectedUser) {
+        setShowSidebar(false);
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [selectedUser]);
   
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -310,7 +324,6 @@ export default function MessagesPage() {
     setIsUploading(true);
     setUploadProgress(0);
     
-    // Simulate upload progress
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 95) {
@@ -319,7 +332,6 @@ export default function MessagesPage() {
             setIsUploading(false);
             setUploadProgress(0);
             
-            // Add success message
             if (selectedUser) {
               const uploadMsg = {
                 id: Date.now(),
@@ -344,6 +356,20 @@ export default function MessagesPage() {
         return prev + 5;
       });
     }, 100);
+  };
+
+  const handleBackToUsers = () => {
+    setShowSidebar(true);
+    if (window.innerWidth < 768) {
+      setSelectedUser(null);
+    }
+  };
+
+  const handleSelectUser = (userId: string) => {
+    setSelectedUser(userId);
+    if (window.innerWidth < 768) {
+      setShowSidebar(false);
+    }
   };
   
   const renderMessageBubble = (msg: any, index: number) => {
@@ -397,21 +423,19 @@ export default function MessagesPage() {
     );
   };
 
-  if (!selectedUser) return <div className="text-white min-h-screen bg-black flex items-center justify-center">Loading...</div>;
-
   const currentUser = users.find(u => u.id === selectedUser);
 
   return (
-    <div className="min-h-screen bg-black flex p-4">
+    <div className="min-h-screen md:min-h-[800px] md:mt-28 mt-20 bg-black flex p-2 md:p-4">
       {/* Sidebar - User List */}
-      <div className="w-80 bg-gray-900 rounded-xl p-4 mr-4 overflow-y-auto">
+      <div className={`${showSidebar ? 'block' : 'hidden'} ${selectedUser && window.innerWidth < 768 ? 'w-full' : 'w-full md:w-80'} bg-gray-900 rounded-xl p-3 md:p-4 md:mr-4 overflow-y-auto`}>
         <h2 className="text-xl font-bold text-white mb-4">Messages</h2>
         
         <div className="space-y-3">
           {users.map(user => (
             <div 
               key={user.id}
-              onClick={() => setSelectedUser(user.id)}
+              onClick={() => handleSelectUser(user.id)}
               className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
                 selectedUser === user.id 
                   ? 'bg-purple-600/20 border border-purple-500/30' 
@@ -433,10 +457,18 @@ export default function MessagesPage() {
       </div>
       
       {/* Main Chat Area */}
-      <div className="flex-1 bg-gray-900 rounded-xl p-4 flex flex-col">
+      <div className={`${!showSidebar || window.innerWidth >= 768 ? 'flex' : 'hidden'} flex-1 bg-gray-900 rounded-xl p-3 md:p-4 flex-col`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700">
           <div className="flex items-center">
+            <button
+              onClick={handleBackToUsers}
+              className="md:hidden mr-2 p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
             <img 
               src={currentUser?.avatar || 'https://i.pravatar.cc/150?img=1'} 
               alt={currentUser?.name} 
@@ -450,7 +482,7 @@ export default function MessagesPage() {
         </div>
         
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto mb-4">
+        <div className="flex-1 overflow-y-auto mb-4 px-1">
           {messages[selectedUser]?.map((msg, index) => renderMessageBubble(msg, index))}
           <div ref={messagesEndRef} />
         </div>
@@ -462,7 +494,7 @@ export default function MessagesPage() {
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              {selectedFile.name}
+              <span className="truncate flex-1">{selectedFile.name}</span>
               {isUploading && (
                 <span className="ml-2 text-purple-400">({uploadProgress}%)</span>
               )}
@@ -472,7 +504,7 @@ export default function MessagesPage() {
                     setSelectedFile(null);
                     if (fileInputRef.current) fileInputRef.current.value = '';
                   }}
-                  className="ml-auto text-red-400 hover:text-red-300"
+                  className="ml-2 text-red-400 hover:text-red-300"
                 >
                   ×
                 </button>
@@ -480,14 +512,20 @@ export default function MessagesPage() {
             </div>
           )}
           
-          <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <div className="relative flex-1">
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage(e);
+                  }
+                }}
                 placeholder="Type a message..."
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                className="w-full px-3 md:px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
               />
               <input
                 type="file"
@@ -501,7 +539,7 @@ export default function MessagesPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 hover:text-white transition-colors"
+              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 hover:text-white transition-colors flex-shrink-0"
               aria-label="Attach file"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -513,7 +551,7 @@ export default function MessagesPage() {
               <button
                 type="button"
                 onClick={handleUploadDesign}
-                className="p-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors"
+                className="p-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors flex-shrink-0"
                 aria-label="Upload file"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -524,9 +562,10 @@ export default function MessagesPage() {
             
             {!selectedFile && (
               <button
-                type="submit"
+                type="button"
+                onClick={handleSendMessage}
                 disabled={!newMessage.trim()}
-                className={`p-2 rounded-lg transition-colors ${
+                className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
                   !newMessage.trim()
                     ? 'bg-purple-600/30 text-gray-500 cursor-not-allowed'
                     : 'bg-purple-600 hover:bg-purple-700 text-white'
@@ -537,7 +576,7 @@ export default function MessagesPage() {
                 </svg>
               </button>
             )}
-          </form>
+          </div>
         </div>
       </div>
     </div>
