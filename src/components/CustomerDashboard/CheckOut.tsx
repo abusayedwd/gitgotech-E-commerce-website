@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import BackButton from '@/customComponent/BackButton';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
+    const router = useRouter();
   const [deliveryMethod, setDeliveryMethod] = useState('delivery');
   const [paymentMethod, setPaymentMethod] = useState('credit-card');
   const [formData, setFormData] = useState({
@@ -36,10 +38,16 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen md:mt-16 mt-16 bg-black text-white p-4 md:p-8">
+    <div className="min-h-screen md:mt-20 mt-16 bg-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto">
-        <BackButton label='Back to checkout' />
+       <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </div>
+        </button>
       </div>
 
       {/* Header */}
@@ -79,16 +87,12 @@ export default function CheckoutPage() {
           </div>
 
           {/* Delivery Address */}
-          <div className="bg-gradient-to-br from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-2xl p-6 md:p-8 border border-purple-500/30 relative">
-            <div className="absolute top-6 right-6">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
+          <div className=" rounded-2xl p- md:p-2 border border-[#b88ccc]  relative">
+            <div className=" top-6 right-6 bg-gradient-to-r from-[#2ACCED] to-[#B630F4] p-4 flex rounded-t">
+              
+            <h2 className="text-xl font-bold">Delivery Address</h2>
             </div>
 
-            <h2 className="text-xl font-bold mb-6">Delivery Address</h2>
 
             <div className="space-y-4">
               {/* Full Name */}
@@ -270,23 +274,19 @@ export default function CheckoutPage() {
               
               {/* Profile Icon */}
               <div className="flex justify-end mt-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
+                
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3">
+            <div className="">
               <Link href="/order-confirmation">
                 <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
                   Place to Order
                 </button>
               </Link>
-              <button className="w-full py-3 border border-purple-500/30 hover:bg-purple-500/10 rounded-full font-semibold transition-all duration-300">
-                I'm pay driver
+              <button className="w-full mt-2 py-3 border border-purple-500/30 hover:bg-purple-500/10 rounded-full font-semibold transition-all duration-300">
+               Trip your driver
               </button>
             </div>
           </div>

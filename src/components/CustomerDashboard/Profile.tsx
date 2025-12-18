@@ -6,7 +6,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   
   return (
-    <div className="  mt-16 md:mt-20 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-6">
+    <div className="  mt-16 md:mt-20 bg-gradient-to-r from-gray-950 via-purple-900/20 to-black text-white p-6">
         <div className="container mx-auto mt-4">
           <h1 className="text-2xl font-semibold text-gray-300">Profile info</h1>
         </div>
@@ -45,7 +45,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Information Card */}
-        <div className="bg-gray-800 bg-opacity-50 border-2 border-blue-500 rounded-3xl p-6 backdrop-blur-sm">
+        <div className="bg-gradient-to-t from-[#0a2930] to-[#0c0111] bg-opacity-50 border-2 border-blue-500 rounded-3xl p-6 backdrop-blur-sm">
           <div className="space-y-6">
             {/* User Name */}
             <div>

@@ -187,7 +187,7 @@ const FashionSearchNav = () => {
 
   const tabs = [
     { name: 'Women', color: 'bg-blue-500' },
-    { name: 'Men', color: 'bg-gray-700' },
+    { name: 'Men',  },
     { name: 'Shoes', color: 'bg-gray-700' },
     { name: 'Kids', color: 'bg-gray-700' },
     { name: 'Seasonal Wear', color: 'bg-gray-700' },
@@ -199,7 +199,7 @@ const FashionSearchNav = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 mt-20 sm:mt-20 md:mt-24 right-0 z-50 w-full bg-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
+      className={`fixed top-0 left-0 mt-20 sm:mt-20 md:mt-24 right-0 z-50 w-full bg-gradient-to-r from-gray-950 via-purple-900/20 to-black bg-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
         isVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
@@ -263,7 +263,7 @@ const FashionSearchNav = () => {
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
                 className={`${
-                  activeTab === tab.name ? tab.color : 'bg-gray-800'
+                  activeTab === tab.name ? tab.color : 'border border-gray-700 bg-[#080715]'
                 } px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap hover:opacity-90 transition-all flex-shrink-0`}
               >
                 {tab.name}
