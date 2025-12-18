@@ -1,9 +1,10 @@
+import CheckoutPage from '@/components/CustomerDashboard/CheckOut';
 import React from 'react';
 
 const page = () => {
     return (
         <div>
-            <h1 className="text-3xl font-bold text-white text-center mt-20">Hot Deals Page</h1>
+            <CheckoutPage />
         </div>
     );
 };

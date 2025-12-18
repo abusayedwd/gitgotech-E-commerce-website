@@ -1,6 +1,8 @@
 "use client";
 
 import BackButton from '@/customComponent/BackButton';
+import Link from 'next/link';
+ 
 import { useState } from 'react';
 
 export default function ShoppingCart() {
@@ -167,9 +169,12 @@ export default function ShoppingCart() {
               </div>
             </div>
 
-            <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
+           <Link href="/login">
+            <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700   rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
               Proceed to Checkout
             </button>
+          </Link>
+          
           </div>
         </div>
       </div>
