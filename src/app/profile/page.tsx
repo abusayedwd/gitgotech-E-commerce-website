@@ -1,4 +1,4 @@
-import ProfilePage from '@/components/CustomerDashboard/Profile';
+import ProfilePage from '@/components/CustomerDashboard/settings/Profile';
 import React from 'react';
 
 const page = () => {

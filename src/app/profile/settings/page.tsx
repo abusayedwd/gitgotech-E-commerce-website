@@ -1,10 +1,10 @@
-import EditProfilePage from '@/components/CustomerDashboard/EditProfilePage';
+import SettingsPage from '@/components/CustomerDashboard/settings/Settings';
 import React from 'react';
 
 const page = () => {
     return (
         <div>
-                <EditProfilePage />
+               <SettingsPage />
         </div>
     );
 };
