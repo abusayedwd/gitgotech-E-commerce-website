@@ -1,8 +1,10 @@
 import { SectionHeader } from '@/customComponent/Header';
 import { Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function TopRated() {
+  const router = useRouter();
   const products = [
     {
       id: 1,
@@ -68,6 +70,7 @@ export default function TopRated() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {products.map((product) => (
             <div
+              onClick={() => router.push('/product/details')}
               key={product.id}
               className="bg-gray-900 rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
             >

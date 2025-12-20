@@ -76,6 +76,7 @@ export default function HotDealsSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {products.map((product) => (
             <div
+             onClick={() => router.push('/product/details')}
               key={product.id}
               className="bg-gray-900 rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
             >

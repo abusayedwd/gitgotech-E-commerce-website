@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus } from 'lucide-react';
 import BackButton from '@/customComponent/BackButton';
+import { CustomButton } from '@/customComponent/CustomButton';
 
 export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
@@ -27,7 +28,7 @@ export default function ProductDetails() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-black to-gray-900 text-white mt-20">
+    <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white mt-20">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <BackButton />
@@ -52,10 +53,13 @@ export default function ProductDetails() {
             
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+              {/* <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
                 <Heart className="w-5 h-5" />
                 Add to Wishlist
-              </button>
+              </button> */}
+                <CustomButton variant="glow" fullWidth="true" icon={Heart} iconPosition="left">
+                Add to Wishlist
+              </CustomButton>
               <button className="w-full border border-purple-600 hover:bg-purple-900/30 text-white py-3 px-4 rounded-lg font-medium transition-colors">
                 Add to Event
               </button>
@@ -81,7 +85,7 @@ export default function ProductDetails() {
             </div>
 
             {/* Seller Info */}
-            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4">
+            <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center">
                   <span className="text-sm font-medium">{product.seller.charAt(0)}</span>
@@ -106,7 +110,7 @@ export default function ProductDetails() {
             </div>
 
             {/* Mix Design Available */}
-            <div className="bg-purple-900/20 border border-purple-600 rounded-lg p-4">
+            <div className="bg-purple-900/20 border border-[#6100FF] rounded-lg p-4">
               <div className="flex items-center space-x-2 mb-2">
                 <Info className="w-5 h-5 text-purple-400" />
                 <h3 className="font-medium text-purple-300">Mix Design Available</h3>
