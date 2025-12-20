@@ -1,10 +1,58 @@
+// import Footer from "@/components/landingPage/Footer";
+// import Navbar from "@/components/landingPage/Navbar";
+// import RouteConditionalNav from "@/customComponent/RouteConditionalNav";
+// import Providers from "@/redux/Providers";
+// import SupportMessage from "@/components/landingPage/SupportMessage";
+// import type { Metadata } from "next";
+// import { Geist, Geist_Mono } from "next/font/google";
+// import "./globals.css";
+
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
+
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
+
+// export const metadata: Metadata = {
+//   title: "GitGoTech - Digital Solutions for Your Business",
+//   description:
+//     "Transform your digital presence with cutting-edge web and app development",
+// };
+
+// export default function RootLayout({
+//   children,
+// }: Readonly<{
+//   children: React.ReactNode;
+// }>) {
+//   return (
+//     <html lang="en">
+//       <body
+//         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+//       >
+//         <Navbar />
+//         <RouteConditionalNav />
+//         <main className="">
+//           <Providers>{children}</Providers>
+//         </main>
+//         <Footer />
+//         <SupportMessage />
+//       </body>
+//     </html>
+//   );
+// }
+
+
 import Footer from "@/components/landingPage/Footer";
 import Navbar from "@/components/landingPage/Navbar";
 import RouteConditionalNav from "@/customComponent/RouteConditionalNav";
 import Providers from "@/redux/Providers";
 import SupportMessage from "@/components/landingPage/SupportMessage";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,6 +63,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const cormorantGaramond = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -29,9 +84,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cormorantGaramond.variable}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} antialiased`}
       >
         <Navbar />
         <RouteConditionalNav />
