@@ -1,6 +1,7 @@
 'use client";'
 import React from 'react';
-import { Check, ChevronRight } from 'lucide-react';
+import { Check, ChevronRight,ShoppingBag  } from 'lucide-react';
+import Link from 'next/link';
 
 export default function OrderCompletedPage() {
   const orderNumber = "#44567";
@@ -12,7 +13,7 @@ export default function OrderCompletedPage() {
 
   return (
     <div className="mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white flex items-center justify-center p-4">
-      <div className="max-w-4xl w-full">
+      <div className="container mx-auto">
         {/* Success Animation Container */}
         <div className="flex flex-col items-center mb-8">
           {/* Animated Check Icon */}
@@ -70,7 +71,50 @@ export default function OrderCompletedPage() {
           </div>
         </div> 
 
-   
+          <div 
+          className="relative rounded-3xl overflow-hidden h-48 md:h-60 my-6 bg-cover bg-center"
+          style={{
+            backgroundImage: 'url(/imgages/discount.png)'
+          }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-[#D78813] to-[#B630F4]"></div>
+          
+          {/* Content */}
+          <div className="relative flex mt-5 items-center justify-between px-6 md:px-10">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-8 h-8 bg-white/20 rounded-full backdrop-blur-sm flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4" />
+                </div>
+                <span className="text-xs md:text-sm font-medium">Sale ends in 🕐 2:58:59 PM</span>
+              </div>
+              <div className="mb-3">
+                <div className="text-sm md:text-base font-semibold mb-1">UP TO</div>
+                <div className="text-3xl md:text-5xl font-black tracking-tight">90% OFF</div>
+              </div>
+
+          <Link href="/hotdeals">
+              <button className="group/btn cursor-pointer relative px-6 md:px-8 py-2 md:py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full font-bold text-sm md:text-base overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/50">
+                <span className="relative z-10 flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4" />
+                  View
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+              </button>
+            </Link>
+            
+            </div>
+            
+            {/* Decorative 3D Megaphone/Icon on Right */}
+            <div className="hidden md:flex items-center justify-center w-48 h-full">
+              <div className="relative">
+                <div className="text-8xl opacity-30">📢</div>
+                <div className="absolute inset-0 blur-2xl bg-white/10"></div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
 

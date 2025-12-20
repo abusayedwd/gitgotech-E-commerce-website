@@ -171,6 +171,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { SectionHeader } from '@/customComponent/Header';
  
 
 export default function WishlistPage() {
@@ -224,7 +225,9 @@ export default function WishlistPage() {
 
       {/* Header */}
       <div className="max-w-6xl mx-auto mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">My Wishlist</h1>
+        <h1 className="flex items-center justify-center text-3xl md:text-4xl font-bold mb-3">
+          <SectionHeader title='My Wishlist'></SectionHeader>
+        </h1>
         <p className="text-gray-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
           Save the products you love and revisit them anytime. Your wishlist helps you keep track of outfits, fabrics, and custom designs you may want to order later. Add them to your cart whenever you're ready.
         </p>

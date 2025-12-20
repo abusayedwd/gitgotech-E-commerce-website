@@ -1,6 +1,7 @@
 "use client";
 
 import BackButton from '@/customComponent/BackButton';
+import { SectionHeader } from '@/customComponent/Header';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
  
@@ -72,7 +73,9 @@ export default function ShoppingCart() {
 
       {/* Header */}
       <div className=" mb-6 md:mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-3">My Shopping Cart</h1>
+        <h1 className="flex items-center justify-center text-3xl md:text-4xl font-bold mb-3">
+                 <SectionHeader title='My Shopping Cart'></SectionHeader>
+               </h1>
         <p className="text-gray-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
           Review your selected items before completing your order. You can update quantities, remove products, or continue shopping to add more. When you're ready, proceed to checkout for secure payment and delivery.
         </p>

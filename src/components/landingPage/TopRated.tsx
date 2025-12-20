@@ -1,4 +1,6 @@
+import { SectionHeader } from '@/customComponent/Header';
 import { Star, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 
 export default function TopRated() {
   const products = [
@@ -49,15 +51,17 @@ export default function TopRated() {
   ];
 
   return (
-    <div className="bg-black py-6 sm:py-8 md:py-10 px-2 sm:px-4">
+    <div className="bg-black py-6 sm:py-8 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-          <h2 className="text-white text-xl sm:text-2xl font-semibold mb-2 sm:mb-0">Top Rated</h2>
-          <button className="flex items-center text-purple-500 hover:text-purple-400 transition-colors text-xs sm:text-sm font-medium">
+           <SectionHeader title='Top Rated'></SectionHeader>
+          <Link href="/top-products">
+          <button className="flex cursor-pointer items-center text-purple-500 hover:text-purple-400 transition-colors text-xs sm:text-sm font-medium">
             View All
             <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4 ml-1" />
           </button>
+          </Link>
         </div>
 
         {/* Products Grid */}

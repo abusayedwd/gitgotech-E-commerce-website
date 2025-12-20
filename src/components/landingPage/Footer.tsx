@@ -44,7 +44,7 @@ const Footer = () => {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-base font-semibold mb-4">Quick Links</h3>
+            <h3 className="text-base text-2xl font-cormorant md:text-[32px] font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.name}>
@@ -61,7 +61,7 @@ const Footer = () => {
 
           {/* Company Info */}
           <div>
-            <h3 className="text-base font-semibold mb-4">Company Info</h3>
+            <h3 className="text-base text-2xl font-cormorant md:text-[32px] font-semibold mb-4">Company Info</h3>
             <ul className="space-y-2">
               {companyInfo.map((link) => (
                 <li key={link.name}>
@@ -78,15 +78,15 @@ const Footer = () => {
 
           {/* Get In Touch */}
           <div>
-            <h3 className="text-base font-semibold mb-4">Get In Touch</h3>
+            <h3 className="text-base text-2xl font-cormorant md:text-[32px] font-semibold mb-4">Get In Touch</h3>
             <ul className="space-y-3">
               <li className="flex items-center">
                 <Mail className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
-                <span className="text-gray-400 text-sm">support@techpit.com</span>
+                <span className="text-gray-400 font-poppins text-sm">support@techpit.com</span>
               </li>
               <li className="flex items-center">
                 <Phone className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
-                <span className="text-gray-400 text-sm">(02) 0454658562</span>
+                <span className="text-gray-400 font-poppins text-sm">(02) 0454658562</span>
               </li>
             </ul>
             <div className="flex space-x-3 mt-4">

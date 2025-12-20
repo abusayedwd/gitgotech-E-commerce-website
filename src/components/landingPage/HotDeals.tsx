@@ -1,5 +1,8 @@
 'use client';
+import { SectionHeader } from '@/customComponent/Header';
+import { Header } from 'antd/es/layout/layout';
 import { Star, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 export default function HotDealsSection() {
@@ -54,17 +57,19 @@ export default function HotDealsSection() {
   ];
 
   return (
-    <div className="bg-black py-6 sm:py-8 md:py-10 px-2 sm:px-4">
+    <div className="bg-black py-4 sm:py-8 px-2 sm:px-4">
       <div 
-      onClick={() => router.push("/product/details")}
+      // onClick={() => router.push("/hotdeals")}
       className="container mx-auto">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
-          <h2 className="text-white text-xl sm:text-2xl font-semibold mb-2 sm:mb-0">Hot Deals</h2>
-          <button className="flex items-center text-purple-500 hover:text-purple-400 transition-colors text-xs sm:text-sm font-medium">
+        <div className="flex flex-col  sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
+          <SectionHeader title='Hot Deals'></SectionHeader>
+          <Link href="/hotdeals">
+          <button className="flex items-center cursor-pointer text-purple-500 hover:text-purple-400 transition-colors text-xs sm:text-sm font-medium">
             View All
             <ChevronRight className="w-3 sm:w-4 h-3 sm:h-4 ml-1" />
           </button>
+          </Link>
         </div>
 
         {/* Products Grid */}

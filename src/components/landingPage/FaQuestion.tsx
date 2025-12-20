@@ -1,5 +1,6 @@
 'use client';
 
+import { SectionHeader } from '@/customComponent/Header';
 import { useState } from 'react';
 
 const faqData = [
@@ -45,7 +46,9 @@ export default function SimpleFAQ() {
       <div className="container mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-3">FAQs</h1>
+          <h1 className='flex items-center justify-center'> 
+          <SectionHeader title='Frequently Asked Questions'></SectionHeader>
+          </h1>
           <p className="text-xl text-gray-600">Get Qualibond Word 404 Answers</p>
         </div>
 

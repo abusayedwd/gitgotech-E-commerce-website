@@ -1,5 +1,6 @@
 import BackButton from '@/customComponent/BackButton';
-import { Star, ChevronRight } from 'lucide-react';
+import { SectionHeader } from '@/customComponent/Header';
+import { Star, ChevronRight, Section } from 'lucide-react';
 
 export default function TopPoduct() {
   const products = [
@@ -143,9 +144,10 @@ export default function TopPoduct() {
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
         
-          <h2 className="text-white flex gap-1.5 text-xl sm:text-2xl font-semibold mb-2 sm:mb-0">
+          <h2 className="text-white flex gap-1.5 text-xl sm:text-2xl font-cormorant font-semibold mb-2 sm:mb-0">
             <BackButton />
-            Top Products</h2>
+            <SectionHeader title='Top Products'></SectionHeader>
+          </h2>
            
         </div>
 

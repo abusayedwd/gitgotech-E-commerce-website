@@ -169,6 +169,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { CustomButton } from '@/customComponent/CustomButton';
  
 
 export default function BannerSection() {
@@ -225,7 +226,10 @@ export default function BannerSection() {
               />
               <div className="absolute inset-0 bg-black/40" />
 
-              <div onClick={() => router.push('/vendors')} className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded"> 
+            
+
+              <div onClick={() => router.push('/vendors')} className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded 
+              "> 
                 <h3 className="text-white text-lg font-semibold">Top Vendors</h3>
               </div>
             </div>
@@ -260,13 +264,13 @@ export default function BannerSection() {
 
               {/* Slider Content */}
               <div className="relative h-full flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 text-center">
-                <h4 className="text-purple-300 text-xs sm:text-sm font-medium mb-2 sm:mb-3 tracking-wide">
+                <h4 className="bg-gradient-to-r from-[#2ACCED] font-cormorant to-[#B630F4] bg-clip-text text-transparent text-[22px] sm:text-sm font-medium mb-2 sm:mb-3 tracking-wide">
                   {slides[currentSlide].title}
                 </h4>
-                <h2 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-normal mb-3 sm:mb-4 max-w-2xl leading-tight px-2">
+                <h2 className="text-white text-2xl font-cormorant sm:text-3xl md:text-[32px] lg:text-4xl font-serif font-normal mb-3 sm:mb-4 max-w-2xl leading-tight px-2">
                   {slides[currentSlide].heading}
                 </h2>
-                <p className="text-gray-300 text-xs sm:text-sm md:text-base max-w-2xl leading-relaxed px-2">
+                <p className="text-gray-300 text-xs font-poppins sm:text-sm md:text-base max-w-2xl leading-relaxed px-2">
                   {slides[currentSlide].description}
                 </p>
 
