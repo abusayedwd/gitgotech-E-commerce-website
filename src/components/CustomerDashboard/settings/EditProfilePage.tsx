@@ -27,7 +27,7 @@ export default function EditProfilePage() {
 
   return (
      
-    <div className="min-h-screen mt-16 bg-gradient-to-r from-gray-950 via-purple-900/20 to-black text-white flex items-center justify-center">
+    <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white flex items-center justify-center">
     
       
       <div className="max-w-2xl w-full">

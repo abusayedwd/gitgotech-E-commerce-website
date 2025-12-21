@@ -9,6 +9,7 @@ export const CustomButton = ({
   icon: Icon,
   iconPosition = "left",
   fullWidth = false,
+  
   onClick = () => {},
   disabled = false
 }) => {

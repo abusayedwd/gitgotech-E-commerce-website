@@ -211,7 +211,7 @@ export default function WishlistPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r mt-28 from-gray-950 via-purple-900/20 to-black text-white p-4 md:p-8">
+    <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Back Button */}
      <div className="max-w-6xl mx-auto mb-6">
         <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">

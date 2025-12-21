@@ -67,7 +67,7 @@ export default function ShowroomsPage() {
   ];
 
   return (
-    <div className="bg-gradient-to-b mt-20 md:mt-24 from-gray-900 via-black to-gray-900 min-h-screen py-12 px-4">
+    <div className=" mt-20 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen py-12 px-4">
       <div className="container mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">

@@ -9,11 +9,11 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   
   return (
-    <div className="  mt-16 md:mt-20 bg-gradient-to-r from-gray-950 via-purple-900/20 to-black text-white p-6">
+    <div className="  mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
         
       <div className="max-w-3xl mx-auto">
         {/* Header */}
-        
+
   <div className="container mx-auto mt-4 flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
@@ -45,8 +45,10 @@ export default function ProfilePage() {
 
         {/* Action Buttons */}
         <div className="grid grid-cols-3 gap-4 mb-8">
-          
-          <button className="bg-[#29223A] bg-opacity-50 border border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
+           
+          <button 
+           onClick={() => router.push("/profile/event")}
+          className="bg-[#29223A] bg-opacity-50 border border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
             <Calendar className="w-6 h-6" />
             <span className="text-sm">Event</span>
           </button>
