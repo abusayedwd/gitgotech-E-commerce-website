@@ -1,6 +1,6 @@
 "use client"
 
-import { Calendar, LocationEdit } from 'lucide-react';
+import { Calendar, LocationEdit, Share2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -44,7 +44,9 @@ export default function Event() {
           <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Event</h1>
         </div>
         
-        <button className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center gap-2">
+        <button 
+         onClick={() => router.push("/profile/event/create-event")}
+        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center gap-2">
           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
           </svg>
@@ -116,9 +118,7 @@ export default function Event() {
                 </button>
                 
                 <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 text-sm flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v6a1 1 0 102 0V7zm-3 6a1 1 0 11-2 0H6a1 1 0 110-2h4a1 1 0 110 2z" clipRule="evenodd" />
-                  </svg>
+                  <Share2></Share2>
                   Send Invitation
                 </button>
               </div>
