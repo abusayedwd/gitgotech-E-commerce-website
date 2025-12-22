@@ -55,7 +55,7 @@ export default function OrderHistory() {
   };
 
   return (
-    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] border border-cyan-500/30 rounded-2xl p-8 shadow-xl shadow-cyan-500/5">
+    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 rounded-2xl p-8">
       <div className="mb-6">
         <h2 className="text-2xl font-bold font-cormorant mb-6 text-white">Orders</h2>
         
@@ -91,7 +91,7 @@ export default function OrderHistory() {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-700/50">
+            <tr className="border-b border-gray-400">
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Order ID</th>
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Date & Time</th>
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Customer</th>

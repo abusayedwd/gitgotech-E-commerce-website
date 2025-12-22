@@ -56,7 +56,7 @@ export default function MyProducts() {
       rating: 5,
       seller: 'PRINCE OF DARKZ',
       image: '',
-      stockStatus: 'Edit Details'
+      stockStatus: 'Stock'
     },
     {
       id: '5',
@@ -66,7 +66,7 @@ export default function MyProducts() {
       rating: 5,
       seller: 'PRINCE OF DARKZ',
       image: '',
-      stockStatus: 'Edit Details'
+      stockStatus: 'Stock'
     },
     {
       id: '6',
@@ -76,7 +76,7 @@ export default function MyProducts() {
       rating: 5,
       seller: 'PRINCE OF DARKZ',
       image: '',
-      stockStatus: 'Edit Details'
+      stockStatus: 'Stock'
     },
   ];
 
@@ -95,7 +95,7 @@ export default function MyProducts() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 rounded-2xl p-8">
+    <div className="bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 border-purple-600/40 shadow-[0_0_12px_rgba(34,211,238,0.35)] border rounded-2xl p-8">
       <div className="mb-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Products</h2>
@@ -139,7 +139,7 @@ export default function MyProducts() {
         {products.map((product) => (
           <div 
             key={product.id} 
-            className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all group"
+            className="bg-[#1B1B1F] border border-gray-800 rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all group"
           >
             {/* Product Image */}
             <div className="relative bg-gray-800 aspect-square flex items-center justify-center overflow-hidden">
@@ -151,11 +151,11 @@ export default function MyProducts() {
  
               
               {/* Stock Badge */}
-              <div className="absolute top-3 right-3">
-                <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  product.stockStatus === 'Out of stock' 
-                    ? 'bg-red-900/80 text-red-300 border border-red-500/50' 
-                    : 'bg-blue-900/80 text-blue-300 border border-blue-500/50'
+              <div className="absolute bottom-3 right-3 ">
+                <span className={`px-3 py-2 rounded-full text-xs font-medium ${
+                  product.stockStatus === 'Stock' 
+                    ? 'bg-[#BAFF9466] text-red-300 border' 
+                    : 'bg-[#AEAEAE66] text-blue-300 border border-blue-500/50'
                 }`}>
                   {product.stockStatus}
                 </span>
