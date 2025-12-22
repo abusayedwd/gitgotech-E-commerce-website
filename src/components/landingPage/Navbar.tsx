@@ -324,7 +324,7 @@ export default function Navbar() {
   };
 
   // Auth logic - Replace with your actual authentication
-  const isLoggedIn = true; // Set to false to see login button
+  const isLoggedIn = false; // Set to false to see login button
   const userRole = 'customer'; // Can be 'customer' or 'vendor'
 
   return (

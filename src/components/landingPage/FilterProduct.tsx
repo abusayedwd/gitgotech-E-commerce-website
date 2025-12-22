@@ -112,8 +112,10 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const FashionSearchNav = () => {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState('Women');
   const [searchQuery, setSearchQuery] = useState('');
   const [isVisible, setIsVisible] = useState(true);
@@ -203,6 +205,15 @@ const FashionSearchNav = () => {
         isVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
     >
+       {/* <div className="container mx-auto mt-8">
+       <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </div>
+        </button>
+      </div> */}
       <div className="container mx-auto">
         {/* Search Bar Section */}
         <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-2 sm:py-6">

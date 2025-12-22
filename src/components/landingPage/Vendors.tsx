@@ -59,7 +59,7 @@ export default function VendorsPage() {
       <div className="container mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
-          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif mb-2 sm:mb-3 md:mb-4">
+          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cormorant mb-2 sm:mb-3 md:mb-4">
             Meet our Vendors
           </h1>
           <p className="text-gray-400 text-xs sm:text-sm md:text-base mb-4 sm:mb-6 md:mb-8">
@@ -86,7 +86,7 @@ export default function VendorsPage() {
 
         {/* All Vendors Section */}
         <div className="mb-6 sm:mb-8">
-          <h2 className="text-white text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 px-2">All Vendors</h2>
+          <h2 className="text-white text-xl font-cormorant sm:text-2xl font-semibold mb-4 sm:mb-6 px-2">All Vendors</h2>
 
           {/* Vendors Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">

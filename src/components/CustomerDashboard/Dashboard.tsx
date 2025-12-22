@@ -68,7 +68,7 @@ export default function MyDashboard() {
   };
 
   return (
-    <div className="min-h-screen md:mt-28 mt-20  bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen md:mt-24 mt-20  bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Header */}
       <div className=" container mx-auto mb-8 md:mb-12 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3">My Dashboard</h1>

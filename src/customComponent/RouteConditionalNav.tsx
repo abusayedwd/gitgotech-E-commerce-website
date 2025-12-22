@@ -11,9 +11,9 @@ const RouteConditionalNav = () => {
     pathname === "/" ||
     pathname.startsWith("/hotdeals") ||
     pathname.startsWith("/new-arrivals") ||
-    pathname.startsWith("/category") ||
+    pathname.startsWith("/showroom/view-showroom") ||
     pathname.startsWith("/products") ||
-    pathname.startsWith("/search");
+    pathname.startsWith("/top-products");
 
   if (showFashionSearchNav) {
     return <FashionSearchNav />;

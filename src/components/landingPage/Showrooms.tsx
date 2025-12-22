@@ -1,5 +1,6 @@
 "use client";
 import { Search, Store, Grid3x3 } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { FaLocationDot } from 'react-icons/fa6';
 
@@ -71,10 +72,10 @@ export default function ShowroomsPage() {
       <div className="container mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-white text-3xl md:text-4xl font-serif mb-3">
+          <h1 className="text-white text-3xl md:text-4xl font-cormorant mb-3">
             Discover Our Showrooms
           </h1>
-          <p className="text-gray-400 text-sm md:text-base max-w-3xl mx-auto mb-8">
+          <p className="text-gray-400 text-sm md:text-base font-poppins max-w-3xl mx-auto mb-8">
             Explore our curated showrooms across the city. Each venue showcases the finest designs and craftsmanship, 
             giving you a world of luxurious choices all within arm's reach.
           </p>
@@ -102,7 +103,7 @@ export default function ShowroomsPage() {
         {/* All Showroom Section */}
         <div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-white text-xl md:text-2xl font-semibold">All Showroom</h2>
+            <h2 className="text-white font-cormorant text-xl md:text-2xl font-semibold">All Showroom</h2>
             <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
               <Grid3x3 className="w-5 h-5 text-gray-400" />
             </button>
@@ -141,10 +142,12 @@ export default function ShowroomsPage() {
                   </p>
 
                   {/* View Showroom Button */}
+                  <Link href={"/showroom/view-showroom"}>
                   <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm mt-auto">
                     <Store className="w-4 h-4" />
                     View Showroom
                   </button>
+                  </Link>
                 </div>
               </div>
             ))}

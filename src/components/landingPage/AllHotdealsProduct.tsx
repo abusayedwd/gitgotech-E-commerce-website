@@ -1,8 +1,11 @@
+'use client'
 import BackButton from "@/customComponent/BackButton";
 import { Star } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function AllHotdealsProduct() {
+  const router = useRouter()
   const products = [
     {
       id: 1,
@@ -106,9 +109,16 @@ export default function AllHotdealsProduct() {
     <div className="bg-black py-6 mt-28 sm:py-8 md:py-10 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
-        <h1 className="text-white flex items-center gap-2 text-2xl font-bold mb-4 mt-24">
-          <BackButton /> All Hot Deals Products
-        </h1>
+        <div className="container mx-auto mt-24 mb-2 flex items-center gap-4">
+             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </div>
+        </button>
+          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Hot Deals</h1>
+        </div>
         <Image
           alt="banner"
           src="/images/dicount.png"

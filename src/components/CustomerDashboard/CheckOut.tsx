@@ -351,7 +351,7 @@ export default function CheckoutPage() {
   };
 
   return (
-    <div className="min-h-screen mt-12 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
+    <div className="min-h-screen mt-24 bg-linear-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto mb-4">
         <button className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
