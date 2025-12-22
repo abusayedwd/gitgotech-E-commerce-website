@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 interface Order {
@@ -13,6 +14,7 @@ export default function OrderHistory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('Filter');
   const [currentPage, setCurrentPage] = useState(2);
+  const router = useRouter()
 
   const allOrders: Order[] = [
     { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Order Placed' },
@@ -49,12 +51,13 @@ export default function OrderHistory() {
 
   const handleViewDetails = (order: Order) => {
     console.log('View details:', order);
+    router.push("/vendor-dashboard/orders/details")
   };
 
   return (
-    <div className="bg-gradient-to-r from-black via-[#0f0924] to-black border border-cyan-500/30 rounded-2xl p-8 shadow-xl shadow-cyan-500/5">
+    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] border border-cyan-500/30 rounded-2xl p-8 shadow-xl shadow-cyan-500/5">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-6 text-white">Orders</h2>
+        <h2 className="text-2xl font-bold font-cormorant mb-6 text-white">Orders</h2>
         
         {/* Filter and Search */}
         <div className="flex gap-4 mb-6">
@@ -76,7 +79,7 @@ export default function OrderHistory() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
+              className=" px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
             />
             <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -110,7 +113,7 @@ export default function OrderHistory() {
                 <td className="py-3 px-4">
                   <button 
                     onClick={() => handleViewDetails(order)}
-                    className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+                    className="px-4 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
                   >
                     View Details
                   </button>

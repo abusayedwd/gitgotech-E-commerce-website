@@ -88,9 +88,35 @@ export default function HotDealsSection() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 {/* Discount Badge */}
-                <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-purple-600 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
+
+
+                {/* <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-purple-600 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
                   {product.discount}% OFF
-                </div>
+                </div> */}
+
+            <div className="absolute top-2 left-0 inline-flex items-center">
+           <div className="relative bg-purple-600 text-white px-4 py-2 font-bold text-sm uppercase tracking-wider whitespace-nowrap flex items-center">
+        <span>10% off</span>
+        
+        {/* Right pointing arrow/chevron */}
+        <div className="ml-2 w-0 h-0   border-br-[16px] border-tr border-t-transparent border-b-transparent border-l-purple-600"></div>
+      </div>
+      
+      {/* 3D effect - left shadow */}
+      <div className="absolute left-0 top-0 bottom-0 w-2 bg-purple-700 rounded-l-md"></div>
+          </div>
+      
+
+      
+      {/* Visual reference - just a simple box to show the badge in context */}
+      <div className="w-64 h-48 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-lg relative">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-white font-bold">Product Image</span>
+        </div>
+      </div>
+
+
+
                 {/* Best Seller Badge */}
                 <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-blue-500 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
                   {product.tag}
