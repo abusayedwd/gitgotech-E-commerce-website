@@ -351,12 +351,15 @@ export default function VendorProfilePage() {
       <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-white font-cormorant">My Showrooms</h2>
-          <button 
+          <Link href={"/v-profile/add-showroom"} >
+            <button 
             onClick={handleAddShowroom}
             className="px-4 py-2 bg-[#6100FF] cursor-pointer text-white hover:bg-[#5000dd] rounded-lg transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2"
           >
             + Add Showroom
           </button>
+          </Link>
+         
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
