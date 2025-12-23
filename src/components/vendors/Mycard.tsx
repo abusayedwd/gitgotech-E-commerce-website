@@ -2,8 +2,10 @@
 import { useState } from 'react';
 import { Wallet, CreditCard, Plus, Trash2 } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function MyCardPage() {
+    const router = useRouter()
   const [cards, setCards] = useState([
     { id: 1, type: 'VISA', last4: '8970', bank: 'Bank Meghna LTD.' },
     { id: 2, type: 'VISA', last4: '8970', bank: 'Bank Meghna LTD.' },
@@ -37,7 +39,7 @@ export default function MyCardPage() {
         {/* Add Card Button */}
         
           <button
-    onClick={() => router.push("/v-profile/wallet/payment-method")}
+    onClick={() => router.push("/v-profile/wallet/payment-method/add-card")}
           className="flex-1 w-full flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#5b2fa3] text-[#6100FF]  gap-2 px-4 py-3 bg-[#2F2643] rounded-xl transition">
               <img src="/images/card.png" alt="" />
             <span>Add Card</span>

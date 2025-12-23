@@ -351,7 +351,7 @@ export default function VendorProfilePage() {
       <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold text-white font-cormorant">My Showrooms</h2>
-          <Link href={"/v-profile/add-showroom"} >
+          <Link href={"/v-profile/add-showroom"}>
             <button 
             onClick={handleAddShowroom}
             className="px-4 py-2 bg-[#6100FF] cursor-pointer text-white hover:bg-[#5000dd] rounded-lg transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2"
@@ -368,13 +368,7 @@ export default function VendorProfilePage() {
               key={showroom.id}
               className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all"
             >
-              <div className="bg-white p-8 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="text-6xl mb-2">✂️</div>
-                  <div className="text-black font-bold text-xl">TAILOR</div>
-                  <div className="text-black text-xs tracking-widest">COMPANY</div>
-                </div>
-              </div>
+               <img src="/images/tailor.png" className='w-full h-fit' alt="" />
 
               <div className="p-4">
                 <h3 className="text-white font-semibold mb-1">{showroom.name}</h3>

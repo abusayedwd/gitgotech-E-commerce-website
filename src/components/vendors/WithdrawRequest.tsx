@@ -72,9 +72,7 @@ export default function WithdrawRequest() {
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded flex items-center justify-center">
-                    <span className="text-xs font-bold text-white">VISA</span>
-                  </div>
+                  <img src="/images/Visa.png" alt="" />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <span className="text-white font-medium">**** **** **** {card.last4}</span>
