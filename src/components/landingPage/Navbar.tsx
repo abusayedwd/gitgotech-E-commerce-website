@@ -2,6 +2,7 @@
 
 
 
+
 // "use client";
 
 // import { useState } from 'react';
@@ -25,11 +26,11 @@
 
 //   // Auth logic - Replace with your actual authentication
 //   const isLoggedIn = true; // Set to false to see login button
-//   const userRole = 'customer'; // Can be 'customer' or 'vendor'
+//   const userRole = 'vendor'; // Can be 'customer' or 'vendor'
 
 //   return (
-//     <nav className="bg-black text-white fixed top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 shadow-lg">
-//       <div className="container mx-auto border py-1 sm:py-1 md:py-1 px-3 sm:px-4 rounded-4xl border-gray-700 flex items-center justify-between">
+//     <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white fixed top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 shadow-lg">
+//       <div className="container   mx-auto border py-1 sm:py-1 md:py-1 px-3 sm:px-4 rounded-4xl border-gray-700 flex items-center justify-between">
 //         {/* Logo */}
 //         <Link href="/" className="flex items-center flex-shrink-0">
 //           <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16">
@@ -77,79 +78,91 @@
 //               {/* Desktop Icon Buttons - Customer only icons */}
 //               {userRole === 'customer' && (
 //                 <>
-//                   <button className="p-2 hover:bg-gray-800 transition-colors">
-//                     {/* <Heart className="w-5 h-5 text-gray-400" /> */}
-//                     <Image 
-//                       src="/images/love.png"
-//                       alt="Heart"
-//                       width={40}
-//                       height={30}
-//                     />
-//                   </button>
+//                   <Link href="/wishlist">
+//                     <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+//                       isActive('/wishlist') ? 'bg-purple-600/40' : ''
+//                     }`}>
+//                       <Image 
+//                         src="/images/love.png"
+//                         alt="Wishlist"
+//                         width={40}
+//                         height={30}
+//                       />
+//                     </button>
+//                   </Link>
                    
-//                    <Link href="/shopping-cart">
-//                   <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors relative">
-//                     <Image 
-//                       src="/images/cart.png"
-//                       alt="Heart"
-//                       width={40}
-//                       height={30}
-//                     />
-//                     <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-//                       2
-//                     </span>
-//                   </button>
+//                   <Link href="/shopping-cart">
+//                     <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors relative ${
+//                       isActive('/shopping-cart') ? 'bg-purple-600/40' : ''
+//                     }`}>
+//                       <Image 
+//                         src="/images/cart.png"
+//                         alt="Cart"
+//                         width={40}
+//                         height={30}
+//                       />
+//                       <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+//                         2
+//                       </span>
+//                     </button>
 //                   </Link>
 //                 </>
 //               )}
 
 //               {/* Common icons for both customer and vendor */}
 //               <Link href="/messaging">
-//               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-//                <Image 
-//                       src="/images/message.png"
-//                       alt="Heart"
-//                       width={40}
-//                       height={30}
-//                     />
-//               </button>
+//                 <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+//                   isActive('/messaging') ? 'bg-purple-600/40' : ''
+//                 }`}>
+//                   <Image 
+//                     src="/images/message.png"
+//                     alt="Messages"
+//                     width={40}
+//                     height={30}
+//                   />
+//                 </button>
 //               </Link>
+
 //               <Link href="/profile">
-//               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-//                  <Image 
-//                       src="/images/profile.png"
-//                       alt="Heart"
-//                       width={40}
-//                       height={30}
-//                     />
-//               </button>
+//                 <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+//                   isActive('/profile') ? 'bg-purple-600/40' : ''
+//                 }`}>
+//                   <Image 
+//                     src="/images/profile.png"
+//                     alt="Profile"
+//                     width={40}
+//                     height={30}
+//                   />
+//                 </button>
 //               </Link>
 
 //               <Link href="/notification">
-//               <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-//                 <Image 
-//                       src="/images/notification.png"
-//                       alt="Heart"
-//                       width={40}
-//                       height={30}
-//                     />
-//               </button>
+//                 <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+//                   isActive('/notification') ? 'bg-purple-600/40' : ''
+//                 }`}>
+//                   <Image 
+//                     src="/images/notification.png"
+//                     alt="Notifications"
+//                     width={40}
+//                     height={30}
+//                   />
+//                 </button>
 //               </Link>
-
+               
 //               <Link href="/customer-dashboard">
-//               <button className="bg-[#6100FF] cursor-pointer hover:bg-purple-700 text-white px-5 xl:px-6 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base">
-//                 Dashboard
-//               </button>
+//                 <button className={` text-white px-5 xl:px-6 py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
+//                   isActive('/customer-dashboard') ? 'bg-purple-600/40 ring-2 ring-purple-400' : 'bg-[#6100FF]'
+//                 }`}>
+//                   Dashboard
+//                 </button>
 //               </Link>
 //             </>
 //           ) : (
 //             /* Show Login button when not logged in */
 //             <Link href="/auth/login">
-//             <button 
-          
-//             className="bg-purple-600 cursor-pointer hover:bg-purple-700 text-white px-6 xl:px-8 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base">
-//               Login
-//             </button>
+//               <button className="bg-purple-600 cursor-pointer hover:bg-purple-700 text-white px-6 xl:px-8 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base">
+//                 Login
+//               </button>
 //             </Link>
 //           )}
 //         </div>
@@ -158,18 +171,21 @@
 //         <div className="flex lg:hidden items-center space-x-1 sm:space-x-2">
 //           {/* Cart Icon - Only show for logged in customers */}
 //           {isLoggedIn && userRole === 'customer' && (
-//             <button className="p-1.5 sm:p-2 hover:bg-gray-800 rounded-lg transition-colors relative">
-//              <Image 
-//                       src="/images/cart.png"
-//                       alt="Heart"
-//                       width={40}
-//                       height={30}
-//                     />
-
-//               <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-purple-600 text-white text-[10px] rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center">
-//                 2
-//               </span>
-//             </button>
+//             <Link href="/shopping-cart">
+//               <button className={`p-1.5 sm:p-2 hover:bg-gray-800 rounded-lg transition-colors relative ${
+//                 isActive('/shopping-cart') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
+//               }`}>
+//                 <Image 
+//                   src="/images/cart.png"
+//                   alt="Cart"
+//                   width={40}
+//                   height={30}
+//                 />
+//                 <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-purple-600 text-white text-[10px] rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center">
+//                   2
+//                 </span>
+//               </button>
+//             </Link>
 //           )}
 
 //           <button
@@ -227,72 +243,76 @@
 //               <div className="flex items-center space-x-2 sm:space-x-3 pt-2 sm:pt-3 pb-2">
 //                 {/* Heart icon - Only for customers */}
 //                 {userRole === 'customer' && (
-//                   <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-//                    <Image 
-//                       src="/images/love.png"
-//                       alt="Heart"
-//                       width={40}
-//                       height={30}
-//                     />
-//                   </button>
+//                   <Link href="/wishlist">
+//                     <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+//                       isActive('/wishlist') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
+//                     }`}>
+//                       <Image 
+//                         src="/images/love.png"
+//                         alt="Wishlist"
+//                         width={40}
+//                         height={30}
+//                       />
+//                     </button>
+//                   </Link>
 //                 )}
 
 //                 {/* Common icons for both */}
 //                 <Link href="/messaging">
-//                 <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-//                  <Image 
+//                   <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+//                     isActive('/messaging') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
+//                   }`}>
+//                     <Image 
 //                       src="/images/message.png"
-//                       alt="Heart"
+//                       alt="Messages"
 //                       width={40}
 //                       height={30}
 //                     />
-//                 </button>
+//                   </button>
 //                 </Link>
 
 //                 <Link href="/profile">
-
-//                 <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-//                   <Image 
+//                   <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+//                     isActive('/profile') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
+//                   }`}>
+//                     <Image 
 //                       src="/images/profile.png"
-//                       alt="Heart"
+//                       alt="Profile"
 //                       width={40}
 //                       height={30}
 //                     />
-
-//                 </button>
+//                   </button>
 //                 </Link>
 
 //                 <Link href="/notification">
-
-//                 <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-//                   <Image 
+//                   <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+//                     isActive('/notification') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
+//                   }`}>
+//                     <Image 
 //                       src="/images/notification.png"
-//                       alt="Heart"
+//                       alt="Notifications"
 //                       width={40}
 //                       height={30}
 //                     />
-//                 </button>
+//                   </button>
 //                 </Link>
-
-                 
-               
 //               </div>
 
 //               {/* Mobile Dashboard Button */}
 //               <Link href="/customer-dashboard">
-//               <button className="w-full bg-[#6100FF] hover:bg-purple-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base">
-//                 Dashboard
-//               </button>
+//                 <button className={`w-full cursor-pointer text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base ${
+//                   isActive('/customer-dashboard') ? 'bg-purple-600/20 ring-2 ring-purple-400' : 'bg-[#6100FF]'
+//                 }`}>
+//                   Dashboard
+//                 </button>
 //               </Link>
 //             </>
 //           ) : (
 //             /* Mobile Login Button */
 //             <Link href="/auth/login">
-//             <button 
-         
-//             className="w-full  bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base">
-//               Login
-//             </button>
+//               <button className="w-full bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base">
+//                 Login
+//               </button>
 //             </Link>
 //           )}
 //         </div>
@@ -300,7 +320,6 @@
 //     </nav>
 //   );
 // }
-
 
 "use client";
 
@@ -324,8 +343,12 @@ export default function Navbar() {
   };
 
   // Auth logic - Replace with your actual authentication
-  const isLoggedIn = false; // Set to false to see login button
-  const userRole = 'customer'; // Can be 'customer' or 'vendor'
+  const isLoggedIn = true; // Set to false to see login button
+  const userRole = 'vendor'; // Can be 'customer' or 'vendor'
+
+  // Dynamic routes based on user role
+  const dashboardRoute = userRole === 'vendor' ? '/vendor-dashboard' : '/customer-dashboard';
+  const profileRoute = userRole === 'vendor' ? '/v-profile' : '/profile';
 
   return (
     <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white fixed top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 shadow-lg">
@@ -422,9 +445,9 @@ export default function Navbar() {
                 </button>
               </Link>
 
-              <Link href="/profile">
+              <Link href={profileRoute}>
                 <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
-                  isActive('/profile') ? 'bg-purple-600/40' : ''
+                  isActive(profileRoute) ? 'bg-purple-600/40' : ''
                 }`}>
                   <Image 
                     src="/images/profile.png"
@@ -447,10 +470,10 @@ export default function Navbar() {
                   />
                 </button>
               </Link>
-
-              <Link href="/customer-dashboard">
-                <button className={`hover:bg-purple-700 text-white px-5 xl:px-6 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base ${
-                  isActive('/customer-dashboard') ? 'bg-purple-700 ring-2 ring-purple-400' : 'bg-[#6100FF]'
+               
+              <Link href={dashboardRoute}>
+                <button className={` text-white px-5 xl:px-6 py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
+                  isActive(dashboardRoute) ? 'bg-purple-600/40 ring-2 ring-purple-400' : 'bg-[#6100FF]'
                 }`}>
                   Dashboard
                 </button>
@@ -570,9 +593,9 @@ export default function Navbar() {
                   </button>
                 </Link>
 
-                <Link href="/profile">
+                <Link href={profileRoute}>
                   <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
-                    isActive('/profile') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
+                    isActive(profileRoute) ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
                   }`}>
                     <Image 
                       src="/images/profile.png"
@@ -598,9 +621,9 @@ export default function Navbar() {
               </div>
 
               {/* Mobile Dashboard Button */}
-              <Link href="/customer-dashboard">
-                <button className={`w-full hover:bg-purple-700 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base ${
-                  isActive('/customer-dashboard') ? 'bg-purple-700 ring-2 ring-purple-400' : 'bg-[#6100FF]'
+              <Link href={dashboardRoute}>
+                <button className={`w-full cursor-pointer text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base ${
+                  isActive(dashboardRoute) ? 'bg-purple-600/20 ring-2 ring-purple-400' : 'bg-[#6100FF]'
                 }`}>
                   Dashboard
                 </button>

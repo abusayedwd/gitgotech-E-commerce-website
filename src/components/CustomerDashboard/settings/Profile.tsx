@@ -9,7 +9,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   
   return (
-    <div className="  mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
         
       <div className="max-w-3xl mx-auto">
         {/* Header */}
@@ -54,7 +54,7 @@ export default function ProfilePage() {
           </button>
 
             <button 
-             onClick={() => router.push("/profile/settings")}
+             onClick={() => router.push("/settings")}
             className="bg-[#29223A] bg-opacity-50 border border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
             <Settings className="w-6 h-6" />
             <span className="text-sm">Settings</span>
