@@ -279,7 +279,7 @@ export default function VendorProfilePage() {
           <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Profile info</h1>
         </div>
         <div className='md:mr-24 mr-2 flex items-center gap-2'>
-          <img onClick={() => router.push("/wallet")} className='cursor-pointer' src="/images/wallet.png" alt="" />
+          <img onClick={() => router.push("/v-profile/wallet")} className='cursor-pointer' src="/images/wallet.png" alt="" />
           <img onClick={() => router.push("/settings")} className='cursor-pointer' src="/images/settinsg.png" alt="" />
           <img onClick={() => setIsLogoutModalOpen(true)} className='cursor-pointer' src="/images/log.png" alt="" />
         </div>
