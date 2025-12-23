@@ -1,8 +1,10 @@
 "use client";
 import { useState } from 'react';
 import { Wallet, CreditCard, Plus, ArrowDownRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function WithdrawRequest() {
+    const router = useRouter()
   const [amount, setAmount] = useState('');
   const [selectedCard, setSelectedCard] = useState(0);
   const [cards] = useState([
@@ -27,25 +29,29 @@ export default function WithdrawRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r mt-20 from-black via-[#110a2b] to-black text-white p-4 md:p-8">
       {/* Header */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <div className="flex items-center gap-2 text-gray-300">
-          <Wallet className="w-5 h-5 text-purple-400" />
-          <h1 className="text-xl font-semibold">Withdraw Request</h1>
+      <div className="max-w-4xl mx-auto flex mb-4 items-center gap-4">
+             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </div>
+        </button>
+          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Profile info</h1>
         </div>
-      </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Amount Input */}
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-300">Enter Amount</label>
+          <label className="block text-sm font-medium ">Enter Amoundt</label>
           <input
             type="number"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="Enter Amount"
-            className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="w-full bg-[#242428] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
             min="0"
             step="0.01"
           />
@@ -61,8 +67,8 @@ export default function WithdrawRequest() {
                 onClick={() => setSelectedCard(index)}
                 className={`p-4 rounded-xl border cursor-pointer transition-all ${
                   selectedCard === index
-                    ? 'border-blue-500/80 bg-blue-500/10 ring-2 ring-blue-500/50'
-                    : 'border-gray-700 hover:border-gray-600'
+                    ? ' bg-[#09090B] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/50 ring-1 ring-purple-500/40 rounded-2xl'
+                    : 'border-gray-700 bg-[#1B1B1F] hover:border-gray-600'
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -87,7 +93,8 @@ export default function WithdrawRequest() {
         </div>
 
         {/* Add Card Button */}
-        <button className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-xl transition">
+        <button className="w-full flex items-center cursor-pointer justify-center gap-2 px-4 py-3 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl
+         bg-gray-800 hover:bg-gray-700 rounded-xl transition">
           <Plus className="w-5 h-5 text-purple-400" />
           <span>Add Card</span>
         </button>
@@ -95,7 +102,7 @@ export default function WithdrawRequest() {
         {/* Withdraw Button */}
         <button
           onClick={handleSubmit}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl transition transform hover:scale-[1.02]"
+          className="w-full flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl transition transform hover:scale-[1.02]"
         >
           <ArrowDownRight className="w-5 h-5" />
           <span>Withdraw</span>

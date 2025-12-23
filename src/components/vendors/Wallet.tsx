@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Wallet, CreditCard, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function Wallett() {
  const router = useRouter()
@@ -18,17 +19,15 @@ export default function Wallett() {
   ]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br mt-24 from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r mt-20 from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Header */}
      <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+            <FaArrowLeft className='text-black'/>
           </div>
         </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Wallet</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">My Wallet</h1>
         </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
@@ -40,26 +39,30 @@ export default function Wallett() {
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-        <Link href={"/v-profile/payment-method"}>
-        
-         <button className="flex-1 flex items-center justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30  gap-2 px-4 py-3 bg-[#2F2643] hover:bg-gray-700 rounded-xl transition">
-            <img src="/images/method.png" alt="" />
+        {/* <Link className='w-full' href={"/v-profile/payment-method"}> */}
+
+  <button
+    onClick={() => router.push("/v-profile/wallet/payment-method")}
+          className="flex-1 flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] text-[#6100FF]  gap-2 px-4 py-3 bg-[#2F2643] rounded-xl transition">
+            <img src="/images/method.png" alt=""/>
             <span>Payment Method</span>
           </button>
-        </Link>
+        {/* </Link> */}
          
 
-          <Link href={"/v-profile/wallet/withdraw-request"}>  
-          <button className="flex-1 flex items-center justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-xl transition">
+          {/* <Link className='w-full' href={"/v-profile/wallet/withdraw-request"}>   */}
+          <button
+            onClick={() => router.push("/v-profile/wallet/withdraw-request")}
+           className="flex-1 flex items-center cursor-pointer justify-center border-2  border-[#42276e] gap-2 px-4 py-3 bg-[#6100FF] hover:bg-purple-700 rounded-xl transition">
               <img src="/images/withdraw.png" alt="" />
             <span>Withdraw</span>
           </button>
-          </Link>
+          {/* </Link> */}
 
         </div>
 
         {/* Recent History */}
-        <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 border border-blue-500/30 rounded-2xl p-6 shadow-lg">
+        <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] rounded-2xl p-6">
           <h3 className="text-lg font-semibold mb-4 text-gray-300">Recent History</h3>
           
           <div className="space-y-4">
