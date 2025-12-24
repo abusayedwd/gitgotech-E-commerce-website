@@ -59,7 +59,7 @@ export default function ShoppingCart() {
   };
 
   return (
-    <div className="mt-16 md:mt-20 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
+    <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto mb-6">
        <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">

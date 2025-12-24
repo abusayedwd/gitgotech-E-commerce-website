@@ -301,6 +301,8 @@
 import React, { useState } from 'react';
 import { X, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import { FaArrowLeft } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState('delivery');
@@ -309,6 +311,7 @@ export default function CheckoutPage() {
   const [showTipModal, setShowTipModal] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [tipAmount, setTipAmount] = useState('');
+  const router = useRouter()
   
   const [formData, setFormData] = useState({
     fullName: 'Dianne',
@@ -353,15 +356,14 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen mt-24 bg-linear-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
       {/* Back Button */}
-      <div className="container mx-auto mb-4">
-        <button className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+      <div className="container mx-auto flex items-center gap-4">
+             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+            <FaArrowLeft className='text-black' />
           </div>
         </button>
-      </div>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Check Out</h1>
+        </div>
 
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6 md:mb-8 text-center">

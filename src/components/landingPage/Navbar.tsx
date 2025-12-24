@@ -344,7 +344,7 @@ export default function Navbar() {
 
   // Auth logic - Replace with your actual authentication
   const isLoggedIn = true; // Set to false to see login button
-  const userRole = 'vendor'; // Can be 'customer' or 'vendor'
+  const userRole = 'customer'; // Can be 'customer' or 'vendor'
 
   // Dynamic routes based on user role
   const dashboardRoute = userRole === 'vendor' ? '/vendor-dashboard' : '/customer-dashboard';
@@ -401,7 +401,7 @@ export default function Navbar() {
               {userRole === 'customer' && (
                 <>
                   <Link href="/wishlist">
-                    <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+                    <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
                       isActive('/wishlist') ? 'bg-purple-600/40' : ''
                     }`}>
                       <Image 
@@ -414,7 +414,7 @@ export default function Navbar() {
                   </Link>
                    
                   <Link href="/shopping-cart">
-                    <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors relative ${
+                    <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative ${
                       isActive('/shopping-cart') ? 'bg-purple-600/40' : ''
                     }`}>
                       <Image 
@@ -433,7 +433,7 @@ export default function Navbar() {
 
               {/* Common icons for both customer and vendor */}
               <Link href="/messaging">
-                <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+                <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
                   isActive('/messaging') ? 'bg-purple-600/40' : ''
                 }`}>
                   <Image 
@@ -446,7 +446,7 @@ export default function Navbar() {
               </Link>
 
               <Link href={profileRoute}>
-                <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+                <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
                   isActive(profileRoute) ? 'bg-purple-600/40' : ''
                 }`}>
                   <Image 
@@ -459,7 +459,7 @@ export default function Navbar() {
               </Link>
 
               <Link href="/notification">
-                <button className={`p-1 hover:bg-gray-800 rounded-full transition-colors ${
+                <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
                   isActive('/notification') ? 'bg-purple-600/40' : ''
                 }`}>
                   <Image 
@@ -472,7 +472,7 @@ export default function Navbar() {
               </Link>
                
               <Link href={dashboardRoute}>
-                <button className={` text-white px-5 xl:px-6 py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
+                <button className={` text-white px-5 xl:px-6   py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
                   isActive(dashboardRoute) ? 'bg-purple-600/40 ring-2 ring-purple-400' : 'bg-[#6100FF]'
                 }`}>
                   Dashboard
@@ -494,7 +494,7 @@ export default function Navbar() {
           {/* Cart Icon - Only show for logged in customers */}
           {isLoggedIn && userRole === 'customer' && (
             <Link href="/shopping-cart">
-              <button className={`p-1.5 sm:p-2 hover:bg-gray-800 rounded-lg transition-colors relative ${
+              <button className={`p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors relative ${
                 isActive('/shopping-cart') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
               }`}>
                 <Image 
@@ -512,7 +512,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-1.5 sm:p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors"
           >
             {isMenuOpen ? (
               <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
