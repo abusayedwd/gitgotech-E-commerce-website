@@ -10,7 +10,7 @@ const ProductCard = ({ product }) => {
   const router = useRouter()
   return (
     <div 
-    onClick={() => router.push("/profile/event/view-deaign/")}
+    // onClick={() => router.push("/profile/event/view-deaign/")}
     className=" text-white bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow">
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">

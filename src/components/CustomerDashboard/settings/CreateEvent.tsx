@@ -1,6 +1,7 @@
 "use client"
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function CreateEvent() {
     const router = useRouter();
@@ -30,15 +31,13 @@ export default function CreateEvent() {
   return (
     <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black to-black p-6">
       {/* Header */}
-      <div className="container mx-auto mt-4 flex items-center gap-4">
+      <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+            <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Create Event</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Create Event</h1>
         </div>
 
       {/* Form */}
