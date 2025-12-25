@@ -78,7 +78,7 @@ export default function HotDealsSection() {
             <div
              onClick={() => router.push('/product/details')}
               key={product.id}
-              className="bg-gray-900 rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
+              className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
             >
               {/* Product Image */}
               <div className="relative aspect-square overflow-hidden">
@@ -126,6 +126,8 @@ export default function HotDealsSection() {
               {/* Product Info */}
               <div className="p-3 sm:p-4">
                 {/* Price */}
+                <div className='flex items-center justify-between'>
+
                 <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
                   ${product.price.toFixed(2)}
                 </div>
@@ -145,6 +147,7 @@ export default function HotDealsSection() {
                   <span className="text-gray-400 text-[10px] sm:text-xs ml-1 sm:ml-2">
                     {product.reviews} Reviews
                   </span>
+                </div>
                 </div>
 
                 {/* Product Name */}

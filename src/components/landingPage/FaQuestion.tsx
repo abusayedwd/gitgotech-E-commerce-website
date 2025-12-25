@@ -43,7 +43,7 @@ export default function SimpleFAQ() {
 
   return (
     <div className=" py-12 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto">
+      <div className="container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className='flex items-center justify-center'> 
@@ -57,14 +57,14 @@ export default function SimpleFAQ() {
           {faqData.map((faq, index) => (
             <div
               key={index}
-              className="  rounded-lg shadow-md overflow-hidden border border-gray-200 text-white bg-gray-900"
+              className="  rounded-lg shadow-md overflow-hidden bg-gradient-to-l from-[#231c2e] to-[#22121e] text-white"
             >
               <button
                 className="w-full px-6 py-5 text-left flex justify-between items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onClick={() => toggleFAQ(index)}
               >
                 <span className="text-lg font-medium text-white">{faq.question}</span>
-                <span className="text-blue-600 font-bold text-xl ml-4">
+                <span className=" font-bold text-xl ml-4">
                   {openIndex === index ? '−' : '+'}
                 </span>
               </button>

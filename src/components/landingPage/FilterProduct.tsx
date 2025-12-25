@@ -228,7 +228,7 @@ const FashionSearchNav = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Find your perfect tailor, design, or outfit."
-                className="w-full bg-gray-900 border border-gray-700 rounded-lg py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+                className="w-full border border-gray-700 rounded-lg py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
               />
             </div>
 

@@ -90,7 +90,7 @@ export default function ShowroomsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Find your perfect tailor, design, or outfit"
-                  className="w-full bg-gray-800/50 backdrop-blur-sm border border-gray-700 text-white rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500 text-sm"
+                  className="w-full backdrop-blur-sm border border-gray-700 text-white rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500 text-sm"
                 />
               </div>
               <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
@@ -114,7 +114,7 @@ export default function ShowroomsPage() {
             {showrooms.map((showroom) => (
               <div
                 key={showroom.id}
-                className="bg-gray-800/30 backdrop-blur-sm h-[380px] rounded-xl overflow-hidden group hover:bg-gray-800/50 transition-all border border-gray-700/50"
+                className="bg-[#1B1B1F] backdrop-blur-sm h-[380px] rounded-xl overflow-hidden group hover:bg-gray-800/50 transition-all border border-gray-700/50"
               >
                 {/* Showroom Image with Logo Overlay */}
                 <div className="relative h-[210px] overflow-hidden">
@@ -143,7 +143,7 @@ export default function ShowroomsPage() {
 
                   {/* View Showroom Button */}
                   <Link href={"/showroom/view-showroom"}>
-                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm mt-auto">
+                  <button className="w-full bg-[#6100FF] cursor-pointer text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm mt-auto">
                     <Store className="w-4 h-4" />
                     View Showroom
                   </button>

@@ -629,12 +629,12 @@ export default function ProductDetails() {
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <Star 
-                      key={i} 
+                      key={i}
                       className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-600 text-gray-600'}`}
                     />
                   ))}
                 </div>
-                <span className="text-sm text-purple-400">({product.reviews} Reviews)</span>
+                <span  className="text-sm cursor-pointer text-purple-400">({product.reviews} Reviews)</span>
               </div>
             </div>
 

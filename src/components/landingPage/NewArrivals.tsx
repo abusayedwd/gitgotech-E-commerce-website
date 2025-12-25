@@ -117,7 +117,7 @@ export default function NewArrivals() {
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-gray-900 rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
+              className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
             >
               {/* Product Image */}
               <div className="relative aspect-square overflow-hidden">
@@ -139,6 +139,8 @@ export default function NewArrivals() {
               {/* Product Info */}
               <div className="p-3 sm:p-4">
                 {/* Price */}
+                <div className='flex items-center justify-between'>
+
                 <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
                   ${product.price.toFixed(2)}
                 </div>
@@ -150,14 +152,15 @@ export default function NewArrivals() {
                       key={index}
                       className={`w-3 sm:w-4 h-3 sm:h-4 ${
                         index < Math.floor(product.rating)
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "fill-gray-600 text-gray-600"
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'fill-gray-600 text-gray-600'
                       }`}
                     />
                   ))}
                   <span className="text-gray-400 text-[10px] sm:text-xs ml-1 sm:ml-2">
                     {product.reviews} Reviews
                   </span>
+                </div>
                 </div>
 
                 {/* Product Name */}
