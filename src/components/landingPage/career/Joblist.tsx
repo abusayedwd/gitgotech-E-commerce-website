@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { Filter, MapPin, DollarSign, Briefcase, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 const Joblist = () => {
   const [selectedLocation, setSelectedLocation] = useState('Bangladesh');
   const [isFilterOpen, setIsFilterOpen] = useState(true);
+   const router = useRouter()
 
   const locations = ['Brazil', 'Bangladesh', 'Cooking', 'India', 'Pakistan', 'Qatar', 'USA'];
 
@@ -135,7 +137,9 @@ const Joblist = () => {
             
             <p className="text-gray-300 mb-6 leading-relaxed">{job.description}</p>
             
-            <button className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center gap-2 group">
+            <button 
+            onClick={() => router.push("/careers/job-details")}
+            className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-300 flex items-center justify-center gap-2 group">
               View Details
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>

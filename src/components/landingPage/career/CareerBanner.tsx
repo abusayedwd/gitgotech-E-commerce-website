@@ -21,10 +21,10 @@ const CareerBanner = () => {
       
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center h-full px-6 text-white">
-        <h1 className="text-4xl md:text-5xl font-bold mb-4 text-center">
+        <h1 className="text-4xl font-cormorant md:text-5xl font-bold mb-4 text-center">
           Build Your Future With Us
         </h1>
-        <p className="text-lg md:text-xl mb-8 text-center max-w-2xl">
+        <p className="text-lg font-poppins md:text-xl mb-8 text-center max-w-2xl">
           Discover new opportunities and apply for roles that match your talent
         </p>
         
@@ -47,11 +47,11 @@ const CareerBanner = () => {
       </div>
       
       {/* Decorative Element */}
-      <div className="absolute top-4 right-4">
+      {/* <div className="absolute top-4 right-4">
         <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
           <UserCheck size={24} className="text-white" />
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
