@@ -1,7 +1,13 @@
+"use client"
 import React from 'react';
 import { ChevronLeft } from 'lucide-react';
+import { FaArrowLeft } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 export default function ReviewsPage() {
+
+    const router = useRouter()
+
   const reviews = [
     {
       id: 1,
@@ -34,6 +40,7 @@ export default function ReviewsPage() {
   ];
 
   const StarIcon = ({ filled }) => (
+  
     <svg 
       className={`w-4 h-4 ${filled ? 'text-yellow-400' : 'text-gray-600'}`} 
       fill="currentColor" 
@@ -44,15 +51,17 @@ export default function ReviewsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white p-6">
+    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-3xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <button className="w-10 h-10 rounded-full bg-indigo-600 flex items-center justify-center hover:bg-indigo-700 transition-colors">
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          <h1 className="text-2xl font-serif">View Reviews</h1>
-        </div>
+       <div className="container mx-auto flex mb-2 items-center gap-4">
+             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+            <FaArrowLeft className='text-black' />
+          </div>
+        </button>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Review</h1>
+        </div> 
 
         {/* Reviews List */}
         <div className="space-y-6">

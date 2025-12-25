@@ -139,14 +139,14 @@ const handleSubmit = () => {
             {/* Sign In Button */}
             <button
               onClick={handleSubmit}
-              className="w-full bg-[#6100FF] cursor-pointer  hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30"
+              className="w-full bg-[#6100FF] cursor-pointer font-poppins  text-white font-semibold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-purple-500/30"
             >
               Sign In
             </button>
 
             {/* Create Account Link */}
             <div className="text-center pt-2">
-              <span className="text-gray-400 text-sm">New Here? </span>
+              <span className="text-gray-400 text-sm">New Here?</span>
               <Link 
                 href="/auth/sign-up" 
                 className="text-sm text-white hover:text-purple-300 font-medium transition-colors"

@@ -634,7 +634,7 @@ export default function ProductDetails() {
                     />
                   ))}
                 </div>
-                <span  className="text-sm cursor-pointer text-purple-400">({product.reviews} Reviews)</span>
+                <span onClick={() => router.push("/product/review")} className="text-sm cursor-pointer text-purple-400">({product.reviews} Reviews)</span>
               </div>
             </div>
 

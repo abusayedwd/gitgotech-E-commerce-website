@@ -15,7 +15,6 @@ export default function ProfilePage() {
     console.log('User logged out');
     setIsLogoutModalOpen(false);
   localStorage.removeItem('user');
- 
     router.push('/');
   };
 
@@ -29,7 +28,7 @@ export default function ProfilePage() {
  <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-            <FaArrowLeft className='text-black' />
+            <FaArrowLeft className='text-black'/>
           </div>
         </button>
           <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Profile info</h1>
@@ -115,15 +114,8 @@ export default function ProfilePage() {
             <div>
               <label className="text-sm text-gray-300 mb-2 block">Communication</label>
               <div className="flex items-center gap-3">
-                <span className="text-gray-400">Email</span>
-                <div className="flex gap-2">
-                  <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-semibold text-sm">
-                    G
-                  </div>
-                  <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center text-white font-semibold text-sm">
-                    M
-                  </div>
-                </div>
+                <span className="text-gray-400">Email : </span>
+                 Mail
               </div>
             </div>
           </div>
