@@ -4,29 +4,58 @@ import { useState } from 'react';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const router = useRouter()
 
-  const handleSubmit = () => {
-    // Handle login logic here
-    console.log('Login:', { email, password });
+  // const handleSubmit = () => {
+  //   // Handle login logic here
+  //   console.log('Login:', { email, password });
+  //    const users = { email, password }
+  //     const user= localStorage.setItem('user', JSON.stringify(users))
+  // };
+
+const handleSubmit = () => {
+  let role = 'customer';
+
+  if (email === 'vendor@gmail.com') {
+    role = 'vendor';
+  } else if (email === 'user@gmail.com') {
+    role = 'customer';
+  } else {
+    alert('Invalid test user');
+    return;
+  }
+
+  const user = {
+    email,
+    role,
+    isLoggedIn: true,
   };
 
+  localStorage.setItem('user', JSON.stringify(user));
+  console.log('Login:', user);
+  router.push("/")
+
+};
+
+
+
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex items-center justify-center p-4">
       {/* Animated gradient orbs in background */}
-      <div className="absolute top-10 right-10 w-32 h-32 bg-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute top-10 right-24 w-32 h-32 bg-purple-500 rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
+      
 
       {/* Login Card */}
       <div className="relative w-full max-w-lg">
         {/* Cyan border glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-3xl blur-sm"></div>
         
-        <div className="relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl border border-cyan-500/30 p-8 shadow-2xl">
+        
+        <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 ">
           {/* Logo and brand badges */}
           <div className="flex items-start justify-between mb-8">
             <div className="relative w-20 h-20">
@@ -44,7 +73,7 @@ export default function LoginPage() {
 
           {/* Welcome text */}
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-[36px] font-cormorant font-bold text-white mb-2">
               Welcome back to <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">TeeKnit</span>
             </h1>
             <p className="text-gray-400 text-sm">You've been missed!</p>
@@ -110,7 +139,7 @@ export default function LoginPage() {
             {/* Sign In Button */}
             <button
               onClick={handleSubmit}
-              className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30"
+              className="w-full bg-[#6100FF] cursor-pointer  hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30"
             >
               Sign In
             </button>
@@ -120,7 +149,7 @@ export default function LoginPage() {
               <span className="text-gray-400 text-sm">New Here? </span>
               <Link 
                 href="/auth/sign-up" 
-                className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                className="text-sm text-white hover:text-purple-300 font-medium transition-colors"
               >
                 Create an account
               </Link>

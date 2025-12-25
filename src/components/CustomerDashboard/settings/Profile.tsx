@@ -8,7 +8,18 @@ import { FaArrowLeft } from 'react-icons/fa';
 export default function ProfilePage() {
   const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   
+
+  const handleLogout = () => {
+    console.log('User logged out');
+    setIsLogoutModalOpen(false);
+  localStorage.removeItem('user');
+ 
+    router.push('/');
+  };
+
+
   return (
     <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
         
@@ -47,19 +58,21 @@ export default function ProfilePage() {
            
           <button 
            onClick={() => router.push("/profile/event")}
-          className="bg-[#29223A] bg-opacity-50 border border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
+          className="bg-[#29223A] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
             <Calendar className="w-6 h-6" />
             <span className="text-sm">Event</span>
           </button>
 
             <button 
              onClick={() => router.push("/settings")}
-            className="bg-[#29223A] bg-opacity-50 border border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
+            className="bg-[#29223A] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
             <Settings className="w-6 h-6" />
             <span className="text-sm">Settings</span>
           </button>
           
-          <button className="bg-[#261224] bg-opacity-50 border border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
+          <button
+          onClick={() => setIsLogoutModalOpen(true)} 
+           className="bg-[#261224] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
             <LogOut className="w-6 h-6" />
             <span className="text-sm">Leave</span>
           </button>
@@ -116,6 +129,39 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+    {isLogoutModalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] border border-purple-500/30 rounded-2xl p-8 max-w-md w-full">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-semibold text-white mb-2 font-cormorant">Logout</h2>
+              <p className="text-gray-400 mb-6">Do you want to logout?</p>
+              
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setIsLogoutModalOpen(false)}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleLogout}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
     </div>
   );
 }

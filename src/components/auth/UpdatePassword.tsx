@@ -59,18 +59,17 @@ export default function CreatePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex items-center justify-center p-4">
       <div className="w-full max-w-lg mx-auto">
         {/* Main Card */}
-        <div className=" rounded-2xl p-8 shadow-2xl border border-blue-500/30 relative overflow-hidden">
+        <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 relative overflow-hidden">
           {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl"></div>
-          
+         
           {/* Content */}
           <div className="relative z-10">
-            <h1 className="text-2xl font-bold text-white text-center mb-4">Create new Password</h1>
+            <h1 className="text-[36px] font-cormorant font-bold text-white text-center mb-4">Create new Password</h1>
             
-            <p className="text-gray-400 text-center mb-6">
+            <p className="text-gray-400 font-poppins text-center mb-6">
               Password must be Min 8 characters, include letters & numbers
             </p>
             
@@ -143,10 +142,10 @@ export default function CreatePasswordPage() {
               <button
                 type="submit"
                 disabled={isLoading || success}
-                className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
+                className={`w-full py-3 px-4 cursor-pointer font-poppins rounded-lg font-semibold transition-all duration-200 ${
                   isLoading || success
-                    ? 'bg-purple-600 cursor-not-allowed opacity-70'
-                    : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
+                    ? 'bg-[#6100FF] cursor-not-allowed opacity-70'
+                    : 'bg-gradient-to-r from-[#6100FF] to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
                 } text-white`}
               >
                 {isLoading ? (

@@ -343,8 +343,12 @@ export default function Navbar() {
   };
 
   // Auth logic - Replace with your actual authentication
-  const isLoggedIn = true; // Set to false to see login button
-  const userRole = 'customer'; // Can be 'customer' or 'vendor'
+  // const isLoggedIn = true; // Set to false to see login button
+  // const userRole = 'customer'; // Can be 'customer' or 'vendor'
+const storedUser = JSON.parse(localStorage.getItem('user'));
+
+const isLoggedIn = storedUser?.isLoggedIn || false;
+const userRole = storedUser?.role || null;
 
   // Dynamic routes based on user role
   const dashboardRoute = userRole === 'vendor' ? '/vendor-dashboard' : '/customer-dashboard';

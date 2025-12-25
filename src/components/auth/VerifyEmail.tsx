@@ -73,13 +73,12 @@ export default function VerifyEmailPage() {
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-lg mx-auto">
         {/* Main Card */}
-        <div className=" rounded-2xl p-8 shadow-2xl border border-blue-500/30 relative overflow-hidden">
-          {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl"></div>
+        <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 relative overflow-hidden">
+          
           
           {/* Content */}
           <div className="relative z-10">
-            <h1 className="text-2xl font-bold text-white text-center mb-4">Verify your email</h1>
+            <h1 className="text-[36px] font-cormorant font-bold text-white text-center mb-4">Verify your email</h1>
             
             <p className="text-gray-400 text-center mb-6">
               We've sent an email with an activation code to your
@@ -102,7 +101,7 @@ export default function VerifyEmailPage() {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
-                    className="w-14 h-14 text-center text-xl font-semibold bg-gray-800 border border-purple-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    className="w-14 h-14 text-center text-xl font-semibold border border-[#912DAD] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     pattern="[0-9]"
                     inputMode="numeric"
                   />
@@ -112,9 +111,9 @@ export default function VerifyEmailPage() {
               <button
                 type="submit"
                 disabled={isLoading || success}
-                className={`w-full py-3 px-4 rounded-lg font-semibold transition-all duration-200 ${
+                className={`w-full py-3 px-4 cursor-pointer rounded-lg font-semibold transition-all duration-200 ${
                   isLoading || success
-                    ? 'bg-purple-600 cursor-not-allowed opacity-70'
+                    ? 'bg-[#6100FF] cursor-not-allowed opacity-70'
                     : 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700'
                 } text-white`}
               >
@@ -132,6 +131,18 @@ export default function VerifyEmailPage() {
                   'Verify OTP'
                 )}
               </button>
+                  <div className="mt-4 text-center">
+          <button 
+            onClick={() => {
+              // Handle resend logic
+              alert('Resend verification email functionality would go here');
+            }}
+            className=" font-poppins text-gray-400 hover:text-gray-300"
+          >
+            <span className='text-[#EF0000]'>Note</span>
+             : If you do not receive the email in your inbox, please check your spam or junk folder.
+          </button>
+        </div>
             </form>
             
             {error && (
@@ -149,17 +160,7 @@ export default function VerifyEmailPage() {
         </div>
         
         {/* Optional: Resend link */}
-        <div className="mt-4 text-center">
-          <button 
-            onClick={() => {
-              // Handle resend logic
-              alert('Resend verification email functionality would go here');
-            }}
-            className="text-sm text-gray-400 hover:text-gray-300 underline"
-          >
-            Didn't receive the code? Resend
-          </button>
-        </div>
+    
       </div>
     </div>
   );

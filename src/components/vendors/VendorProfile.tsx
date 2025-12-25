@@ -253,7 +253,9 @@ export default function VendorProfilePage() {
     console.log('User logged out');
     setIsLogoutModalOpen(false);
     // Add your logout logic here
-    router.push('/login');
+  localStorage.removeItem('user');
+  
+    router.push('/');
   };
 
   const handleAddShowroom = () => {
