@@ -1,9 +1,11 @@
+"use client"
+
 import { useState } from 'react';
 import { Filter, MapPin, DollarSign, Briefcase, ChevronRight } from 'lucide-react';
 
 const Joblist = () => {
   const [selectedLocation, setSelectedLocation] = useState('Bangladesh');
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(true);
 
   const locations = ['Brazil', 'Bangladesh', 'Cooking', 'India', 'Pakistan', 'Qatar', 'USA'];
 
@@ -69,7 +71,6 @@ const Joblist = () => {
       {/* Header Section */}
       <header className="mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Career Opportunities</h1>
           <button 
             onClick={() => setIsFilterOpen(!isFilterOpen)}
             className="flex items-center gap-2 px-4 py-2 bg-purple-600 rounded-full hover:bg-purple-700 transition-colors"
@@ -81,7 +82,7 @@ const Joblist = () => {
         
         {/* Filter Panel */}
         {isFilterOpen && (
-          <div className="bg-gray-900 p-4 rounded-lg mb-6">
+          <div className="bg-gray-900 w-[20%] p-4 rounded-lg mb-6">
             <h2 className="text-lg font-semibold mb-4">Select Location</h2>
             <div className="space-y-2">
               {locations.map((location) => (
@@ -106,7 +107,7 @@ const Joblist = () => {
       </header>
 
       {/* Job Listings Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {jobListings.map((job) => (
           <div 
             key={job.id} 

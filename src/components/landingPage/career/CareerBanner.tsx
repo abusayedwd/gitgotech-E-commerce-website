@@ -1,20 +1,22 @@
+"use client"
+
 import { useState } from 'react';
 import { Search, UserCheck } from 'lucide-react';
 
-const App = () => {
+const CareerBanner = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-    <div className="relative w-full h-96 overflow-hidden rounded-xl">
+    <div className="relative mt-24 w-full h-[550px] overflow-hidden rounded-xl">
       {/* Background Image */}
       <div className="absolute inset-0">
         <img 
-          src="https://placehold.co/1200x400/2563eb/ffffff?text=Career+Banner" 
+          src="/images/careerb.png" 
           alt="Professional team handshake" 
-          className="w-full h-full object-cover"
+          className="w-full  h-full object-cover"
         />
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-indigo-900/80"></div>
+         
       </div>
       
       {/* Content */}
@@ -38,7 +40,7 @@ const App = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="flex-1 bg-transparent text-white px-3 py-2 focus:outline-none"
           />
-          <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md font-medium transition-colors">
+          <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md font-medium transition-colors"> 
             Search
           </button>
         </div>
@@ -54,4 +56,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default CareerBanner;
