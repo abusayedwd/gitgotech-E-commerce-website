@@ -8,7 +8,7 @@ import { TfiTimer } from 'react-icons/tfi';
 import { RiTimeZoneLine } from 'react-icons/ri';
 
 const App = () => {
-  const [isApplying, setIsApplying] = useState(false);
+ 
   const router = useRouter()
 
   const jobDetails = {
@@ -104,7 +104,7 @@ const App = () => {
           </div>
           
           <button 
-            onClick={() => setIsApplying(true)}
+            onClick={() => router.push('/careers/apply-job')}
             className="px-12 py-3 bg-[#6100FF] cursor-pointer hover:bg-purple-700 rounded-lg font-medium transition-colors"
           >
             Apply Now
@@ -203,69 +203,8 @@ const App = () => {
           </div>
         </div>
       </div>
-
-      {/* Application Modal */}
-      {isApplying && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-900 rounded-xl p-6 w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-4">Apply for {jobDetails.title}</h2>
-            <p className="text-gray-300 mb-6">Please fill out the application form below to apply for this position.</p>
-            
-            <form className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Full Name</label>
-                <input 
-                  type="text" 
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Enter your full name"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Email Address</label>
-                <input 
-                  type="email" 
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Enter your email address"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Phone Number</label>
-                <input 
-                  type="tel" 
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Resume/CV</label>
-                <input 
-                  type="file" 
-                  className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-              
-              <div className="flex gap-3 pt-4">
-                <button 
-                  type="button"
-                  onClick={() => setIsApplying(false)}
-                  className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md font-medium transition-colors"
-                >
-                  Cancel
-                </button>
-                <button 
-                  type="submit"
-                  className="flex-1 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md font-medium transition-colors"
-                >
-                  Submit Application
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+ 
+    
     </div>
   );
 };
