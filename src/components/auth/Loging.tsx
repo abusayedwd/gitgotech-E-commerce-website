@@ -19,6 +19,31 @@ export default function LoginPage() {
   //     const user= localStorage.setItem('user', JSON.stringify(users))
   // };
 
+// const handleSubmit = () => {
+//   let role = 'customer';
+
+//   if (email === 'vendor@gmail.com') {
+//     role = 'vendor';
+//   } else if (email === 'user@gmail.com') {
+//     role = 'customer';
+//   } else {
+//     alert('Invalid test user');
+//     return;
+//   }
+
+//   const user = {
+//     email,
+//     role,
+//     isLoggedIn: true,
+//   };
+
+//   localStorage.setItem('user', JSON.stringify(user));
+  
+//   router.push("/")
+
+// };
+
+
 const handleSubmit = () => {
   let role = 'customer';
 
@@ -38,10 +63,14 @@ const handleSubmit = () => {
   };
 
   localStorage.setItem('user', JSON.stringify(user));
-  console.log('Login:', user);
-  router.push("/")
 
+  if (role === 'vendor') {
+    router.push('/vendor-dashboard');
+  } else {
+    router.push('/');
+  }
 };
+
 
 
 
