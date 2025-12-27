@@ -26,7 +26,7 @@ export default function SettingsPage() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Wallet</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Settings</h1>
         </div>
 
           {/* Settings Card */}

@@ -196,6 +196,7 @@ import React, { useState } from 'react';
 import { Upload, Edit, MapPin, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function VendorProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -270,15 +271,13 @@ export default function VendorProfilePage() {
     <div className="space-y-6 pb-5 mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen">
       {/* Header */}
       <div className='flex items-center container mx-auto justify-between pt-4'>
-        <div className="flex items-center gap-4">
-          <button onClick={() => router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-            <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </div>
-          </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Profile info</h1>
+          <div className="container mx-auto flex items-center gap-4">
+             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+            <FaArrowLeft className='text-black' />
+          </div>
+        </button>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Profile Info</h1>
         </div>
         <div className='md:mr-24 mr-2 flex items-center gap-2'>
           <img onClick={() => router.push("/v-profile/wallet")} className='cursor-pointer' src="/images/wallet.png" alt="" />

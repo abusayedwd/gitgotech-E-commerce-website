@@ -2,6 +2,7 @@
 import React from 'react';
 import { Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { FaArrowLeft } from 'react-icons/fa';
 
 export default function PrivacyPolicyPage() {
     const router = useRouter();
@@ -113,23 +114,22 @@ export default function PrivacyPolicyPage() {
   ];
 
   return (
-    <div className="min-h-screen mt-12 bg-gradient-to-r from-gray-950 via-purple-900/20 to-black text-white p-6">
+    <div className="min-h-screen mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}
-               <div className="container mx-auto mt-20 flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </div>
-        </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Privacy Policy</h1>
-        </div>
+         <div className="container mt-12 mx-auto flex items-center gap-4">
+                     <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+                    <FaArrowLeft className='text-black' />
+                  </div>
+                </button>
+                <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Privacy Policy</h1>
+                </div>
+          
 
         {/* Last Updated */}
-        <div className="mb-6">
+        <div className="my-6">
           <p className="text-sm text-gray-400">Last Updated: December 20, 2025</p>
         </div>
 
