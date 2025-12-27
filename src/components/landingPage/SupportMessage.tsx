@@ -70,9 +70,9 @@ export default function SupportMessage() {
   return (
     <>
       {/* Floating support icon */}
-      <button
+      {/* <button
         onClick={() => setIsOpen(true)}
-        className="fixed top-36 right-10 text-white p-4 rounded-full shadow-lg z-50 hover:bg-purple-700 transition-all duration-300 transform hover:scale-110"
+        className="fixed top-36 right-10 text-white p-4 rounded-full shadow-lg z-50 cursor-pointer transition-all duration-300 transform hover:scale-110"
         aria-label="Open support chat"
       >
         <Image 
@@ -81,7 +81,107 @@ export default function SupportMessage() {
           width={50}
           height={50}
         />  
-      </button>
+      </button> */}
+
+   <button
+  onClick={() => setIsOpen(!isOpen)}
+  className="fixed top-36 right-6 text-white p-0 rounded-full shadow-2xl z-50 cursor-pointer transition-all duration-300 transform hover:scale-110 hover:shadow-blue-500/50 animate-bounce-slow group"
+  style={{
+    animation: 'bounce-slow 3s infinite, pulse-ring 2s infinite'
+  }}
+  aria-label="Open support chat"
+>
+  {/* Pulsing Ring Effect */}
+  {/* <span className="absolute inset-1 rounded-full bg-blue-400 opacity-75 animate-ping"></span> */}
+  
+  {/* Your Image Icon */}
+  <div className="relative">
+    <Image 
+      src="/images/messageicon.png"
+      alt="Support"
+      width={50}
+      height={50}
+      className="group-hover:rotate-12 transition-transform duration-300"
+    />
+    
+    {/* Notification Badge */}
+    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold animate-pulse">
+      1
+    </span>
+  </div>
+</button>
+
+ <style jsx>{`
+        @keyframes bounce-slow {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+
+        @keyframes wiggle {
+          0%, 100% {
+            transform: rotate(0deg);
+          }
+          25% {
+            transform: rotate(-5deg);
+          }
+          75% {
+            transform: rotate(5deg);
+          }
+        }
+
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-15px);
+          }
+        }
+
+        @keyframes breath {
+          0%, 100% {
+            transform: scale(1);
+            opacity: 0.3;
+          }
+          50% {
+            transform: scale(1.1);
+            opacity: 0.6;
+          }
+        }
+
+        @keyframes spin-slow {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .animate-bounce-slow {
+          animation: bounce-slow 2s infinite;
+        }
+
+        .animate-wiggle {
+          animation: wiggle 2s ease-in-out infinite;
+        }
+
+        .animate-float {
+          animation: float 3s ease-in-out infinite;
+        }
+
+        .animate-breath {
+          animation: breath 2s ease-in-out infinite;
+        }
+
+        .animate-spin-slow {
+          animation: spin-slow 3s linear infinite;
+        }
+      `}</style>
 
       {/* Support modal */}
       {isOpen && (

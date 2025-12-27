@@ -5,6 +5,7 @@ import { MapPin, DollarSign, Briefcase, Calendar } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { TfiTimer } from 'react-icons/tfi';
+import { RiTimeZoneLine } from 'react-icons/ri';
 
 const App = () => {
   const [isApplying, setIsApplying] = useState(false);
@@ -136,7 +137,7 @@ const App = () => {
               <ul className="space-y-2">
                 {jobDetails.responsibilities.map((responsibility, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mt-2"></span>
+                    <span className="w-2 h-2 bg-white rounded-full mt-2"></span>
                     <span>{responsibility}</span>
                   </li>
                 ))}
@@ -148,7 +149,7 @@ const App = () => {
               <ul className="space-y-2">
                 {jobDetails.qualifications.map((qualification, index) => (
                   <li key={index} className="flex items-start gap-2">
-                    <span className="w-2 h-2 bg-purple-500 rounded-full mt-2"></span>
+                    <span className="w-2 h-2 bg-white rounded-full mt-2"></span>
                     <span>{qualification}</span>
                   </li>
                 ))}
@@ -156,11 +157,12 @@ const App = () => {
             </div>
 
             <div className="bg-gray-950 rounded-xl p-6">
-              <div className="flex items-center justify-between mb-4 font-cormorant ">
+              <div className="  mb-4 font-cormorant ">
                 <h2 className="text-xl font-bold text-[32px]">Salary</h2>
                 <span className="text-lg font-semibold">{jobDetails.salary}</span>
               </div>
-              <div className="flex items-center gap-4 text-sm text-gray-400">
+              <div className=" gap-4 text-sm font-cormorant">
+                 <h2 className="text-xl font-bold text-[32px]">Application Deadline</h2>
                 <span className="flex items-center gap-1">
                   <Calendar size={16} />
                   Application Deadline: {jobDetails.deadline}
@@ -171,22 +173,25 @@ const App = () => {
 
           {/* Sidebar - Similar Jobs */}
           <div className="space-y-6">
-            <div className="bg-gray-900 rounded-xl p-6">
-              <h2 className="text-xl font-bold mb-4">See Similar Jobs</h2>
+            <div className=" rounded-xl p-6">
+              <h2 className="text-[32px] font-bold mb-4 font-cormorant">See Similar Jobs</h2>
               <div className="space-y-4">
                 {similarJobs.map((job) => (
-                  <div key={job.id} className="bg-gray-800 rounded-lg p-4">
-                    <h3 className="font-semibold mb-2">{job.title}</h3>
-                    <div className="flex items-center gap-4 text-sm text-gray-400 mb-2">
-                      <span className="flex items-center gap-1">
-                        <MapPin size={16} />
-                        {job.location}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <DollarSign size={16} />
-                        {job.salary}
-                      </span>
-                    </div>
+                  <div key={job.id} className="bg-[#17161A] border border-[#67676D] rounded-lg p-4">
+                    <div className="  text-sm text-gray-400 mb-3">
+                                     <span className="flex items-center gap-1 mb-3">
+                                       <MapPin className='text-white' size={26} />
+                                       {job.location}
+                                     </span>
+                                     <span className="flex items-center gap-1">
+                                       <DollarSign className='text-white' size={26} />
+                                       {job.salary}
+                                     </span>
+                                   </div>
+                                   <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                                   <RiTimeZoneLine className='text-white' size={26} />
+                                     {job.type}
+                                   </div>
                     <p className="text-sm text-gray-300 mb-3">{job.description}</p>
                     <button className="w-full py-2 px-4 bg-purple-600 hover:bg-purple-700 rounded-md font-medium transition-colors">
                       View Details
