@@ -355,13 +355,13 @@ const userRole = storedUser?.role || null;
   const profileRoute = userRole === 'vendor' ? '/v-profile' : '/profile';
 
   return (
-    <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white fixed top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 py-2 sm:py-3 md:py-4 shadow-lg">
-      <div className="container   mx-auto border py-1 sm:py-1 md:py-1 px-3 sm:px-4 rounded-4xl border-gray-700 flex items-center justify-between">
+    <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white fixed top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg">
+      <div className="container  mx-auto border px-3 sm:px-4 rounded-[50] border-gray-700 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center flex-shrink-0">
-          <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16">
+          <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-20 md:h-20">
             <Image
-              src="/images/logo.png"
+              src="/images/logo2.png"
               alt="Logo"
               fill
               className="object-contain"

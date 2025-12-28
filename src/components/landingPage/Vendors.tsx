@@ -1,5 +1,6 @@
 
 import { Search, Store } from 'lucide-react';
+import Link from 'next/link';
 
 export default function VendorsPage() {
 
@@ -100,7 +101,7 @@ export default function VendorsPage() {
                   <img
                     src={vendor.image}
                     alt={vendor.name}
-                    className="w-full h-full group-hover:scale-110 transition-transform duration-300"
+                    className=" object-cover group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
 
@@ -114,10 +115,13 @@ export default function VendorsPage() {
                   </p>
 
                   {/* View Showroom Button */}
-                  <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm">
+                  <Link href={"/showroom/view-showroom"}> 
+                  <button className="w-full bg-purple-600 cursor-pointer hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm">
                     <Store className="w-3 sm:w-4 h-3 sm:h-4" />
                     View Showroom
                   </button>
+                  </Link>
+             
                 </div>
               </div>
             ))}

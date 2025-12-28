@@ -228,7 +228,7 @@ export default function BannerSection() {
 
             
 
-              <div onClick={() => router.push('/vendors')} className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded 
+              <div onClick={() => router.push('/vendors')} className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded 
               "> 
                 <h3 className="text-white text-lg font-semibold">Top Vendors</h3>
               </div>
@@ -245,7 +245,7 @@ export default function BannerSection() {
               <div className="absolute inset-0 bg-black/40" />
               <div 
               onClick={() => router.push('/top-products')}
-              className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
+              className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded">
                 <h3 className="text-white text-lg font-semibold">Top Products</h3>
               </div>
             </div>
@@ -319,7 +319,7 @@ export default function BannerSection() {
               <div className="absolute inset-0 bg-black/40" />
               <div
                 onClick={() => router.push('/hotdeals')}
-              className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
+              className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded">
                 <h3 className="text-white text-lg font-semibold">Hot Deals</h3>
               </div>
             </div>
@@ -335,7 +335,7 @@ export default function BannerSection() {
               <div className="absolute inset-0 bg-black/40" />
               <div 
                 onClick={() => router.push('/new-arrivals')}
-               className="absolute top-4 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounded">
+               className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded">
                 <h3 className="text-white text-lg font-semibold">New Arrivals</h3>
               </div>
             </div>

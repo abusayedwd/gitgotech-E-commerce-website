@@ -45,7 +45,7 @@ export default function VendorDashboardLayout({
                   <button
                     key={item.name}
                     onClick={() => handleNavigation(item.path)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all ${
                       pathname === item.path
                         ? 'bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white'
                         : 'text-gray-400 hover:bg-gray-800 hover:text-white'

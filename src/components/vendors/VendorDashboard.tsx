@@ -211,7 +211,7 @@ export default function DashboardHome() {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className={`cursor-pointer bg-gradient-to-tl from-[#100b1f] via-[#170f2e] to-black 
+            className={` bg-gradient-to-tl from-[#100b1f] via-[#170f2e] to-black 
  border border-l-[#912DAD] border-l-6 
 
   ${stat.borderColor} rounded-2xl p-6 hover:shadow-lg hover:shadow-purple-500/10 h-36 transition-all`}
