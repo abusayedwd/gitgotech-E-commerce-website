@@ -5,6 +5,10 @@ import { Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+
+import styles from './../../customComponent/Discount.module.css'
+
+
 export default function HotDealsSection() {
  
     const router = useRouter();
@@ -81,29 +85,36 @@ export default function HotDealsSection() {
               className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
             >
               {/* Product Image */}
-             <div className="relative aspect-square overflow-hidden">
-  <img
-    src="/images/jacket.png"
-    alt={product.name}
-    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-  />
+              <div className="relative aspect-square overflow-hidden">
+                <img
+                  src="/images/jacket.png"
+                  alt={product.name}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                />
+                {/* Discount Badge */} 
 
-  {/* Discount Badge - Top Left */}
-  <div className="absolute top-2 left-0 z-10">
-    <div className="relative bg-purple-600 text-white px-4 py-2 font-bold text-sm uppercase tracking-wider whitespace-nowrap flex items-center">
-      <span>10% off</span>
-      {/* Right-pointing arrow/chevron */}
-      <div className="ml-2 w-0 h-0 border-t-[8px] border-b-[8px] border-l-[12px] border-t-transparent border-b-transparent border-l-purple-600"></div>
-    </div>
-    {/* 3D Shadow Effect - Left Edge */}
-    <div className="absolute left-0 top-0 bottom-0 w-1 bg-purple-700 rounded-l-md"></div>
-  </div>
+   <div className="absolute top-2 left-0 inline-flex items-center">  
+     <div className={styles.card}>
+      <div className={styles.discountBadge}>10% off</div>
+    </div> 
+   </div>
+      
 
-  {/* Best Seller Badge - Top Right */}
-  <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-blue-500 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
-    {product.tag}
-  </div>
-</div>
+      
+      {/* Visual reference - just a simple box to show the badge in context */}
+      <div className="w-64 h-48 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-lg relative">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-white font-bold">Product Image</span>
+        </div>
+      </div>
+
+
+
+                {/* Best Seller Badge */}
+                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#2388FF] text-white px-2 sm:px-3 py-1 md:py-2 rounded text-[10px] sm:text-xs font-semibold">
+                  {product.tag}
+                </div>
+              </div>
 
               {/* Product Info */}
               <div className="p-3 sm:p-4">

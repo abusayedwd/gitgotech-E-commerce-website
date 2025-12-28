@@ -5,7 +5,7 @@ import { SectionHeader } from '@/customComponent/Header';
 import { Star, ChevronRight, Section } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
-
+import styles from "./../../customComponent/Discount.module.css"
 export default function TopPoduct() {
   const products = [
     {
@@ -171,13 +171,16 @@ export default function TopPoduct() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
                 {/* Discount Badge */}
-                <div className="absolute top-2 sm:top-3 left-2 sm:left-3 bg-purple-600 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
-                  {product.discount}% OFF
-                </div>
+                            <div className="absolute top-2 left-0 inline-flex items-center">  
+     <div className={styles.card}>
+      <div className={styles.discountBadge}>10% off</div>
+    </div> 
+   </div> 
                 {/* Best Seller Badge */}
-                <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-blue-500 text-white px-2 sm:px-3 py-1 rounded text-[10px] sm:text-xs font-semibold">
+               <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#2388FF] text-white px-2 sm:px-3 py-1 md:py-2 rounded text-[10px] sm:text-xs font-semibold">
                   {product.tag}
                 </div>
+
               </div>
 
               {/* Product Info */}
