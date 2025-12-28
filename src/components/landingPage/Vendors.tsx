@@ -1,6 +1,7 @@
 
 import { Search, Store } from 'lucide-react';
 import Link from 'next/link';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 
 export default function VendorsPage() {
 
@@ -75,7 +76,7 @@ export default function VendorsPage() {
                 <input
                   type="text"
                   placeholder="Find your perfect tailor, design, or outfit"
-                  className="w-full bg-gray-800 text-white rounded-lg pl-10 pr-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500"
+                  className="w-full border border-[#414149] text-white rounded-lg pl-10 pr-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500"
                 />
               </div>
               <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg font-medium transition-colors w-full sm:w-auto">
@@ -94,14 +95,14 @@ export default function VendorsPage() {
             {vendors.map((vendor) => (
               <div
                 key={vendor.id}
-                className="bg-gray-800/50 backdrop-blur-sm rounded-lg sm:rounded-xl overflow-hidden group hover:bg-gray-800 transition-all"
+                className="bg-[#1B1B1F] backdrop-blur-sm rounded-lg sm:rounded-xl overflow-hidden group hover:bg-gray-800 transition-all"
               >
                 {/* Vendor Image */}
                 <div className="aspect-square overflow-hidden">
                   <img
                     src={vendor.image}
                     alt={vendor.name}
-                    className=" object-cover group-hover:scale-110 transition-transform duration-300"
+                    className=" object-cover h-[] group-hover:scale-110 transition-transform duration-300"
                   />
                 </div>
 
@@ -115,9 +116,9 @@ export default function VendorsPage() {
                   </p>
 
                   {/* View Showroom Button */}
-                  <Link href={"/showroom/view-showroom"}> 
-                  <button className="w-full bg-purple-600 cursor-pointer hover:bg-purple-700 text-white py-2 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-xs sm:text-sm">
-                    <Store className="w-3 sm:w-4 h-3 sm:h-4" />
+                 <Link href={"/showroom/view-showroom"}>
+                  <button className="w-full bg-[#6100FF] text-[16px] cursor-pointer text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2  mt-auto">
+                   <AiOutlineShoppingCart className="w-3 sm:w-4 h-3 md:h-5 md:w-5 sm:h-4" />
                     View Showroom
                   </button>
                   </Link>

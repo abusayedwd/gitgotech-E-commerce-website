@@ -2,6 +2,7 @@
 import { Search, Store, Grid3x3 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { FaLocationDot } from 'react-icons/fa6';
 
 export default function ShowroomsPage() {
@@ -143,8 +144,8 @@ export default function ShowroomsPage() {
 
                   {/* View Showroom Button */}
                   <Link href={"/showroom/view-showroom"}>
-                  <button className="w-full bg-[#6100FF] cursor-pointer text-white py-2.5 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm mt-auto">
-                    <Store className="w-4 h-4" />
+                  <button className="w-full bg-[#6100FF] text-[16px] cursor-pointer text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2  mt-auto">
+                   <AiOutlineShoppingCart className="w-3 sm:w-4 h-3 md:h-5 md:w-5 sm:h-4" />
                     View Showroom
                   </button>
                   </Link>
