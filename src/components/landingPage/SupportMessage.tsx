@@ -106,7 +106,7 @@ export default function SupportMessage() {
     
     {/* Notification Badge */}
     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold animate-pulse">
-      1
+      2
     </span>
   </div>
 </button>
@@ -185,7 +185,7 @@ export default function SupportMessage() {
 
       {/* Support modal */}
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/80 bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-gray-900 rounded-xl w-full max-w-lg max-h-[80vh] flex flex-col shadow-2xl">
             {/* Modal header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-700">
@@ -202,7 +202,7 @@ export default function SupportMessage() {
                 onClick={() => setIsOpen(false)}
                 className="text-gray-400 hover:text-white"
               >
-                <X className="w-5 h-5" />
+                <X className="w-6 h-6 cursor-pointer" />
               </button>
             </div>
 
