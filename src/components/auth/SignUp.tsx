@@ -366,13 +366,13 @@ export default function SignUpPage() {
         
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8">
           {/* Logo placeholder */}
-          <div className="flex items-start justify-between mb-6">
+          <div className="flex items-start justify-between">
            <Image
                 src="/images/logo.png"
                 alt="TeeKnit Logo"  
-                width={64}
-                height={64}
-                className="object-contain"
+                width={100}
+                height={100}
+                className="object-contain h-36 w-36"
               />    
  
           </div>
@@ -545,7 +545,7 @@ export default function SignUpPage() {
                 className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-800/50 text-purple-600 focus:ring-purple-500 focus:ring-2"
               />
               <label htmlFor="terms" className="text-sm text-gray-400">
-                I agree to TeeKnit's{' '}
+                I agree to SleeKnit's{' '}
                 <span className="text-purple-400 hover:text-purple-300 cursor-pointer">
                   Terms of Use
                 </span>

@@ -86,13 +86,13 @@ const handleSubmit = () => {
         
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 ">
           {/* Logo and brand badges */}
-          <div className="flex items-start justify-between mb-8">
-            <div className="relative w-20 h-20">
+          <div className="flex items-start justify-between mb-2">
+            <div className="relative w-32 h-32">
               <Image
                 src="/images/logo.png"
                 alt="TeeKnit Logo"
                 fill
-                className="object-contain"
+                className="object-contain "
               />
             </div>
             
@@ -103,7 +103,7 @@ const handleSubmit = () => {
           {/* Welcome text */}
           <div className="mb-8">
             <h1 className="text-[36px] font-cormorant font-bold text-white mb-2">
-              Welcome back to <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">TeeKnit</span>
+              Welcome back to <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">SleeKnit</span>
             </h1>
             <p className="text-gray-400 text-sm">You've been missed!</p>
           </div>

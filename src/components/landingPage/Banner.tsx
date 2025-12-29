@@ -228,9 +228,9 @@ export default function BannerSection() {
 
             
 
-              <div onClick={() => router.push('/vendors')} className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded 
+              <div onClick={() => router.push('/vendors')} className="absolute top-10 left- bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounde 
               "> 
-                <h3 className="text-white text-lg font-semibold">Top Vendors</h3>
+                <h3 className="text-white text-lg font-semibold font-cormorant text-[24px]">Top Vendors</h3>
               </div>
             </div>
 
@@ -245,8 +245,8 @@ export default function BannerSection() {
               <div className="absolute inset-0 bg-black/40" />
               <div 
               onClick={() => router.push('/top-products')}
-              className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded">
-                <h3 className="text-white text-lg font-semibold">Top Products</h3>
+              className="absolute top-10 left- bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounde">
+                <h3 className="text-white text-lg font-semibold font-cormorant text-[24px]">Top Products</h3>
               </div>
             </div>
           </div>
@@ -319,8 +319,8 @@ export default function BannerSection() {
               <div className="absolute inset-0 bg-black/40" />
               <div
                 onClick={() => router.push('/hotdeals')}
-              className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded">
-                <h3 className="text-white text-lg font-semibold">Hot Deals</h3>
+              className="absolute top-10 left- bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounde">
+                <h3 className="text-white text-lg font-semibold font-cormorant text-[24px]">Hot Deals</h3>
               </div>
             </div>
 
@@ -335,8 +335,8 @@ export default function BannerSection() {
               <div className="absolute inset-0 bg-black/40" />
               <div 
                 onClick={() => router.push('/new-arrivals')}
-               className="absolute top-10 left-4 bg-gradient-to-r from-[#6100FF] w-full px-4 py-5 rounded">
-                <h3 className="text-white text-lg font-semibold">New Arrivals</h3>
+               className="absolute top-10 left- bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounde">
+                <h3 className="text-white text-lg font-semibold font-cormorant text-[24px]">New Arrivals</h3>
               </div>
             </div>
           </div>
