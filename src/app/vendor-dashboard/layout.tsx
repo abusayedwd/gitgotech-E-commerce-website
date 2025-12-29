@@ -94,6 +94,7 @@ export default function VendorDashboardLayout({
           <div className="flex-1 pb-8 mt-4 w-full lg:w-auto">
             {children}
           </div>
+           
         </div>
       </div>
     </div>

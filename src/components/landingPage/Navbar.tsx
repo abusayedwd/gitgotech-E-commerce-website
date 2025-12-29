@@ -379,21 +379,21 @@ const userRole = storedUser?.role || null;
                 href="/vendors"
                 className={`${
                   isActive('/vendors')
-                    ? 'text-purple-500 font-medium'
-                    : 'text-gray-400 hover:text-white'
-                } transition-colors text-sm xl:text-base`}
+                    ? 'text-purple-500 font-medium text-[20px]'
+                    : 'text-[20px] text-white hover:text-white text-2xl '
+                } transition-colors  font-cormorant  `}
               >
-                vendors
+                Vendors
               </Link>
               <Link
                 href="/showroom"
                 className={`${
                   isActive('/showroom')
-                    ? 'text-purple-500 font-medium'
-                    : 'text-gray-400 hover:text-white'
-                } transition-colors text-sm xl:text-base`}
+                   ? 'text-purple-500 font-medium text-[20px]'
+                    : 'text-[20px] text-white hover:text-white text-2xl '
+                } transition-colors   font-cormorant  `}
               >
-                showroom
+                Showrooms
               </Link>
             </div>
           )}
@@ -476,7 +476,7 @@ const userRole = storedUser?.role || null;
               </Link>
                
               <Link href={dashboardRoute}>
-                <button className={` text-white px-5 xl:px-6   py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
+                <button className={` text-white px-5 xl:px-6 font-poppins  py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
                   isActive(dashboardRoute) ? 'bg-purple-600/40 ring-2 ring-purple-400' : 'bg-[#6100FF]'
                 }`}>
                   Dashboard

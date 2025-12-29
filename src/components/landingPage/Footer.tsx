@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Mail, Phone } from 'lucide-react';
 import { FaFacebookF, FaTwitter, FaLinkedinIn, FaYoutube } from 'react-icons/fa';
+import { WhatsAppOutlined } from '@ant-design/icons';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -23,12 +24,12 @@ const Footer = () => {
 
   return (
     <footer className="bg-[#141627] text-white pt-12 pb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 pb-8">
           {/* Company Info */}
           <div>
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="relative w-10 h-10">
+            <div className="flex items-center space-x-2">
+              <div className="relative w-24 h-24">
                 <Image 
                   src="/images/logo.png" 
                   alt="Logo" 
@@ -38,7 +39,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Transform your images with powerful AI-powered tools. We help creators and businesses enhance their visual content.
+              Transform your images with powerful  Enhance your visual content with advanced image tools built to support creators and businesses at every scale.. We help creators and businesses enhance their visual content.
             </p>
           </div>
 
@@ -114,6 +115,13 @@ const Footer = () => {
               >
                 <FaYoutube size={14} className="text-gray-400" />
               </Link>
+
+              <Link 
+                href="#" 
+                className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
+              >
+                <WhatsAppOutlined size={8} className="text-gray-400 "/>
+              </Link>
             </div>
           </div>
         </div>
@@ -129,9 +137,9 @@ const Footer = () => {
             <Link href="/terms" className="text-gray-500 hover:text-white transition-colors">
               Terms of Service
             </Link>
-            <Link href="/cookies" className="text-gray-500 hover:text-white transition-colors">
+            {/* <Link href="/cookies" className="text-gray-500 hover:text-white transition-colors">
               Cookie Policy
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

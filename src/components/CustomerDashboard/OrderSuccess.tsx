@@ -27,7 +27,7 @@ export default function OrderCompletedPage() {
 
           {/* Thank You Message */}
           <h1 className="text-3xl font-cormorant md:text-4xl font-bold text-center mb-3 bg-gradient-to-r from-[#6100FF] to-[#E19E75] bg-clip-text text-transparent">
-            Thank you for your Payment
+            Thank you For Your Payment
           </h1>
           <p className="text-gray-400 text-sm text-center">
             Your Order is Now being Prepared

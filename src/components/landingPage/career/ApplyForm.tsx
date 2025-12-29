@@ -191,11 +191,11 @@ export default function JobApplicationForm() {
   };
 
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black p-4 md:p-8">
+    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#050218] to-black p-4 md:p-8">
       <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-            <FaArrowLeft className='text-black' />
+            <FaArrowLeft className='text-black'/>
           </div>
         </button>
           <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Application Form</h1>
@@ -204,9 +204,11 @@ export default function JobApplicationForm() {
         {/* Header */}
 
    
-        <div className="text-center mb-8">
+        <div className="text-center mb-2">
             <div className='flex justify-center'> 
-            <img  src="/images/logo.png" alt="" />
+            <img 
+             className='h-44 w-44'
+            src="/images/logo.png" alt="" />
             </div>
           <h1 className="text-4xl font-bold font-cormorant text-white mb-2">Submit Your Application</h1>
           <p className="text-gray-400">Provide your important details to complete your job application.</p>
