@@ -321,6 +321,8 @@
 //   );
 // }
 
+
+
 "use client";
 
 import { useState } from 'react';
@@ -356,17 +358,19 @@ const userRole = storedUser?.role || null;
 
   return (
     <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white fixed pb-1.5 top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg">
-      <div className="container  mx-auto border px-3 sm:px-4 rounded-[50] border-gray-700  flex items-center justify-between">
+      <div className="container  mx-auto border px-3 md:py-3 py-1 sm:px-4 rounded-[50] border-gray-700  flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center flex-shrink-0">
-          <div className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-20 md:h-20">
-            <Image
-              src="/images/logo2.png"
+          <div className="relative">
+            {/* <Image
+              src="/images/llogo.png"
               alt="Logo"
               fill
               className="object-contain"
               priority
-            />
+              
+            /> */}
+            <img src="/images/llogo.png" alt="" />
           </div>
         </Link>
 

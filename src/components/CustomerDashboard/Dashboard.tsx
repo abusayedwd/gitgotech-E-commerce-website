@@ -425,14 +425,14 @@ export default function MyDashboard() {
 
       {/* Review Modal */}
       {showReviewModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 mt-16 bg-black/70 flex items-center justify-center p-4 z-50">
           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-3xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Close Button */}
             <button 
               onClick={() => setShowReviewModal(false)}
               className="float-right text-white hover:text-purple-400 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -491,7 +491,7 @@ export default function MyDashboard() {
               onClick={() => setShowRewardModal(false)}
               className="float-right text-white hover:text-purple-400 transition-colors"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -501,9 +501,7 @@ export default function MyDashboard() {
               <h2 className="text-3xl font-bold text-white mb-4">Rewards</h2>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <p className="text-purple-400 text-sm">Support your driver with a reward.</p>
-                <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">GM</span>
-                </div>
+                
               </div>
             </div>
 

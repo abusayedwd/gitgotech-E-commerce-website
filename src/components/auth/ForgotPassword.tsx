@@ -64,17 +64,17 @@ export default function ForgotPasswordPage() {
         
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#8645a5] rounded-2xl p-8">
           {/* Logo placeholder */}
-               <div className="flex items-start justify-between mb-6">
-                <Image
-                     src="/images/logo.png"
-                     alt="TeeKnit Logo"  
-                     width={64}
-                     height={64}
-                     className="object-contain"
-                   />    
-      
-               </div>
-     Cormorant Garamond
+                <div className="flex items-start justify-between">
+                          <Image
+                            src="/images/llogo.png"
+                               alt="TeeKnit Logo"  
+                               width={100}
+                               height={100}
+                               className="object-contain h-36 w-36"
+                             />    
+                
+                         </div>
+     
 
           {/* Header */}
           <div className="mb-6 text-center">
