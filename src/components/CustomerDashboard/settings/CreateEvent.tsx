@@ -29,7 +29,7 @@ export default function CreateEvent() {
   };
 
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black to-black p-6">
+    <div className="min-h-screen mt-12 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black to-black p-6">
       {/* Header */}
       <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">

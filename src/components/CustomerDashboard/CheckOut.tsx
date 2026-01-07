@@ -372,7 +372,7 @@ export default function CheckoutPage() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Check Out</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Check Out</h1>
         </div>
 
       {/* Header */}
