@@ -68,7 +68,7 @@ export default function ShoppingCart() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">My Cart</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">My Cart</h1>
         </div>
 
       {/* Header */}

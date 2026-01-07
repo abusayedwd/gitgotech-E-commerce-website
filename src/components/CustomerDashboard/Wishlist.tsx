@@ -228,7 +228,7 @@ export default function WishlistPage() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Wish list</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Wish list</h1>
         </div>
 
       {/* Header */}

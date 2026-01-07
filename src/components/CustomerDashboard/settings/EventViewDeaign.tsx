@@ -115,7 +115,7 @@ export default function EventViewDeaign() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">View Design</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">View Design</h1>
         </div>
           <Link href={"/profile/event/add-design"}>
           <button className="flex items-center w-45 py-2 cursor-pointer px-4 gap-2 bg-gradient-to-l from-blue-600 to-cyan-600 text-white px-2  rounded-lg font-medium transition-colors">

@@ -14,6 +14,7 @@ const RouteConditionalNav = () => {
     pathname.startsWith("/showroom/view-showroom") ||
     pathname.startsWith("/products") ||
     pathname.startsWith("/profile/event/add-design") ||
+    // pathname.startsWith("/messaging") ||
     pathname.startsWith("/top-products");
 
   if (showFashionSearchNav) {

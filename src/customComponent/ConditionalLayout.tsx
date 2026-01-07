@@ -12,7 +12,10 @@ export default function ConditionalLayout({
   children: React.ReactNode 
 }) {
   const pathname = usePathname();
-  const isDashboardRoute = pathname?.startsWith('/vendor-dashboard');
+const isDashboardRoute =
+  pathname?.startsWith('/vendor-dashboard') ||
+  pathname?.startsWith('/messaging');
+
 
   if (isDashboardRoute) {
     // Only return children for vendor dashboard (no navbar, footer)

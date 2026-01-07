@@ -201,7 +201,7 @@ const FashionSearchNav = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 mt-[50] sm:mt-20 md:mt-20 right-0 z-50 w-full bg-gradient-to-r from-black via-[#0f0924] to-black bg-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
+      className={`fixed top-0 left-0 mt-16 sm:mt-20 md:mt-20 right-0 z-50 w-full bg-gradient-to-r from-black via-[#0f0924] to-black bg-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
         isVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
     >

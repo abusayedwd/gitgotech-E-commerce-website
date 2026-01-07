@@ -204,15 +204,13 @@
 //   );
 // }
 
+"use client";
+import React, { useState, useEffect, useRef } from 'react';
 
-'use client';
-
-import { useState, useEffect, useRef } from 'react';
-
-export default function MessagesPage() {
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [showSidebar, setShowSidebar] = useState<boolean>(true);
-  const [messages, setMessages] = useState<Record<string, any[]>>({
+const MessagesPage = () => {
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [showSidebar, setShowSidebar] = useState(true);
+  const [messages, setMessages] = useState({
     RAkib: [
       { id: 1, text: "Thank you for reaching out. I'll get back to you shortly.", sender: 'me', time: '10:45 AM' },
       { id: 2, text: "I appreciate your message and will respond as soon as possible.", sender: 'other', time: '10:47 AM' },
@@ -242,12 +240,12 @@ export default function MessagesPage() {
     ]
   });
   
-  const [newMessage, setNewMessage] = useState<string>('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const fileInputRef = useRef(null);
+  const messagesEndRef = useRef(null);
   
   // Mock user data
   const users = [
@@ -264,7 +262,7 @@ export default function MessagesPage() {
     if (users.length > 0 && !selectedUser) {
       setSelectedUser(users[0].id);
     }
-  }, [users, selectedUser]);
+  }, []);
   
   // Scroll to bottom when messages change
   useEffect(() => {
@@ -273,8 +271,6 @@ export default function MessagesPage() {
 
   // Handle mobile view - hide sidebar when user is selected
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setShowSidebar(true);
@@ -288,7 +284,7 @@ export default function MessagesPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, [selectedUser]);
   
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = (e) => {
     e.preventDefault();
     if (!newMessage.trim() && !selectedFile) return;
     
@@ -314,7 +310,7 @@ export default function MessagesPage() {
     }
   };
   
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
@@ -362,37 +358,37 @@ export default function MessagesPage() {
 
   const handleBackToUsers = () => {
     setShowSidebar(true);
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    if (window.innerWidth < 768) {
       setSelectedUser(null);
     }
   };
 
-  const handleSelectUser = (userId: string) => {
+  const handleSelectUser = (userId) => {
     setSelectedUser(userId);
-    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    if (window.innerWidth < 768) {
       setShowSidebar(false);
     }
   };
   
-  const renderMessageBubble = (msg: any, index: number) => {
+  const renderMessageBubble = (msg) => {
     const isMe = msg.sender === 'me';
     const isFile = msg.file;
     
     return (
       <div 
         key={msg.id} 
-        className={`flex ${isMe ? 'justify-end' : 'justify-start'} mb-4`}
+        className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
       >
         {!isMe && (
           <img 
             src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'} 
             alt="User" 
-            className="w-8 h-8 rounded-full mr-2 self-end"
+            className="w-8 h-8 rounded-full mr-2 self-end flex-shrink-0"
           />
         )}
         
         <div 
-          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+          className={`max-w-[75%] lg:max-w-md px-4 py-2 rounded-lg break-words ${
             isMe 
               ? 'bg-purple-600 text-white' 
               : 'bg-gray-700 text-white'
@@ -400,13 +396,13 @@ export default function MessagesPage() {
         >
           {isFile ? (
             <div className="flex items-center space-x-2">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <svg className="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span className="text-sm">{msg.file.name}</span>
+              <span className="text-sm truncate">{msg.file.name}</span>
             </div>
           ) : (
-            <p className="text-sm">{msg.text}</p>
+            <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
           )}
           
           <div className={`text-xs mt-1 ${isMe ? 'text-purple-200' : 'text-gray-400'}`}>
@@ -418,7 +414,7 @@ export default function MessagesPage() {
           <img 
             src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'} 
             alt="User" 
-            className="w-8 h-8 rounded-full ml-2 self-end"
+            className="w-8 h-8 rounded-full ml-2 self-end flex-shrink-0"
           />
         )}
       </div>
@@ -428,40 +424,56 @@ export default function MessagesPage() {
   const currentUser = users.find(u => u.id === selectedUser);
 
   return (
-    <div className="min-h-screen md:min-h-[800px] md:mt-28 mt-20 bg-black flex p-2 md:p-4">
+    <div className="  mt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex p-2 md:p-4">
       {/* Sidebar - User List */}
-      <div className={`${showSidebar ? 'block' : 'hidden'} ${selectedUser ? 'w-full md:w-80' : 'w-full md:w-80'} bg-gray-900 rounded-xl p-3 md:p-4 md:mr-4 overflow-y-auto`}>
-        <h2 className="text-xl font-bold text-white mb-4">Messages</h2>
+      <div className={`${showSidebar ? 'block' : 'hidden'} ${selectedUser ? 'w-full md:w-80' : 'w-full md:w-80'} h-[550px] md:h-[750px] bg-gray-900/80 backdrop-blur-sm rounded-xl p-3 md:p-4 md:mr-4 border border-gray-700/50 flex flex-col`}>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-white">Messages</h2>
+          <div className="bg-purple-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
+            {users.length}
+          </div>
+        </div>
         
-        <div className="space-y-3">
+        <div className="space-y-2 overflow-y-auto flex-1 custom-scrollbar pr-1">
           {users.map(user => (
             <div 
               key={user.id}
               onClick={() => handleSelectUser(user.id)}
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition-colors ${
+              className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${
                 selectedUser === user.id 
-                  ? 'bg-purple-600/20 border border-purple-500/30' 
-                  : 'hover:bg-gray-800'
+                  ? 'bg-purple-600/20 border border-purple-500/50 shadow-lg shadow-purple-500/10' 
+                  : 'hover:bg-gray-800/50 border border-transparent'
               }`}
             >
-              <img 
-                src={user.avatar} 
-                alt={user.name} 
-                className="w-10 h-10 rounded-full mr-3"
-              />
-              <div className="flex-1">
-                <div className="font-medium text-white">{user.name}</div>
-                <div className="text-xs text-gray-400">{user.lastSeen}</div>
+              <div className="relative">
+                <img 
+                  src={user.avatar} 
+                  alt={user.name} 
+                  className="w-12 h-12 rounded-full mr-3 border-2 border-gray-700"
+                />
+                <div className="absolute bottom-0 right-2 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
               </div>
+              <div className="flex-1">
+                <div className="font-semibold text-white">{user.name}</div>
+                <div className="text-xs text-gray-400 flex items-center">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
+                  {user.lastSeen}
+                </div>
+              </div>
+              {selectedUser === user.id && (
+                <svg className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+              )}
             </div>
           ))}
         </div>
       </div>
       
       {/* Main Chat Area */}
-      <div className={`${!showSidebar ? 'hidden md:flex' : 'flex'} flex-1 bg-gray-900 rounded-xl p-3 md:p-4 flex-col`}>
+      <div className={`${!showSidebar || (showSidebar && window.innerWidth >= 768) ? 'flex' : 'hidden'} flex-1 bg-gray-900/80 backdrop-blur-sm rounded-xl h-[550px] md:h-[750px] p-3 md:p-4 flex-col border border-gray-700/50   overflow-hidden`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700/50">
           <div className="flex items-center">
             <button
               onClick={handleBackToUsers}
@@ -471,34 +483,63 @@ export default function MessagesPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <img 
-              src={currentUser?.avatar || 'https://i.pravatar.cc/150?img=1'} 
-              alt={currentUser?.name} 
-              className="w-10 h-10 rounded-full mr-3"
-            />
-            <div>
-              <div className="font-medium text-white">{currentUser?.name}</div>
-              <div className="text-xs text-gray-400">Last seen: {currentUser?.lastSeen}</div>
+            <div className="relative">
+              <img 
+                src={currentUser?.avatar || 'https://i.pravatar.cc/150?img=1'} 
+                alt={currentUser?.name} 
+                className="w-10 h-10 rounded-full mr-3 border-2 border-purple-500"
+              />
+              <div className="absolute bottom-0 right-2 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
             </div>
+            <div>
+              <div className="font-semibold text-white">{currentUser?.name}</div>
+              <div className="text-xs text-green-400 flex items-center">
+                <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1 animate-pulse"></span>
+                Online
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+              <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
           </div>
         </div>
         
         {/* Messages Container */}
-        <div className="flex-1 overflow-y-auto mb-4 px-1">
-          {selectedUser && messages[selectedUser]?.map((msg, index) => renderMessageBubble(msg, index))}
+        <div className="flex-1 overflow-y-auto mb-4 px-1 custom-scrollbar">
+          <div className="space-y-4">
+            {selectedUser && messages[selectedUser]?.map((msg) => renderMessageBubble(msg))}
+          </div>
           <div ref={messagesEndRef} />
         </div>
         
         {/* Input Area */}
-        <div className="border-t border-gray-700 pt-4">
+        <div className="border-t border-gray-700/50 pt-4">
           {selectedFile && (
-            <div className="mb-2 flex items-center bg-gray-800 rounded-lg p-2 text-sm text-white">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              <span className="truncate flex-1">{selectedFile.name}</span>
+            <div className="mb-3 flex items-center bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-sm text-white">
+              <div className="flex-1 flex items-center">
+                <div className="bg-purple-600/20 p-2 rounded-lg mr-3">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="font-medium truncate">{selectedFile.name}</div>
+                  {isUploading && (
+                    <div className="mt-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                      <div 
+                        className="bg-purple-600 h-full transition-all duration-300"
+                        style={{ width: `${uploadProgress}%` }}
+                      ></div>
+                    </div>
+                  )}
+                </div>
+              </div>
               {isUploading && (
-                <span className="ml-2 text-purple-400">({uploadProgress}%)</span>
+                <span className="ml-3 text-purple-400 font-semibold">{uploadProgress}%</span>
               )}
               {!isUploading && (
                 <button 
@@ -506,7 +547,7 @@ export default function MessagesPage() {
                     setSelectedFile(null);
                     if (fileInputRef.current) fileInputRef.current.value = '';
                   }}
-                  className="ml-2 text-red-400 hover:text-red-300"
+                  className="ml-3 text-red-400 hover:text-red-300 text-xl font-bold transition-colors"
                 >
                   ×
                 </button>
@@ -527,7 +568,7 @@ export default function MessagesPage() {
                   }
                 }}
                 placeholder="Type a message..."
-                className="w-full px-3 md:px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
               />
               <input
                 type="file"
@@ -541,11 +582,10 @@ export default function MessagesPage() {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-gray-300 hover:text-white transition-colors flex-shrink-0"
-              aria-label="Attach file"
+              className="p-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-400 hover:text-purple-400 transition-all duration-200 border border-gray-700"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
             </button>
             
@@ -553,11 +593,10 @@ export default function MessagesPage() {
               <button
                 type="button"
                 onClick={handleUploadDesign}
-                className="p-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors flex-shrink-0"
-                aria-label="Upload file"
+                className="p-3 bg-purple-600 hover:bg-purple-700 rounded-xl text-white transition-all duration-200 shadow-lg shadow-purple-500/30"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
               </button>
             )}
@@ -567,20 +606,39 @@ export default function MessagesPage() {
                 type="button"
                 onClick={handleSendMessage}
                 disabled={!newMessage.trim()}
-                className={`p-2 rounded-lg transition-colors flex-shrink-0 ${
+                className={`p-3 rounded-xl transition-all duration-200 ${
                   !newMessage.trim()
-                    ? 'bg-purple-600/30 text-gray-500 cursor-not-allowed'
-                    : 'bg-purple-600 hover:bg-purple-700 text-white'
+                    ? 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
+                    : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/30'
                 }`}
               >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M10.894 2.553c-.808-.843-2.097-.774-3.189.177.177.843.526 1.748 1.155 2.633 1.117 1.513 2.567 2.978 4.015 4.015 1.513 1.117 2.978 2.567 4.015 4.015 1.047 1.047 1.846 2.39 1.846 3.953 0 1.211-.478 2.377-1.307 3.206-1.307 1.307-2.615 1.846-3.953 1.846-1.563 0-2.909-.798-3.953-1.846-1.047-1.047-1.846-2.39-1.846-3.953 0-1.563.798-2.909 1.846-3.953 1.047-1.047 2.39-1.846 3.953-1.846 1.563 0 2.909.798 3.953 1.846 1.047 1.047 1.846 2.39 1.846 3.953 0 1.563-.798 2.909-1.846 3.953-1.047 1.047-2.39 1.846-3.953 1.846-1.563 0-2.909-.798-3.953-1.846-1.047-1.047-1.846-2.39-1.846-3.953 0-1.563.798-2.909 1.846-3.953 1.047-1.047 2.39-1.846 3.953-1.846 1.563 0 2.909.798 3.953 1.846 1.047 1.047 1.846 2.39 1.846 3.953 0 1.563-.798 2.909-1.846 3.953-1.047 1.047-2.39 1.846-3.953 1.846-1.563 0-2.909-.798-3.953-1.846-1.047-1.047-1.846-2.39-1.846-3.953 0-1.563.798-2.909 1.846-3.953 1.047-1.047 2.39-1.846 3.953-1.846 1.563 0 2.909.798 3.953 1.846 1.047 1.047 1.846 2.39 1.846 3.953 0 1.563-.798 2.909-1.846 3.953-1.047 1.047-2.39 1.846-3.953 1.846-1.563 0-2.909-.798-3.953-1.846-1.047-1.047-1.846-2.39-1.846-3.953 0-1.563.798-2.909 1.846-3.953z" />
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
                 </svg>
               </button>
             )}
           </div>
         </div>
       </div>
+
+      <style>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(31, 41, 55, 0.3);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(139, 92, 246, 0.5);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(139, 92, 246, 0.7);
+        }
+      `}</style>
     </div>
   );
-}
+};
+
+export default MessagesPage;
