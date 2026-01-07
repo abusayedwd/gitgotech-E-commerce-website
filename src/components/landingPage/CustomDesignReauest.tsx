@@ -138,7 +138,7 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 
 export default function CustomDesignRequest() {
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [notes, setNotes] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [selectedMeasurementType, setSelectedMeasurementType] = useState('');
@@ -151,12 +151,15 @@ export default function CustomDesignRequest() {
 
   const router = useRouter();
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setSelectedFile(file);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file) setSelectedFile(file);
+    }
   };
 
-  const handleMeasurementChange = (field, value) => {
+  const handleMeasurementChange = (field: string, value: string) => {
     setMeasurements(prev => ({ ...prev, [field]: value }));
   };
 
@@ -187,7 +190,10 @@ export default function CustomDesignRequest() {
         {/* Upload Section */}
         <div className="mb-6">
           <div className="relative w-full h-32 border-2 border-dashed border-purple-400 rounded-lg flex flex-col items-center justify-center cursor-pointer hover:bg-purple-900/20 transition-colors"
-               onClick={() => document.getElementById('fileInput').click()}>
+               onClick={() => {
+                 const element = document.getElementById('fileInput');
+                 if (element) element.click();
+               }}>
             {isUploading ? (
               <div className="flex flex-col items-center">
                 <svg className="animate-spin w-8 h-8 text-purple-400 mb-2" fill="none" viewBox="0 0 24 24">

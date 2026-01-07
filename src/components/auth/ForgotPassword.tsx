@@ -11,25 +11,25 @@ export default function ForgotPasswordPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
  const router = useRouter();
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     // Reset errors
     setErrors('');
-    
+
     // Validate email
     if (!email.trim()) {
       setErrors('Please enter your email address');
       setIsLoading(false);
       return;
     }
-    
+
     if (!validateEmail(email)) {
       setErrors('Please enter a valid email address');
       setIsLoading(false);
@@ -60,21 +60,21 @@ export default function ForgotPasswordPage() {
       {/* Forgot Password Card */}
       <div className="relative w-full max-w-lg">
         {/* Cyan border glow */}
-       
-        
+
+
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#8645a5] rounded-2xl p-8">
           {/* Logo placeholder */}
                 <div className="flex items-start justify-between">
                           <Image
                             src="/images/llogo.png"
-                               alt="TeeKnit Logo"  
+                               alt="TeeKnit Logo"
                                width={100}
                                height={100}
                                className="object-contain h-36 w-36"
-                             />    
-                
+                             />
+
                          </div>
-     
+
 
           {/* Header */}
           <div className="mb-6 text-center">
@@ -99,8 +99,8 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter Your Gmail"
                     className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
-                      errors 
-                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                      errors
+                        ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                         : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
                     }`}
                   />
@@ -139,16 +139,16 @@ export default function ForgotPasswordPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              
+
               {/* Success Message */}
               <div>
                 <h2 className="text-xl font-bold text-white mb-2">Check Your Email</h2>
                 <p className="text-gray-400 text-sm">
-                  We've sent a password reset link to <span className="text-purple-400">{email}</span>. 
+                  We've sent a password reset link to <span className="text-purple-400">{email}</span>.
                   Please check your inbox and follow the instructions to reset your password.
                 </p>
               </div>
-              
+
               {/* Action Buttons */}
               <div className="space-y-3">
                 <button
@@ -157,7 +157,7 @@ export default function ForgotPasswordPage() {
                 >
                   Reset Another Email
                 </button>
-                
+
                 <button
                   onClick={() => window.location.href = '/login'}
                   className="w-full bg-transparent border border-gray-700 hover:border-gray-600 text-gray-400 hover:text-white font-medium py-3 rounded-xl transition-colors"
@@ -172,7 +172,7 @@ export default function ForgotPasswordPage() {
           {!isSubmitted && (
             <div className="text-center pt-4">
               <span className="text-gray-400 text-sm">Remembered your password? </span>
-              <span 
+              <span
                 onClick={() => window.location.href = '/auth/login'}
                 className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors cursor-pointer"
               >

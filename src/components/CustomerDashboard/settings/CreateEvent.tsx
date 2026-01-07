@@ -1,6 +1,6 @@
 "use client"
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, FormEvent, ChangeEvent } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 
 export default function CreateEvent() {
@@ -14,14 +14,14 @@ export default function CreateEvent() {
     description: ''
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     console.log('Event created:', formData);
     alert('Event created successfully!');
   };
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
       [name]: type === 'radio' ? value : value
@@ -134,7 +134,7 @@ export default function CreateEvent() {
             value={formData.description}
             onChange={handleChange}
             placeholder="Type Here"
-            rows="4"
+            rows={4}
             className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           />
         </div>

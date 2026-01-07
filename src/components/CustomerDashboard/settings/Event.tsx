@@ -243,12 +243,25 @@ import { CiEdit } from 'react-icons/ci';
 import { FaArrowLeft } from 'react-icons/fa';
 import { IoIosShareAlt } from 'react-icons/io';
 
+// Define the event type
+type EventType = {
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  totalInvite: number;
+  status: string;
+  rawDate: string;
+  rawTime: string;
+};
+
 export default function Event() {
   const [activeTab, setActiveTab] = useState('created');
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [emailFields, setEmailFields] = useState(['']);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [editFormData, setEditFormData] = useState({
     title: '',
     date: '',
@@ -288,13 +301,13 @@ export default function Event() {
     setEmailFields([...emailFields, '']);
   };
 
-  const handleEmailChange = (index, value) => {
+  const handleEmailChange = (index: number, value: string) => {
     const newEmailFields = [...emailFields];
     newEmailFields[index] = value;
     setEmailFields(newEmailFields);
   };
 
-  const handleRemoveEmailField = (index) => {
+  const handleRemoveEmailField = (index: number) => {
     if (emailFields.length > 1) {
       const newEmailFields = emailFields.filter((_, i) => i !== index);
       setEmailFields(newEmailFields);
@@ -312,7 +325,7 @@ export default function Event() {
     setEmailFields(['']);
   };
 
-  const openEditModal = (event) => {
+  const openEditModal = (event: any) => {
     setSelectedEvent(event);
     setEditFormData({
       title: event.title,
@@ -325,7 +338,7 @@ export default function Event() {
     setIsEditModalOpen(true);
   };
 
-  const handleEditChange = (e) => {
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setEditFormData(prev => ({
       ...prev,
@@ -334,13 +347,14 @@ export default function Event() {
   };
 
   const handleUpdateEvent = () => {
+    if (!selectedEvent) return;
     console.log('Updating event:', selectedEvent.id, editFormData);
     alert('Event updated successfully!');
     setIsEditModalOpen(false);
   };
 
   const handleDeleteEvent = () => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
+    if (selectedEvent && window.confirm('Are you sure you want to delete this event?')) {
       console.log('Deleting event:', selectedEvent.id);
       alert('Event deleted successfully!');
       setIsEditModalOpen(false);

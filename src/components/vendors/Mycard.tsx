@@ -13,7 +13,7 @@ export default function MyCardPage() {
     { id: 4, type: 'VISA', last4: '8970', bank: 'Bank Meghna LTD.' },
   ]);
 
-  const handleDeleteCard = (id) => {
+  const handleDeleteCard = (id: number) => {
     setCards(cards.filter(card => card.id !== id));
   };
 

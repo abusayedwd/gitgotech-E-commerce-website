@@ -74,7 +74,7 @@ export default function ChangePasswordPage() {
   );
 }
 
-function PasswordInput({ label, value, setValue, show, setShow }) {
+function PasswordInput({ label, value, setValue, show, setShow }: { label: string; value: string; setValue: (value: string) => void; show: boolean; setShow: (show: boolean) => void }) {
   return (
     <div>
       <label className="block mb-2 text-sm text-gray-300">{label}</label>

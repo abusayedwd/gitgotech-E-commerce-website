@@ -15,7 +15,7 @@ export default function EditProfilePage() {
     communication: 'Email'
   });
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value

@@ -149,24 +149,28 @@ export default function DashboardHome() {
       value: "4",
       icon: "/images/product.png",
       borderColor: "border-blue-500/30",
+      color: "from-purple-500 to-purple-600",
     },
     {
       title: "Total Orders",
       value: "4",
       icon: "/images/order.png",
       borderColor: "border-blue-500/30",
+      color: "from-blue-500 to-blue-600",
     },
     {
       title: "Total Revenue",
       value: "$40",
       icon: "/images/earn.png",
       borderColor: "border-cyan-500/30",
+      color: "from-green-500 to-green-600",
     },
     {
       title: "Total Pending",
       value: "4",
       icon: "/images/pending.png",
       borderColor: "border-purple-500/30",
+      color: "from-pink-500 to-pink-600",
     },
   ];
 

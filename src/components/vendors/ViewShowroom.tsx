@@ -132,7 +132,21 @@ import { useRouter } from 'next/navigation';
 
 export default function ViewShowroomPage() {
   const router = useRouter();
-  const [showroomData, setShowroomData] = useState({
+  type ShowroomData = {
+    logo: string;
+    information: {
+      name: string;
+      category: string;
+      country: string;
+      city: string;
+      location: string;
+    };
+    hours: {
+      [key: string]: string;
+    };
+  };
+
+  const [showroomData, setShowroomData] = useState<ShowroomData>({
     logo: 'https://images.unsplash.com/photo-1558403194-611308249627?w=200&h=200&fit=crop',
     information: {
       name: 'zAlexJames512',
@@ -152,27 +166,34 @@ export default function ViewShowroomPage() {
     },
   });
 
-  const [editModal, setEditModal] = useState({ open: false, type: null }); // 'information' or 'hours'
-  const [formData, setFormData] = useState({});
+  const [editModal, setEditModal] = useState<{ open: boolean; type: 'logo' | 'information' | 'hours' | null }>({ open: false, type: null }); // 'information' or 'hours'
+  const [formData, setFormData] = useState<Record<string, any>>({});
 
   // Open modal and load current data
-  const openEditModal = (type) => {
-    setFormData({ ...showroomData[type] });
+  const openEditModal = (type: 'logo' | 'information' | 'hours') => {
+    if (type === 'logo') {
+      setFormData({ logo: showroomData.logo });
+    } else {
+      setFormData({ ...showroomData[type] });
+    }
     setEditModal({ open: true, type });
   };
 
   // Handle input changes
-  const handleChange = (key, value) => {
+  const handleChange = (key: string, value: string) => {
     setFormData((prev) => ({ ...prev, [key]: value }));
   };
 
   // Save changes and log to console
   const handleSave = () => {
-    console.log('Updated data:', { [editModal.type]: formData });
-    setShowroomData((prev) => ({
-      ...prev,
-      [editModal.type]: formData,
-    }));
+    if (editModal.type) {
+      console.log('Updated data:', { [editModal.type]: formData });
+      setShowroomData((prev) => {
+        const updatedData = { ...prev };
+        (updatedData as any)[editModal.type!] = formData;
+        return updatedData;
+      });
+    }
     setEditModal({ open: false, type: null });
   };
 
@@ -276,11 +297,11 @@ export default function ViewShowroomPage() {
 
             {editModal.type === 'information' ? (
               <>
-                <InputField label="Showroom name" value={formData.name} onChange={(v) => handleChange('name', v)} />
-                <InputField label="Category" value={formData.category} onChange={(v) => handleChange('category', v)} />
-                <InputField label="Country" value={formData.country} onChange={(v) => handleChange('country', v)} />
-                <InputField label="City" value={formData.city} onChange={(v) => handleChange('city', v)} />
-                <InputField label="Location" value={formData.location} onChange={(v) => handleChange('location', v)} />
+                <InputField label="Showroom name" value={formData.name} onChange={(v: string) => handleChange('name', v)} />
+                <InputField label="Category" value={formData.category} onChange={(v: string) => handleChange('category', v)} />
+                <InputField label="Country" value={formData.country} onChange={(v: string) => handleChange('country', v)} />
+                <InputField label="City" value={formData.city} onChange={(v: string) => handleChange('city', v)} />
+                <InputField label="Location" value={formData.location} onChange={(v: string) => handleChange('location', v)} />
               </>
             ) : (
               <>
@@ -321,7 +342,7 @@ export default function ViewShowroomPage() {
 }
 
 // Reusable input field
-function InputField({ label, value, onChange }) {
+function InputField({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
   return (
     <div className="mb-4">
       <label className="block text-gray-300 text-sm mb-1">{label}</label>
@@ -336,7 +357,7 @@ function InputField({ label, value, onChange }) {
 }
 
 // Your existing InfoRow
-function InfoRow({ label, value }) {
+function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between items-center py-3 border-b border-gray-800/50 last:border-0">
       <span className="text-white font-medium">{label}</span>

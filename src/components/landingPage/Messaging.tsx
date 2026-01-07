@@ -273,6 +273,8 @@ export default function MessagesPage() {
 
   // Handle mobile view - hide sidebar when user is selected
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+
     const handleResize = () => {
       if (window.innerWidth >= 768) {
         setShowSidebar(true);
@@ -280,7 +282,7 @@ export default function MessagesPage() {
         setShowSidebar(false);
       }
     };
-    
+
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -360,14 +362,14 @@ export default function MessagesPage() {
 
   const handleBackToUsers = () => {
     setShowSidebar(true);
-    if (window.innerWidth < 768) {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setSelectedUser(null);
     }
   };
 
   const handleSelectUser = (userId: string) => {
     setSelectedUser(userId);
-    if (window.innerWidth < 768) {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setShowSidebar(false);
     }
   };
@@ -428,7 +430,7 @@ export default function MessagesPage() {
   return (
     <div className="min-h-screen md:min-h-[800px] md:mt-28 mt-20 bg-black flex p-2 md:p-4">
       {/* Sidebar - User List */}
-      <div className={`${showSidebar ? 'block' : 'hidden'} ${selectedUser && window.innerWidth < 768 ? 'w-full' : 'w-full md:w-80'} bg-gray-900 rounded-xl p-3 md:p-4 md:mr-4 overflow-y-auto`}>
+      <div className={`${showSidebar ? 'block' : 'hidden'} ${selectedUser ? 'w-full md:w-80' : 'w-full md:w-80'} bg-gray-900 rounded-xl p-3 md:p-4 md:mr-4 overflow-y-auto`}>
         <h2 className="text-xl font-bold text-white mb-4">Messages</h2>
         
         <div className="space-y-3">
@@ -457,7 +459,7 @@ export default function MessagesPage() {
       </div>
       
       {/* Main Chat Area */}
-      <div className={`${!showSidebar || window.innerWidth >= 768 ? 'flex' : 'hidden'} flex-1 bg-gray-900 rounded-xl p-3 md:p-4 flex-col`}>
+      <div className={`${!showSidebar ? 'hidden md:flex' : 'flex'} flex-1 bg-gray-900 rounded-xl p-3 md:p-4 flex-col`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700">
           <div className="flex items-center">
@@ -483,7 +485,7 @@ export default function MessagesPage() {
         
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto mb-4 px-1">
-          {messages[selectedUser]?.map((msg, index) => renderMessageBubble(msg, index))}
+          {selectedUser && messages[selectedUser]?.map((msg, index) => renderMessageBubble(msg, index))}
           <div ref={messagesEndRef} />
         </div>
         

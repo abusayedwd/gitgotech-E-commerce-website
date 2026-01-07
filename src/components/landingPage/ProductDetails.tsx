@@ -365,7 +365,7 @@ export default function ProductDetails() {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('M');
   const [showEventModal, setShowEventModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
   const events = [

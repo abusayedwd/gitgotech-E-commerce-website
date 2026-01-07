@@ -1,7 +1,7 @@
 "use client";
 import { ArrowLeft, Lock, CreditCard, FileText, RotateCcw, Shield, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, ReactNode } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowsLeftRight } from "react-icons/fa6";
 
@@ -116,7 +116,7 @@ export default function SettingsPage() {
     );
 }
 
-function SettingButton({ icon, label, primary, danger, onClick }) {
+function SettingButton({ icon, label, primary, danger, onClick }: { icon: ReactNode; label: string; primary?: boolean; danger?: boolean; onClick: () => void }) {
   const base = "flex items-center justify-center gap-3 w-full py-3 rounded-xl text-sm font-medium transition";
 
   const styles = danger

@@ -78,14 +78,14 @@
 //       {/* Orders List */}
 //       <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
 //         {orders.map((order) => (
-//           <div 
+//           <div
 //             key={order.id}
 //             className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 border border-gray-800 rounded-2xl p-4 md:p-6 hover:border-purple-500/30 transition-all duration-300"
 //           >
 //             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
 //               {/* Product Image */}
 //               <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
-//                 <img 
+//                 <img
 //                   src={order.image}
 //                   alt={order.productName}
 //                   className="w-full h-full object-cover"
@@ -139,7 +139,7 @@
 //                       Leave Review
 //                     </button>
 //                   )}
-                  
+
 //                   {order.showRewardBadge && (
 //                     <div className="relative">
 //                       <button className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
@@ -150,7 +150,7 @@
 //                       </div>
 //                     </div>
 //                   )}
-                  
+
 //                   <button className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
 //                     View Detail
 //                   </button>
@@ -181,7 +181,7 @@ import { useState } from 'react';
 export default function MyDashboard() {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showRewardModal, setShowRewardModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [productRating, setProductRating] = useState(0);
   const [driverRating, setDriverRating] = useState(0);
   const [productReview, setProductReview] = useState('');
@@ -240,20 +240,34 @@ export default function MyDashboard() {
     }
   ]);
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Completed':
-        return 'text-green-500';
-      case 'Processing':
-        return 'text-blue-500';
-      case 'Cancelled':
-        return 'text-red-500';
-      default:
-        return 'text-gray-400';
-    }
-  };
+  // const getStatusColor = (status) => {
+  //   switch(status) {
+  //     case 'Completed':
+  //       return 'text-green-500';
+  //     case 'Processing':
+  //       return 'text-blue-500';
+  //     case 'Cancelled':
+  //       return 'text-red-500';
+  //     default:
+  //       return 'text-gray-400';
+  //   }
+  // };
 
-  const handleLeaveReview = (order) => {
+  interface Order {
+    id: number;
+    productName: string;
+    brand: string;
+    image: string;
+    price: number;
+    quantity: number;
+    otp: string;
+    total: number;
+    status: 'Completed' | 'Processing' | 'Cancelled' | 'Reward';
+    hasReview: boolean;
+    showRewardBadge?: boolean;
+  }
+
+  const handleLeaveReview = (order: Order): void => {
     setSelectedOrder(order);
     setShowReviewModal(true);
     setProductRating(0);
@@ -262,7 +276,7 @@ export default function MyDashboard() {
     setDriverReview('');
   };
 
-  const handleReward = (order) => {
+  const handleReward = (order: Order): void => {
     setSelectedOrder(order);
     setShowRewardModal(true);
     setRewardAmount('');
@@ -298,7 +312,7 @@ export default function MyDashboard() {
     });
   };
 
-  const StarRating = ({ rating, onRate }) => {
+  const StarRating = ({ rating, onRate }: { rating: number; onRate: (star: number) => void }) => {
     return (
       <div className="flex gap-2">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -325,14 +339,14 @@ export default function MyDashboard() {
       {/* Orders List */}
       <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
         {orders.map((order) => (
-          <div 
+          <div
             key={order.id}
             className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 border border-gray-800 rounded-2xl p-4 md:p-6 hover:border-purple-500/30 transition-all duration-300"
           >
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
               {/* Product Image */}
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
-                <img 
+                <img
                   src={order.image}
                   alt={order.productName}
                   className="w-full h-full object-cover"
@@ -382,18 +396,18 @@ export default function MyDashboard() {
                 {/* Action Buttons */}
                 <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
                   {order.status === 'Completed' && !order.hasReview && (
-                    <button 
-                      onClick={() => handleLeaveReview(order)}
+                    <button
+                      onClick={() => handleLeaveReview(order as Order)}
                       className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
                     >
                       Leave Review
                     </button>
                   )}
-                  
+
                   {order.showRewardBadge && (
                     <div className="relative">
-                      <button 
-                        onClick={() => handleReward(order)}
+                      <button
+                        onClick={() => handleReward(order as Order)}
                         className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
                       >
                         Reward
@@ -403,7 +417,7 @@ export default function MyDashboard() {
                       </div>
                     </div>
                   )}
-                  
+
                   <button className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
                     View Detail
                   </button>
@@ -428,7 +442,7 @@ export default function MyDashboard() {
         <div className="fixed inset-0 mt-16 bg-black/70 flex items-center justify-center p-4 z-50">
           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-3xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
             {/* Close Button */}
-            <button 
+            <button
               onClick={() => setShowReviewModal(false)}
               className="float-right text-white hover:text-purple-400 transition-colors"
             >
@@ -450,7 +464,7 @@ export default function MyDashboard() {
                 placeholder="Write your review"
                 className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
               />
-              <button 
+              <button
                 onClick={handleSubmitProductReview}
                 className="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
               >
@@ -471,7 +485,7 @@ export default function MyDashboard() {
                 placeholder="Write your review"
                 className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
               />
-              <button 
+              <button
                 onClick={handleSubmitDriverReview}
                 className="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
               >
@@ -487,7 +501,7 @@ export default function MyDashboard() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-3xl p-8 max-w-md w-full">
             {/* Close Button */}
-            <button 
+            <button
               onClick={() => setShowRewardModal(false)}
               className="float-right text-white hover:text-purple-400 transition-colors"
             >
@@ -501,7 +515,7 @@ export default function MyDashboard() {
               <h2 className="text-3xl font-bold text-white mb-4">Rewards</h2>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <p className="text-purple-400 text-sm">Support your driver with a reward.</p>
-                
+
               </div>
             </div>
 
@@ -515,7 +529,7 @@ export default function MyDashboard() {
             />
 
             {/* Submit Button */}
-            <button 
+            <button
               onClick={handleSubmitReward}
               className="w-full py-4 bg-purple-600 hover:bg-purple-700 rounded-full text-white text-lg font-semibold transition-colors"
             >

@@ -334,7 +334,17 @@ export default function CheckoutPage() {
   const discount = 40.00;
   const total = subtotal + deliveryCharge + tax - discount;
 
-  const handleInputChange = (e) => {
+  interface FormData {
+    fullName: string;
+    getLocation: string;
+    country: string;
+    state: string;
+    zipCode: string;
+    email: string;
+    phone: string;
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value

@@ -1,17 +1,30 @@
 import React from 'react';
 import { ShoppingCart, Heart, Download, Send, Check, ArrowRight, Sparkles } from 'lucide-react';
 
+type Variant = "primary" | "secondary" | "gradient" | "glass" | "glow" | "outline" | "shine";
+type Size = "sm" | "md" | "lg";
+type IconPosition = "left" | "right";
+
 // Custom Button Component with Multiple Variants
-export const CustomButton = ({ 
+export const CustomButton = ({
   children,
-  variant = "primary", 
+  variant = "primary",
   size = "md",
   icon: Icon,
   iconPosition = "left",
   fullWidth = false,
-  
+
   onClick = () => {},
   disabled = false
+}: {
+  children: React.ReactNode;
+  variant?: Variant;
+  size?: Size;
+  icon?: React.ComponentType<{ className?: string; w?: number; h?: number; }>;
+  iconPosition?: IconPosition;
+  fullWidth?: boolean;
+  onClick?: () => void;
+  disabled?: boolean;
 }) => {
   
   const baseStyles = "relative overflow-hidden font-semibold transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed";

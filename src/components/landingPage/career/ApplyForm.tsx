@@ -21,7 +21,7 @@ export default function JobApplicationForm() {
     fullName: '',
     phone: '',
     location: '',
-    cvFile: null,
+    cvFile: null as File | null,
     tellUs: ''
   });
 
@@ -51,18 +51,21 @@ export default function JobApplicationForm() {
   }]);
 
   // Handler functions
-  const toggleSection = (section) => {
+  const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) setFormData(prev => ({ ...prev, cvFile: file }));
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file) setFormData(prev => ({ ...prev, cvFile: file }));
+    }
   };
 
   // Work Experience handlers
@@ -72,14 +75,14 @@ export default function JobApplicationForm() {
       currentlyWorking: false, startDate: '', endDate: '', roleDescription: ''
     }]);
   };
-  
-  const removeWorkExperience = (id) => {
+
+  const removeWorkExperience = (id: number) => {
     if (workExperiences.length > 1) {
       setWorkExperiences(workExperiences.filter(exp => exp.id !== id));
     }
   };
-  
-  const updateWorkExperience = (id, field, value) => {
+
+  const updateWorkExperience = (id: number, field: string, value: string | boolean) => {
     setWorkExperiences(workExperiences.map(exp =>
       exp.id === id ? { ...exp, [field]: value } : exp
     ));
@@ -91,14 +94,14 @@ export default function JobApplicationForm() {
       id: Date.now(), degree: '', institution: '', graduationYear: '', gpa: ''
     }]);
   };
-  
-  const removeEducation = (id) => {
+
+  const removeEducation = (id: number) => {
     if (educations.length > 1) {
       setEducations(educations.filter(edu => edu.id !== id));
     }
   };
-  
-  const updateEducation = (id, field, value) => {
+
+  const updateEducation = (id: number, field: string, value: string) => {
     setEducations(educations.map(edu =>
       edu.id === id ? { ...edu, [field]: value } : edu
     ));
@@ -110,14 +113,14 @@ export default function JobApplicationForm() {
       id: Date.now(), certName: '', issuingOrg: '', certDate: ''
     }]);
   };
-  
-  const removeCertification = (id) => {
+
+  const removeCertification = (id: number) => {
     if (certifications.length > 1) {
       setCertifications(certifications.filter(cert => cert.id !== id));
     }
   };
-  
-  const updateCertification = (id, field, value) => {
+
+  const updateCertification = (id: number, field: string, value: string) => {
     setCertifications(certifications.map(cert =>
       cert.id === id ? { ...cert, [field]: value } : cert
     ));
@@ -127,14 +130,14 @@ export default function JobApplicationForm() {
   const addSkill = () => {
     setSkills([...skills, { id: Date.now(), skill: '', proficiency: '' }]);
   };
-  
-  const removeSkill = (id) => {
+
+  const removeSkill = (id: number) => {
     if (skills.length > 1) {
       setSkills(skills.filter(skill => skill.id !== id));
     }
   };
-  
-  const updateSkill = (id, field, value) => {
+
+  const updateSkill = (id: number, field: string, value: string) => {
     setSkills(skills.map(skill =>
       skill.id === id ? { ...skill, [field]: value } : skill
     ));
@@ -144,14 +147,14 @@ export default function JobApplicationForm() {
   const addLanguage = () => {
     setLanguages([...languages, { id: Date.now(), language: '', proficiency: '' }]);
   };
-  
-  const removeLanguage = (id) => {
+
+  const removeLanguage = (id: number) => {
     if (languages.length > 1) {
       setLanguages(languages.filter(lang => lang.id !== id));
     }
   };
-  
-  const updateLanguage = (id, field, value) => {
+
+  const updateLanguage = (id: number, field: string, value: string) => {
     setLanguages(languages.map(lang =>
       lang.id === id ? { ...lang, [field]: value } : lang
     ));
@@ -163,14 +166,14 @@ export default function JobApplicationForm() {
       id: Date.now(), refName: '', refRelation: '', refEmail: '', refPhone: ''
     }]);
   };
-  
-  const removeReference = (id) => {
+
+  const removeReference = (id: number) => {
     if (references.length > 1) {
       setReferences(references.filter(ref => ref.id !== id));
     }
   };
-  
-  const updateReference = (id, field, value) => {
+
+  const updateReference = (id: number, field: string, value: string) => {
     setReferences(references.map(ref =>
       ref.id === id ? { ...ref, [field]: value } : ref
     ));

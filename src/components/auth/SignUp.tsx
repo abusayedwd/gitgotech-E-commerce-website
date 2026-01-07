@@ -10,7 +10,7 @@
 //   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 //   const [userType, setUserType] = useState<'customer' | 'vendor'>('customer');
 //   const [agreeTerms, setAgreeTerms] = useState(false);
-  
+
 //   const [formData, setFormData] = useState({
 //     name: '',
 //     username: '',
@@ -37,7 +37,7 @@
 //       <div className="relative w-full max-w-lg">
 //         {/* Cyan border glow */}
 //         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-3xl blur-sm"></div>
-        
+
 //         <div className="relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl border border-cyan-500/30 p-8 shadow-2xl">
 //           {/* Logo and badges */}
 //           <div className="flex items-start justify-between mb-6">
@@ -49,7 +49,7 @@
 //                 className="object-contain"
 //               />
 //             </div>
-            
+
 //             <div className="flex gap-2">
 //               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-cyan-500/50">
 //                 G
@@ -225,8 +225,8 @@
 //             {/* Sign In Link */}
             // <div className="text-center pt-2">
             //   <span className="text-gray-400 text-sm">Already have an account? </span>
-            //   <Link 
-            //     href="/auth/login" 
+            //   <Link
+            //     href="/auth/login"
             //     className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors"
             //   >
             //     Sign in
@@ -242,7 +242,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { User, Lock, Mail, Eye, EyeOff, UserCircle } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -252,7 +252,7 @@ export default function SignUpPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userType, setUserType] = useState('customer');
   const [agreeTerms, setAgreeTerms] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     username: '',
@@ -331,7 +331,7 @@ export default function SignUpPage() {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       console.log('Sign Up:', { ...formData, userType });
@@ -339,7 +339,24 @@ export default function SignUpPage() {
     }
   };
 
-  const handleInputChange = (field, value) => {
+  interface FormDataType {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+  }
+
+  interface ErrorsType {
+    name: string;
+    username: string;
+    email: string;
+    password: string;
+    confirmPassword: string;
+    terms: string;
+  }
+
+  const handleInputChange = (field: keyof FormDataType, value: string): void => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
@@ -347,7 +364,7 @@ export default function SignUpPage() {
     }
   };
 
-  const handleTermsChange = (checked) => {
+  const handleTermsChange = (checked: boolean): void => {
     setAgreeTerms(checked);
     if (errors.terms && checked) {
       setErrors(prev => ({ ...prev, terms: '' }));
@@ -357,24 +374,24 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen mt-20 bg-black flex items-center justify-center p-4 py-8">
       {/* Animated gradient orbs */}
-      
+
 
       {/* Sign Up Card */}
       <div className="relative w-full max-w-lg">
         {/* Cyan border glow */}
         <div className="absolute inset-0  bg-[#151579] rounded-3xl blur-sm"></div>
-        
+
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8">
           {/* Logo placeholder */}
           <div className="flex items-start justify-between">
            <Image
              src="/images/llogo.png"
-                alt="TeeKnit Logo"  
+                alt="TeeKnit Logo"
                 width={100}
                 height={100}
                 className="object-contain h-36 w-36"
-              />    
- 
+              />
+
           </div>
 
           {/* Header */}
@@ -432,8 +449,8 @@ export default function SignUpPage() {
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="Enter Your Name"
                   className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
-                    errors.name 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                    errors.name
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                       : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
@@ -452,8 +469,8 @@ export default function SignUpPage() {
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   placeholder="Enter a Unique User Name"
                   className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
-                    errors.username 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                    errors.username
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                       : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
@@ -472,8 +489,8 @@ export default function SignUpPage() {
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="Enter Your Email"
                   className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
-                    errors.email 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                    errors.email
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                       : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
@@ -492,8 +509,8 @@ export default function SignUpPage() {
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   placeholder="• • • • • • • • •"
                   className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
-                    errors.password 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                    errors.password
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                       : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
@@ -519,8 +536,8 @@ export default function SignUpPage() {
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   placeholder="• • • • • • • • •"
                   className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
-                    errors.confirmPassword 
-                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' 
+                    errors.confirmPassword
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
                       : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
@@ -567,15 +584,15 @@ export default function SignUpPage() {
             {/* Sign In Link */}
             <div className="text-center pt-2">
               <span className="text-gray-400 text-sm">Already have an account? </span>
-              <Link 
-                href="/auth/login" 
+              <Link
+                href="/auth/login"
                 className="text-sm text-[#6100FF] hover:text-purple-300 font-medium transition-colors"
               >
                 Sign in
               </Link>
             </div>
-          
-         
+
+
           </form>
         </div>
       </div>

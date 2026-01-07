@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import { Wallet, CreditCard, Plus, ArrowDownRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -15,9 +15,9 @@ export default function WithdrawRequest() {
     { id: 4, type: 'VISA', last4: '8970', bank: 'Bank Meghna LTD.' },
   ]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
       alert('Please enter a valid amount');
       return;
     }

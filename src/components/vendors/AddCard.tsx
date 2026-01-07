@@ -11,9 +11,9 @@ export default function AddCardPage() {
   const [country, setCountry] = useState('');
   const router = useRouter()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Basic validation
     if (!cardNumber || !expiryDate || !cvc || !country) {
       alert('Please fill all fields');
@@ -32,17 +32,18 @@ export default function AddCardPage() {
   };
 
   // Auto-format card number as user types (spaces every 4 digits)
-  const handleCardNumberChange = (e) => {
+  const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length > 16) value = value.slice(0, 16);
     if (value.length > 0) {
-      value = value.match(/.{1,4}/g).join(' ');
+      const matches = value.match(/.{1,4}/g);
+      value = matches ? matches.join(' ') : value;
     }
     setCardNumber(value);
   };
 
   // Auto-format expiry date (MM/YY)
-  const handleExpiryChange = (e) => {
+  const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value.replace(/\D/g, '');
     if (value.length > 4) value = value.slice(0, 4);
     if (value.length > 2) {
@@ -77,7 +78,7 @@ export default function AddCardPage() {
                   onChange={handleCardNumberChange}
                   placeholder="Enter card number"
                   className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:right-1"
-                  maxLength="19"
+                  maxLength={19}
                 />
                 {/* Card Type Icons */}
                 <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
@@ -101,7 +102,7 @@ export default function AddCardPage() {
                   onChange={handleExpiryChange}
                   placeholder="MM/YY"
                   className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:right-1"
-                  maxLength="5"
+                  maxLength={5}
                 />
               </div>
               <div>
@@ -112,7 +113,7 @@ export default function AddCardPage() {
                   onChange={(e) => setCvc(e.target.value.replace(/\D/g, '').slice(0, 3))}
                   placeholder="CVC"
                   className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:right-1"
-                  maxLength="3"
+                  maxLength={3}
                 />
               </div>
             </div>

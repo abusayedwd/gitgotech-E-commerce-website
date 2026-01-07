@@ -35,7 +35,7 @@ export default function ShoppingCart() {
     }
   ]);
 
-  const updateQuantity = (id, change) => {
+  const updateQuantity = (id: number, change: number) => {
     setCartItems(items =>
       items.map(item => {
         if (item.id === id) {
@@ -47,11 +47,11 @@ export default function ShoppingCart() {
     );
   };
 
-  const removeItem = (id) => {
+  const removeItem = (id: number) => {
     setCartItems(items => items.filter(item => item.id !== id));
   };
 
-  const calculateSubtotal = (item) => {
+  const calculateSubtotal = (item: typeof cartItems[0]) => {
     return (item.price * item.quantity).toFixed(2);
   };
 

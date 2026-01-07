@@ -201,11 +201,19 @@ export default function WishlistPage() {
     }
   ]);
 
-  const removeFromWishlist = (id) => {
+  type WishlistItem = {
+    id: number;
+    name: string;
+    image: string;
+    price: number;
+    status: string;
+  };
+
+  const removeFromWishlist = (id: number) => {
     setWishlistItems(items => items.filter(item => item.id !== id));
   };
 
-  const addToCart = (item) => {
+  const addToCart = (item: WishlistItem) => {
     if (item.status === 'In Stock') {
       alert(`${item.name} added to cart!`);
     }

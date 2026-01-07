@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 
 export default function AddShowroom() {
   const router = useRouter();
-  const [logoPreview, setLogoPreview] = useState(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [hours, setHours] = useState({
     Monday: '',
     Tuesday: '',
@@ -24,23 +24,26 @@ export default function AddShowroom() {
     location: '',
   });
 
-  const handleLogoChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setLogoPreview(URL.createObjectURL(file));
+  const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file) {
+        setLogoPreview(URL.createObjectURL(file));
+      }
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleHourChange = (day, value) => {
+  const handleHourChange = (day: string, value: string) => {
     setHours((prev) => ({ ...prev, [day]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
       logo: logoPreview,
@@ -194,7 +197,7 @@ export default function AddShowroom() {
 }
 
 // Reusable Input Field Component
-function InputField({ label, name, value, onChange, placeholder, required = false }) {
+function InputField({ label, name, value, onChange, placeholder, required = false }: { label: string; name: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; placeholder: string; required?: boolean }) {
   return (
     <div>
       <label className="block text-gray-300 text-sm font-medium mb-2">

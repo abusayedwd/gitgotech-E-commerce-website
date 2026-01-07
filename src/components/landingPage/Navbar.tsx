@@ -347,7 +347,8 @@ export default function Navbar() {
   // Auth logic - Replace with your actual authentication
   // const isLoggedIn = true; // Set to false to see login button
   // const userRole = 'customer'; // Can be 'customer' or 'vendor'
-const storedUser = JSON.parse(localStorage.getItem('user'));
+const storedUserString = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
+const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
 
 const isLoggedIn = storedUser?.isLoggedIn || false;
 const userRole = storedUser?.role || null;

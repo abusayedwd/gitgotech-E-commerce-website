@@ -6,10 +6,19 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-const ProductCard = ({ product }) => {
+type Product = {
+  id: number;
+  name: string;
+  price: string;
+  reviews: number;
+  brand: string;
+  image: string;
+};
+
+const ProductCard = ({ product }: { product: Product }) => {
   const router = useRouter()
   return (
-    <div 
+    <div
     // onClick={() => router.push("/profile/event/view-deaign/")}
     className=" text-white bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow">
       {/* Product Image */}
@@ -39,7 +48,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         <h3 className="text-xl font-semibold   mb-2">{product.name}</h3>
-        
+
         <div className="flex items-center gap-2 mb-4">
           <ShoppingCart className="w-4 h-4 text-red-500" />
           <span className="text-[16px] text-[#B8B8B8]">{product.brand}</span>
@@ -50,12 +59,12 @@ const ProductCard = ({ product }) => {
           <button onClick={() => router.push("/profile/event/view-deaign/select-size")} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
             View Size
           </button>
-       
+
           <button  onClick={() => router.push("/checkout")} className="flex-1 w-full cursor-pointer bg-[#6100FF] text-white py-2.5 rounded-lg font-medium transition-colors">
             Place Order
           </button>
-          
-       
+
+
 
         </div>
       </div>

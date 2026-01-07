@@ -16,18 +16,25 @@ export default function SelectSize() {
     { id: 6, name: "Alex James", avatar: "/api/placeholder/48/48", size: "Size" }
   ]);
 
-  const [openDropdown, setOpenDropdown] = useState(null);
+  type User = {
+    id: number;
+    name: string;
+    avatar: string;
+    size: string;
+  };
+
+  const [openDropdown, setOpenDropdown] = useState<number | null>(null);
 
   const sizes = ["XS", "S", "M", "L", "XL", "XXL", "S/28", "M/30", "L/32", "XL/34"];
 
-  const handleSizeSelect = (userId, size) => {
-    setUsers(users.map(user => 
+  const handleSizeSelect = (userId: number, size: string) => {
+    setUsers(users.map(user =>
       user.id === userId ? { ...user, size } : user
     ));
     setOpenDropdown(null);
   };
 
-  const toggleDropdown = (userId) => {
+  const toggleDropdown = (userId: number) => {
     setOpenDropdown(openDropdown === userId ? null : userId);
   };
 
