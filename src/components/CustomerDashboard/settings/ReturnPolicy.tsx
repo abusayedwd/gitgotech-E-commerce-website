@@ -147,7 +147,7 @@ export default function ReturnPolicyPage() {
         
         {/* Header */}
 
-           <div className="container mt-24 my-4 mx-auto flex items-center gap-4">
+           <div className="container md:mt-24 mt-12 my-4 mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
             <FaArrowLeft className='text-black' />

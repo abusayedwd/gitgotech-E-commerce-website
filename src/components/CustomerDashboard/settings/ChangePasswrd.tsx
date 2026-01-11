@@ -2,6 +2,7 @@
 import { ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function ChangePasswordPage() {
     const router = useRouter();
@@ -33,16 +34,14 @@ export default function ChangePasswordPage() {
     <div className="min-h-screen bg-gradient-to-br from-black via-[#120a2a] to-black flex items-center justify-center p-6">
       <div className="w-full max-w-xl">
         {/* Header */}
-        <div className=" mt-4 flex items-center gap-4 mb-6">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </div>
-        </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Change Password</h1>
-        </div>
+        <div className="container mx-auto flex items-center gap-4 py-2">
+                    <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+                   <FaArrowLeft className='text-black'/>
+                 </div>
+               </button>
+                 <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Change Password</h1>
+               </div>
 
         {/* Card */}
         <div className="relative rounded-2xl p-8 bg-gradient-to-br from-[#1b1233] to-[#0e0a1f] shadow-xl border border-purple-500/40">

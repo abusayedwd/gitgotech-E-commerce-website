@@ -19,9 +19,9 @@ export default function Wallett() {
   ]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r mt-20 from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r md:mt-20 mt-12 from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Header */}
-     <div className="container mx-auto flex items-center gap-4">
+     <div className="container mx-auto flex items-center gap-4 py-2">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
             <FaArrowLeft className='text-black'/>
@@ -34,7 +34,7 @@ export default function Wallett() {
         {/* Balance Card */}
         <div className='w-full'>
 
-        <img src="/images/wallett.png" className='w-full h-[254]' alt="/images/wallett.png" />
+        <img src="/images/wallett.png" className='w-full md:h-[254]' alt="/images/wallett.png" />
         </div>
 
         {/* Action Buttons */}

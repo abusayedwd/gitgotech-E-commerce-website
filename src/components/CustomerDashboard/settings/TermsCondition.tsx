@@ -103,13 +103,13 @@ export default function TermsConditionsPage() {
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}
-         <div className="container mt-24 mx-auto flex items-center gap-4">
+         <div className="container md:mt-24 mt-12 mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Terms & Condition</h1>
+          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Terms & Condition</h1>
         </div>
 
         {/* Content Card */}

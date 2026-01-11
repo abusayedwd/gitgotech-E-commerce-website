@@ -268,9 +268,9 @@ export default function VendorProfilePage() {
   };
 
   return (
-    <div className="space-y-6 pb-5 mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen">
+    <div className="space-y-6 pb-5 md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen">
       {/* Header */}
-      <div className='flex items-center container mx-auto justify-between pt-4'>
+      <div className='flex items-center container mx-auto justify-between pt-0 md:pt-4'>
           <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
@@ -279,7 +279,7 @@ export default function VendorProfilePage() {
         </button>
           <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Profile Info</h1>
         </div>
-        <div className='md:mr-24 mr-2 flex items-center gap-2'>
+        <div className='md:mr-24 mr-14 flex items-center gap-2'>
           <img onClick={() => router.push("/v-profile/wallet")} className='cursor-pointer' src="/images/wallet.png" alt="" />
           <img onClick={() => router.push("/settings")} className='cursor-pointer' src="/images/settinsg.png" alt="" />
           <img onClick={() => setIsLogoutModalOpen(true)} className='cursor-pointer' src="/images/log.png" alt="" />

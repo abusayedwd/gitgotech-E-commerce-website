@@ -114,11 +114,11 @@ export default function PrivacyPolicyPage() {
   ];
 
   return (
-    <div className="min-h-screen mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen md:mt-24 mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}
-         <div className="container mt-12 mx-auto flex items-center gap-4">
+         <div className="container   mx-auto flex items-center gap-4">
                      <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
                   <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
                     <FaArrowLeft className='text-black' />

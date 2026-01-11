@@ -30,7 +30,7 @@ export default function WithdrawRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r mt-20 from-black via-[#110a2b] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r md:mt-20 mt-12 from-black via-[#110a2b] to-black text-white p-4 md:p-8">
       {/* Header */}
        <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
