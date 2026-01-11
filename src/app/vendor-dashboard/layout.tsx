@@ -32,7 +32,7 @@ export default function VendorDashboardLayout({
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden fixed top-28 left-4 z-50 p-3 bg-[#2E2E34] rounded-lg border border-gray-800 hover:bg-gray-800 transition-colors"
+            className="lg:hidden fixed top-16 left-4 z-50 p-3 bg-[#2E2E34] rounded-lg border border-gray-800 hover:bg-gray-800 transition-colors"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>

@@ -98,24 +98,24 @@ export default function MyProducts() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 border-purple-600/40 shadow-[0_0_12px_rgba(34,211,238,0.35)] border rounded-2xl p-8">
-      <div className="mb-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-white">Products</h2>
+    <div className="bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 border-purple-600/40 shadow-[0_0_12px_rgba(34,211,238,0.35)] border rounded-xl md:rounded-2xl p-4 md:p-8">
+      <div className="mb-4 md:mb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-white">Products</h2>
           <button 
             onClick={handleAddProduct}
-            className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-medium transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2"
+            className="w-full sm:w-auto px-4 md:px-6 py-2 md:py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg font-medium transition-all shadow-lg shadow-purple-500/20 flex items-center justify-center gap-2 text-sm md:text-base"
           >
             <span className="text-xl">+</span> Add Product
           </button>
         </div>
         
         {/* Filter and Search */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6">
           <select 
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
           >
             <option>Filter</option>
             <option>All Products</option>
@@ -128,7 +128,7 @@ export default function MyProducts() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="  px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
+              className="w-full px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
             />
             <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -138,7 +138,7 @@ export default function MyProducts() {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {products.map((product) => (
           <div 
             key={product.id} 
@@ -147,48 +147,41 @@ export default function MyProducts() {
             {/* Product Image */}
             <div className="relative bg-gray-800 aspect-square flex items-center justify-center overflow-hidden">
               <img
-                  src="/images/jacket.png"
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
- 
+                src="/images/jacket.png"
+                alt={product.name}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              />
               
               {/* Stock Badge */}
-              <div className="absolute bottom-3 flex justify-between gap-10 right-3 ">
+              <div className="absolute bottom-2 md:bottom-3 left-2 right-2 md:left-auto md:right-3 flex justify-between md:justify-end gap-2 md:gap-10">
                 <button 
-                onClick={() => router.push("products/edit-product")}
-                className='bg-blue-500 px-5 rounded'>Edit</button>
-                <span className={`px-3 py-2 text-xs font-medium ${
+                  onClick={() => router.push("products/edit-product")}
+                  className='bg-blue-500 px-3 md:px-5 py-1.5 md:py-2 rounded text-xs md:text-sm text-white font-medium hover:bg-blue-600 transition-colors'
+                >
+                  Edit
+                </button>
+                <span className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-base font-medium ${
                   product.stockStatus === 'Stock' 
-                    ? 'bg-[#BAFF9466] backdrop-blur-[4px] text-[16px] font-normal text-[#00AA33] font-poppins'
-                    : 'bg-[#AEAEAE66] backdrop-blur-[4px] text-black text-[16px] font-normal font-poppins'
+                    ? 'bg-[#BAFF9466] backdrop-blur-[4px] text-[#00AA33] font-poppins'
+                    : 'bg-[#AEAEAE66] backdrop-blur-[4px] text-black font-poppins'
                 }`}>
                   {product.stockStatus}
                 </span>
               </div>
-              
-              {/* Out of Stock Overlay */}
-              {/* {product.stockStatus === 'Out of stock' && (
-                <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">
-                   
-                </div>
-              )} */}
             </div>
 
             {/* Product Info */}
-            <div className="p-4">
-              <div className="flex items-start justify-between mb-2">
-                <div className="flex gap-4 justify-around items-center">
-                  <div className="text-lg font-bold text-white mb-1">{product.price}</div>
-                  <div className="flex items-center gap-2 mb-1">
-                    {renderStars(product.rating)}
-                    <span className="text-xs text-gray-400">{product.reviews} Reviews</span>
-                  </div>
+            <div className="p-3 md:p-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+                <div className="text-base md:text-lg font-bold text-white">{product.price}</div>
+                <div className="flex items-center gap-2">
+                  {renderStars(product.rating)}
+                  <span className="text-xs text-gray-400">{product.reviews} Reviews</span>
                 </div>
               </div>
               
-              <h3 className="text-base font-semibold text-white mb-1">{product.name}</h3>
-              <p className="text-sm text-red-400 flex items-center gap-1">
+              <h3 className="text-sm md:text-base font-semibold text-white mb-1">{product.name}</h3>
+              <p className="text-xs md:text-sm text-red-400 flex items-center gap-1">
                 <span className="text-red-500">👤</span> {product.seller}
               </p>
             </div>

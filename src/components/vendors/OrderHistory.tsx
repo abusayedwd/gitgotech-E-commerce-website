@@ -55,16 +55,16 @@ export default function OrderHistory() {
   };
 
   return (
-    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 rounded-2xl p-8">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold font-cormorant mb-6 text-white">Orders</h2>
+    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 rounded-xl md:rounded-2xl p-4 md:p-8">
+      <div className="mb-4 md:mb-6">
+        <h2 className="text-xl md:text-2xl font-bold font-cormorant mb-4 md:mb-6 text-white">Orders</h2>
         
         {/* Filter and Search */}
-        <div className="flex gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6">
           <select 
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
           >
             <option>Filter</option>
             <option>All Orders</option>
@@ -79,7 +79,7 @@ export default function OrderHistory() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className=" px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
+              className="w-full px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
             />
             <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -88,7 +88,37 @@ export default function OrderHistory() {
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-3 mb-4">
+        {allOrders.map((order, index) => (
+          <div
+            key={index}
+            className="bg-gray-800/20 border border-gray-700/30 rounded-lg p-4 hover:bg-gray-800/30 transition-colors"
+          >
+            <div className="flex justify-between items-start mb-3">
+              <div>
+                <div className="text-sm font-medium text-white mb-1">{order.id}</div>
+                <div className="text-xs text-gray-400">{order.date}</div>
+              </div>
+              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(order.status)}`}>
+                {order.status}
+              </span>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-gray-700/30">
+              <span className="text-sm text-white">{order.customer}</span>
+              <button 
+                onClick={() => handleViewDetails(order)}
+                className="px-3 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-400">
@@ -125,40 +155,40 @@ export default function OrderHistory() {
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-center gap-2 mt-6">
+      <div className="flex items-center justify-center gap-1.5 md:gap-2 mt-4 md:mt-6 overflow-x-auto pb-2">
         <button 
           onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-          className="w-8 h-8 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+          className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base"
         >
           ←
         </button>
         
-        <button className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm">
+        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
           1
         </button>
-        <button className="w-8 h-8 flex items-center justify-center bg-purple-600 rounded-lg text-sm">
+        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 rounded-lg text-xs md:text-sm">
           2
         </button>
-        <button className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm">
+        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
           3
         </button>
-        <button className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm">
+        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
           4
         </button>
-        <button className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm">
+        <button className="hidden sm:flex w-7 h-7 md:w-8 md:h-8 shrink-0 items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
           5
         </button>
-        <button className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm">
+        <button className="hidden sm:flex w-7 h-7 md:w-8 md:h-8 shrink-0 items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
           6
         </button>
-        <span className="text-gray-400 text-sm">...</span>
-        <button className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-sm">
+        <span className="text-gray-400 text-xs md:text-sm px-1">...</span>
+        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
           24
         </button>
         
         <button 
           onClick={() => setCurrentPage(currentPage + 1)}
-          className="w-8 h-8 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors"
+          className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base"
         >
           →
         </button>
