@@ -1,0 +1,294 @@
+"use client";
+import { useState } from 'react';
+
+export default function ReturnRequestForm() {
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [reason, setReason] = useState('');
+  const [fullName, setFullName] = useState('');
+  const [location, setLocation] = useState('');
+  const [country, setCountry] = useState('United States');
+  const [state, setState] = useState('Washington DC');
+  const [zipCode, setZipCode] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [productUnused, setProductUnused] = useState(false);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      const newImages: string[] = [];
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          if (event.target?.result) {
+            newImages.push(event.target.result as string);
+            if (newImages.length === files.length) {
+              setUploadedImages([...uploadedImages, ...newImages]);
+            }
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = () => {
+    console.log({
+      images: uploadedImages,
+      reason,
+      deliveryAddress: {
+        fullName,
+        location,
+        country,
+        state,
+        zipCode,
+        email,
+        phone
+      },
+      productUnused
+    });
+    alert('Return request submitted successfully!');
+  };
+
+  return (
+    <div className="  bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+      {/* Back Button */}
+      <div className="fixed top-4 left-4 md:top-8 md:left-8">
+        <button className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
+          <svg className="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Profile Icon - Top Right */}
+      <div className="fixed top-4 right-4 md:top-8 md:right-8">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+          <svg className="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Header */}
+      <div className="container mx-auto mt-16 md:mt-20 mb-8 text-center">
+        <h1 className="text-3xl md:text-4xl font-bold mb-2">Return</h1>
+        <p className="text-gray-400 text-sm md:text-base">One step away from your dream purchase.</p>
+      </div>
+
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Form */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Upload Images */}
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Upload Images</h3>
+            <div className="flex flex-wrap gap-4">
+              {uploadedImages.map((img, index) => (
+                <div key={index} className="relative w-32 h-32 rounded-xl overflow-hidden bg-gray-800">
+                  <img src={img} alt={`Upload ${index + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute top-1 right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              
+              <label className="w-32 h-32 border-2 border-dashed border-gray-700 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-purple-500 transition-colors">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="hidden"
+                />
+                <svg className="w-8 h-8 text-purple-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span className="text-purple-400 text-sm">Upload</span>
+              </label>
+            </div>
+          </div>
+
+          {/* Reason Textarea */}
+          <div>
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder="Write your reason"
+              className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[150px] resize-none"
+            />
+          </div>
+
+          {/* Delivery Address */}
+          <div className="border border-gray-700 p-2 rounded-2xl ">
+            <div className='bg-gradient-to-r from-[#2ACCED] to-[#B630F4] py-2'>
+
+            <h3 className="py-3 p-6 text-[24px]">
+              Delivery Address
+            </h3>
+            </div>
+   <div className='p-6'>
+
+  <div className="mb-4">
+              <label className="block text-sm text-gray-400 mb-2">Full name</label>
+              <input
+                type="text"
+                value={fullName}
+                onChange={(e) => setFullName(e.target.value)}
+                placeholder="Dianne"
+                className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+              />
+            </div>
+
+            {/* Set Location */}
+            <div className="mb-4">
+              <label className="block text-sm text-gray-400 mb-2">Set Location</label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="4140 Psh"
+                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                />
+                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Country, State, Zip Code */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Country / Region</label>
+                <select
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>United Kingdom</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">States</label>
+                <select
+                  value={state}
+                  onChange={(e) => setState(e.target.value)}
+                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                >
+                  <option>Washington DC</option>
+                  <option>California</option>
+                  <option>New York</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Zip Code</label>
+                <input
+                  type="text"
+                  value={zipCode}
+                  onChange={(e) => setZipCode(e.target.value)}
+                  placeholder="20033"
+                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+            </div>
+
+            {/* Email and Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="dianne.russell@gmail.com"
+                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Phone</label>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="(603) 555-0123"
+                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Product is unused checkbox */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              id="unused"
+              checked={productUnused}
+              onChange={(e) => setProductUnused(e.target.checked)}
+              className="w-5 h-5 rounded bg-black/50 border border-gray-700 checked:bg-purple-600 checked:border-purple-600 cursor-pointer"
+            />
+            <label htmlFor="unused" className="text-sm cursor-pointer">
+              ☑ Product is unused
+            </label>
+          </div>
+
+   </div>
+            {/* Full Name */}
+          
+        </div>
+
+        {/* Right Column - Order Summary */}
+        <div className="lg:col-span-1">
+          <div className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 border border-gray-800 rounded-2xl p-6 sticky top-24">
+            <h3 className="text-xl font-bold mb-6">Order Summary</h3>
+
+            {/* Summary Items */}
+            <div className="space-y-4 mb-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Selected Category</span>
+                <span className="text-white">$30.00</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Tax</span>
+                <span className="text-white">$20.00</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-green-400">Discount</span>
+                <span className="text-green-400">-$10.00</span>
+              </div>
+              <div className="h-px bg-gray-700"></div>
+              <div className="flex justify-between font-semibold">
+                <span>Total</span>
+                <span className="text-purple-400">$3000.00</span>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="space-y-3">
+              <button
+                onClick={handleSubmit}
+                className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
+              >
+                Send Request
+              </button>
+              <button className="w-full py-3 bg-transparent border border-purple-500 hover:bg-purple-500/10 rounded-full text-purple-400 font-semibold transition-colors">
+                Tip Your driver
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

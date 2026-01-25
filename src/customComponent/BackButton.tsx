@@ -1,42 +1,25 @@
-"use client";
-
+"use client"
 import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import React from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
 
-interface BackButtonProps {
-  fallbackUrl?: string;
-  label?: string;
+interface PageHeaderProps {
+  title: string;
+  onBack?: () => void;
   className?: string;
-  showIcon?: boolean;
 }
 
-export default function BackButton({ 
-  fallbackUrl = '/', 
-  label = 'Back',
-  className = 'cursor-pointer',
-  showIcon = true
-}: BackButtonProps) {
-  const router = useRouter();
-
-  const handleBack = () => {
-    // Check if there's a previous page in history
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      // If no history, go to fallback URL
-      router.push(fallbackUrl);
-    }
-  };
-
+export default function BackButton({ title, onBack, className = '' }: PageHeaderProps) {
+  const router = useRouter()
   return (
-    <button
-      onClick={handleBack}
-      className={`flex items-center gap-2 text-gray-400 hover:text-white transition-colors group ${className}`}
-    >
-      {showIcon && (
-        <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-      )}
-      <span className="font-medium">{label}</span>
-    </button>
+    <div className="container mx-auto flex gap-2 ">
+             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+            <FaArrowLeft className='text-black'/>
+          </div>
+        </button>
+         <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">{title}</h1>
+        </div>
+    
   );
 }

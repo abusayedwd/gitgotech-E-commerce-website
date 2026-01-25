@@ -3,6 +3,7 @@ import React from 'react';
 import { Star, User, Shield, MessageCircle } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 const OrderDetails = () => {
     const router = useRouter()
@@ -77,8 +78,11 @@ const OrderDetails = () => {
             <div>
                   <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
-        
-            <div className="bg-[#6100FF] px-4 py-2 rounded-lg text-sm font-medium">Return</div>
+          <Link href={"/customer-dashboard/return-request"}>
+     <div 
+             className="bg-[#6100FF] px-4 py-2 rounded-lg text-sm font-medium">Return</div>
+           </Link>
+           
             <div className="bg-[#0070254D] text-[#00DD00] px-4 py-1 rounded-lg text-sm font-medium">Completed</div>
           </div>
           

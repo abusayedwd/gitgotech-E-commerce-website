@@ -1,6 +1,6 @@
 "use client"
 
-import BackButton from '@/customComponent/BackButton';
+ 
 import { SectionHeader } from '@/customComponent/Header';
 import { Star, ChevronRight, Section } from 'lucide-react';
 import { useRouter } from 'next/navigation';
