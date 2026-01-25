@@ -1,7 +1,13 @@
+"use client"
+
 import React from 'react';
 import { Package, MapPin, Clock, CheckCircle, AlertTriangle, Loader } from 'lucide-react';
-
+import BackButton from '@/customComponent/BackButton';
+import { useRouter } from 'next/navigation';
 const DeliveryRequest = () => {
+
+const router = useRouter()
+
   const deliveries = [
     {
       id: 1,
@@ -68,7 +74,7 @@ const DeliveryRequest = () => {
   return (
     <div className=" container mx-auto mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       {/* Header */}
-      
+      <BackButton title='Request Delivery' className='text-[24px]' /> 
        <div className='text-center mt-12'>
           <h1 className="text-3xl font-bold font-cormorant">Request A Delivery</h1>
           <p className="text-gray-400 mt-1">View the history of the requested delivery</p>
@@ -76,7 +82,8 @@ const DeliveryRequest = () => {
       <div className="flex items-center justify-between mb-8">
        <div> </div>
         
-        <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+        <button onClick={() => router.push("/customer-dashboard/newdelivery-request")}
+         className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
           New Request
         </button>
       </div>
