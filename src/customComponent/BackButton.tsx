@@ -18,7 +18,9 @@ export default function BackButton({ title, onBack, className = '' }: PageHeader
             <FaArrowLeft className='text-black'/>
           </div>
         </button>
-         <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">{title}</h1>
+        <h1 className={`font-semibold text-gray-300 text-2xl font-cormorant ${className}`}>
+  {title}
+</h1>
         </div>
     
   );

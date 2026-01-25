@@ -1,4 +1,5 @@
 "use client";
+import BackButton from '@/customComponent/BackButton';
 import { useState } from 'react';
 
 export default function ReturnRequestForm() {
@@ -55,28 +56,15 @@ export default function ReturnRequestForm() {
   };
 
   return (
-    <div className="  bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Back Button */}
-      <div className="fixed top-4 left-4 md:top-8 md:left-8">
-        <button className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors">
-          <svg className="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      </div>
-
-      {/* Profile Icon - Top Right */}
-      <div className="fixed top-4 right-4 md:top-8 md:right-8">
-        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-          <svg className="w-5 h-5 md:w-6 md:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-          </svg>
-        </div>
-      </div>
-
+     <div className='max-w-6xl mx-auto mt-16 md:mt-20'>
+       <BackButton title='Return Request' className='text-3xl' />
+     </div>
       {/* Header */}
-      <div className="container mx-auto mt-16 md:mt-20 mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold mb-2">Return</h1>
+      <div className=" mb-8 text-center">
+        
+        <h1 className="text-3xl md:text-4xl font-cormorant font-bold mb-2">Return</h1>
         <p className="text-gray-400 text-sm md:text-base">One step away from your dream purchase.</p>
       </div>
 

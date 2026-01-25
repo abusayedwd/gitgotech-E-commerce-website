@@ -106,9 +106,9 @@ export default function NewArrivals() {
     <div className="bg-black py-6 mt-44 sm:py-8 md:py-10 px-2 sm:px-4">
       <div className="container mx-auto">
         <div className="flex flex-col sm:flex-row mt-6 sm:items-center sm:justify-between mb-4 sm:mb-6">
-          <h2 className="text-white text-xl flex gap-1.5 sm:text-2xl font-semibold mb-2 sm:mb-0">
+         
             <BackButton title="New Arrival" /> 
-          </h2>
+          
         </div>
 
         {/* <OfferBanner /> */}
