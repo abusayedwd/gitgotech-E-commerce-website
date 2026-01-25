@@ -95,7 +95,7 @@ const OrderDetails = () => {
   ));
 
   return (
-    <div className="min-h-screen mt-20 container mx-auto bg-black text-white p-6">
+    <div className="min-h-screen mt-20 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8"> 
         <BackButton title='View Details' className='text-[24px]' /> 

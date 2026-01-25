@@ -376,6 +376,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function MyDashboard() {
+ 
   const [activeTab, setActiveTab] = useState<'orders' | 'returns'>('orders');
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showRewardModal, setShowRewardModal] = useState(false);
@@ -385,7 +386,7 @@ export default function MyDashboard() {
   const [productReview, setProductReview] = useState('');
   const [driverReview, setDriverReview] = useState('');
   const [rewardAmount, setRewardAmount] = useState('');
- const Router = useRouter()
+ const router = useRouter()
   const [orders] = useState([
     {
       id: 1,
@@ -556,7 +557,16 @@ export default function MyDashboard() {
       <div className="container mx-auto mb-8 md:mb-12 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3">My Dashboard</h1>
         <p className="text-gray-400 text-sm md:text-base">View all of your order history and keep track of your shopping.</p>
+      
       </div>
+<div
+  className="container mx-auto flex justify-end"
+  onClick={() => router.push("/customer-dashboard/delivery-request")}
+>
+  <button className="bg-blue-600 px-4 py-1.5 rounded cursor-pointer">
+    delivery request
+  </button>
+</div>
 
       {/* Tabs */}
       <div className="max-w-6xl mx-auto mb-6">
