@@ -1,7 +1,11 @@
+"use client"
 import React from 'react';
 import { Star, User, Shield, MessageCircle } from 'lucide-react';
+import { FaArrowLeft } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 const OrderDetails = () => {
+    const router = useRouter()
   const product = {
     name: "Jacket",
     price: 28.00,
@@ -11,7 +15,7 @@ const OrderDetails = () => {
     quantity: 1,
     rating: 4.5,
     reviews: 20,
-    image: "https://placehold.co/400x500/9B6C3D/FFFFFF?text=Jacket",
+    image: "/images/jacket.png",
     description: "Lorem ipsum dolor sit amet consectetur. Lacus et venenatis gravida vivamus mauris."
   };
 
@@ -29,29 +33,20 @@ const OrderDetails = () => {
   ));
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
+    <div className="min-h-screen mt-20 container mx-auto bg-black text-white p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center space-x-2">
-          <button className="bg-purple-600 rounded-full p-2">
-            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M8 0L0 8l8 8 8-8z"/>
-            </svg>
-          </button>
-          <h1 className="text-xl font-semibold">View Details</h1>
+       <div className="container mx-auto flex items-center gap-4">
+             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+            <FaArrowLeft className='text-black' />
+          </div>
+        </button>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+            View Details</h1>
         </div>
         
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold">G</div>
-            <div className="bg-purple-600 px-4 py-2 rounded-lg text-sm font-medium">Return</div>
-            <div className="bg-green-600 px-4 py-2 rounded-lg text-sm font-medium">Completed</div>
-          </div>
-          
-          <button className="bg-purple-600 rounded-full p-2">
-            <MessageCircle className="w-6 h-6" />
-          </button>
-        </div>
+      
       </div>
 
       {/* Main Content */}
@@ -61,7 +56,7 @@ const OrderDetails = () => {
           <img 
             src={product.image} 
             alt={product.name}
-            className="w-full h-auto object-contain rounded-lg shadow-lg"
+            className="w-full object-contain rounded-lg shadow-lg"
           />
           <button className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-md text-sm">
             Mix Design
@@ -70,20 +65,32 @@ const OrderDetails = () => {
 
         {/* Product Info */}
         <div className="space-y-6">
-          <div>
-            <h2 className="text-3xl font-bold">{product.name}</h2>
+          <div className='flex justify-between'>
+            <div><h2 className="text-3xl font-bold">{product.name}</h2>
             <div className="flex items-center mt-2">
               <div className="flex items-center space-x-1">
                 {stars}
               </div>
               <span className="ml-2 text-sm text-gray-400">{product.reviews} Reviews</span>
             </div>
+            </div>
+            <div>
+                  <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2">
+        
+            <div className="bg-[#6100FF] px-4 py-2 rounded-lg text-sm font-medium">Return</div>
+            <div className="bg-[#0070254D] text-[#00DD00] px-4 py-1 rounded-lg text-sm font-medium">Completed</div>
+          </div>
+          
+          {/* <button className="bg-purple-600 rounded-full p-2">
+            <MessageCircle className="w-6 h-6" />
+          </button> */}
+        </div>
+            </div>
+            
             
             {/* Reviewer Avatars */}
-            <div className="flex items-center space-x-2 mt-4">
-              <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">M</div>
-              <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center text-white font-bold">G</div>
-            </div>
+            
           </div>
 
           {/* Reviews Section */}

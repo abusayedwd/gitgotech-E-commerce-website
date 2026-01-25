@@ -371,6 +371,8 @@
 
 
 "use client";
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function MyDashboard() {
@@ -383,7 +385,7 @@ export default function MyDashboard() {
   const [productReview, setProductReview] = useState('');
   const [driverReview, setDriverReview] = useState('');
   const [rewardAmount, setRewardAmount] = useState('');
-
+ const Router = useRouter()
   const [orders] = useState([
     {
       id: 1,
@@ -657,6 +659,7 @@ export default function MyDashboard() {
                 <div className="text-right w-full md:w-auto">
                   <div className="text-xs md:text-sm text-gray-400 mb-1">OTP: {order.otp}</div>
                   <div className="text-sm md:text-base font-semibold">Total: ${order.total}</div>
+           
                 </div>
 
                 {/* Action Buttons */}
@@ -676,17 +679,23 @@ export default function MyDashboard() {
                       >
                         Reward Driver
                       </button>
-                      <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
-                        View Details
-                      </button>
+                      <Link href={`/customer-dashboard/details/${order.id}`}> 
+                    <button  
+                     className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                      View Details
+                    </button>
+                    </Link>
                     </>
                   )}
 
                   {/* Ready for Pickup: Show only View Details */}
                   {order.status === 'Ready for Pickup' && (
-                    <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                     <Link href={`/customer-dashboard/details/${order.id}`}> 
+                    <button  
+                     className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
                       View Details
                     </button>
+                    </Link>
                   )}
 
                   {/* Picked Up: Show Reward Driver and View Details */}
@@ -698,17 +707,23 @@ export default function MyDashboard() {
                       >
                         Reward Driver
                       </button>
-                      <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
-                        View Details
-                      </button>
+                      <Link href={`/customer-dashboard/details/${order.id}`}> 
+                    <button  
+                     className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                      View Details
+                    </button>
+                    </Link>
                     </>
                   )}
 
                   {/* Cancelled and Return Opened: Show only View Details */}
-                  {(order.status === 'Cancelled' || order.status === 'Return Opened') && (
-                    <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                  {(order.status === 'Cancelled' || order.status === 'Returned' || order.status === 'Return Accepted' || order.status === 'Return Declined') && (
+                    <Link href={`/customer-dashboard/details/${order.id}`}> 
+                    <button  
+                     className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
                       View Details
                     </button>
+                    </Link>
                   )}
                 </div>
               </div>
