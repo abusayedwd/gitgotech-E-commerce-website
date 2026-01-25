@@ -1,7 +1,20 @@
+
+
+
+
 // "use client";
 // import { useState } from 'react';
 
 // export default function MyDashboard() {
+//   const [showReviewModal, setShowReviewModal] = useState(false);
+//   const [showRewardModal, setShowRewardModal] = useState(false);
+//   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+//   const [productRating, setProductRating] = useState(0);
+//   const [driverRating, setDriverRating] = useState(0);
+//   const [productReview, setProductReview] = useState('');
+//   const [driverReview, setDriverReview] = useState('');
+//   const [rewardAmount, setRewardAmount] = useState('');
+
 //   const [orders] = useState([
 //     {
 //       id: 1,
@@ -54,23 +67,98 @@
 //     }
 //   ]);
 
-//   const getStatusColor = (status) => {
-//     switch(status) {
-//       case 'Completed':
-//         return 'text-green-500';
-//       case 'Processing':
-//         return 'text-blue-500';
-//       case 'Cancelled':
-//         return 'text-red-500';
-//       default:
-//         return 'text-gray-400';
-//     }
+//   // const getStatusColor = (status) => {
+//   //   switch(status) {
+//   //     case 'Completed':
+//   //       return 'text-green-500';
+//   //     case 'Processing':
+//   //       return 'text-blue-500';
+//   //     case 'Cancelled':
+//   //       return 'text-red-500';
+//   //     default:
+//   //       return 'text-gray-400';
+//   //   }
+//   // };
+
+//   interface Order {
+//     id: number;
+//     productName: string;
+//     brand: string;
+//     image: string;
+//     price: number;
+//     quantity: number;
+//     otp: string;
+//     total: number;
+//     status: 'Completed' | 'Processing' | 'Cancelled' | 'Reward';
+//     hasReview: boolean;
+//     showRewardBadge?: boolean;
+//   }
+
+//   const handleLeaveReview = (order: Order): void => {
+//     setSelectedOrder(order);
+//     setShowReviewModal(true);
+//     setProductRating(0);
+//     setDriverRating(0);
+//     setProductReview('');
+//     setDriverReview('');
+//   };
+
+//   const handleReward = (order: Order): void => {
+//     setSelectedOrder(order);
+//     setShowRewardModal(true);
+//     setRewardAmount('');
+//   };
+
+//   const handleSubmitReward = () => {
+//     console.log({
+//       type: 'Reward',
+//       orderId: selectedOrder?.id,
+//       productName: selectedOrder?.productName,
+//       amount: rewardAmount
+//     });
+//     setShowRewardModal(false);
+//   };
+
+//   const handleSubmitProductReview = () => {
+//     console.log({
+//       type: 'Product Review',
+//       orderId: selectedOrder?.id,
+//       productName: selectedOrder?.productName,
+//       rating: productRating,
+//       review: productReview
+//     });
+//   };
+
+//   const handleSubmitDriverReview = () => {
+//     console.log({
+//       type: 'Driver Review',
+//       orderId: selectedOrder?.id,
+//       productName: selectedOrder?.productName,
+//       rating: driverRating,
+//       review: driverReview
+//     });
+//   };
+
+//   const StarRating = ({ rating, onRate }: { rating: number; onRate: (star: number) => void }) => {
+//     return (
+//       <div className="flex gap-2">
+//         {[1, 2, 3, 4, 5].map((star) => (
+//           <button
+//             key={star}
+//             onClick={() => onRate(star)}
+//             className="text-3xl transition-transform hover:scale-110"
+//           >
+//             {star <= rating ? '⭐' : '☆'}
+//           </button>
+//         ))}
+//       </div>
+//     );
 //   };
 
 //   return (
-//     <div className="min-h-screen md:mt-24 mt-20  bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+//     <div className="min-h-screen md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
 //       {/* Header */}
-//       <div className=" container mx-auto mb-8 md:mb-12 text-center">
+//       <div className="container mx-auto mb-8 md:mb-12 text-center">
 //         <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3">My Dashboard</h1>
 //         <p className="text-gray-400 text-sm md:text-base">View all of your order history and keep track of your shopping.</p>
 //       </div>
@@ -135,14 +223,20 @@
 //                 {/* Action Buttons */}
 //                 <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
 //                   {order.status === 'Completed' && !order.hasReview && (
-//                     <button className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+//                     <button
+//                       onClick={() => handleLeaveReview(order as Order)}
+//                       className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
+//                     >
 //                       Leave Review
 //                     </button>
 //                   )}
 
 //                   {order.showRewardBadge && (
 //                     <div className="relative">
-//                       <button className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+//                       <button
+//                         onClick={() => handleReward(order as Order)}
+//                         className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
+//                       >
 //                         Reward
 //                       </button>
 //                       <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
@@ -169,16 +263,118 @@
 //           </svg>
 //         </div>
 //       </div>
+
+//       {/* Review Modal */}
+//       {showReviewModal && (
+//         <div className="fixed inset-0 mt-16 bg-black/70 flex items-center justify-center p-4 z-50">
+//           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-3xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+//             {/* Close Button */}
+//             <button
+//               onClick={() => setShowReviewModal(false)}
+//               className="float-right text-white hover:text-purple-400 transition-colors"
+//             >
+//               <svg className="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+//               </svg>
+//             </button>
+
+//             {/* Product Rating Section */}
+//             <div className="mb-8">
+//               <h2 className="text-2xl font-bold text-white text-center mb-6">Product Rating</h2>
+//               <div className="flex justify-center mb-4">
+//                 <StarRating rating={productRating} onRate={setProductRating} />
+//               </div>
+//               <p className="text-purple-400 text-center text-sm mb-4">How satisfied are you with product quality?</p>
+//               <textarea
+//                 value={productReview}
+//                 onChange={(e) => setProductReview(e.target.value)}
+//                 placeholder="Write your review"
+//                 className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
+//               />
+//               <button
+//                 onClick={handleSubmitProductReview}
+//                 className="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
+//               >
+//                 Submit
+//               </button>
+//             </div>
+
+//             {/* Driver Rating Section */}
+//             <div>
+//               <h2 className="text-2xl font-bold text-white text-center mb-6">Driver Rating</h2>
+//               <div className="flex justify-center mb-4">
+//                 <StarRating rating={driverRating} onRate={setDriverRating} />
+//               </div>
+//               <p className="text-purple-400 text-center text-sm mb-4">How was your experience with the driver?</p>
+//               <textarea
+//                 value={driverReview}
+//                 onChange={(e) => setDriverReview(e.target.value)}
+//                 placeholder="Write your review"
+//                 className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
+//               />
+//               <button
+//                 onClick={handleSubmitDriverReview}
+//                 className="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
+//               >
+//                 Submit
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Reward Modal */}
+//       {showRewardModal && (
+//         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
+//           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-3xl p-8 max-w-md w-full">
+//             {/* Close Button */}
+//             <button
+//               onClick={() => setShowRewardModal(false)}
+//               className="float-right text-white hover:text-purple-400 transition-colors"
+//             >
+//               <svg className="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+//               </svg>
+//             </button>
+
+//             {/* Reward Content */}
+//             <div className="text-center mb-8">
+//               <h2 className="text-3xl font-bold text-white mb-4">Rewards</h2>
+//               <div className="flex items-center justify-center gap-2 mb-2">
+//                 <p className="text-purple-400 text-sm">Support your driver with a reward.</p>
+
+//               </div>
+//             </div>
+
+//             {/* Amount Input */}
+//             <input
+//               type="number"
+//               value={rewardAmount}
+//               onChange={(e) => setRewardAmount(e.target.value)}
+//               placeholder="Enter Amount"
+//               className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 mb-6"
+//             />
+
+//             {/* Submit Button */}
+//             <button
+//               onClick={handleSubmitReward}
+//               className="w-full py-4 bg-purple-600 hover:bg-purple-700 rounded-full text-white text-lg font-semibold transition-colors"
+//             >
+//               Submit
+//             </button>
+//           </div>
+//         </div>
+//       )}
 //     </div>
 //   );
 // }
-
 
 
 "use client";
 import { useState } from 'react';
 
 export default function MyDashboard() {
+  const [activeTab, setActiveTab] = useState<'orders' | 'returns'>('orders');
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [showRewardModal, setShowRewardModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -210,9 +406,8 @@ export default function MyDashboard() {
       quantity: 1,
       otp: '5R7T8956',
       total: 14.99,
-      status: 'Reward',
-      hasReview: false,
-      showRewardBadge: true
+      status: 'Ready for Pickup',
+      hasReview: false
     },
     {
       id: 3,
@@ -223,7 +418,7 @@ export default function MyDashboard() {
       quantity: 1,
       otp: '5R7T8956',
       total: 14.99,
-      status: 'Processing',
+      status: 'Picked Up',
       hasReview: false
     },
     {
@@ -240,18 +435,44 @@ export default function MyDashboard() {
     }
   ]);
 
-  // const getStatusColor = (status) => {
-  //   switch(status) {
-  //     case 'Completed':
-  //       return 'text-green-500';
-  //     case 'Processing':
-  //       return 'text-blue-500';
-  //     case 'Cancelled':
-  //       return 'text-red-500';
-  //     default:
-  //       return 'text-gray-400';
-  //   }
-  // };
+  const [returns] = useState([
+    {
+      id: 5,
+      productName: 'Flowy Skirt',
+      brand: 'PRINCE OF DARZI',
+      image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=200&h=200&fit=crop',
+      price: 14.99,
+      quantity: 1,
+      otp: '5R7T8956',
+      total: 14.99,
+      status: 'Returned',
+      hasReview: false
+    },
+    {
+      id: 6,
+      productName: 'Flowy Skirt',
+      brand: 'PRINCE OF DARZI',
+      image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=200&h=200&fit=crop',
+      price: 14.99,
+      quantity: 1,
+      otp: '5R7T8956',
+      total: 14.99,
+      status: 'Return Accepted',
+      hasReview: false
+    },
+    {
+      id: 7,
+      productName: 'Flowy Skirt',
+      brand: 'PRINCE OF DARZI',
+      image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=200&h=200&fit=crop',
+      price: 14.99,
+      quantity: 1,
+      otp: '5R7T8956',
+      total: 14.99,
+      status: 'Return Declined',
+      hasReview: false
+    }
+  ]);
 
   interface Order {
     id: number;
@@ -262,9 +483,8 @@ export default function MyDashboard() {
     quantity: number;
     otp: string;
     total: number;
-    status: 'Completed' | 'Processing' | 'Cancelled' | 'Reward';
+    status: 'Completed' | 'Ready for Pickup' | 'Picked Up' | 'Cancelled' | 'Return Opened';
     hasReview: boolean;
-    showRewardBadge?: boolean;
   }
 
   const handleLeaveReview = (order: Order): void => {
@@ -336,9 +556,35 @@ export default function MyDashboard() {
         <p className="text-gray-400 text-sm md:text-base">View all of your order history and keep track of your shopping.</p>
       </div>
 
+      {/* Tabs */}
+      <div className="max-w-6xl mx-auto mb-6">
+        <div className="flex justify-center">
+          <button
+            onClick={() => setActiveTab('orders')}
+            className={`px-8 py-2.5 rounded shadow-2xl text-sm font-medium transition-all ${
+              activeTab === 'orders'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            }`}
+          >
+            Orders
+          </button>
+          <button
+            onClick={() => setActiveTab('returns')}
+            className={`px-8 py-2.5 rounded shadow-2xl text-sm font-medium transition-all ${
+              activeTab === 'returns'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+            }`}
+          >
+            Returns
+          </button>
+        </div>
+      </div>
+
       {/* Orders List */}
       <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
-        {orders.map((order) => (
+        {(activeTab === 'orders' ? orders : returns).map((order) => (
           <div
             key={order.id}
             className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 border border-gray-800 rounded-2xl p-4 md:p-6 hover:border-purple-500/30 transition-all duration-300"
@@ -375,14 +621,34 @@ export default function MyDashboard() {
                       Completed
                     </span>
                   )}
-                  {order.status === 'Processing' && (
+                  {order.status === 'Ready for Pickup' && (
                     <span className="px-3 py-1 bg-blue-500/20 text-blue-500 rounded-full text-xs font-medium">
-                      Processing
+                      Ready for Pickup
+                    </span>
+                  )}
+                  {order.status === 'Picked Up' && (
+                    <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium">
+                      Picked Up
                     </span>
                   )}
                   {order.status === 'Cancelled' && (
                     <span className="px-3 py-1 bg-red-500/20 text-red-500 rounded-full text-xs font-medium">
                       Cancelled
+                    </span>
+                  )}
+                  {order.status === 'Returned' && (
+                    <span className="px-3 py-1 bg-red-500/20 text-[#00DD00] rounded-full text-xs font-medium">
+                      Returned
+                    </span>
+                  )}
+                  {order.status === 'Return Accepted' && (
+                    <span className="px-3 py-1 bg-red-500/20 text-[#0B6A99] rounded-full text-xs font-medium">
+                     Return Accepted
+                    </span>
+                  )}
+                  {order.status === 'Return Declined' && (
+                    <span className="px-3 py-1 bg-red-500/20 text-[#CC1247] rounded-full text-xs font-medium">
+                     Return Declined
                     </span>
                   )}
                 </div>
@@ -395,32 +661,55 @@ export default function MyDashboard() {
 
                 {/* Action Buttons */}
                 <div className="flex flex-wrap items-center gap-2 md:gap-3 w-full md:w-auto">
-                  {order.status === 'Completed' && !order.hasReview && (
-                    <button
-                      onClick={() => handleLeaveReview(order as Order)}
-                      className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
-                    >
-                      Leave Review
+                  {/* Completed: Show Leave Review, Reward Driver, View Details */}
+                  {order.status === 'Completed' && (
+                    <>
+                      <button
+                        onClick={() => handleLeaveReview(order as Order)}
+                        className="px-4 md:px-6 py-2 cursor-pointer bg-[#03AB35] rounded-full text-sm font-medium transition-colors"
+                      >
+                        Leave Review
+                      </button>
+                      <button
+                        onClick={() => handleReward(order as Order)}
+                        className="px-4 md:px-6 py-2 cursor-pointer bg-[#912DAD] hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
+                      >
+                        Reward Driver
+                      </button>
+                      <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                        View Details
+                      </button>
+                    </>
+                  )}
+
+                  {/* Ready for Pickup: Show only View Details */}
+                  {order.status === 'Ready for Pickup' && (
+                    <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                      View Details
                     </button>
                   )}
 
-                  {order.showRewardBadge && (
-                    <div className="relative">
+                  {/* Picked Up: Show Reward Driver and View Details */}
+                  {order.status === 'Picked Up' && (
+                    <>
                       <button
                         onClick={() => handleReward(order as Order)}
-                        className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
+                        className="px-4 md:px-6 py-2 cursor-pointer bg-[#912DAD] hover:bg-purple-700 rounded-full text-sm font-medium transition-colors"
                       >
-                        Reward
+                        Reward Driver
                       </button>
-                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-green-400 to-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-xs font-bold">M</span>
-                      </div>
-                    </div>
+                      <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                        View Details
+                      </button>
+                    </>
                   )}
 
-                  <button className="px-4 md:px-6 py-2 bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
-                    View Detail
-                  </button>
+                  {/* Cancelled and Return Opened: Show only View Details */}
+                  {(order.status === 'Cancelled' || order.status === 'Return Opened') && (
+                    <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
+                      View Details
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -515,7 +804,6 @@ export default function MyDashboard() {
               <h2 className="text-3xl font-bold text-white mb-4">Rewards</h2>
               <div className="flex items-center justify-center gap-2 mb-2">
                 <p className="text-purple-400 text-sm">Support your driver with a reward.</p>
-
               </div>
             </div>
 
