@@ -6,6 +6,12 @@ import React, { useState } from 'react';
 export default function ReturnDetails() {
   const router = useRouter();
   const [showChat, setShowChat] = useState(false);
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [declineReason, setDeclineReason] = useState('');
+  const [reportReason, setReportReason] = useState('');
+  const [uploadedImages, setUploadedImages] = useState([]);
 
   const returnData = {
     orderId: '#72517B',
@@ -13,7 +19,7 @@ export default function ReturnDetails() {
     date: 'May 5, 4:20 PM',
     product: {
       name: 'Brown Bomber Jacket',
-      image: '/api/placeholder/400/400',
+      image: '/images/jacket.png',
       price: '$89.99',
       quantity: 1
     },
@@ -21,17 +27,47 @@ export default function ReturnDetails() {
   };
 
   const handleAccept = () => {
-    console.log('Return accepted');
-    // Add your accept logic here
+    setShowConfirmModal(true);
   };
 
   const handleDecline = () => {
-    console.log('Return declined');
-    // Add your decline logic here
+    setShowDeclineModal(true);
+  };
+
+  const handleReport = () => {
+    setShowReportModal(true);
   };
 
   const handleBack = () => {
     router.back();
+  };
+
+  const confirmAccept = () => {
+    console.log('Return accepted');
+    setShowConfirmModal(false);
+    // Add your accept logic here
+  };
+
+  const confirmDecline = () => {
+    console.log('Return declined with reason:', declineReason);
+    setShowDeclineModal(false);
+    // Add your decline logic here
+  };
+
+  const submitReport = () => {
+    console.log('Report submitted with reason:', reportReason, 'and images:', uploadedImages);
+    setShowReportModal(false);
+    // Add your report submission logic here
+  };
+
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map(file => URL.createObjectURL(file));
+    setUploadedImages(prev => [...prev, ...newImages]);
+  };
+
+  const removeImage = (index) => {
+    setUploadedImages(prev => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -63,6 +99,12 @@ export default function ReturnDetails() {
               className="px-6 py-2.5 bg-transparent border border-red-500/50 hover:bg-red-500/10 rounded-lg text-red-400 font-medium transition-all"
             >
               Decline
+            </button>
+            <button
+              onClick={handleReport}
+              className="px-6 py-2.5 bg-transparent border border-yellow-500/50 hover:bg-yellow-500/10 rounded-lg text-yellow-400 font-medium transition-all"
+            >
+              Report
             </button>
           </div>
         </div>
@@ -151,6 +193,148 @@ export default function ReturnDetails() {
                 placeholder="Type a message..."
                 className="w-full px-4 py-2 bg-gray-800/50 border border-gray-600/30 rounded-lg focus:outline-none focus:border-purple-500 text-white placeholder-gray-500"
               />
+            </div>
+          </div>
+        )}
+
+        {/* Modal for Decline */}
+        {showDeclineModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#0a0a0f] border border-purple-500/30 rounded-2xl p-6 w-full max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-white">Reason</h3>
+                <button
+                  onClick={() => setShowDeclineModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">G</div>
+                <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">M</div>
+              </div>
+              <p className="text-purple-400 text-sm mb-4">Tell us why you're declining this return request.</p>
+              <textarea
+                value={declineReason}
+                onChange={(e) => setDeclineReason(e.target.value)}
+                placeholder="Write your reason"
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/30 rounded-lg focus:outline-none focus:border-purple-500 text-white placeholder-gray-500 resize-none h-24"
+              />
+              <button
+                onClick={confirmDecline}
+                disabled={!declineReason.trim()}
+                className={`w-full mt-4 px-6 py-3 rounded-lg font-medium transition-all ${
+                  declineReason.trim()
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+                    : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Modal for Confirm Accept */}
+        {showConfirmModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#0a0a0f] border border-green-500/30 rounded-2xl p-6 w-full max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-white">Confirm Acceptance</h3>
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-green-400 text-sm mb-4">Are you sure you want to accept this return request?</p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowConfirmModal(false)}
+                  className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmAccept}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-lg text-white font-medium transition-all"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Modal for Report */}
+        {showReportModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#0a0a0f] border border-purple-500/30 rounded-2xl p-6 w-full max-w-md">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-semibold text-white">Report</h3>
+                <button
+                  onClick={() => setShowReportModal(false)}
+                  className="text-gray-400 hover:text-white transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-purple-400 text-sm mb-4 text-center">Your report will go to admin</p>
+              
+              <div className="mb-4">
+                <label className="block text-sm text-gray-400 mb-2">Upload Images</label>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {uploadedImages.map((image, index) => (
+                    <div key={index} className="relative w-16 h-16">
+                      <img src={image} alt="Uploaded" className="w-full h-full object-cover rounded" />
+                      <button
+                        onClick={() => removeImage(index)}
+                        className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center text-white text-xs"
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                  <label className="w-16 h-16 border-2 border-dashed border-gray-600 rounded flex items-center justify-center cursor-pointer hover:border-purple-500">
+                    <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+              
+              <textarea
+                value={reportReason}
+                onChange={(e) => setReportReason(e.target.value)}
+                placeholder="Write your reason"
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/30 rounded-lg focus:outline-none focus:border-purple-500 text-white placeholder-gray-500 resize-none h-24 mb-4"
+              />
+              <button
+                onClick={submitReport}
+                disabled={!reportReason.trim()}
+                className={`w-full px-6 py-3 rounded-lg font-medium transition-all ${
+                  reportReason.trim()
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+                    : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                }`}
+              >
+                Submit
+              </button>
             </div>
           </div>
         )}

@@ -82,7 +82,12 @@ export default function OrderHistory() {
 
   const handleViewDetails = (item: Order | Return) => {
     console.log('View details:', item);
-    router.push("/vendor-dashboard/orders/details");
+    // Navigate to different routes based on active tab
+    if (activeTab === 'orders') {
+      router.push("/vendor-dashboard/orders/details");
+    } else {
+      router.push("/vendor-dashboard/orders/return-product");
+    }
   };
 
   return (
