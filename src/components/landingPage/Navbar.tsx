@@ -441,6 +441,24 @@ const userRole = storedUser?.role || null;
               )}
 
               {/* Common icons for both customer and vendor */}
+              {
+               userRole === 'vendor' ? (
+                <Link href="/custom-request">
+                <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                  isActive('/custom-request') ? 'bg-purple-600/40' : ''
+                }`}>
+                  <Image 
+                    src="/images/requ.png"
+                    alt="Messages"
+                    width={40}
+                    height={30}
+                  />
+                </button>
+              </Link>
+               ) : (
+                ''
+               )
+              }
               <Link href="/messaging">
                 <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
                   isActive('/messaging') ? 'bg-purple-600/40' : ''
