@@ -1,4 +1,5 @@
 "use client";
+import BackButton from "@/customComponent/BackButton";
 import { Mail, MapPin, Package, Phone, Upload } from "lucide-react";
 import React, { useState } from "react";
 
@@ -87,16 +88,17 @@ const DeliveryRequestFrom = () => {
     <div className="min-h-screen mt-24 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
+        
         <div>
-          <h1 className="text-2xl font-bold">New Request</h1>
+          <h1 className="text-2xl font-bold">
+    <BackButton title="New Request" />
+          </h1>
           <p className="text-gray-400 mt-1">
             Request a delivery to send products to your friends.
           </p>
         </div>
 
-        <button className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-          Back
-        </button>
+        
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

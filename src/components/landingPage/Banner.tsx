@@ -264,7 +264,7 @@ export default function BannerSection() {
 
               {/* Slider Content */}
               <div className="relative h-full flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 text-center">
-                <h4 className="bg-gradient-to-r from-[#2ACCED] font-cormorant to-[#B630F4] bg-clip-text text-transparent text-[22px] sm:text-sm font-medium mb-2 sm:mb-3 tracking-wide">
+                <h4 className="bg-gradient-to-r from-[#2ACCED] font-cormorant to-[#B630F4] bg-clip-text lg:text-[22px] text-transparent text-[22px] sm:text-sm font-medium mb-2 sm:mb-3 tracking-wide">
                   {slides[currentSlide].title}
                 </h4>
                 <h2 className="text-white text-2xl font-cormorant sm:text-3xl md:text-[32px] lg:text-4xl font-serif font-normal mb-3 sm:mb-4 max-w-2xl leading-tight px-2">
