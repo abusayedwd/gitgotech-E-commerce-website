@@ -11,7 +11,7 @@ export default function ReturnDetails() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
   const [reportReason, setReportReason] = useState('');
-  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
   const returnData = {
     orderId: '#72517B',
@@ -60,13 +60,13 @@ export default function ReturnDetails() {
     // Add your report submission logic here
   };
 
-  const handleImageUpload = (e) => {
-    const files = Array.from(e.target.files);
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
     const newImages = files.map(file => URL.createObjectURL(file));
     setUploadedImages(prev => [...prev, ...newImages]);
   };
 
-  const removeImage = (index) => {
+  const removeImage = (index: number) => {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
   };
 

@@ -1,13 +1,23 @@
 "use client"
-import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useState, useEffect, SetStateAction } from 'react';
+
+interface CustomRequest {
+  id: string;
+  date: string;
+  customer: string;
+  status: string;
+  price?: number;
+  reason?: string;
+}
 
 export default function CustomRequest() {
-  const [requests, setRequests] = useState([]);
+  const [requests, setRequests] = useState<CustomRequest[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
-  const [selectedRequest, setSelectedRequest] = useState(null);
-  const [modalType, setModalType] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState<CustomRequest | null>(null);
+  const [modalType, setModalType] = useState<'accept' | 'decline' | null>(null);
   const [price, setPrice] = useState('');
   const [reason, setReason] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -24,7 +34,7 @@ export default function CustomRequest() {
   }, []);
 
   // Filter and paginate requests
-  const filteredRequests = requests.filter(request => 
+  const filteredRequests = requests.filter(request =>
     request.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
     request.customer.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -34,14 +44,20 @@ export default function CustomRequest() {
   const currentRequests = filteredRequests.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
 
-  const handleAccept = (request) => {
+  interface ModalType {
+    type: 'accept' | 'decline' | null;
+  }
+
+  interface SelectedRequest extends CustomRequest {}
+
+  const handleAccept = (request: CustomRequest): void => {
     setSelectedRequest(request);
     setModalType('accept');
     setIsModalOpen(true);
     setPrice('');
   };
 
-  const handleDecline = (request) => {
+  const handleDecline = (request: CustomRequest) => {
     setSelectedRequest(request);
     setModalType('decline');
     setIsModalOpen(true);
@@ -49,18 +65,19 @@ export default function CustomRequest() {
   };
 
   const handleSubmitPrice = () => {
-    if (!price || isNaN(price) || price <= 0) return;
-    
-    setRequests(prev => prev.map(req => 
+    if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) return;
+    if (!selectedRequest) return;
+
+    setRequests(prev => prev.map(req =>
       req.id === selectedRequest.id ? { ...req, status: 'accepted', price: parseFloat(price) } : req
     ));
     closeModal();
   };
 
   const handleSendReason = () => {
-    if (!reason.trim()) return;
-    
-    setRequests(prev => prev.map(req => 
+    if (!reason.trim() || !selectedRequest) return;
+
+    setRequests(prev => prev.map(req =>
       req.id === selectedRequest.id ? { ...req, status: 'declined', reason } : req
     ));
     closeModal();
@@ -74,7 +91,7 @@ export default function CustomRequest() {
     setReason('');
   };
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page: number) => {
     if (page > 0 && page <= totalPages) {
       setCurrentPage(page);
     }
@@ -99,7 +116,7 @@ export default function CustomRequest() {
               className="w-full bg-[#1a1a2e] border border-[#4d4dff] rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-[#8a8a9d]"
             />
             <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#8a8a9d]">
-              
+
             </div>
           </div>
         </div>
@@ -119,26 +136,30 @@ export default function CustomRequest() {
               </thead>
               <tbody>
                 {currentRequests.map((request) => (
-                  <tr 
-                    key={request.id} 
+                  <tr
+                    key={request.id}
                     className="border-t border-[#2d2d41] hover:bg-[#22223b] transition-colors"
                   >
                     <td className="px-6 py-4 font-mono text-[#e0e0ff]">{request.id}</td>
                     <td className="px-6 py-4 text-[#c7c7d9]">{request.date}</td>
                     <td className="px-6 py-4 text-[#c7c7d9]">{request.customer}</td>
                     <td className="px-6 py-4">
-                      <button className="bg-[#4d4dff] hover:bg-[#5d5dff] text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm">
+                      <Link href={`/custom-request/details/djfoi940504`} >
+
+                      <button
+                       className="bg-[#4d4dff] hover:bg-[#5d5dff] text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm">
                         View Details
                       </button>
+                      </Link>
                     </td>
                     <td className="px-6 py-4 flex space-x-2">
-                      <button 
+                      <button
                         onClick={() => handleAccept(request)}
                         className="bg-[#4d4dff] hover:bg-[#5d5dff] text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
                       >
                         Accept
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleDecline(request)}
                         className="bg-[#ff4d6d] hover:bg-[#ff6b8b] text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
                       >
@@ -157,7 +178,7 @@ export default function CustomRequest() {
               {filteredRequests.length} Results
             </div>
             <div className="flex items-center space-x-2">
-              <button 
+              <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#2d2d41] hover:bg-[#4d4dff] disabled:opacity-50 transition-colors text-white"
@@ -177,7 +198,7 @@ export default function CustomRequest() {
                   {page}
                 </button>
               ))}
-              <button 
+              <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#2d2d41] hover:bg-[#4d4dff] disabled:opacity-50 transition-colors text-white"
@@ -191,17 +212,17 @@ export default function CustomRequest() {
 
       {/* Modals */}
       {isModalOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/70 bg-opacity-50 flex items-center justify-center z-50 p-4"
           onClick={closeModal}
         >
           {/* MODAL CONTAINER WITH relative POSITIONING */}
-          <div 
+          <div
             className="bg-[#0f0f1b] border border-[#4d4dff] rounded-xl w-full max-w-md shadow-2xl relative"
             onClick={e => e.stopPropagation()}
           >
             {/* CLOSE BUTTON - TOP RIGHT CORNER */}
-            <button 
+            <button
               onClick={closeModal}
               className="absolute top-4 right-4 text-[#8a8a9d] hover:text-white transition-colors z-10 text-xl font-bold"
               aria-label="Close modal"
@@ -229,7 +250,7 @@ export default function CustomRequest() {
                 </div>
                 <button
                   onClick={handleSubmitPrice}
-                  disabled={!price || isNaN(price) || price <= 0}
+                  disabled={!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0}
                   className="w-full bg-[#4d4dff] hover:bg-[#5d5dff] text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Submit
@@ -251,7 +272,7 @@ export default function CustomRequest() {
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                     placeholder="Write your reason"
-                    rows="4"
+                    rows={4}
                     className="w-full bg-[#1a1a2e] border border-[#4d4dff] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white resize-none"
                   ></textarea>
                 </div>

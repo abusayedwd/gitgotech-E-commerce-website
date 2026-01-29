@@ -69,7 +69,7 @@
 //         <div className="p-6 border-b border-purple-500/20">
 //           <h2 className="text-xl font-bold text-white">Messages</h2>
 //         </div>
-        
+
 //         <div className="flex-1 overflow-y-auto">
 //           {contacts.map((contact) => (
 //             <button
@@ -118,7 +118,7 @@
 //                   👤
 //                 </div>
 //               )}
-              
+
 //               <div className={`max-w-md ${msg.isOwn ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
 //                 <div
 //                   className={`px-5 py-3 rounded-2xl ${
@@ -157,7 +157,7 @@
 //               </button>
 //             </div>
 //           )}
-          
+
 //           <div className="flex items-center gap-3">
 //             <div className="flex-1 relative">
 //               <input
@@ -168,7 +168,7 @@
 //                 placeholder="Type a message..."
 //                 className="w-full bg-gray-800/50 border border-gray-700 rounded-full px-6 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all pr-32"
 //               />
-              
+
 //               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
 //                 <label className="cursor-pointer p-2 hover:bg-gray-700 rounded-full transition-colors">
 //                   <Image className="w-5 h-5 text-gray-400 hover:text-purple-400" />
@@ -179,11 +179,11 @@
 //                     className="hidden"
 //                   />
 //                 </label>
-                
+
 //                 <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
 //                   <Paperclip className="w-5 h-5 text-gray-400 hover:text-purple-400" />
 //                 </button>
-                
+
 //                 <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
 //                   <Smile className="w-5 h-5 text-gray-400 hover:text-purple-400" />
 //                 </button>
@@ -205,12 +205,13 @@
 // }
 
 "use client";
+
 import React, { useState, useEffect, useRef } from 'react';
 
 const MessagesPage = () => {
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUser, setSelectedUser] = useState('');
   const [showSidebar, setShowSidebar] = useState(true);
-  const [messages, setMessages] = useState({
+  const [messages, setMessages] = useState<Record<string, Message[]>>({
     RAkib: [
       { id: 1, text: "Thank you for reaching out. I'll get back to you shortly.", sender: 'me', time: '10:45 AM' },
       { id: 2, text: "I appreciate your message and will respond as soon as possible.", sender: 'other', time: '10:47 AM' },
@@ -239,14 +240,14 @@ const MessagesPage = () => {
       { id: 2, text: "Thank you for reaching out. I'll get back to you shortly.", sender: 'other', time: '3:18 PM' }
     ]
   });
-  
+
   const [newMessage, setNewMessage] = useState('');
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const fileInputRef = useRef(null);
-  const messagesEndRef = useRef(null);
-  
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   // Mock user data
   const users = [
     { id: 'RAkib', name: 'RAkib', avatar: 'https://i.pravatar.cc/150?img=1', lastSeen: 'Just now' },
@@ -256,14 +257,14 @@ const MessagesPage = () => {
     { id: 'Tokniol', name: 'Tokniol', avatar: 'https://i.pravatar.cc/150?img=5', lastSeen: 'Just now' },
     { id: 'Hasif', name: 'Hasif', avatar: 'https://i.pravatar.cc/150?img=6', lastSeen: 'Just now' }
   ];
-  
+
   // Set default selected user
   useEffect(() => {
     if (users.length > 0 && !selectedUser) {
       setSelectedUser(users[0].id);
     }
   }, []);
-  
+
   // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -271,37 +272,56 @@ const MessagesPage = () => {
 
   // Handle mobile view - hide sidebar when user is selected
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setShowSidebar(true);
-      } else if (selectedUser) {
-        setShowSidebar(false);
-      }
-    };
+    if (typeof window !== 'undefined') {
+      const handleResize = () => {
+        if (window.innerWidth >= 768) {
+          setShowSidebar(true);
+        } else if (selectedUser) {
+          setShowSidebar(false);
+        }
+      };
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+      handleResize();
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
   }, [selectedUser]);
-  
-  const handleSendMessage = (e) => {
-    e.preventDefault();
+
+  interface Message {
+    id: number;
+    text: string;
+    sender: 'me' | 'other';
+    time: string;
+    file?: { name: string; type: string } | null;
+  }
+
+  interface FileData {
+    name: string;
+    type: string;
+  }
+
+  const handleSendMessage = (
+    e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>
+  ): void => {
+    if (e) {
+      if ('preventDefault' in e) e.preventDefault();
+    }
     if (!newMessage.trim() && !selectedFile) return;
-    
+
     if (selectedUser) {
-      const newMsg = {
+      const newMsg: Message = {
         id: Date.now(),
         text: newMessage,
         sender: 'me',
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         file: selectedFile ? { name: selectedFile.name, type: selectedFile.type } : null
       };
-      
-      setMessages(prev => ({
+
+      setMessages((prev: Record<string, Message[]>) => ({
         ...prev,
         [selectedUser]: [...(prev[selectedUser] || []), newMsg]
       }));
-      
+
       setNewMessage('');
       setSelectedFile(null);
       if (fileInputRef.current) {
@@ -309,19 +329,19 @@ const MessagesPage = () => {
       }
     }
   };
-  
-  const handleFileChange = (e) => {
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
   };
-  
+
   const handleUploadDesign = async () => {
     if (!selectedFile) return;
-    
+
     setIsUploading(true);
     setUploadProgress(0);
-    
+
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 95) {
@@ -329,16 +349,16 @@ const MessagesPage = () => {
           setTimeout(() => {
             setIsUploading(false);
             setUploadProgress(0);
-            
+
             if (selectedUser) {
-              const uploadMsg = {
+              const uploadMsg: Message = {
                 id: Date.now(),
                 text: `Uploaded: ${selectedFile.name}`,
                 sender: 'me',
                 time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                 file: { name: selectedFile.name, type: selectedFile.type }
               };
-              
+
               setMessages(prev => ({
                 ...prev,
                 [selectedUser]: [...(prev[selectedUser] || []), uploadMsg]
@@ -358,39 +378,39 @@ const MessagesPage = () => {
 
   const handleBackToUsers = () => {
     setShowSidebar(true);
-    if (window.innerWidth < 768) {
-      setSelectedUser(null);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setSelectedUser('');
     }
   };
 
-  const handleSelectUser = (userId) => {
+  const handleSelectUser = (userId: string): void => {
     setSelectedUser(userId);
-    if (window.innerWidth < 768) {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setShowSidebar(false);
     }
   };
-  
-  const renderMessageBubble = (msg) => {
+
+  const renderMessageBubble = (msg: Message) => {
     const isMe = msg.sender === 'me';
     const isFile = msg.file;
-    
+
     return (
-      <div 
-        key={msg.id} 
+      <div
+        key={msg.id}
         className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
       >
         {!isMe && (
-          <img 
-            src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'} 
-            alt="User" 
+          <img
+            src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'}
+            alt="User"
             className="w-8 h-8 rounded-full mr-2 self-end flex-shrink-0"
           />
         )}
-        
-        <div 
+
+        <div
           className={`max-w-[75%] lg:max-w-md px-4 py-2 rounded-lg break-words ${
-            isMe 
-              ? 'bg-purple-600 text-white' 
+            isMe
+              ? 'bg-purple-600 text-white'
               : 'bg-gray-700 text-white'
           }`}
         >
@@ -399,21 +419,21 @@ const MessagesPage = () => {
               <svg className="w-5 h-5 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              <span className="text-sm truncate">{msg.file.name}</span>
+              <span className="text-sm truncate">{msg.file?.name}</span>
             </div>
           ) : (
             <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
           )}
-          
+
           <div className={`text-xs mt-1 ${isMe ? 'text-purple-200' : 'text-gray-400'}`}>
             {msg.time}
           </div>
         </div>
-        
+
         {isMe && (
-          <img 
-            src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'} 
-            alt="User" 
+          <img
+            src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'}
+            alt="User"
             className="w-8 h-8 rounded-full ml-2 self-end flex-shrink-0"
           />
         )}
@@ -433,22 +453,22 @@ const MessagesPage = () => {
             {users.length}
           </div>
         </div>
-        
+
         <div className="space-y-2 overflow-y-auto flex-1 custom-scrollbar pr-1">
           {users.map(user => (
-            <div 
+            <div
               key={user.id}
               onClick={() => handleSelectUser(user.id)}
               className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                selectedUser === user.id 
-                  ? 'bg-purple-600/20 border border-purple-500/50 shadow-lg shadow-purple-500/10' 
+                selectedUser === user.id
+                  ? 'bg-purple-600/20 border border-purple-500/50 shadow-lg shadow-purple-500/10'
                   : 'hover:bg-gray-800/50 border border-transparent'
               }`}
             >
               <div className="relative">
-                <img 
-                  src={user.avatar} 
-                  alt={user.name} 
+                <img
+                  src={user.avatar}
+                  alt={user.name}
                   className="w-12 h-12 rounded-full mr-3 border-2 border-gray-700"
                 />
                 <div className="absolute bottom-0 right-2 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
@@ -469,9 +489,9 @@ const MessagesPage = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Main Chat Area */}
-      <div className={`${!showSidebar || (showSidebar && window.innerWidth >= 768) ? 'flex' : 'hidden'} flex-1 bg-gray-900/80 backdrop-blur-sm rounded-xl h-[550px] md:h-[750px] p-3 md:p-4 flex-col border border-gray-700/50   overflow-hidden`}>
+      <div className={`${!showSidebar || showSidebar ? 'flex' : 'hidden'} flex-1 bg-gray-900/80 backdrop-blur-sm rounded-xl h-[550px] md:h-[750px] p-3 md:p-4 flex-col border border-gray-700/50   overflow-hidden`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700/50">
           <div className="flex items-center">
@@ -484,9 +504,9 @@ const MessagesPage = () => {
               </svg>
             </button>
             <div className="relative">
-              <img 
-                src={currentUser?.avatar || 'https://i.pravatar.cc/150?img=1'} 
-                alt={currentUser?.name} 
+              <img
+                src={currentUser?.avatar || 'https://i.pravatar.cc/150?img=1'}
+                alt={currentUser?.name}
                 className="w-10 h-10 rounded-full mr-3 border-2 border-purple-500"
               />
               <div className="absolute bottom-0 right-2 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
@@ -507,7 +527,7 @@ const MessagesPage = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto mb-4 px-1 custom-scrollbar">
           <div className="space-y-4">
@@ -515,7 +535,7 @@ const MessagesPage = () => {
           </div>
           <div ref={messagesEndRef} />
         </div>
-        
+
         {/* Input Area */}
         <div className="border-t border-gray-700/50 pt-4">
           {selectedFile && (
@@ -530,7 +550,7 @@ const MessagesPage = () => {
                   <div className="font-medium truncate">{selectedFile.name}</div>
                   {isUploading && (
                     <div className="mt-1 bg-gray-700 rounded-full h-1.5 overflow-hidden">
-                      <div 
+                      <div
                         className="bg-purple-600 h-full transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       ></div>
@@ -542,7 +562,7 @@ const MessagesPage = () => {
                 <span className="ml-3 text-purple-400 font-semibold">{uploadProgress}%</span>
               )}
               {!isUploading && (
-                <button 
+                <button
                   onClick={() => {
                     setSelectedFile(null);
                     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -554,7 +574,7 @@ const MessagesPage = () => {
               )}
             </div>
           )}
-          
+
           <div className="flex items-center space-x-2">
             <div className="relative flex-1">
               <input
@@ -578,7 +598,7 @@ const MessagesPage = () => {
                 className="hidden"
               />
             </div>
-            
+
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
@@ -588,7 +608,7 @@ const MessagesPage = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
             </button>
-            
+
             {selectedFile && !isUploading && (
               <button
                 type="button"
@@ -600,7 +620,7 @@ const MessagesPage = () => {
                 </svg>
               </button>
             )}
-            
+
             {!selectedFile && (
               <button
                 type="button"
