@@ -19,7 +19,7 @@ const Footer = () => {
   const companyInfo = [
     { name: 'About Us', href: '/about' },
     { name: 'Careers', href: '/careers' },
-    { name: 'Investors', href: '/investors' },
+    { name: 'Vendors', href: '/vendors' },
   ];
 
   return (
@@ -39,7 +39,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Transform your images with powerful  Enhance your visual content with advanced image tools built to support creators and businesses at every scale.. We help creators and businesses enhance their visual content.
+              Built for creators and businesses, SleekNlit lets every vendor run their own store while helping customers plan events, manage guests, send invitations, and place orders seamlessly.
             </p>
           </div>
 
@@ -128,15 +128,21 @@ const Footer = () => {
 
         <div className="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center text-sm">
           <p className="text-gray-500">
-            © {currentYear} Stealth-pit. All rights reserved.
+            © {currentYear} Sleeknit All rights reserved.
           </p>
           <div className="mt-4 md:mt-0 flex space-x-6">
-            <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">
+            {/* <Link href="/privacy" className="text-gray-500 hover:text-white transition-colors">
               Privacy Policy
             </Link>
             <Link href="/terms" className="text-gray-500 hover:text-white transition-colors">
               Terms of Service
-            </Link>
+            </Link> */}
+            <p   className="text-gray-500 hover:text-white transition-colors">
+              Privacy Policy
+            </p>
+            <p className="text-gray-500 hover:text-white transition-colors">
+              Terms of Service
+            </p>
             {/* <Link href="/cookies" className="text-gray-500 hover:text-white transition-colors">
               Cookie Policy
             </Link> */}
