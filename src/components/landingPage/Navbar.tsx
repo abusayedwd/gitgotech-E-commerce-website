@@ -49,7 +49,7 @@ const userRole = storedUser?.role || null;
               className="object-contain"
               priority  
             /> */}
-            <img className="" src="/images/logo.png" alt="" />
+            <img className="" src="/images/logos.svg" alt="" />
           </div>
         </Link>
 

@@ -36,7 +36,7 @@ const Footer = () => {
                   fill
                   className="object-contain h-48"
                 /> */}
-                <img  className="md:h-28 h-20" src="/images/logo.png"  alt="" />
+                <img  className="h-24" src="/images/logo.png"  alt="" />
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
