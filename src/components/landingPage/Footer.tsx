@@ -29,13 +29,14 @@ const Footer = () => {
           {/* Company Info */}
           <div>
             <div className="flex items-center space-x-2">
-              <div className="relative w-24 h-24">
-                <Image 
+              <div className="relative">
+                {/* <Image 
                   src="/images/logo.png" 
                   alt="Logo" 
                   fill
-                  className="object-contain"
-                />
+                  className="object-contain h-48"
+                /> */}
+                <img  className="md:h-28 h-20" src="/images/logo.png"  alt="" />
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
