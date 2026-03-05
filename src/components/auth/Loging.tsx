@@ -26,17 +26,25 @@ export default function LoginPage() {
 
       if (res?.success || res?.status === 200) {
         toast.success(res?.message || 'Login successful!');
-        
+
         // Store token
         const token = res?.token || res?.data?.token;
         if (token) {
           localStorage.setItem('token', token);
         }
 
-        // Get user role and redirect
+        // Get user data and store with isLoggedIn flag
         const user = res?.data?.user || res?.user;
         const role = user?.role || 'customer';
-
+        
+        // Store user with isLoggedIn flag for Navbar
+        const userToStore = {
+          ...user,
+          isLoggedIn: true,
+          role: role
+        };
+        localStorage.setItem('user', JSON.stringify(userToStore));
+        
         setTimeout(() => {
           if (role === 'vendor') {
             router.push('/vendor-dashboard');

@@ -4,13 +4,17 @@ import { useState } from 'react';
 import { Mail, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useForgotPasswordMutation } from '@/redux/features/auth/authSlice';
+import toast from 'react-hot-toast';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
- const router = useRouter();
+  const router = useRouter();
+  const [forgotPassword] = useForgotPasswordMutation();
+
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -36,13 +40,26 @@ export default function ForgotPasswordPage() {
       return;
     }
 
+    try {
+      const res = await forgotPassword({ email }).unwrap();
+      console.log(res);
 
-    router.push('/auth/verify-email');
-    // Simulate API call with timeout
-    setTimeout(() => {
+      if (res?.success || res?.status === 200) {
+        toast.success(res?.message || 'Reset link sent to your email!');
+        const token = res?.token || res?.data?.token || '';
+        setIsSubmitted(true);
+        
+        // Redirect to verify-email with token for OTP verification
+        setTimeout(() => {
+          router.push(`/auth/verify-email?email=${email}&token=${token}&path=/auth/forgot-password`);
+        }, 1500);
+      }
+    } catch (err: any) {
+      const message = err?.data?.message || err?.message || 'Failed to send reset email';
+      setErrors(message);
+      toast.error(message);
       setIsLoading(false);
-      setIsSubmitted(true);
-    }, 1500);
+    }
   };
 
   const handleReset = () => {
@@ -53,32 +70,23 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4 py-8">
-      {/* Animated gradient orbs */}
-      {/* <div className="absolute top-10 right-10 w-32 h-32 bg-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute top-10 right-24 w-32 h-32 bg-purple-500 rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div> */}
-
       {/* Forgot Password Card */}
       <div className="relative w-full max-w-lg">
-        {/* Cyan border glow */}
-
-
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#8645a5] rounded-2xl p-8">
-          {/* Logo placeholder */}
-                <div className="flex items-start justify-between">
-                          <Image
-                            src="/images/llogo.png"
-                               alt="TeeKnit Logo"
-                               width={100}
-                               height={100}
-                               className="object-contain h-36 w-36"
-                             />
-
-                         </div>
-
+          {/* Logo */}
+          <div className="flex items-start justify-between">
+            <Image
+              src="/images/llogo.png"
+              alt="TeeKnit Logo"
+              width={100}
+              height={100}
+              className="object-contain h-36 w-36"
+            />
+          </div>
 
           {/* Header */}
           <div className="mb-6 text-center">
-            <h1 className="text-3xl font-cormorant font-bold font-cormorant-garamond text-white mb-2">
+            <h1 className="text-3xl font-cormorant font-bold text-white mb-2">
               Forgot Password?
             </h1>
             <p className="text-gray-400 text-sm">
@@ -97,7 +105,7 @@ export default function ForgotPasswordPage() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter Your Gmail"
+                    placeholder="Enter Your Email"
                     className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
                       errors
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
@@ -159,7 +167,7 @@ export default function ForgotPasswordPage() {
                 </button>
 
                 <button
-                  onClick={() => window.location.href = '/login'}
+                  onClick={() => window.location.href = '/auth/login'}
                   className="w-full bg-transparent border border-gray-700 hover:border-gray-600 text-gray-400 hover:text-white font-medium py-3 rounded-xl transition-colors"
                 >
                   Back to Login

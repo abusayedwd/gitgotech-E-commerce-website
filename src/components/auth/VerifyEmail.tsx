@@ -78,6 +78,9 @@ const handleSubmit = async (e: React.FormEvent) => {
       toast.success(res?.message || 'Email verified successfully!');
       setSuccess(true);
 
+      // Get new token from response if available
+      const newToken = res?.token || res?.data?.token || token;
+
       // Conditional redirect based on path
       setTimeout(() => {
         if (path === '/auth/sign-up' || path.includes('sign-up')) {
@@ -85,7 +88,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           router.push('/auth/login');
         } else {
           // For forgot password or other flows, redirect to update password
-          router.push(`/auth/update-password?email=${email}&token=${token}`);
+          router.push(`/auth/update-password?email=${email}&token=${newToken}`);
         }
       }, 2000);
     }

@@ -25,36 +25,34 @@ const authSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-verifyOtp: builder.mutation({
-  query: ({ data, token }) => ({
-    url: `/auth/verify-otp`,
-    method: "POST",
-    body: data,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  }),
-}),
-
-    resetPassword: builder.mutation({
-      query: (data) => ({
+    verifyOtp: builder.mutation({
+      query: ({ data, token }) => ({
         url: `/auth/verify-otp`,
         method: "POST",
         body: data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }),
     }),
 
-
-
-
+    resetPassword: builder.mutation({
+      query: ({ data, token }) => ({
+        url: `/auth/reset-password`,
+        method: "POST",
+        body: data,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }),
+    }),
   }),
 });
 
 export const {
     useRegisterUserMutation,
-     useUserLoginMutation,
-     useForgotPasswordMutation,
-     useResetPasswordMutation,
-     useVerifyOtpMutation
-
- } = authSlice;
+    useUserLoginMutation,
+    useForgotPasswordMutation,
+    useResetPasswordMutation,
+    useVerifyOtpMutation
+} = authSlice;

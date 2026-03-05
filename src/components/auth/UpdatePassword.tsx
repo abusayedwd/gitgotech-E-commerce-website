@@ -1,9 +1,8 @@
-// app/create-password/page.tsx
-
-'use client';
+"use client";
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useResetPasswordMutation } from '@/redux/features/auth/authSlice';
 import toast from 'react-hot-toast';
 
 export default function CreatePasswordPage() {
@@ -15,6 +14,7 @@ export default function CreatePasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
+  const [resetPassword] = useResetPasswordMutation();
   
   const [email, setEmail] = useState<string>('');
   const [token, setToken] = useState<string>('');
@@ -28,8 +28,8 @@ export default function CreatePasswordPage() {
   // Password validation rules
   const validatePassword = (pwd: string): boolean => {
     if (pwd.length < 8) return false;
-    if (!/[a-zA-Z]/.test(pwd)) return false; // Must contain letters
-    if (!/[0-9]/.test(pwd)) return false; // Must contain numbers
+    if (!/[a-zA-Z]/.test(pwd)) return false;
+    if (!/[0-9]/.test(pwd)) return false;
     return true;
   };
 
@@ -48,34 +48,31 @@ export default function CreatePasswordPage() {
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
       }
+ const data = {  
+          password  
+        }
+      // Call reset password API
+      const res = await resetPassword({ 
+        data,
+        token 
+      }).unwrap();
 
-      // API call to reset password
-      const response = await fetch('YOUR_API_ENDPOINT/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
-      });
-
-      const res = await response.json();
+      console.log(res);
 
       if (res?.success || res?.status === 200) {
-        toast.success(res?.message || 'Password updated successfully!');
+        toast.success(res?.message || 'Password reset successfully!');
         setSuccess(true);
         setTimeout(() => {
           router.push('/auth/login');
         }, 2000);
       } else {
-        throw new Error(res?.message || 'Failed to update password');
+        throw new Error(res?.message || 'Failed to reset password');
       }
 
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to create password. Please try again.';
+    } catch (err: any) {
+      const message = err instanceof Error 
+        ? err.message 
+        : err?.data?.message || 'Failed to reset password. Please try again.';
       setError(message);
       toast.error(message);
     } finally {
@@ -88,8 +85,6 @@ export default function CreatePasswordPage() {
       <div className="w-full max-w-lg mx-auto">
         {/* Main Card */}
         <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 relative overflow-hidden">
-          {/* Glow effect */}
-
           {/* Content */}
           <div className="relative z-10">
             <h1 className="text-[36px] font-cormorant font-bold text-white text-center mb-4">Create new Password</h1>
@@ -179,10 +174,10 @@ export default function CreatePasswordPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V6a6 6 0 616 6h2a8 8 0 11-16 0z"></path>
                     </svg>
-                    Creating...
+                    Resetting...
                   </div>
                 ) : success ? (
-                  'Password Created! Redirecting...'
+                  'Password Reset! Redirecting...'
                 ) : (
                   'Submit'
                 )}
@@ -197,13 +192,13 @@ export default function CreatePasswordPage() {
 
             {success && (
               <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm">
-                Password created successfully! Redirecting to login...
+                Password reset successfully! Redirecting to login...
               </div>
             )}
           </div>
         </div>
 
-        {/* Optional: Back link */}
+        {/* Back link */}
         <div className="mt-4 text-center">
           <button
             onClick={() => router.back()}
