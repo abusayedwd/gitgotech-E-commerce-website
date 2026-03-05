@@ -2,8 +2,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function CreatePasswordPage() {
   const [password, setPassword] = useState<string>('');
@@ -14,6 +15,15 @@ export default function CreatePasswordPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
+  
+  const [email, setEmail] = useState<string>('');
+  const [token, setToken] = useState<string>('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setEmail(params.get('email') || '');
+    setToken(params.get('token') || '');
+  }, []);
 
   // Password validation rules
   const validatePassword = (pwd: string): boolean => {
@@ -27,52 +37,67 @@ export default function CreatePasswordPage() {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    
+
     try {
       // Validate password meets requirements
       if (!validatePassword(password)) {
         throw new Error('Password must be at least 8 characters and include letters & numbers');
       }
-      
+
       // Validate passwords match
       if (password !== confirmPassword) {
         throw new Error('Passwords do not match');
       }
-      
-      // In a real app, you would send this to your backend
-      // await createPasswordAPI({ password });
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setSuccess(true);
-      // Redirect after success (adjust as needed)
-      setTimeout(() => {
-        router.push('/auth/login'); // or wherever you want to redirect
-      }, 2000);
-      
+
+      // API call to reset password
+      const response = await fetch('YOUR_API_ENDPOINT/reset-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const res = await response.json();
+
+      if (res?.success || res?.status === 200) {
+        toast.success(res?.message || 'Password updated successfully!');
+        setSuccess(true);
+        setTimeout(() => {
+          router.push('/auth/login');
+        }, 2000);
+      } else {
+        throw new Error(res?.message || 'Failed to update password');
+      }
+
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create password. Please try again.');
+      const message = err instanceof Error ? err.message : 'Failed to create password. Please try again.';
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-lg mx-auto">
         {/* Main Card */}
         <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 relative overflow-hidden">
           {/* Glow effect */}
-         
+
           {/* Content */}
           <div className="relative z-10">
             <h1 className="text-[36px] font-cormorant font-bold text-white text-center mb-4">Create new Password</h1>
-            
+
             <p className="text-gray-400 font-poppins text-center mb-6">
               Password must be Min 8 characters, include letters & numbers
             </p>
-            
+
             {/* Password Fields */}
             <form onSubmit={handleSubmit}>
               <div className="mb-6">
@@ -106,7 +131,7 @@ export default function CreatePasswordPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mb-8">
                 <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
                 <div className="relative">
@@ -138,7 +163,7 @@ export default function CreatePasswordPage() {
                   </div>
                 </div>
               </div>
-              
+
               <button
                 type="submit"
                 disabled={isLoading || success}
@@ -163,24 +188,24 @@ export default function CreatePasswordPage() {
                 )}
               </button>
             </form>
-            
+
             {error && (
               <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
                 {error}
               </div>
             )}
-            
+
             {success && (
               <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm">
-                Password created successfully! Redirecting to dashboard...
+                Password created successfully! Redirecting to login...
               </div>
             )}
           </div>
         </div>
-        
+
         {/* Optional: Back link */}
         <div className="mt-4 text-center">
-          <button 
+          <button
             onClick={() => router.back()}
             className="text-sm text-gray-400 hover:text-gray-300 underline"
           >

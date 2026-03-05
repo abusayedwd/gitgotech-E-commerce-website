@@ -4,6 +4,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useVerifyOtpMutation } from '@/redux/features/auth/authSlice';
+import toast from 'react-hot-toast';
 
 export default function VerifyEmailPage() {
   const [otp, setOtp] = useState<string[]>(['', '', '', '', '', '']);
@@ -13,20 +15,30 @@ export default function VerifyEmailPage() {
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
 
-  // Simulate getting email from URL or localStorage (you would replace this with actual logic)
-  useEffect(() => {
-    // In a real app, you might get the email from URL params or session storage
-    const storedEmail = localStorage.getItem('verificationEmail') || 'yourmail@gmail.com';
-    setEmail(storedEmail);
+  const [path, setPath] = useState('')
+  const [token, setToken] = useState("")
+  const [verifyEmail] = useVerifyOtpMutation()
+
+  console.log(path,email, token)
+
+    useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setEmail(params.get('email') || '');
+    setPath(params.get('path') || '');
+    setToken(params.get('token') || '');
+
   }, []);
+
+
+
 
   const handleOtpChange = (index: number, value: string) => {
     if (value.length > 1) return;
-    
+
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-    
+
     // Auto-focus next input
     if (value && index < 5) {
       const nextInput = document.getElementById(`otp-${index + 1}`);
@@ -41,33 +53,55 @@ export default function VerifyEmailPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Validate OTP is complete
-      if (otp.some(digit => digit === '')) {
-        throw new Error('Please enter all 5 digits of the OTP');
-      }
-      
-      const otpCode = otp.join('');
-     
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setSuccess(true);
-      // Redirect after success (adjust as needed)
-      setTimeout(() => {
-        router.push('/auth/update-password'); // or wherever you want to redirect
-      }, 2000);
-      
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Verification failed. Please try again.');
-    } finally {
-      setIsLoading(false);
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    // Validate OTP
+    if (otp.some((digit) => digit === "")) {
+      throw new Error("Please enter all 5 digits of the OTP");
     }
-  };
+
+    const otpCode = otp.join("");
+
+    const data = {
+      otp: otpCode,
+      email: email,
+    };
+
+    const res = await verifyEmail({ data, token }).unwrap();
+    console.log(res);
+
+    if (res?.success || res?.status === 200) {
+      toast.success(res?.message || 'Email verified successfully!');
+      setSuccess(true);
+
+      // Conditional redirect based on path
+      setTimeout(() => {
+        if (path === '/auth/sign-up' || path.includes('sign-up')) {
+          // After signup, redirect to login
+          router.push('/auth/login');
+        } else {
+          // For forgot password or other flows, redirect to update password
+          router.push(`/auth/update-password?email=${email}&token=${token}`);
+        }
+      }, 2000);
+    }
+  } catch (err: any) {
+    const message =
+      err?.data?.message ||
+      err?.message ||
+      "Verification failed. Please try again.";
+
+    setError(message);
+    toast.error(message);
+    console.log(err);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">

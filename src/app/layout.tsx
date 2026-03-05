@@ -56,7 +56,8 @@
  
 
 import Providers from "@/redux/Providers";
- 
+import ToastProvider from "@/components/ToastProvider";
+
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
@@ -93,11 +94,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={cormorantGaramond.variable}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} antialiased`}
+         className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} antialiased`}
+  suppressHydrationWarning  //
       >
         <Providers>
           <ConditionalLayout>{children}</ConditionalLayout>
         </Providers>
+        <ToastProvider />
       </body>
     </html>
   );

@@ -240,23 +240,31 @@
 // }
 
 
+
 "use client";
 
-import { useState, FormEvent } from 'react';
-import { User, Lock, Mail, Eye, EyeOff, UserCircle } from 'lucide-react';
+import { useState, FormEvent, useEffect } from 'react';
+import { User, Lock, Mail, Eye, EyeOff, UserCircle, Phone } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRegisterUserMutation } from '@/redux/features/auth/authSlice';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userType, setUserType] = useState('customer');
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [error, setError] = useState(" ")
+  const [pathName, setPathName] = useState("");
+  const router = useRouter()
 
   const [formData, setFormData] = useState({
     name: '',
     username: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: ''
   });
@@ -265,6 +273,7 @@ export default function SignUpPage() {
     name: '',
     username: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
     terms: ''
@@ -276,6 +285,7 @@ export default function SignUpPage() {
       name: '',
       username: '',
       email: '',
+      phone: '',
       password: '',
       confirmPassword: '',
       terms: ''
@@ -300,6 +310,12 @@ export default function SignUpPage() {
       isValid = false;
     } else if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
+      isValid = false;
+    }
+
+    // Phone validation
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
       isValid = false;
     }
 
@@ -331,18 +347,47 @@ export default function SignUpPage() {
     return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setPathName(window.location.pathname);
+    }
+  }, []);
+
+  const [signUpUser] = useRegisterUserMutation()
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
       console.log('Sign Up:', { ...formData, userType });
-      // Handle successful form submission
+      console.log(pathName)
     }
+
+    try {
+      const res = await signUpUser(formData).unwrap();
+      console.log(res)
+      if (res?.status === 200 || res?.success) {
+        const token = res?.token || res?.data?.token || '';
+        toast.success(typeof res?.message === 'string' ? res?.message : 'Sign up successful! Please verify your email')
+        localStorage.setItem("token", token)
+        router.push(`/auth/verify-email?path=${pathName}&email=${formData.email}&token=${token}`)
+      }
+    } catch (error: any) {
+      console.log(error);
+      const errorMessage = typeof error?.data?.data === 'string'
+        ? error?.data?.data
+        : typeof error?.data === 'string'
+          ? error?.data
+          : 'An error occurred';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    };
   };
 
   interface FormDataType {
     name: string;
     username: string;
     email: string;
+    phone: string;
     password: string;
     confirmPassword: string;
   }
@@ -351,6 +396,7 @@ export default function SignUpPage() {
     name: string;
     username: string;
     email: string;
+    phone: string;
     password: string;
     confirmPassword: string;
     terms: string;
@@ -359,7 +405,7 @@ export default function SignUpPage() {
   const handleInputChange = (field: keyof FormDataType, value: string): void => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
-    if (errors[field]) {
+    if (errors[field as keyof ErrorsType]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
   };
@@ -373,9 +419,6 @@ export default function SignUpPage() {
 
   return (
     <div className="min-h-screen mt-20 bg-black flex items-center justify-center p-4 py-8">
-      {/* Animated gradient orbs */}
-
-
       {/* Sign Up Card */}
       <div className="relative w-full max-w-lg">
         {/* Cyan border glow */}
@@ -384,14 +427,13 @@ export default function SignUpPage() {
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8">
           {/* Logo placeholder */}
           <div className="flex items-start justify-between">
-           <Image
-             src="/images/llogo.png"
-                alt="TeeKnit Logo"
-                width={100}
-                height={100}
-                className="object-contain h-36 w-36"
-              />
-
+            <Image
+              src="/images/logo.png"
+              alt="TeeKnit Logo"
+              width={100}
+              height={100}
+              className="object-contain h-36 w-36"
+            />
           </div>
 
           {/* Header */}
@@ -498,6 +540,26 @@ export default function SignUpPage() {
               {errors.email && <p className="text-red-400 text-xs mt-1 ml-1">{errors.email}</p>}
             </div>
 
+            {/* Phone Number */}
+            <div>
+              <label className="block text-white text-sm font-medium mb-2">Phone Number</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
+                <input
+                  type="number"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="Enter Your Phone Number"
+                  className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                    errors.phone
+                      ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
+                      : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                  }`}
+                />
+              </div>
+              {errors.phone && <p className="text-red-400 text-xs mt-1 ml-1">{errors.phone}</p>}
+            </div>
+
             {/* Create Password */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">Create Password</label>
@@ -575,12 +637,14 @@ export default function SignUpPage() {
             {errors.terms && <p className="text-red-400 text-xs mt-1 ml-5">{errors.terms}</p>}
 
             {/* Sign Up Button */}
+             <p className='text-red-500'>{error}</p>
             <button
               type="submit"
               className="w-full cursor-pointer bg-gradient-to-r from-purple-600 to-purple-700  text-white font-semibold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30 mt-2"
             >
               Sign Up
             </button>
+
             {/* Sign In Link */}
             <div className="text-center pt-2">
               <span className="text-gray-400 text-sm">Already have an account? </span>
@@ -591,8 +655,6 @@ export default function SignUpPage() {
                 Sign in
               </Link>
             </div>
-
-
           </form>
         </div>
       </div>

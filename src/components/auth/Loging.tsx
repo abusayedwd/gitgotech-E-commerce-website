@@ -5,85 +5,64 @@ import { User, Lock, Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { useUserLoginMutation } from '@/redux/features/auth/authSlice';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const router = useRouter()
+  const [error, setError] = useState('');
+  const router = useRouter();
+  const [login] = useUserLoginMutation();
 
-  // const handleSubmit = () => {
-  //   // Handle login logic here
-  //   console.log('Login:', { email, password });
-  //    const users = { email, password }
-  //     const user= localStorage.setItem('user', JSON.stringify(users))
-  // };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
 
-// const handleSubmit = () => {
-//   let role = 'customer';
+    try {
+      const res = await login({ email, password }).unwrap();
+      console.log(res);
 
-//   if (email === 'vendor@gmail.com') {
-//     role = 'vendor';
-//   } else if (email === 'user@gmail.com') {
-//     role = 'customer';
-//   } else {
-//     alert('Invalid test user');
-//     return;
-//   }
+      if (res?.success || res?.status === 200) {
+        toast.success(res?.message || 'Login successful!');
+        
+        // Store token
+        const token = res?.token || res?.data?.token;
+        if (token) {
+          localStorage.setItem('token', token);
+        }
 
-//   const user = {
-//     email,
-//     role,
-//     isLoggedIn: true,
-//   };
+        // Get user role and redirect
+        const user = res?.data?.user || res?.user;
+        const role = user?.role || 'customer';
 
-//   localStorage.setItem('user', JSON.stringify(user));
-  
-//   router.push("/")
-
-// };
-
-
-const handleSubmit = () => {
-  let role = 'customer';
-
-  if (email === 'vendor@gmail.com') {
-    role = 'vendor';
-  } else if (email === 'user@gmail.com') {
-    role = 'customer';
-  } else {
-    alert('Invalid test user');
-    return;
-  }
-
-  const user = {
-    email,
-    role,
-    isLoggedIn: true,
+        setTimeout(() => {
+          if (role === 'vendor') {
+            router.push('/vendor-dashboard');
+          } else {
+            router.push('/');
+          }
+        }, 1000);
+      }
+    } catch (err: any) {
+      console.log(err);
+      const errorMessage = err?.data?.message || err?.message || 'Login failed. Please try again.';
+      setError(errorMessage);
+      toast.error(errorMessage);
+    }
   };
-
-  localStorage.setItem('user', JSON.stringify(user));
-
-  if (role === 'vendor') {
-    router.push('/vendor-dashboard');
-  } else {
-    router.push('/');
-  }
-};
-
-
-
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex items-center justify-center p-4">
       {/* Animated gradient orbs in background */}
-      
+
 
       {/* Login Card */}
       <div className="relative w-full max-w-lg">
         {/* Cyan border glow effect */}
-        
-        
+
+
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 ">
           {/* Logo and brand badges */}
           <div className="flex items-start justify-between mb-2">
@@ -95,10 +74,10 @@ const handleSubmit = () => {
                 className="object-contain "
               />
             </div>
-               
-            
+
+
             {/* Gradient badges */}
-             
+
           </div>
 
           {/* Welcome text */}
@@ -110,7 +89,7 @@ const handleSubmit = () => {
           </div>
 
           {/* Login Form */}
-          <div className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email Input */}
             <div>
               <label className="block text-white text-sm font-medium mb-2">
@@ -158,17 +137,24 @@ const handleSubmit = () => {
 
             {/* Forgot Password */}
             <div className="text-right">
-              <Link 
-                href="/auth/forgot-password" 
+              <Link
+                href="/auth/forgot-password"
                 className="text-sm text-purple-400 hover:text-purple-300 transition-colors"
               >
                 Forgot Password?
               </Link>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+
             {/* Sign In Button */}
             <button
-              onClick={handleSubmit}
+              type="submit"
               className="w-full bg-[#6100FF] cursor-pointer font-poppins  text-white font-semibold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-purple-500/30"
             >
               Sign In
@@ -177,14 +163,14 @@ const handleSubmit = () => {
             {/* Create Account Link */}
             <div className="text-center pt-2">
               <span className="text-gray-400 text-sm">New Here?</span>
-              <Link 
-                href="/auth/sign-up" 
+              <Link
+                href="/auth/sign-up"
                 className="text-sm text-white hover:text-purple-300 font-medium transition-colors"
               >
                 Create an account
               </Link>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

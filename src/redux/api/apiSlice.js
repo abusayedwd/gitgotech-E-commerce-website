@@ -4,8 +4,8 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
   
-    baseUrl: "https://sayed3050.sobhoy.com/v1", 
-    // baseUrl: "http://10.10.7.68:3050/v1", 
+    baseUrl: "https://beginner-rochester-cartridges-tubes.trycloudflare.com/api/v1", 
+    // baseUrl: "http://10.10.7.68:3050/v1", https://beginner-rochester-cartridges-tubes.trycloudflare.com/
     
     prepareHeaders: (headers, { getState }) => {
       const token = localStorage.getItem("token");
@@ -20,5 +20,5 @@ export const apiSlice = createApi({
   }),
   tagTypes: ["Profile", "Campaign", "Wallet", "Coupon", "About"],  
 
-  endpoints: () => ({}),
+  endpoints: () => ({}), 
 });
