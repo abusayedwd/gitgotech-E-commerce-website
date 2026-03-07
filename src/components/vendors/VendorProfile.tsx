@@ -190,6 +190,9 @@
 //   );
 // }
 
+
+
+
 'use client';
 
 import React, { useState } from 'react';
@@ -197,11 +200,20 @@ import { Upload, Edit, MapPin, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
+import { useGetShowroomQuery } from '@/redux/features/vendor/showroomSlice/showroomSlice';
+import url from './../../redux/api/baseUrl.js'
 
 export default function VendorProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const router = useRouter();
+
+ 
+
+  const {data: showroomData} = useGetShowroomQuery()
+  console.log(showroomData);
+
+ 
   
   const [profileData, setProfileData] = useState({
     userName: 'AlexJames512',
@@ -215,20 +227,7 @@ export default function VendorProfilePage() {
 
   const [editFormData, setEditFormData] = useState(profileData);
 
-  const showrooms = [
-    {
-      id: 1,
-      name: 'Luxurias Showroom',
-      branch: 'Gulshan Branch',
-      location: 'Gulshan, Dhaka'
-    },
-    {
-      id: 2,
-      name: 'Luxurias Showroom',
-      branch: 'Gulshan Branch',
-      location: 'Gulshan, Dhaka'
-    }
-  ];
+  const showrooms = showroomData?.data ?? [];
 
   const handleImageUpload = () => {
     console.log('Upload profile picture');
@@ -264,9 +263,6 @@ export default function VendorProfilePage() {
     console.log('Add showroom');
   };
 
-  const handleViewInfo = (showroomId: number) => {
-    console.log('View showroom info:', showroomId);
-  };
 
   return (
     <div className="space-y-6 pb-5 md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen">
@@ -365,23 +361,24 @@ export default function VendorProfilePage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {showrooms.map((showroom) => (
-            <div 
-              key={showroom.id}
+          {showrooms.map((showroom: any) => (
+            <div
+              key={showroom._id}
               className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all"
             >
-               <img src="/images/tailor.png" className='w-full h-fit' alt="" />
+               <img src={`${url}/${showroom?.logo}`} className=' w-full' alt="" />
 
               <div className="p-4">
-                <h3 className="text-white font-semibold mb-1">{showroom.name}</h3>
-                <p className="text-gray-400 text-sm mb-2">— {showroom.branch}</p>
+                <h3 className="text-white font-semibold mb-1">{showroom.showroom_name}</h3>
+                {!showroom.isApprove && (
+                  <p className="text-yellow-400 text-xs mb-1">Pending Approval</p>
+                )}
                 <div className="flex items-center gap-1 text-gray-400 text-xs mb-4">
                   <MapPin size={14} />
-                  <span>{showroom.location}</span>
+                  <span>{showroom.showroom_address}</span>
                 </div>
-                <Link href={"/v-profile/view-showroom"}> 
-                <button 
-                  onClick={() => handleViewInfo(showroom.id)}
+                <Link href={`/v-profile/view-showroom?id=${showroom._id}`}>
+                <button
                   className="w-full py-2 bg-[#6100FF] text-white cursor-pointer hover:bg-[#5000dd] rounded-lg transition-all text-sm font-medium"
                 >
                   View Info

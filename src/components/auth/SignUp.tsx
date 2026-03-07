@@ -363,7 +363,7 @@ export default function SignUpPage() {
     }
 
     try {
-      const res = await signUpUser(formData).unwrap();
+      const res = await signUpUser({ ...formData, role: userType }).unwrap();
       console.log(res)
       if (res?.status === 200 || res?.success) {
         const token = res?.token || res?.data?.token || '';
