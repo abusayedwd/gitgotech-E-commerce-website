@@ -89,7 +89,7 @@ export default function NotificationsPage() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Wallet</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Notification</h1>
         </div>
       <div className="max-w-4xl mx-auto">
       

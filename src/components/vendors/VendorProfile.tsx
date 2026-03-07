@@ -255,6 +255,7 @@ export default function VendorProfilePage() {
     setIsLogoutModalOpen(false);
     // Add your logout logic here
   localStorage.removeItem('user');
+  localStorage.removeItem('token');
   
     router.push('/');
   };

@@ -15,6 +15,7 @@ export default function ProfilePage() {
     console.log('User logged out');
     setIsLogoutModalOpen(false);
   localStorage.removeItem('user');
+  localStorage.removeItem('token');
     router.push('/');
   };
 

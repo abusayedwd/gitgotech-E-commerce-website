@@ -3,7 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+<<<<<<< HEAD
     "dev": "next dev -p 3001",
+=======
+    "dev": "next dev -p 3040",
+>>>>>>> 3be87adc66669c1e68a9d7f98f52532468e76efc
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -16,6 +20,7 @@
     "next": "16.0.10",
     "react": "19.2.1",
     "react-dom": "19.2.1",
+    "react-hot-toast": "^2.6.0",
     "react-icons": "^5.5.0",
     "recharts": "^3.6.0"
   },
