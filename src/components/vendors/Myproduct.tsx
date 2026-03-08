@@ -12,6 +12,8 @@ export default function MyProducts() {
   const router = useRouter();
 
   const showroomId = useSelector(selectShowroomId);
+  console.log(showroomId)
+
   const { data: productData, isLoading } = useGetProductsQuery({ showroomId }, { skip: !showroomId });
 
   const allProducts: any[] = productData?.data ?? [];
