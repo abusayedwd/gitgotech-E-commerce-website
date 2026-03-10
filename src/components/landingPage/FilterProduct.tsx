@@ -24,7 +24,7 @@ const FashionSearchNav = () => {
   const handleTabClick = (category: { _id: string; name: string }) => {
     setActiveTab(category._id);
     setSelectedCategory(category.name);
-    console.log('Selected Category:', category);
+    router.push(`/category/${encodeURIComponent(category.name.toLowerCase())}`);
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {

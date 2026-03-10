@@ -1,66 +1,84 @@
-export default function CategoryMarquee() {
-  const categories = [
-    {
-      name: 'Women',
-      image: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&q=80'
-    },
-    {
-      name: 'Men',
-      image: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=400&q=80'
-    },
-    {
-      name: 'Shoes',
-      image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80'
-    },
-    {
-      name: 'Kids',
-      image: 'https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=400&q=80'
-    },
-    {
-      name: 'Fall & Winter',
-      image: 'https://images.unsplash.com/photo-1544957992-20514f595d6f?w=400&q=80'
-    },
-    {
-      name: 'Ceremony Formal',
-      image: 'https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&q=80'
-    },
-    {
-      name: 'Home & Living',
-      image: 'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=400&q=80'
-    },
-    {
-      name: 'Accessories',
-      image: 'https://images.unsplash.com/photo-1492707892479-7bc8d5a4ee93?w=400&q=80'
-    }
-  ];
+'use client';
 
-  // Duplicate categories for seamless loop
-  const duplicatedCategories = [...categories, ...categories];
+import { useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
+import { useRouter } from 'next/navigation';
+
+const IMAGE_BASE_URL = 'https://beginner-rochester-cartridges-tubes.trycloudflare.com/images';
+
+const gradients = [
+  'from-purple-600 to-blue-500',
+  'from-pink-500 to-rose-400',
+  'from-green-500 to-teal-400',
+  'from-orange-500 to-yellow-400',
+  'from-blue-600 to-cyan-400',
+  'from-indigo-600 to-purple-400',
+  'from-red-500 to-orange-400',
+  'from-teal-500 to-green-400',
+];
+
+type Category = {
+  _id: string;
+  name: string;
+  image?: string;
+};
+
+export default function CategoryMarquee() {
+  const router = useRouter();
+
+  const { data: categoriesRes, isLoading } = useGetHomeCategoriesQuery();
+  const categories: Category[] = categoriesRes?.data ?? [];
+
+  if (isLoading || categories.length === 0) return null;
+
+  // Duplicate enough times so short lists still loop smoothly
+  const repeated = Array.from(
+    { length: Math.max(2, Math.ceil(16 / categories.length)) },
+    () => categories
+  ).flat();
 
   return (
     <div className="py-8 sm:py-10 md:py-12 mt-4 sm:mt-6 md:mt-8 overflow-hidden">
-      <div className="container mx-auto w-full sm:w-[90%] md:w-[80%] px-4">
-        {/* Marquee Container */}
-        <div className="flex container mx-auto animate-marquee hover:pause">
-          {duplicatedCategories.map((category, index) => (
+      {/* marquee track — no container/mx-auto so width is unconstrained */}
+      <div className="animate-marquee">
+        {repeated.map((category, index) => {
+          const imageUrl = category.image
+            ? `${category.image}`
+            : null;
+
+          return (
             <div
-              key={index}
+              key={`${category._id}-${index}`}
+              onClick={() =>
+                router.push(`/category/${encodeURIComponent(category.name.toLowerCase())}`)
+              }
               className="flex-shrink-0 mx-2 sm:mx-3 md:mx-4 group cursor-pointer"
             >
-              <div className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-xl sm:rounded-2xl overflow-hidden transition-transform duration-300 group-hover:scale-105">
-                <img
-                  src={category.image}
-                  alt={category.name}
-                  className="w-full h-full object-cover"
-                />
+              <div
+                className={`relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 rounded-xl sm:rounded-2xl overflow-hidden transition-transform duration-300 group-hover:scale-105 ${
+                  !imageUrl ? `bg-gradient-to-br ${gradients[index % gradients.length]}` : ''
+                }`}
+              >
+                {imageUrl ? (
+                  <img
+                    src={imageUrl}
+                    alt={category.name}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-white text-xl sm:text-2xl md:text-3xl font-bold uppercase">
+                      {category.name.charAt(0)}
+                    </span>
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
               </div>
-              <p className="text-white text-center mt-2 sm:mt-3 text-xs sm:text-sm md:text-base font-medium">
+              <p className="text-white text-center mt-2 sm:mt-3 text-xs sm:text-sm md:text-base font-medium capitalize">
                 {category.name}
               </p>
             </div>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
       <style jsx>{`
@@ -75,7 +93,8 @@ export default function CategoryMarquee() {
 
         .animate-marquee {
           display: flex;
-          animation: marquee 30s linear infinite;
+          width: max-content;
+          animation: marquee 20s linear infinite;
         }
 
         .animate-marquee:hover {
