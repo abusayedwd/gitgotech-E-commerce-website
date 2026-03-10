@@ -359,14 +359,36 @@ import { useState } from 'react';
 import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useGetProductDetailsQuery } from '@/redux/features/vendor/product/productSlice';
 
-export default function ProductDetails() {
+interface ProductDetailsProps {
+  productId?: string | null;
+}
+
+export default function ProductDetails({ productId }: ProductDetailsProps) {
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('M');
   const [showEventModal, setShowEventModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+
+  const { data: productData, isLoading } = useGetProductDetailsQuery(productId || '', {
+    skip: !productId
+  });
+
+  const product = productData?.data || {
+    name: "Jacket",
+    product_name: "Jacket",
+    product_price: 28.00,
+    product_category: "clothing",
+    product_description: "This design supports custom mix-mixing!",
+    product_images: ["/images/jacket.png"],
+    product_stocks: [{ size: 'M', stock: 10 }],
+    review_rating: 4.5,
+    review_count: 20,
+    discount: { percentage: 10 }
+  };
 
   const events = [
     {
@@ -400,23 +422,8 @@ export default function ProductDetails() {
     }
   };
 
-  const product = {
-    name: "Jacket",
-    price: 28.00,
-    originalPrice: 32.00,
-    rating: 4.5,
-    reviews: 20,
-    seller: "William Alex",
-    inStock: false,
-    category: "shoe", // "clothing" or "shoe"
-    image: "/images/jacket.png",
-    description: "This design supports custom mix-mixing! You can combine elements from different products to create your unique style.",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    weight: "100 gram"
-  };
-
   const handleAddToCart = () => {
-    alert(`Added ${quantity} ${product.name}(s) to cart!`);
+    alert(`Added ${quantity} ${product.product_name || product.name}(s) to cart!`);
   };
 
   // Shoe Size Guide Component
@@ -596,9 +603,9 @@ export default function ProductDetails() {
           {/* Product Image Section */}
           <div className="space-y-4">
             <div className="relative bg-white rounded-lg p-8">
-              <img 
-                src={product.image} 
-                alt={product.name} 
+              <img
+                src={product.product_images?.[0] || product.image || '/images/jacket.png'}
+                alt={product.product_name || product.name}
                 className="w-full rounded-lg"
               />
               <button className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
@@ -624,17 +631,17 @@ export default function ProductDetails() {
           <div className="space-y-4">
             {/* Product Title & Rating */}
             <div>
-              <h1 className="text-3xl font-bold font-cormorant mb-2">{product.name}</h1>
+              <h1 className="text-3xl font-bold font-cormorant mb-2">{product.product_name || product.name}</h1>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
-                    <Star 
+                    <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-600 text-gray-600'}`}
+                      className={`w-4 h-4 ${i < Math.floor(product.review_rating || product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-600 text-gray-600'}`}
                     />
                   ))}
                 </div>
-                <span onClick={() => router.push("/product/review")} className="text-sm cursor-pointer text-purple-400">({product.reviews} Reviews)</span>
+                <span onClick={() => router.push("/product/review")} className="text-sm cursor-pointer text-purple-400">({product.review_count || product.reviews || 0} Reviews)</span>
               </div>
             </div>
 
@@ -642,10 +649,10 @@ export default function ProductDetails() {
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center">
-                  <span className="text-sm font-medium">{product.seller.charAt(0)}</span>
+                  <span className="text-sm font-medium">{product.vendor?.charAt(0) || 'V'}</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">{product.seller}</p>
+                  <p className="font-medium">Vendor</p>
                   <p className="text-xs text-gray-400">Lorem ipsum dolor sit amet consectetur. Lacus at venenatis gravida vivamus.</p>
                 </div>
               </div>
@@ -654,13 +661,15 @@ export default function ProductDetails() {
             {/* Price & Stock Status */}
             <div className="bg-gray-800/50 rounded-lg p-4">
               <div className="flex items-center space-x-3 mb-2">
-                <span className="text-l line-through text-gray-500">${product.originalPrice.toFixed(2)}</span>
-                <span className="text-4xl font-semibold text-[#6100FF]">${product.price.toFixed(2)}</span>
+                {product.discount?.percentage && (
+                  <span className="text-l line-through text-gray-500">${(product.product_price * (1 + product.discount.percentage / 100)).toFixed(2)}</span>
+                )}
+                <span className="text-4xl font-semibold text-[#6100FF]">${product.product_price?.toFixed(2) || product.price?.toFixed(2)}</span>
               </div>
               <div className="">
                 <span className="text-sm text-gray-400">Valid till December 30,2025</span>
                 <br />
-                <span className="text-sm text-gray-400">Weight: 100 gram</span>
+                <span className="text-sm text-gray-400">Weight: {product.product_weight?.amount || 100} {product.product_weight?.unit || 'gram'}</span>
               </div>
             </div>
 
@@ -679,24 +688,24 @@ export default function ProductDetails() {
             {/* Description */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
               <h3 className="font-medium font-cormorant text-2xl mb-2">Description</h3>
-              <p className="text-sm text-gray-400">{product.description}</p>
+              <p className="text-sm text-gray-400">{product.product_description || product.description}</p>
             </div>
 
             {/* Size Selection */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
               <h3 className="font-medium mb-3 font-cormorant text-2xl">Select Size</h3>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map(size => (
+                {(product.product_stocks || [{ size: 'M', stock: 10 }]).map((stockItem) => (
                   <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
+                    key={stockItem._id || stockItem.size}
+                    onClick={() => setSelectedSize(stockItem.size)}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors border ${
-                      selectedSize === size 
-                        ? 'bg-purple-600 border-purple-600 text-white' 
+                      selectedSize === stockItem.size
+                        ? 'bg-purple-600 border-purple-600 text-white'
                         : 'bg-gray-800 border-[#6100FF] hover:bg-gray-700 text-gray-300'
                     }`}
                   >
-                    {size}
+                    {stockItem.size}
                   </button>
                 ))}
               </div>
@@ -723,13 +732,13 @@ export default function ProductDetails() {
             </div>
 
             {/* Add to Cart Button */}
-            <button 
+            <button
               onClick={handleAddToCart}
               className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white py-3.5 px-4 rounded-lg font-medium transition-all"
             >
               <div className="flex items-center justify-center space-x-2">
                 <ShoppingCart className="w-5 h-5" />
-                <span>Add to Cart - ${(product.price * quantity).toFixed(2)}</span>
+                <span>Add to Cart - ${((product.product_price || product.price || 0) * quantity).toFixed(2)}</span>
               </div>
             </button>
 

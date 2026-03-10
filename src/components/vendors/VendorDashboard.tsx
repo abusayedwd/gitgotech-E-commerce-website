@@ -5,9 +5,14 @@ import Image from "next/image";
 import React, { use } from "react";
 import productIcon from "./../../../public/images/product.png";
 import { useRouter } from "next/navigation";
+import { useDashboardStatusQuery } from "@/redux/features/vendor/dashboardOverview";
+import { useSelector } from "react-redux";
 
 export default function DashboardHome() {
  const router = useRouter()
+ const showroomId = useSelector(selectShowroomId);
+  console.log(showroomId)
+ const {data: dashboardOverviewData} = useDashboardStatusQuery()
 
   const stats = [
     {

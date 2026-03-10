@@ -1,12 +1,16 @@
+'use client';
 import ProductDetails from '@/components/landingPage/ProductDetails';
-import React from 'react';
+import { useSearchParams } from 'next/navigation';
 
 const page = () => {
-    return (
-        <div>
-             <ProductDetails />
-        </div>
-    );
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+
+  return (
+    <div>
+      <ProductDetails productId={productId} />
+    </div>
+  );
 };
 
 export default page;

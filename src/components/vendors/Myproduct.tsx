@@ -15,6 +15,8 @@ export default function MyProducts() {
   console.log(showroomId)
 
   const { data: productData, isLoading } = useGetProductsQuery({ showroomId }, { skip: !showroomId });
+ 
+  
 
   const allProducts: any[] = productData?.data ?? [];
 
