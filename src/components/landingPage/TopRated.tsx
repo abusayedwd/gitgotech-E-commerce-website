@@ -5,8 +5,7 @@ import { Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import styles from './../../customComponent/Discount.module.css';
-
-const IMAGE_BASE_URL = 'https://beginner-rochester-cartridges-tubes.trycloudflare.com/images';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 
 export default function TopRated() {
   const router = useRouter();

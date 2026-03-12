@@ -4,8 +4,7 @@ import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import styles from "./../../customComponent/Discount.module.css"
 import BackButton from "@/customComponent/BackButton";
-
-const IMAGE_BASE_URL = "https://beginner-rochester-cartridges-tubes.trycloudflare.com/images";
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
 
 export default function NewArrivals({ 
   searchQuery, 

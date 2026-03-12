@@ -1,12 +1,11 @@
 "use client"
- 
+
 import { useTopVendorsQuery } from '@/redux/features/home/homeSlice';
 import { Search } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
-
-const IMAGE_BASE_URL = "https://beginner-rochester-cartridges-tubes.trycloudflare.com/images";
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
 
 export default function VendorsPage() {
   const [searchInput, setSearchInput] = useState('');

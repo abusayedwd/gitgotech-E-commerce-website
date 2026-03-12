@@ -359,7 +359,9 @@ import { useState } from 'react';
 import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useGetProductDetailsQuery } from '@/redux/features/vendor/product/productSlice';
+import { useGetProductDetailsforCustomerQuery } from '@/redux/features/home/homeSlice';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+ 
 
 interface ProductDetailsProps {
   productId?: string | null;
@@ -373,22 +375,27 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const [selectedEvent, setSelectedEvent] = useState<number | null>(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
 
-  const { data: productData, isLoading } = useGetProductDetailsQuery(productId || '', {
+  const { data: productData, isLoading } = useGetProductDetailsforCustomerQuery(productId || '', {
     skip: !productId
   });
 
-  const product = productData?.data || {
-    name: "Jacket",
-    product_name: "Jacket",
-    product_price: 28.00,
-    product_category: "clothing",
-    product_description: "This design supports custom mix-mixing!",
-    product_images: ["/images/jacket.png"],
-    product_stocks: [{ size: 'M', stock: 10 }],
-    review_rating: 4.5,
-    review_count: 20,
-    discount: { percentage: 10 }
-  };
+  const product = productData?.data || null;
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white flex items-center justify-center">
+        <div className="text-purple-400 text-xl">Loading product details...</div>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white flex items-center justify-center">
+        <div className="text-red-400 text-xl">Product not found</div>
+      </div>
+    );
+  }
 
   const events = [
     {
@@ -604,13 +611,15 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
           <div className="space-y-4">
             <div className="relative bg-white rounded-lg p-8">
               <img
-                src={product.product_images?.[0] || product.image || '/images/jacket.png'}
-                alt={product.product_name || product.name}
+                src={product?.product_images?.[0] ? `${IMAGE_BASE_URL}/${product.product_images[0]}` : product?.image || '/images/jacket.png'}
+                alt={product?.product_name || 'Product'}
                 className="w-full rounded-lg"
               />
-              <button className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                Mix Design
-              </button>
+              {product?.isMixable && (
+                <button className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                  Mix Design
+                </button>
+              )}
             </div>
             
             {/* Action Buttons */}
@@ -648,12 +657,12 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             {/* Seller Info */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center">
-                  <span className="text-sm font-medium">{product.vendor?.charAt(0) || 'V'}</span>
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                  <span className="text-sm font-medium">{product.vendor?.name?.charAt(0) || product.vendor?.charAt(0) || 'V'}</span>
                 </div>
                 <div className="flex-1">
-                  <p className="font-medium">Vendor</p>
-                  <p className="text-xs text-gray-400">Lorem ipsum dolor sit amet consectetur. Lacus at venenatis gravida vivamus.</p>
+                  <p className="font-medium">{product.vendor?.name || product.vendor || 'Vendor'}</p>
+                  <p className="text-xs text-gray-400">Trusted seller with quality products</p>
                 </div>
               </div>
             </div>
@@ -674,16 +683,24 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             </div>
 
             {/* Mix Design Available */}
-            <div className="bg-purple-900/20 border border-[#6100FF] rounded-lg p-4">
-              <div className="flex items-center space-x-2 mb-2">
-                <Info className="w-5 h-5 text-purple-400" />
-                <h3 className="font-medium font-cormorant text-2xl text-purple-300">Mix Design Available</h3>
+            {(product.isMixable || product.isCustom) && (
+              <div className="bg-purple-900/20 border border-[#6100FF] rounded-lg p-4">
+                <div className="flex items-center space-x-2 mb-2">
+                  <Info className="w-5 h-5 text-purple-400" />
+                  <h3 className="font-medium font-cormorant text-2xl text-purple-300">
+                    {product.isMixable ? 'Mix Design Available' : 'Custom Design Available'}
+                  </h3>
+                </div>
+                <p className="text-sm text-gray-300 mb-4">
+                  {product.isMixable 
+                    ? 'This product supports custom mix-mixing! You can combine elements from different products to create your unique style.'
+                    : 'This product can be customized according to your preferences.'}
+                </p>
+                <button className="w-full bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
+                  Start {product.isMixable ? 'Mix Design' : 'Custom Design'}
+                </button>
               </div>
-              <p className="text-sm text-gray-300 mb-4">This product supports custom mix-design. You can combine elements from different products to create your unique style.</p>
-              <button className="w-full bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
-                Start Mix Design
-              </button>
-            </div>
+            )}
 
             {/* Description */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
@@ -699,13 +716,18 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                   <button
                     key={stockItem._id || stockItem.size}
                     onClick={() => setSelectedSize(stockItem.size)}
+                    disabled={stockItem.stock === 0}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-colors border ${
                       selectedSize === stockItem.size
                         ? 'bg-purple-600 border-purple-600 text-white'
+                        : stockItem.stock === 0
+                        ? 'bg-gray-900 border-gray-700 text-gray-500 cursor-not-allowed'
                         : 'bg-gray-800 border-[#6100FF] hover:bg-gray-700 text-gray-300'
                     }`}
                   >
                     {stockItem.size}
+                    {stockItem.stock === 0 && ' (Out)'}
+                    {stockItem.stock > 0 && ` (${stockItem.stock})`}
                   </button>
                 ))}
               </div>

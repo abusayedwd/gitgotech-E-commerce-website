@@ -2,8 +2,7 @@
 
 import { useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 import { useRouter } from 'next/navigation';
-
-const IMAGE_BASE_URL = 'https://beginner-rochester-cartridges-tubes.trycloudflare.com/images';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 
 const gradients = [
   'from-purple-600 to-blue-500',

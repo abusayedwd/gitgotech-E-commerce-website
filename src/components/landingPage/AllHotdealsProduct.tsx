@@ -1,12 +1,11 @@
 'use client'
- 
+
 import { Star } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from 'react-icons/fa';
 import styles from "./../../customComponent/Discount.module.css"
-
-const IMAGE_BASE_URL = "https://beginner-rochester-cartridges-tubes.trycloudflare.com/images";
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
 
 export default function AllHotdealsProduct({ 
   searchQuery, 

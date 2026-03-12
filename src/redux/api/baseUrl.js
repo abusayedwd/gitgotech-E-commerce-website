@@ -1,7 +1,6 @@
 
 
-// const url = "https://beginner-rochester-cartridges-tubes.trycloudflare.com/images"
-const url = "https://thru-gain-interval-bids.trycloudflare.com/images"
-// const url = "http://10.10.7.68:3050"
- 
+// Base URL for images - loaded from environment variable
+const url = process.env.NEXT_PUBLIC_IMAGE_URL || "https://thru-gain-interval-bids.trycloudflare.com/images";
+
 export default url;
