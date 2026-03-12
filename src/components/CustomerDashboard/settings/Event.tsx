@@ -1,67 +1,4 @@
- 
-// "use client"
 
-// import { Calendar, X, MapPin } from 'lucide-react';
-// import Link from 'next/link';
-// import { useRouter } from 'next/navigation';
-// import { useState } from 'react';
-// import { CiEdit } from 'react-icons/ci';
-// import { FaArrowLeft } from 'react-icons/fa';
-// import { IoIosShareAlt } from 'react-icons/io';
-
-// // Define the event type
-// type EventType = {
-//   id: number;
-//   title: string;
-//   description: string;
-//   date: string;
-//   location: string;
-//   totalInvite: number;
-//   status: string;
-//   rawDate: string;
-//   rawTime: string;
-// };
-
-// export default function Event() {
-//   const [activeTab, setActiveTab] = useState('created');
-//   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
-//   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-//   const [emailFields, setEmailFields] = useState(['']);
-//   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
-//   const [editFormData, setEditFormData] = useState({
-//     title: '',
-//     date: '',
-//     time: '',
-//     address: '',
-//     purchaseOption: 'creator',
-//     description: ''
-//   });
-//   const router = useRouter();
-  
-//   const events = [
-//     {
-//       id: 1,
-//       title: "Birthday Family Outfit",
-//       description: "Lorem ipsum dolor sit amet consectetur. Integer a eros vitae arcu. Egestas dui id felis sed nunc congue scelerisque.",
-//       date: "18 Nov, 25 02:00PM",
-//       location: "Mohakhali 240, Dhaka",
-//       totalInvite: 24,
-//       status: "Buy Creator",
-//       rawDate: "2025-11-18",
-//       rawTime: "14:00"
-//     },
-//     {
-//       id: 2,
-//       title: "Birthday Family Outfit",
-//       description: "Lorem ipsum dolor sit amet consectetur. Integer a eros vitae arcu. Egestas dui id felis sed nunc congue scelerisque.",
-//       date: "18 Nov, 25 02:00PM",
-//       location: "Mohakhali 240, Dhaka",
-//       totalInvite: 24,
-//       status: "By Participants",
-//       rawDate: "2025-11-18",
-//       rawTime: "14:00"
-//     }
-//   ];
 
 //   const handleAddEmailField = () => {
 //     setEmailFields([...emailFields, '']);
@@ -419,11 +356,9 @@
 //     </div>
 //   );
 // }
+  
 
-
-
-
-"use client";
+"use client"
 
 import { Calendar, X, MapPin } from 'lucide-react';
 import Link from 'next/link';
@@ -432,18 +367,18 @@ import { useState } from 'react';
 import { CiEdit } from 'react-icons/ci';
 import { FaArrowLeft } from 'react-icons/fa';
 import { IoIosShareAlt } from 'react-icons/io';
+import { useGetEventsQuery } from '@/redux/features/event/eventSlice';
 
 // Define the event type
 type EventType = {
-  id: number;
+  _id: string;
   title: string;
   description: string;
-  date: string;
-  location: string;
-  totalInvite: number;
-  status: string;
-  rawDate: string;
-  rawTime: string;
+  eventDate: string;
+  address: string;
+  purchaseOption: string;
+  participant: number;
+  createdAt: string;
 };
 
 export default function Event() {
@@ -461,32 +396,29 @@ export default function Event() {
     description: ''
   });
   const router = useRouter();
-  
-  const events: EventType[] = [
-    {
-      id: 1,
-      title: "Birthday Family Outfit",
-      description: "Lorem ipsum dolor sit amet consectetur. Integer a eros vitae arcu. Egestas dui id felis sed nunc congue scelerisque.",
-      date: "18 Nov, 25 02:00PM",
-      location: "Mohakhali 240, Dhaka",
-      totalInvite: 24,
-      status: "Buy Creator",
-      rawDate: "2025-11-18",
-      rawTime: "14:00"
-    },
-    {
-      id: 2,
-      title: "Friend's Wedding Coordination",
-      description: "Join us for a coordinated outfit session for the upcoming wedding.",
-      date: "10 Dec, 25 05:30PM",
-      location: "Gulshan, Dhaka",
-      totalInvite: 15,
-      status: "By Participants",
-      rawDate: "2025-12-10",
-      rawTime: "17:30"
-    }
-  ];
 
+  const { data: eventsData, isLoading } = useGetEventsQuery({
+    type: activeTab,
+    page: 1,
+    limit: 10
+  });
+
+  const events: EventType[] = eventsData?.data || [];
+
+// Define the event type
+type EventType = {
+  id: number;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+  totalInvite: number;
+  status: string;
+  rawDate: string;
+  rawTime: string;
+};
+ 
+  
   const handleAddEmailField = () => {
     setEmailFields([...emailFields, '']);
   };
@@ -517,12 +449,13 @@ export default function Event() {
 
   const openEditModal = (event: EventType) => {
     setSelectedEvent(event);
+    const eventDate = new Date(event.eventDate);
     setEditFormData({
       title: event.title,
-      date: event.rawDate,
-      time: event.rawTime,
-      address: event.location,
-      purchaseOption: event.status === "Buy Creator" ? 'creator' : 'invitees',
+      date: eventDate.toISOString().split('T')[0],
+      time: eventDate.toTimeString().slice(0, 5),
+      address: event.address,
+      purchaseOption: event.purchaseOption,
       description: event.description
     });
     setIsEditModalOpen(true);
@@ -602,9 +535,9 @@ export default function Event() {
           Created
         </button>
         <button 
-          onClick={() => setActiveTab('invitations')}
+          onClick={() => setActiveTab('invited')}
           className={`px-6 py-2 rounded-r-lg font-medium transition-all duration-200 ${
-            activeTab === 'invitations' 
+            activeTab === 'invited' 
               ? 'bg-[#6100FF] text-white' 
               : 'bg-[#4C455A] text-gray-300 hover:bg-gray-700'
           }`}
@@ -615,47 +548,54 @@ export default function Event() {
 
       {/* Events List */}
       <div className="max-w-4xl mx-auto space-y-6 pb-6 px-4">
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => (
-            <div key={event.id} className="bg-[#2C233E] border border-[#67676D] rounded-lg p-6 hover:border-purple-500 transition-all duration-200">
+        {isLoading ? (
+          <div className="text-center text-gray-400 py-10">Loading events...</div>
+        ) : events.length > 0 ? (
+          events.map((event) => (
+            <div key={event._id} className="bg-[#2C233E] border border-[#67676D] rounded-lg p-6 hover:border-purple-500 transition-all duration-200">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <h3 className="text-2xl font-semibold font-cormorant text-white mb-2">{event.title}</h3>
                   <p className="text-gray-400 mb-4 font-poppins">{event.description}</p>
-                  
+
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 font-poppins text-gray-300">
                       <Calendar size={20} />
-                      <span>{event.date}</span>
+                      <span>{new Date(event.eventDate).toLocaleString('en-US', { 
+                        dateStyle: 'medium',
+                        timeStyle: 'short'
+                      })}</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 text-gray-300">
                       <MapPin size={20} />
-                      <span>{event.location}</span>
+                      <span>{event.address}</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-2 text-[16px] text-[#912DAD]">
-                      <span>Total Invite: {event.totalInvite}</span>
+                      <span>Participants: {event.participant || 0}</span>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-col gap-2 ml-4">
                   <div className="flex gap-3.5 items-center">
-                    <p className='bg-[#3D3648] px-4 py-1 rounded-full text-[#912DAD]'>{event?.status}</p>
-                    <CiEdit 
+                    <p className='bg-[#3D3648] px-4 py-1 rounded-full text-[#912DAD] text-sm'>
+                      {event.purchaseOption === 'creator' ? 'Buy Creator' : 'By Participants'}
+                    </p>
+                    <CiEdit
                       onClick={() => openEditModal(event)}
-                      className='text-[#1E5EFF] text-2xl cursor-pointer hover:text-[#3D7FFF]' 
+                      className='text-[#1E5EFF] text-2xl cursor-pointer hover:text-[#3D7FFF]'
                     />
                   </div>
-                  
-                  <Link href={"/profile/event/view-deaign"}>
+
+                  <Link href={`/profile/event/view-deaign?id=${event._id}`}>
                     <button className="px-4 py-2 cursor-pointer w-full mt-16 bg-[#912DAD] text-white rounded-lg hover:bg-[#7A2491] transition-all duration-200 text-sm">
                       View Design
                     </button>
                   </Link>
-                  
-                  <button 
+
+                  <button
                     onClick={openInviteModal}
                     className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 text-sm flex items-center justify-center gap-2">
                     <IoIosShareAlt size={24} />
@@ -667,7 +607,7 @@ export default function Event() {
           ))
         ) : (
           <div className="text-center text-gray-500 py-10">
-            No events to display.
+            No events to display. Create your first event!
           </div>
         )}
       </div>

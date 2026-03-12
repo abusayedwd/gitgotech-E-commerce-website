@@ -15,7 +15,8 @@ const eventSlice = apiSlice.injectEndpoints({
 
     // Get Events (created / invited)
     getEvents: builder.query({
-      query: (type = "created") => `/event/get?type=${type}`,
+      query: ({ type = "created", page = 1, limit = 10 }) => 
+        `/event/get?type=${type}&page=${page}&limit=${limit}`,
       providesTags: ["Events"],
     }),
 

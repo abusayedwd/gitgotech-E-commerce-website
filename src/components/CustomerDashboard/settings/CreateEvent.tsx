@@ -2,9 +2,13 @@
 import { useRouter } from 'next/navigation';
 import { useState, FormEvent, ChangeEvent } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
+import { useCreateEventMutation } from '@/redux/features/event/eventSlice';
+import toast from 'react-hot-toast';
 
 export default function CreateEvent() {
-    const router = useRouter();
+  const router = useRouter();
+  const [createEvent, { isLoading }] = useCreateEventMutation();
+  
   const [formData, setFormData] = useState({
     title: '',
     date: '',
@@ -14,17 +18,35 @@ export default function CreateEvent() {
     description: ''
   });
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log('Event created:', formData);
-    alert('Event created successfully!');
+    
+    // Combine date and time into ISO format
+    const eventDate = new Date(`${formData.date}T${formData.time}`).toISOString();
+    
+    try {
+      const eventData = {
+        title: formData.title,
+        eventDate,
+        address: formData.address,
+        purchaseOption: formData.purchaseOption,
+        description: formData.description,
+        customer: localStorage.getItem('userId') || '' // Get from auth context
+      };
+      
+      await createEvent(eventData).unwrap();
+      toast.success('Event created successfully!');
+      router.push('/settings/events'); // Redirect to events list
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to create event');
+    }
   };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value, type } = e.target as HTMLInputElement;
+    const { name, value } = e.target as HTMLInputElement;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'radio' ? value : value
+      [name]: value
     }));
   };
 
@@ -116,8 +138,8 @@ export default function CreateEvent() {
               <input
                 type="radio"
                 name="purchaseOption"
-                value="invitees"
-                checked={formData.purchaseOption === 'invitees'}
+                value="participator"
+                checked={formData.purchaseOption === 'participator'}
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 focus:ring-blue-500"
               />
@@ -142,9 +164,10 @@ export default function CreateEvent() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium"
+          disabled={isLoading}
+          className="w-full py-3 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Create Event
+          {isLoading ? 'Creating...' : 'Create Event'}
         </button>
       </form>
     </div>
