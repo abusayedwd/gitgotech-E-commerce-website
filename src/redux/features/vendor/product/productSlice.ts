@@ -8,44 +8,48 @@ const productSlice = apiSlice.injectEndpoints({
       query: ({ page = 1, limit = 10, showroomId }) => ({
         url: `/product`,
         params: { page, limit },
-        headers: {
-          showroom: showroomId,
-        },
+        headers: { showroom: showroomId },
       }),
       providesTags: [{ type: "Product" }],
     }),
 
     // GET PRODUCT DETAILS
     getProductDetails: builder.query({
-      query: (id) => `/product/details/${id}`,
+      query: ({ id, showroomId }) => ({
+        url: `/product/details/${id}`,
+        headers: { showroom: showroomId },
+      }),
       providesTags: [{ type: "Product" }],
     }),
 
     // ADD PRODUCT
     addProduct: builder.mutation({
-      query: (data) => ({
+      query: ({ data, showroomId }) => ({
         url: `/product/add`,
         method: "POST",
         body: data,
+        headers: { showroom: showroomId },
       }),
       invalidatesTags: [{ type: "Product" }],
     }),
 
     // UPDATE PRODUCT
     updateProduct: builder.mutation({
-      query: ({ id, data }) => ({
+      query: ({ id, data, showroomId }) => ({
         url: `/product/edit/${id}`,
         method: "PATCH",
         body: data,
+        headers: { showroom: showroomId },
       }),
       invalidatesTags: [{ type: "Product" }],
     }),
 
     // DELETE PRODUCT
     deleteProduct: builder.mutation({
-      query: (id) => ({
+      query: ({ id, showroomId }) => ({
         url: `/product/delete/${id}`,
         method: "DELETE",
+        headers: { showroom: showroomId },
       }),
       invalidatesTags: [{ type: "Product" }],
     }),

@@ -4,7 +4,7 @@ export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
   
-    baseUrl: "https://beginner-rochester-cartridges-tubes.trycloudflare.com/api/v1", 
+    baseUrl: "https://thru-gain-interval-bids.trycloudflare.com/api/v1", 
     // baseUrl: "http://10.10.7.68:3050/v1", https://beginner-rochester-cartridges-tubes.trycloudflare.com/
     
     prepareHeaders: (headers, { getState }) => {
@@ -18,7 +18,7 @@ export const apiSlice = createApi({
 
     
   }),
-  tagTypes: ["Profile", "Campaign", "Wallet", "Showroom", "About"],  
+  tagTypes: ["Profile", "Campaign", "Wallet", "Showroom", "About", "Product", "Order", "Orders", "Returns"],  
 
   endpoints: () => ({}), 
 });

@@ -1,60 +1,116 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Upload, ArrowLeft } from 'lucide-react';
+import { Upload, X, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
+import { useAddProductMutation } from '@/redux/features/vendor/product/productSlice';
+import toast from 'react-hot-toast';
 
 export default function AddProductPage() {
   const router = useRouter();
+  const showroomId = useSelector(selectShowroomId);
+  const [addProduct, { isLoading }] = useAddProductMutation();
+
   const [productName, setProductName] = useState('');
   const [description, setDescription] = useState('');
   const [price, setPrice] = useState('');
   const [category, setCategory] = useState('');
-  const [quantity, setQuantity] = useState('');
-  const [weight, setWeight] = useState('');
+  const [weightAmount, setWeightAmount] = useState('');
+  const [weightUnit, setWeightUnit] = useState('kg');
   const [hasDiscount, setHasDiscount] = useState(false);
   const [discountPercent, setDiscountPercent] = useState('');
-  const [discountDate, setDiscountDate] = useState('');
+  const [discountStartDate, setDiscountStartDate] = useState('');
+  const [discountEndDate, setDiscountEndDate] = useState('');
   const [mixDesign, setMixDesign] = useState(false);
   const [customDesign, setCustomDesign] = useState(false);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
-  const sizes = ['S', 'M', 'L', 'XL', 'XXL', '3X', '4X'];
+  // Size & stock management
+  const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3X', '4X'];
+  const [productStocks, setProductStocks] = useState<{ size: string; stock: number }[]>([]);
 
   const toggleSize = (size: string) => {
-    if (selectedSizes.includes(size)) {
-      setSelectedSizes(selectedSizes.filter(s => s !== size));
+    const exists = productStocks.find((s) => s.size === size);
+    if (exists) {
+      setProductStocks(productStocks.filter((s) => s.size !== size));
     } else {
-      setSelectedSizes([...selectedSizes, size]);
+      setProductStocks([...productStocks, { size, stock: 0 }]);
     }
+  };
+
+  const updateStock = (size: string, stock: number) => {
+    setProductStocks(productStocks.map((s) => (s.size === size ? { ...s, stock } : s)));
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      console.log('Files uploaded:', files);
+      const newFiles = Array.from(files);
+      setImageFiles((prev) => [...prev, ...newFiles]);
+      newFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          setImagePreviews((prev) => [...prev, ev.target?.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
     }
+  };
+
+  const removeImage = (index: number) => {
+    setImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleCancel = () => {
     router.back();
   };
 
-  const handleUpload = () => {
-    console.log('Upload product', {
-      productName,
-      description,
-      price,
-      category,
-      quantity,
-      weight,
-      hasDiscount,
-      discountPercent,
-      discountDate,
-      selectedSizes,
-      mixDesign,
-      customDesign
+  const handleUpload = async () => {
+    if (!productName || !price || !category) {
+      toast.error('Please fill in product name, price, and category');
+      return;
+    }
+
+    const productData: any = {
+      product_name: productName,
+      product_category: category,
+      product_description: description,
+      product_price: parseFloat(price),
+      product_stocks: productStocks,
+      product_weight: {
+        unit: weightUnit,
+        amount: parseFloat(weightAmount) || 0,
+      },
+      isMixable: mixDesign,
+      isCustom: customDesign,
+    };
+
+    if (hasDiscount) {
+      productData.discount = {
+        isValid: true,
+        percentage: parseFloat(discountPercent) || 0,
+        startDate: discountStartDate ? new Date(discountStartDate).toISOString() : '',
+        endDate: discountEndDate ? new Date(discountEndDate).toISOString() : '',
+      };
+    }
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(productData));
+    imageFiles.forEach((file) => {
+      formData.append('files', file);
     });
+
+    try {
+      const res = await addProduct({ data: formData, showroomId }).unwrap();
+      toast.success(res?.message || 'Product added successfully');
+      router.push('/vendor-dashboard/products');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to add product');
+    }
   };
 
   return (
@@ -62,27 +118,29 @@ export default function AddProductPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="container mx-auto mt-4 flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </div>
-        </button>
+          <button onClick={() => router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+            <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </div>
+          </button>
           <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Add product</h1>
         </div>
 
         <div className="flex gap-3">
-          <button 
+          <button
             onClick={handleCancel}
             className="px-6 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors"
           >
             Cancel
           </button>
-          <button 
+          <button
             onClick={handleUpload}
-            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all shadow-lg shadow-purple-500/20"
+            disabled={isLoading}
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2 disabled:opacity-50"
           >
+            {isLoading && <Loader2 size={16} className="animate-spin" />}
             Upload
           </button>
         </div>
@@ -143,33 +201,57 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        {/* Quantity and Weight */}
+        {/* Weight */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Quantity</label>
+            <label className="block text-sm text-gray-400 mb-2">Weight Amount</label>
             <input
               type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Type here"
+              value={weightAmount}
+              onChange={(e) => setWeightAmount(e.target.value)}
+              placeholder="e.g. 1.5"
+              step="0.1"
               className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Weight</label>
-            <input
-              type="text"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              placeholder="Type here"
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
-            />
+            <label className="block text-sm text-gray-400 mb-2">Weight Unit</label>
+            <select
+              value={weightUnit}
+              onChange={(e) => setWeightUnit(e.target.value)}
+              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+            >
+              <option value="kg">kg</option>
+              <option value="g">g</option>
+              <option value="lb">lb</option>
+              <option value="oz">oz</option>
+            </select>
           </div>
         </div>
 
         {/* Image Upload */}
         <div className="mb-6">
           <label className="block text-sm text-gray-400 mb-2">Product Images</label>
+
+          {/* Preview uploaded images */}
+          {imagePreviews.length > 0 && (
+            <div className="flex gap-4 flex-wrap mb-4">
+              {imagePreviews.map((src, index) => (
+                <div key={index} className="relative group">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-gray-700">
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <button
+                    onClick={() => removeImage(index)}
+                    className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center hover:border-purple-500 transition-colors cursor-pointer">
             <input
               type="file"
@@ -187,16 +269,16 @@ export default function AddProductPage() {
           </div>
         </div>
 
-        {/* Available Sizes */}
+        {/* Available Sizes with Stock */}
         <div className="mb-6">
           <label className="block text-sm text-gray-400 mb-2">Available Sizes</label>
-          <div className="flex flex-wrap gap-3">
-            {sizes.map((size) => (
+          <div className="flex flex-wrap gap-3 mb-4">
+            {availableSizes.map((size) => (
               <button
                 key={size}
                 onClick={() => toggleSize(size)}
                 className={`px-4 py-2 rounded-lg border transition-all ${
-                  selectedSizes.includes(size)
+                  productStocks.find((s) => s.size === size)
                     ? 'bg-purple-600 border-purple-500 text-white'
                     : 'bg-gray-900/50 border-gray-700 text-gray-400 hover:border-purple-500'
                 }`}
@@ -205,10 +287,25 @@ export default function AddProductPage() {
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Value (Colors) */}
-        
+          {/* Stock inputs for selected sizes */}
+          {productStocks.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {productStocks.map((item) => (
+                <div key={item.size}>
+                  <label className="block text-xs text-gray-400 mb-1">Stock for {item.size}</label>
+                  <input
+                    type="number"
+                    value={item.stock}
+                    onChange={(e) => updateStock(item.size, parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                    className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500 text-sm"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
 
         {/* Product Discount */}
         <div className="mb-6">
@@ -227,7 +324,7 @@ export default function AddProductPage() {
           </div>
 
           {hasDiscount && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Discount (%)</label>
                 <input
@@ -239,11 +336,20 @@ export default function AddProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Discount expired date</label>
+                <label className="block text-sm text-gray-400 mb-2">Start Date</label>
                 <input
                   type="date"
-                  value={discountDate}
-                  onChange={(e) => setDiscountDate(e.target.value)}
+                  value={discountStartDate}
+                  onChange={(e) => setDiscountStartDate(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">End Date</label>
+                <input
+                  type="date"
+                  value={discountEndDate}
+                  onChange={(e) => setDiscountEndDate(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
                 />
               </div>

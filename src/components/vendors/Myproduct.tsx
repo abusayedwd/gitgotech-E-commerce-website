@@ -4,7 +4,10 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
-import { useGetProductsQuery } from '@/redux/features/vendor/product/productSlice';
+import { useGetProductsQuery, useDeleteProductMutation } from '@/redux/features/vendor/product/productSlice';
+import baseUrl from '@/redux/api/baseUrl';
+import toast from 'react-hot-toast';
+import DeleteModal from '@/components/shared/DeleteModal';
 
 export default function MyProducts() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -12,9 +15,29 @@ export default function MyProducts() {
   const router = useRouter();
 
   const showroomId = useSelector(selectShowroomId);
-  console.log(showroomId)
 
   const { data: productData, isLoading } = useGetProductsQuery({ showroomId }, { skip: !showroomId });
+  const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+
+  const openDeleteModal = (product: any) => {
+    setDeleteTarget(product);
+    setShowDeleteModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      const res = await deleteProduct({ id: deleteTarget._id, showroomId }).unwrap();
+      toast.success(res?.message || 'Product deleted');
+    } catch (error: any) {
+      const msg = error?.data?.message || 'Failed to delete product';
+      toast.error(typeof msg === 'string' ? msg : 'Failed to delete product');
+    }
+    setShowDeleteModal(false);
+    setDeleteTarget(null);
+  };
  
   
 
@@ -103,7 +126,7 @@ export default function MyProducts() {
             {/* Product Image */}
             <div className="relative bg-gray-800 aspect-square flex items-center justify-center overflow-hidden">
               <img
-                src="/images/jacket.png"
+                src={product.product_images?.[0] ? `${baseUrl}/${product.product_images[0]}` : '/images/jacket.png'}
                 alt={product.product_name}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               />
@@ -111,10 +134,22 @@ export default function MyProducts() {
               {/* Buttons overlay */}
               <div className="absolute bottom-2 md:bottom-3 left-2 right-2 md:left-auto md:right-3 flex justify-between md:justify-end gap-2 md:gap-4">
                 <button
+                  onClick={() => router.push(`products/details?id=${product._id}`)}
+                  className="bg-purple-600 px-3 md:px-5 py-1.5 md:py-2 rounded text-xs md:text-sm text-white font-medium hover:bg-purple-700 transition-colors"
+                >
+                  View Details
+                </button>
+                <button
                   onClick={() => router.push(`products/edit-product?id=${product._id}`)}
                   className="bg-blue-500 px-3 md:px-5 py-1.5 md:py-2 rounded text-xs md:text-sm text-white font-medium hover:bg-blue-600 transition-colors"
                 >
                   Edit
+                </button>
+                <button
+                  onClick={() => openDeleteModal(product)}
+                  className="bg-red-600 px-3 md:px-5 py-1.5 md:py-2 rounded text-xs md:text-sm text-white font-medium hover:bg-red-700 transition-colors"
+                >
+                  Delete
                 </button>
                 <span
                   className={`px-2 md:px-3 py-1.5 md:py-2 text-xs md:text-sm font-medium ${
@@ -152,6 +187,15 @@ export default function MyProducts() {
           </div>
         ))}
       </div>
+
+      <DeleteModal
+        show={showDeleteModal}
+        title="Delete Product"
+        itemName={deleteTarget?.product_name}
+        deleting={deleting}
+        onClose={() => { setShowDeleteModal(false); setDeleteTarget(null); }}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }

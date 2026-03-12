@@ -2,91 +2,145 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+import { useGetVendorOrdersQuery, useGetVendorReturnsQuery, useUpdateOrderStatusMutation } from '@/redux/features/vendor/order/orderSlice';
+import { useSelector } from 'react-redux';
+import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
 
 interface Order {
-  id: string;
-  date: string;
-  customer: string;
-  status: string;
+  _id: string;
+  customer: {
+    _id: string;
+    name: string;
+  };
+  product: {
+    _id: string;
+    product_name: string;
+  };
+  orderStatus: string;
+  createdAt: string;
 }
 
 interface Return {
-  id: string;
-  date: string;
-  customer: string;
+  _id: string;
+  product: {
+    _id: string;
+    product_name: string;
+  };
+  showroom: {
+    _id: string;
+    showroom_name: string;
+  };
   status: string;
-  reason?: string;
+  clientReason: string;
+  createdAt: string;
 }
+
+const ORDER_STATUS_OPTIONS = [
+  'Pending',
+  'Order Placed',
+  'Processing',
+  'Ready for Pickup',
+  'Driver Accepted',
+  'Picked Up',
+  'Delivered',
+  'Rejected',
+];
+
+const ORDER_FILTERS = [
+  'All Orders',
+  'Pending',
+  'Order Placed',
+  'Processing',
+  'Ready for Pickup',
+  'Driver Accepted',
+  'Picked Up',
+  'Delivered',
+  'Rejected',
+];
+
+const RETURN_FILTERS = [
+  'All Returns',
+  'Pending',
+  'Return Accepted',
+  'Return Declined',
+  'Refunded',
+];
 
 export default function OrderHistory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('Filter');
-  const [currentPage, setCurrentPage] = useState(2);
+  const [currentPage, setCurrentPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'orders' | 'returns'>('orders');
+  const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
+
   const router = useRouter();
+  const limit = 10;
 
-  const allOrders: Order[] = [
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Order Placed' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Processing' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Shipped' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Order Placed' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Order Accepted' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refund Init' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refund Init' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Delivered' },
-  ];
+  const showroomId = useSelector(selectShowroomId);
 
-  const allReturns: Return[] = [
-    { id: '#12512B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Return Accepted' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Return Declined' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Return Declined' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Return Accepted' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Return Accepted' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Pending' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Pending' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-    { id: '#72517B', date: 'May 5, 4:20 PM', customer: 'Tom Anderson', status: 'Refunded' },
-  ];
+  const [updateOrderStatus] = useUpdateOrderStatusMutation();
+
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    setUpdatingOrderId(orderId);
+    try {
+      await updateOrderStatus({
+        id: orderId,
+        orderStatus: newStatus,
+        showroomId,
+      }).unwrap();
+      refetchOrders();
+    } catch (err) {
+      console.error('Failed to update order status:', err);
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  const { data: ordersData, isLoading: ordersLoading, refetch: refetchOrders } = useGetVendorOrdersQuery({
+    page: currentPage,
+    limit,
+    searchQ: searchTerm,
+    filter: filterType !== 'All Orders' && filterType !== 'Filter' ? filterType : '',
+    showroomId,
+  });
+
+  const { data: returnsData, isLoading: returnsLoading, refetch: refetchReturns } = useGetVendorReturnsQuery({
+    page: currentPage,
+    limit,
+    searchQ: searchTerm,
+    filter: filterType !== 'All Returns' && filterType !== 'Filter' ? filterType : '',
+    showroomId,
+  });
+
+  const allOrders: Order[] = ordersData?.data || [];
+  const allReturns: Return[] = returnsData?.data || [];
+
+  const pagination = activeTab === 'orders' ? ordersData?.pagination : returnsData?.pagination;
+  const isLoading = activeTab === 'orders' ? ordersLoading : returnsLoading;
 
   const getStatusStyle = (status: string) => {
     const styles: { [key: string]: string } = {
       'Order Placed': 'bg-yellow-900/30 text-yellow-500 border border-yellow-500/30',
       'Processing': 'bg-purple-900/30 text-purple-400 border border-purple-500/30',
-      'Shipped': 'bg-blue-900/30 text-blue-400 border border-blue-500/30',
-      'Order Accepted': 'bg-cyan-900/30 text-cyan-400 border border-cyan-500/30',
-      'Refund Init': 'bg-teal-900/30 text-teal-400 border border-teal-500/30',
+      'Ready for Pickup': 'bg-blue-900/30 text-blue-400 border border-blue-500/30',
+      'Driver Accepted': 'bg-cyan-900/30 text-cyan-400 border border-cyan-500/30',
+      'Picked Up': 'bg-indigo-900/30 text-indigo-400 border border-indigo-500/30',
       'Delivered': 'bg-green-900/30 text-green-400 border border-green-500/30',
+      'Pending': 'bg-gray-900/30 text-gray-400 border border-gray-500/30',
+      'Rejected': 'bg-red-900/30 text-red-400 border border-red-500/30',
       'Return Accepted': 'bg-orange-900/30 text-orange-400 border border-orange-500/30',
       'Return Declined': 'bg-red-900/30 text-red-400 border border-red-500/30',
-      'Pending': 'bg-gray-900/30 text-gray-400 border border-gray-500/30',
       'Refunded': 'bg-green-900/30 text-green-400 border border-green-500/30'
     };
     return styles[status] || 'bg-gray-900/30 text-gray-400 border border-gray-500/30';
   };
 
-  const handleViewDetails = (item: Order | Return) => {
-    console.log('View details:', item);
+  const handleViewDetails = (orderId: string) => {
     // Navigate to different routes based on active tab
     if (activeTab === 'orders') {
-      router.push("/vendor-dashboard/orders/details");
+      router.push(`/vendor-dashboard/orders/details?id=${orderId}`);
     } else {
-      router.push("/vendor-dashboard/orders/return-product");
+      router.push(`/vendor-dashboard/orders/return-product?id=${orderId}`);
     }
   };
 
@@ -123,29 +177,15 @@ export default function OrderHistory() {
         
         {/* Filter and Search */}
         <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6">
-          <select 
+          <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
             className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
           >
             <option>Filter</option>
-            {activeTab === 'orders' ? (
-              <>
-                <option>All Orders</option>
-                <option>Order Placed</option>
-                <option>Processing</option>
-                <option>Shipped</option>
-                <option>Delivered</option>
-              </>
-            ) : (
-              <>
-                <option>All Returns</option>
-                <option>Pending</option>
-                <option>Return Accepted</option>
-                <option>Return Declined</option>
-                <option>Refunded</option>
-              </>
-            )}
+            {(activeTab === 'orders' ? ORDER_FILTERS : RETURN_FILTERS).map((filter) => (
+              <option key={filter}>{filter}</option>
+            ))}
           </select>
           <div className="flex-1 relative">
             <input
@@ -164,31 +204,54 @@ export default function OrderHistory() {
 
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-3 mb-4">
-        {(activeTab === 'orders' ? allOrders : allReturns).map((item, index) => (
-          <div
-            key={index}
-            className="bg-gray-800/20 border border-gray-700/30 rounded-lg p-4 hover:bg-gray-800/30 transition-colors"
-          >
-            <div className="flex justify-between items-start mb-3">
-              <div>
-                <div className="text-sm font-medium text-white mb-1">{item.id}</div>
-                <div className="text-xs text-gray-400">{item.date}</div>
+        {isLoading ? (
+          <div className="text-center text-gray-400 py-8">Loading...</div>
+        ) : (activeTab === 'orders' ? allOrders : allReturns).length === 0 ? (
+          <div className="text-center text-gray-400 py-8">No {activeTab} found</div>
+        ) : (
+          (activeTab === 'orders' ? allOrders : allReturns).map((item) => (
+            <div
+              key={item._id}
+              className="bg-gray-800/20 border border-gray-700/30 rounded-lg p-4 hover:bg-gray-800/30 transition-colors"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <div className="text-sm font-medium text-white mb-1">#{item._id.slice(-8)}</div>
+                  <div className="text-xs text-gray-400">{new Date(item.createdAt).toLocaleString()}</div>
+                </div>
+                {activeTab === 'orders' ? (
+                  <select
+                    value={item.orderStatus}
+                    onChange={(e) => handleStatusUpdate(item._id, e.target.value)}
+                    disabled={updatingOrderId === item._id}
+                    className="px-2 py-1 bg-gray-800/50 border border-purple-500/30 rounded-lg text-xs text-white focus:outline-none focus:border-purple-500 disabled:opacity-50"
+                  >
+                    {ORDER_STATUS_OPTIONS.map((status) => (
+                      <option key={status} value={status}>
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(item.status)}`}>
+                    {item.status}
+                  </span>
+                )}
               </div>
-              <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(item.status)}`}>
-                {item.status}
-              </span>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-700/30">
+                <span className="text-sm text-white">
+                  {activeTab === 'orders' ? item.customer?.name : item.showroom?.showroom_name}
+                </span>
+                <button
+                  onClick={() => handleViewDetails(item._id)}
+                  className="px-3 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+                >
+                  View Details
+                </button>
+              </div>
             </div>
-            <div className="flex justify-between items-center pt-2 border-t border-gray-700/30">
-              <span className="text-sm text-white">{item.customer}</span>
-              <button 
-                onClick={() => handleViewDetails(item)}
-                className="px-3 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
-              >
-                View Details
-              </button>
-            </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Desktop Table View */}
@@ -202,75 +265,111 @@ export default function OrderHistory() {
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Date & Time</th>
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Customer</th>
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
-                {activeTab === 'orders' ? 'Order Status' : 'Order Status'}
+                {activeTab === 'orders' ? 'Order Status' : 'Return Status'}
               </th>
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Action</th>
             </tr>
           </thead>
           <tbody>
-            {(activeTab === 'orders' ? allOrders : allReturns).map((item, index) => (
-              <tr key={index} className="border-b border-gray-800/30 hover:bg-gray-800/20 transition-colors">
-                <td className="py-3 px-4 text-sm text-white">{item.id}</td>
-                <td className="py-3 px-4 text-sm text-gray-400">{item.date}</td>
-                <td className="py-3 px-4 text-sm text-white">{item.customer}</td>
-                <td className="py-3 px-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(item.status)}`}>
-                    {item.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <button 
-                    onClick={() => handleViewDetails(item)}
-                    className="px-4 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
-                  >
-                    View Details
-                  </button>
-                </td>
+            {isLoading ? (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-gray-400">Loading...</td>
               </tr>
-            ))}
+            ) : (activeTab === 'orders' ? allOrders : allReturns).length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-8 text-center text-gray-400">No {activeTab} found</td>
+              </tr>
+            ) : (
+              (activeTab === 'orders' ? allOrders : allReturns).map((item) => (
+                <tr key={item._id} className="border-b border-gray-800/30 hover:bg-gray-800/20 transition-colors">
+                  <td className="py-3 px-4 text-sm text-white">#{item._id.slice(-8)}</td>
+                  <td className="py-3 px-4 text-sm text-gray-400">{new Date(item.createdAt).toLocaleString()}</td>
+                  <td className="py-3 px-4 text-sm text-white">
+                    {activeTab === 'orders' ? item.customer?.name : item.showroom?.showroom_name}
+                  </td>
+                  <td className="py-3 px-4">
+                    {activeTab === 'orders' ? (
+                      <div className="flex items-center gap-2">
+                        <select
+                          value={item.orderStatus}
+                          onChange={(e) => handleStatusUpdate(item._id, e.target.value)}
+                          disabled={updatingOrderId === item._id}
+                          className="px-3 py-1 bg-gray-800/50 border border-purple-500/30 rounded-lg text-xs text-white focus:outline-none focus:border-purple-500 disabled:opacity-50"
+                        >
+                          {ORDER_STATUS_OPTIONS.map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    ) : (
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(item.status)}`}>
+                        {item.status}
+                      </span>
+                    )}
+                  </td>
+                  <td className="py-3 px-4">
+                    <button
+                      onClick={() => handleViewDetails(item._id)}
+                      className="px-4 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+                    >
+                      View Details
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-center gap-1.5 md:gap-2 mt-4 md:mt-6 overflow-x-auto pb-2">
-        <button 
-          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-          className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base"
-        >
-          ←
-        </button>
-        
-        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
-          1
-        </button>
-        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 rounded-lg text-xs md:text-sm">
-          2
-        </button>
-        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
-          3
-        </button>
-        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
-          4
-        </button>
-        <button className="hidden sm:flex w-7 h-7 md:w-8 md:h-8 shrink-0 items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
-          5
-        </button>
-        <button className="hidden sm:flex w-7 h-7 md:w-8 md:h-8 shrink-0 items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
-          6
-        </button>
-        <span className="text-gray-400 text-xs md:text-sm px-1">...</span>
-        <button className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors text-xs md:text-sm">
-          24
-        </button>
-        
-        <button 
-          onClick={() => setCurrentPage(currentPage + 1)}
-          className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base"
-        >
-          →
-        </button>
-      </div>
+      {pagination && pagination.totalPage > 1 && (
+        <div className="flex items-center justify-center gap-1.5 md:gap-2 mt-4 md:mt-6 overflow-x-auto pb-2">
+          <button
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ←
+          </button>
+
+          {Array.from({ length: Math.min(5, pagination.totalPage) }, (_, i) => {
+            let pageNum;
+            if (pagination.totalPage <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= pagination.totalPage - 2) {
+              pageNum = pagination.totalPage - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            return (
+              <button
+                key={pageNum}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center rounded-lg transition-colors text-xs md:text-sm ${
+                  currentPage === pageNum
+                    ? 'bg-purple-600'
+                    : 'bg-gray-800 hover:bg-gray-700'
+                }`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+
+          <button
+            onClick={() => setCurrentPage(Math.min(pagination.totalPage, currentPage + 1))}
+            disabled={currentPage === pagination.totalPage}
+            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            →
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,10 +1,56 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
+import { useGetReturnDetailsQuery, useReturnOrderActionMutation } from '@/redux/features/vendor/order/orderSlice';
+import { useSelector } from 'react-redux';
+import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
+
+interface ReturnDetails {
+  _id: string;
+  product: {
+    _id: string;
+    product_name: string;
+  };
+  showroom: {
+    _id: string;
+    showroom_name: string;
+  };
+  status: string;
+  clientReason: string;
+  vendorReason: string | null;
+  deliveryInfo: {
+    name: string;
+    address: string;
+    country: string;
+    state: string;
+    zipcode: number;
+    email?: string;
+    phone?: number;
+  };
+  pickUpInfo?: {
+    name: string;
+    address: string;
+    country: string;
+    state: string;
+    zipcode: number;
+    email?: string;
+    phone?: number;
+  };
+  price: {
+    unit: string;
+    tip: number;
+    deliveryCharge: number;
+  };
+  createdAt?: string;
+}
 
 export default function ReturnDetails() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnId = searchParams.get('id') || '';
+ 
+  
   const [showChat, setShowChat] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -13,18 +59,16 @@ export default function ReturnDetails() {
   const [reportReason, setReportReason] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
-  const returnData = {
-    orderId: '#72517B',
-    customer: 'Tom Anderson',
-    date: 'May 5, 4:20 PM',
-    product: {
-      name: 'Brown Bomber Jacket',
-      image: '/images/jacket.png',
-      price: '$89.99',
-      quantity: 1
-    },
-    reason: 'Lorem ipsum dolor sit amet consectetur. Enim non sit varius ut vulpat amet nisi. Faucibus lacus elit faucibus tempus scelerisque. Sagittis at orci rutrum lorem arcu at massa. Ac sed accumsan ipsum ornare blandit. Facilisi lacus lorem sodales diam.'
-  };
+  const showroomId = useSelector(selectShowroomId)
+
+  const { data, isLoading, error } = useGetReturnDetailsQuery({
+    id: returnId,
+    showroomId,
+  });
+
+  const [returnOrderAction, { isLoading: isActionLoading }] = useReturnOrderActionMutation();
+
+  const returnData: ReturnDetails | null = data?.data || null;
 
   const handleAccept = () => {
     setShowConfirmModal(true);
@@ -42,16 +86,24 @@ export default function ReturnDetails() {
     router.back();
   };
 
-  const confirmAccept = () => {
-    console.log('Return accepted');
-    setShowConfirmModal(false);
-    // Add your accept logic here
+  const confirmAccept = async () => {
+    try {
+      await returnOrderAction({ id: returnId, action: 'accept', showroomId }).unwrap();
+      setShowConfirmModal(false);
+      router.back();
+    } catch (err) {
+      console.error('Failed to accept return:', err);
+    }
   };
 
-  const confirmDecline = () => {
-    console.log('Return declined with reason:', declineReason);
-    setShowDeclineModal(false);
-    // Add your decline logic here
+  const confirmDecline = async () => {
+    try {
+      await returnOrderAction({ id: returnId, action: 'decline', showroomId }).unwrap();
+      setShowDeclineModal(false);
+      router.back();
+    } catch (err) {
+      console.error('Failed to decline return:', err);
+    }
   };
 
   const submitReport = () => {
@@ -70,6 +122,22 @@ export default function ReturnDetails() {
     setUploadedImages(prev => prev.filter((_, i) => i !== index));
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+        <div className="text-purple-400 text-xl">Loading return details...</div>
+      </div>
+    );
+  }
+
+  if (error || !returnData) {
+    return (
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+        <div className="text-red-400 text-xl">Failed to load return details</div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0f] p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -84,21 +152,23 @@ export default function ReturnDetails() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <h1 className="text-2xl font-bold text-white">View Details</h1>
+            <h1 className="text-2xl font-bold text-white">Return Details</h1>
           </div>
 
           <div className="flex gap-3">
             <button
               onClick={handleAccept}
-              className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white font-medium transition-all shadow-lg shadow-purple-500/20"
+              disabled={isActionLoading}
+              className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white font-medium transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Accept
+              {isActionLoading ? 'Processing...' : 'Accept'}
             </button>
             <button
               onClick={handleDecline}
-              className="px-6 py-2.5 bg-transparent border border-red-500/50 hover:bg-red-500/10 rounded-lg text-red-400 font-medium transition-all"
+              disabled={isActionLoading}
+              className="px-6 py-2.5 bg-transparent border border-red-500/50 hover:bg-red-500/10 rounded-lg text-red-400 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Decline
+              {isActionLoading ? 'Processing...' : 'Decline'}
             </button>
             <button
               onClick={handleReport}
@@ -114,8 +184,8 @@ export default function ReturnDetails() {
           {/* Product Image */}
           <div className="bg-white rounded-2xl p-8 flex items-center justify-center">
             <img
-              src={returnData.product.image}
-              alt={returnData.product.name}
+              src="/images/jacket.png"
+              alt={returnData.product.product_name}
               className="max-w-full h-auto object-contain"
             />
           </div>
@@ -123,10 +193,16 @@ export default function ReturnDetails() {
           {/* Reason Box */}
           <div className="relative">
             <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border border-purple-500/30 rounded-2xl p-6">
-              <h2 className="text-xl font-semibold text-white mb-4">Reason</h2>
+              <h2 className="text-xl font-semibold text-white mb-4">Reason for Return</h2>
               <p className="text-gray-300 leading-relaxed">
-                {returnData.reason}
+                {returnData.clientReason}
               </p>
+              {returnData.vendorReason && (
+                <div className="mt-4 pt-4 border-t border-purple-500/30">
+                  <p className="text-purple-400 text-sm mb-2">Vendor Response:</p>
+                  <p className="text-gray-300">{returnData.vendorReason}</p>
+                </div>
+              )}
             </div>
 
             {/* Chat Button */}
@@ -141,33 +217,103 @@ export default function ReturnDetails() {
           </div>
         </div>
 
-        {/* Order Information */}
+        {/* Return Information */}
         <div className="mt-6 bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/30 rounded-2xl p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">Order Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <h2 className="text-xl font-semibold text-white mb-6">Return Information</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             <div>
-              <p className="text-gray-400 text-sm mb-1">Order ID</p>
-              <p className="text-white font-medium">{returnData.orderId}</p>
+              <p className="text-gray-400 text-sm mb-1">Return ID</p>
+              <p className="text-white font-medium">#{returnData._id.slice(-8)}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-sm mb-1">Customer</p>
-              <p className="text-white font-medium">{returnData.customer}</p>
+              <p className="text-gray-400 text-sm mb-1">Showroom</p>
+              <p className="text-white font-medium">{returnData.showroom.showroom_name}</p>
             </div>
             <div>
-              <p className="text-gray-400 text-sm mb-1">Date</p>
-              <p className="text-white font-medium">{returnData.date}</p>
+              <p className="text-gray-400 text-sm mb-1">Status</p>
+              <p className="text-white font-medium">{returnData.status}</p>
             </div>
           </div>
 
-          <div className="mt-6 pt-6 border-t border-gray-700/30">
-            <div className="flex items-center justify-between">
+          <div className="pt-6 border-t border-gray-700/30">
+            <div className="flex items-center justify-between mb-4">
               <div>
-                <p className="text-white font-medium">{returnData.product.name}</p>
-                <p className="text-gray-400 text-sm">Quantity: {returnData.product.quantity}</p>
+                <p className="text-white font-medium">{returnData.product.product_name}</p>
+                <p className="text-gray-400 text-sm mt-1">Product ID: #{returnData.product._id.slice(-8)}</p>
               </div>
-              <p className="text-white font-semibold text-lg">{returnData.product.price}</p>
+              <div className="text-right">
+                <p className="text-gray-400 text-sm">Tip: ${returnData.price.tip}</p>
+                <p className="text-gray-400 text-sm">Delivery: ${returnData.price.deliveryCharge}</p>
+                <p className="text-white font-semibold text-lg">Total: ${returnData.price.tip + returnData.price.deliveryCharge}</p>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Delivery & PickUp Information */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+          {/* Delivery Information */}
+          <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/30 rounded-2xl p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Delivery Information</h2>
+            <div className="space-y-3">
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Name</p>
+                <p className="text-white font-medium">{returnData.deliveryInfo.name}</p>
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm mb-1">Address</p>
+                <p className="text-white font-medium">
+                  {returnData.deliveryInfo.address}, {returnData.deliveryInfo.state}, {returnData.deliveryInfo.zipcode}, {returnData.deliveryInfo.country}
+                </p>
+              </div>
+              {returnData.deliveryInfo.email && (
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Email</p>
+                  <p className="text-white font-medium">{returnData.deliveryInfo.email}</p>
+                </div>
+              )}
+              {returnData.deliveryInfo.phone && (
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Phone</p>
+                  <p className="text-white font-medium">{returnData.deliveryInfo.phone}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* PickUp Information */}
+          {returnData.pickUpInfo && (
+            <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/30 border border-gray-700/30 rounded-2xl p-6">
+              <h2 className="text-xl font-semibold text-white mb-4">PickUp Information</h2>
+              <div className="space-y-3">
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Name</p>
+                  <p className="text-white font-medium">{returnData.pickUpInfo.name}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm mb-1">Address</p>
+                  <p className="text-white font-medium">
+                    {returnData.pickUpInfo.address}
+                    {returnData.pickUpInfo.state && `, ${returnData.pickUpInfo.state}`}
+                    {returnData.pickUpInfo.zipcode && `, ${returnData.pickUpInfo.zipcode}`}
+                    {returnData.pickUpInfo.country && `, ${returnData.pickUpInfo.country}`}
+                  </p>
+                </div>
+                {returnData.pickUpInfo.email && (
+                  <div>
+                    <p className="text-gray-400 text-sm mb-1">Email</p>
+                    <p className="text-white font-medium">{returnData.pickUpInfo.email}</p>
+                  </div>
+                )}
+                {returnData.pickUpInfo.phone && (
+                  <div>
+                    <p className="text-gray-400 text-sm mb-1">Phone</p>
+                    <p className="text-white font-medium">{returnData.pickUpInfo.phone}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Chat Panel (Optional) */}
@@ -202,7 +348,7 @@ export default function ReturnDetails() {
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <div className="bg-[#0a0a0f] border border-purple-500/30 rounded-2xl p-6 w-full max-w-md">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-semibold text-white">Reason</h3>
+                <h3 className="text-xl font-semibold text-white">Decline Return</h3>
                 <button
                   onClick={() => setShowDeclineModal(false)}
                   className="text-gray-400 hover:text-white transition-colors"
@@ -211,10 +357,6 @@ export default function ReturnDetails() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
-              </div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">G</div>
-                <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">M</div>
               </div>
               <p className="text-purple-400 text-sm mb-4">Tell us why you're declining this return request.</p>
               <textarea
@@ -225,14 +367,14 @@ export default function ReturnDetails() {
               />
               <button
                 onClick={confirmDecline}
-                disabled={!declineReason.trim()}
+                disabled={!declineReason.trim() || isActionLoading}
                 className={`w-full mt-4 px-6 py-3 rounded-lg font-medium transition-all ${
-                  declineReason.trim()
+                  declineReason.trim() && !isActionLoading
                     ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
                     : 'bg-gray-700 text-gray-400 cursor-not-allowed'
                 }`}
               >
-                Send
+                {isActionLoading ? 'Processing...' : 'Send'}
               </button>
             </div>
           </div>
@@ -257,15 +399,17 @@ export default function ReturnDetails() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowConfirmModal(false)}
-                  className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors"
+                  disabled={isActionLoading}
+                  className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={confirmAccept}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-lg text-white font-medium transition-all"
+                  disabled={isActionLoading}
+                  className="flex-1 px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 rounded-lg text-white font-medium transition-all disabled:opacity-50"
                 >
-                  Confirm
+                  {isActionLoading ? 'Processing...' : 'Confirm'}
                 </button>
               </div>
             </div>
@@ -288,7 +432,7 @@ export default function ReturnDetails() {
                 </button>
               </div>
               <p className="text-purple-400 text-sm mb-4 text-center">Your report will go to admin</p>
-              
+
               <div className="mb-4">
                 <label className="block text-sm text-gray-400 mb-2">Upload Images</label>
                 <div className="flex flex-wrap gap-2 mb-2">
@@ -317,7 +461,7 @@ export default function ReturnDetails() {
                   </label>
                 </div>
               </div>
-              
+
               <textarea
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}

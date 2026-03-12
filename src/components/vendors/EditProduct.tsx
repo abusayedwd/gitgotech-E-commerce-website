@@ -1,41 +1,104 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Upload, ArrowLeft, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
+import { Upload, X, Loader2 } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useSelector } from 'react-redux';
+import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
+import {
+  useGetProductDetailsQuery,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
+} from '@/redux/features/vendor/product/productSlice';
+import toast from 'react-hot-toast';
+import baseUrl from '@/redux/api/baseUrl';
+import DeleteModal from '@/components/shared/DeleteModal';
 
 export default function EditProductPage() {
   const router = useRouter();
-  
-  // Pre-filled with existing product data
-  const [productName, setProductName] = useState('Bomber Jacket');
-  const [description, setDescription] = useState('Premium quality bomber jacket with comfortable fit and stylish design');
-  const [price, setPrice] = useState('24.00');
-  const [category, setCategory] = useState('clothing');
-  const [quantity, setQuantity] = useState('45');
-  const [weight, setWeight] = useState('500g');
-  const [hasDiscount, setHasDiscount] = useState(true);
-  const [discountPercent, setDiscountPercent] = useState('15');
-  const [discountDate, setDiscountDate] = useState('2025-12-31');
-  const [mixDesign, setMixDesign] = useState(true);
-  const [customDesign, setCustomDesign] = useState(false);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>(['S', 'M', 'L', 'XL']);
-  const [existingImages, setExistingImages] = useState<string[]>(['image1.jpg', 'image2.jpg']);
+  const searchParams = useSearchParams();
+  const productId = searchParams.get('id');
+  const showroomId = useSelector(selectShowroomId);
 
-  const sizes = ['S', 'M', 'L', 'XL', 'XXL', '3X', '4X'];
+  const { data: productDetailsData, isLoading: isLoadingDetails } = useGetProductDetailsQuery(
+    { id: productId, showroomId },
+    { skip: !productId || !showroomId }
+  );
+  const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+
+  const [productName, setProductName] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('');
+  const [weightAmount, setWeightAmount] = useState('');
+  const [weightUnit, setWeightUnit] = useState('kg');
+  const [hasDiscount, setHasDiscount] = useState(false);
+  const [discountPercent, setDiscountPercent] = useState('');
+  const [discountStartDate, setDiscountStartDate] = useState('');
+  const [discountEndDate, setDiscountEndDate] = useState('');
+  const [mixDesign, setMixDesign] = useState(false);
+  const [customDesign, setCustomDesign] = useState(false);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [newImageFiles, setNewImageFiles] = useState<File[]>([]);
+  const [newImagePreviews, setNewImagePreviews] = useState<string[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3X', '4X'];
+  const [productStocks, setProductStocks] = useState<{ size: string; stock: number }[]>([]);
+
+  // Populate form with existing product data
+  useEffect(() => {
+    const product = productDetailsData?.data;
+    if (product) {
+      setProductName(product.product_name || '');
+      setDescription(product.product_description || '');
+      setPrice(product.product_price?.toString() || '');
+      setCategory(product.product_category || '');
+      setWeightAmount(product.product_weight?.amount?.toString() || '');
+      setWeightUnit(product.product_weight?.unit || 'kg');
+      setMixDesign(product.isMixable || false);
+      setCustomDesign(product.isCustom || false);
+      setExistingImages(product.product_images || []);
+
+      if (product.product_stocks && Array.isArray(product.product_stocks)) {
+        setProductStocks(product.product_stocks.map((s: any) => ({ size: s.size, stock: s.stock })));
+      }
+
+      if (product.discount?.isValid) {
+        setHasDiscount(true);
+        setDiscountPercent(product.discount.percentage?.toString() || '');
+        setDiscountStartDate(product.discount.startDate ? product.discount.startDate.split('T')[0] : '');
+        setDiscountEndDate(product.discount.endDate ? product.discount.endDate.split('T')[0] : '');
+      }
+    }
+  }, [productDetailsData]);
 
   const toggleSize = (size: string) => {
-    if (selectedSizes.includes(size)) {
-      setSelectedSizes(selectedSizes.filter(s => s !== size));
+    const exists = productStocks.find((s) => s.size === size);
+    if (exists) {
+      setProductStocks(productStocks.filter((s) => s.size !== size));
     } else {
-      setSelectedSizes([...selectedSizes, size]);
+      setProductStocks([...productStocks, { size, stock: 0 }]);
     }
+  };
+
+  const updateStock = (size: string, stock: number) => {
+    setProductStocks(productStocks.map((s) => (s.size === size ? { ...s, stock } : s)));
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
-      console.log('Files uploaded:', files);
+      const newFiles = Array.from(files);
+      setNewImageFiles((prev) => [...prev, ...newFiles]);
+      newFiles.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          setNewImagePreviews((prev) => [...prev, ev.target?.result as string]);
+        };
+        reader.readAsDataURL(file);
+      });
     }
   };
 
@@ -43,67 +106,115 @@ export default function EditProductPage() {
     setExistingImages(existingImages.filter((_, i) => i !== index));
   };
 
+  const removeNewImage = (index: number) => {
+    setNewImageFiles((prev) => prev.filter((_, i) => i !== index));
+    setNewImagePreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const handleCancel = () => {
     router.back();
   };
 
-  const handleUpdate = () => {
-    console.log('Update product', {
-      productName,
-      description,
-      price,
-      category,
-      quantity,
-      weight,
-      hasDiscount,
-      discountPercent,
-      discountDate,
-      selectedSizes,
-      mixDesign,
-      customDesign,
-      existingImages
-    });
-  };
+  const handleUpdate = async () => {
+    if (!productName || !price || !category) {
+      toast.error('Please fill in product name, price, and category');
+      return;
+    }
 
-  const handleDelete = () => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      console.log('Delete product');
+    const productData: any = {
+      product_name: productName,
+      product_category: category,
+      product_description: description,
+      product_price: parseFloat(price),
+      product_stocks: productStocks,
+      product_weight: {
+        unit: weightUnit,
+        amount: parseFloat(weightAmount) || 0,
+      },
+      product_images: existingImages,
+      isMixable: mixDesign,
+      isCustom: customDesign,
+    };
+
+    if (hasDiscount) {
+      productData.discount = {
+        isValid: true,
+        percentage: parseFloat(discountPercent) || 0,
+        startDate: discountStartDate ? new Date(discountStartDate).toISOString() : '',
+        endDate: discountEndDate ? new Date(discountEndDate).toISOString() : '',
+      };
+    } else {
+      productData.discount = { isValid: false };
+    }
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(productData));
+    newImageFiles.forEach((file) => {
+      formData.append('files', file);
+    });
+
+    try {
+      const res = await updateProduct({ id: productId, data: formData, showroomId }).unwrap();
+      toast.success(res?.message || 'Product updated successfully');
       router.push('/vendor-dashboard/products');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to update product');
     }
   };
+
+  const handleDelete = async () => {
+    try {
+      const res = await deleteProduct({ id: productId, showroomId }).unwrap();
+      toast.success(res?.message || 'Product deleted successfully');
+      setShowDeleteModal(false);
+      router.push('/vendor-dashboard/products');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to delete product');
+    }
+  };
+
+  if (isLoadingDetails) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={32} className="animate-spin text-purple-500" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div className="container mx-auto flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </div>
-        </button>
+          <button onClick={() => router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+            <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </div>
+          </button>
           <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Edit Product</h1>
         </div>
 
         <div className="flex gap-3">
-          <button 
-            onClick={handleDelete}
+          <button
+            onClick={() => setShowDeleteModal(true)}
             className="px-6 py-2 bg-red-600 hover:bg-red-700 border border-red-500 rounded-lg transition-colors"
           >
             Delete
           </button>
-          <button 
+          <button
             onClick={handleCancel}
             className="px-6 py-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg transition-colors"
           >
             Cancel
           </button>
-          <button 
+          <button
             onClick={handleUpdate}
-            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all shadow-lg shadow-purple-500/20"
+            disabled={isUpdating}
+            className="px-6 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2 disabled:opacity-50"
           >
+            {isUpdating && <Loader2 size={14} className="animate-spin" />}
             Update
           </button>
         </div>
@@ -164,27 +275,31 @@ export default function EditProductPage() {
           </div>
         </div>
 
-        {/* Quantity and Weight */}
+        {/* Weight */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Quantity</label>
+            <label className="block text-sm text-gray-400 mb-2">Weight Amount</label>
             <input
               type="number"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              placeholder="Type here"
+              value={weightAmount}
+              onChange={(e) => setWeightAmount(e.target.value)}
+              placeholder="e.g. 1.5"
+              step="0.1"
               className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Weight</label>
-            <input
-              type="text"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              placeholder="Type here"
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
-            />
+            <label className="block text-sm text-gray-400 mb-2">Weight Unit</label>
+            <select
+              value={weightUnit}
+              onChange={(e) => setWeightUnit(e.target.value)}
+              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+            >
+              <option value="kg">kg</option>
+              <option value="g">g</option>
+              <option value="lb">lb</option>
+              <option value="oz">oz</option>
+            </select>
           </div>
         </div>
 
@@ -195,14 +310,36 @@ export default function EditProductPage() {
             <div className="flex gap-4 flex-wrap">
               {existingImages.map((image, index) => (
                 <div key={index} className="relative group">
-                  <div className="w-24 h-24 bg-gradient-to-br from-amber-700 to-amber-900 rounded-lg flex items-center justify-center">
-                    <span className="text-3xl">🧥</span>
+                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-gray-700">
+                    <img src={`${baseUrl}/${image}`} alt="" className="w-full h-full object-cover" />
                   </div>
                   <button
                     onClick={() => removeExistingImage(index)}
                     className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
                     <X size={16} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* New Image Previews */}
+        {newImagePreviews.length > 0 && (
+          <div className="mb-4">
+            <label className="block text-sm text-gray-400 mb-2">New Images</label>
+            <div className="flex gap-4 flex-wrap">
+              {newImagePreviews.map((src, index) => (
+                <div key={index} className="relative group">
+                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-purple-500/30">
+                    <img src={src} alt="" className="w-full h-full object-cover" />
+                  </div>
+                  <button
+                    onClick={() => removeNewImage(index)}
+                    className="absolute -top-2 -right-2 bg-red-600 hover:bg-red-700 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={14} />
                   </button>
                 </div>
               ))}
@@ -230,16 +367,16 @@ export default function EditProductPage() {
           </div>
         </div>
 
-        {/* Available Sizes */}
+        {/* Available Sizes with Stock */}
         <div className="mb-6">
           <label className="block text-sm text-gray-400 mb-2">Available Sizes</label>
-          <div className="flex flex-wrap gap-3">
-            {sizes.map((size) => (
+          <div className="flex flex-wrap gap-3 mb-4">
+            {availableSizes.map((size) => (
               <button
                 key={size}
                 onClick={() => toggleSize(size)}
                 className={`px-4 py-2 rounded-lg border transition-all ${
-                  selectedSizes.includes(size)
+                  productStocks.find((s) => s.size === size)
                     ? 'bg-purple-600 border-purple-500 text-white'
                     : 'bg-gray-900/50 border-gray-700 text-gray-400 hover:border-purple-500'
                 }`}
@@ -248,19 +385,23 @@ export default function EditProductPage() {
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Value (Colors) */}
-        <div className="mb-6">
-          <label className="block text-sm text-gray-400 mb-2">Value</label>
-          <div className="flex gap-3">
-            <button className="w-10 h-10 rounded-full bg-[#4A5D4A] border-2 border-gray-700 hover:border-purple-500 transition-colors flex items-center justify-center">
-              <span className="text-xs font-bold text-white">G</span>
-            </button>
-            <button className="w-10 h-10 rounded-full bg-purple-600 border-2 border-gray-700 hover:border-purple-500 transition-colors flex items-center justify-center">
-              <span className="text-xs font-bold text-white">M</span>
-            </button>
-          </div>
+          {productStocks.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {productStocks.map((item) => (
+                <div key={item.size}>
+                  <label className="block text-xs text-gray-400 mb-1">Stock for {item.size}</label>
+                  <input
+                    type="number"
+                    value={item.stock}
+                    onChange={(e) => updateStock(item.size, parseInt(e.target.value) || 0)}
+                    placeholder="0"
+                    className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500 text-sm"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Product Discount */}
@@ -280,7 +421,7 @@ export default function EditProductPage() {
           </div>
 
           {hasDiscount && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Discount (%)</label>
                 <input
@@ -292,11 +433,20 @@ export default function EditProductPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-2">Discount expired date</label>
+                <label className="block text-sm text-gray-400 mb-2">Start Date</label>
                 <input
                   type="date"
-                  value={discountDate}
-                  onChange={(e) => setDiscountDate(e.target.value)}
+                  value={discountStartDate}
+                  onChange={(e) => setDiscountStartDate(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">End Date</label>
+                <input
+                  type="date"
+                  value={discountEndDate}
+                  onChange={(e) => setDiscountEndDate(e.target.value)}
                   className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
                 />
               </div>
@@ -331,6 +481,15 @@ export default function EditProductPage() {
           </div>
         </div>
       </div>
+
+      <DeleteModal
+        show={showDeleteModal}
+        title="Delete Product"
+        itemName={productName}
+        deleting={isDeleting}
+        onClose={() => setShowDeleteModal(false)}
+        onDelete={handleDelete}
+      />
     </div>
   );
 }
