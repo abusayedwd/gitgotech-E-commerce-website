@@ -65,7 +65,7 @@ export default function ShowroomsPage() {
             <h2 className="text-white font-cormorant text-xl md:text-2xl font-semibold">All Showroom</h2>
             <div className="flex items-center gap-4">
               {/* Category Filter */}
-              <select
+              {/* <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="bg-[#1B1B1F] backdrop-blur-sm border border-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -76,11 +76,9 @@ export default function ShowroomsPage() {
                     {category.category_name}
                   </option>
                 ))}
-              </select>
+              </select> */}
               
-              <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-                <Grid3x3 className="w-5 h-5 text-gray-400" />
-              </button>
+              
             </div>
           </div>
 

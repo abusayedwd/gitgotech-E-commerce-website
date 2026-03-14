@@ -1,7 +1,5 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 
-
-
 const homeSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
 
@@ -9,10 +7,12 @@ const homeSlice = apiSlice.injectEndpoints({
     getProductsByCategory: builder.query({
       query: (category) => `/home/products-by-category/${category}`,
     }),
-    
-   getProductDetailsforCustomer: builder.query({
-     query: (id) => `/product/customer/details/${id}`
-   }),
+
+    // Product details
+    getProductDetailsforCustomer: builder.query({
+      query: (id) => `/product/customer/details/${id}`,
+    }),
+
     // Newest products
     getNewestProducts: builder.query({
       query: ({ searchTerm = "", product_category = "" }) =>
@@ -30,6 +30,8 @@ const homeSlice = apiSlice.injectEndpoints({
       query: ({ searchTerm = "", product_category = "" }) =>
         `/home/hot-deals?searchTerm=${searchTerm}&product_category=${product_category}`,
     }),
+
+    // Top vendors
     topVendors: builder.query({
       query: (searchTerm = "") =>
         `/home/top-vendors?searchTerm=${searchTerm}`,
@@ -40,34 +42,42 @@ const homeSlice = apiSlice.injectEndpoints({
       query: () => `/home/category`,
     }),
 
-    ///showroom and showroom product api
-
-      getAllShowroom : builder.query({
+    // Showroom APIs
+    getAllShowroom: builder.query({
       query: () => `/showroom/get-all`,
     }),
 
-      getShowroomProduct: builder.query({
-      query: ({id, product_category = ""}) => `/showroom/get-showrooms-products/${id}?product_category=${product_category}`,
+    getShowroomProduct: builder.query({
+      query: ({ id, product_category = "" }) =>
+        `/showroom/get-showrooms-products/${id}?product_category=${product_category}`,
     }),
 
-      getVendorshowroom: builder.query({
+    getVendorshowroom: builder.query({
       query: (id) => `/showroom/get-vendor-showrooms/${id}`,
     }),
 
-    //////add product card and wishlist api data
+    // Wishlist & Cart
+    getWishlistAndCart: builder.query({
+      query: ({ type, page = 1 }) =>
+        `/product/customer/save?saveType=${type}&page=${page}&limit=10`,
+      providesTags: ["SaveItems"],
+    }),
 
-     getwishlistAndCart: builder.query({
-      query: () => `/product/customer/save?saveType=${type}&page=${page}&limit=10`
-     }),
+    addToCartWishList: builder.mutation({
+      query: (data) => ({
+        url: `/product/customer/save`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["SaveItems"],
+    }),
 
-     addToCartWishList: builder.mutation({
-       query: (data) => ({
-         url: `/product/customer/save`,
-         method: "POST",
-         body: data 
-       })
-     })
-
+    deleteSaveList: builder.mutation({
+      query: (id) => ({
+        url: `/product/customer/delete-save/${id}`,
+        method: "DELETE"
+      })
+    })
 
   }),
 });
@@ -80,11 +90,14 @@ export const {
   useGetTopProductsQuery,
   useGetHotDealsQuery,
   useGetHomeCategoriesQuery,
-
-  ///
   useGetAllShowroomQuery,
   useGetShowroomProductQuery,
-  useGetVendorshowroomQuery
+  useGetVendorshowroomQuery,
 
-  
+  // wishlist & cart
+  useGetWishlistAndCartQuery,
+  useAddToCartWishListMutation,
+  useDeleteSaveListMutation,
+
+
 } = homeSlice;

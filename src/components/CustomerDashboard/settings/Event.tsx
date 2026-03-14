@@ -448,17 +448,8 @@ type EventType = {
   };
 
   const openEditModal = (event: EventType) => {
-    setSelectedEvent(event);
-    const eventDate = new Date(event.eventDate);
-    setEditFormData({
-      title: event.title,
-      date: eventDate.toISOString().split('T')[0],
-      time: eventDate.toTimeString().slice(0, 5),
-      address: event.address,
-      purchaseOption: event.purchaseOption,
-      description: event.description
-    });
-    setIsEditModalOpen(true);
+    // Navigate to update event page
+    router.push(`/settings/events/update?id=${event._id}`);
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -467,21 +458,6 @@ type EventType = {
       ...prev,
       [name]: value
     }));
-  };
-
-  const handleUpdateEvent = () => {
-    if (!selectedEvent) return;
-    console.log('Updating event:', selectedEvent.id, editFormData);
-    alert('Event updated successfully!');
-    setIsEditModalOpen(false);
-  };
-
-  const handleDeleteEvent = () => {
-    if (selectedEvent && window.confirm('Are you sure you want to delete this event?')) {
-      console.log('Deleting event:', selectedEvent.id);
-      alert('Event deleted successfully!');
-      setIsEditModalOpen(false);
-    }
   };
 
   // Filter events based on active tab

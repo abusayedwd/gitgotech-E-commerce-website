@@ -359,8 +359,9 @@ import { useState } from 'react';
 import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useGetProductDetailsforCustomerQuery } from '@/redux/features/home/homeSlice';
+import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+import toast from 'react-hot-toast';
  
 
 interface ProductDetailsProps {
@@ -379,6 +380,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
     skip: !productId
   });
 
+  const [addToCartWishList] = useAddToCartWishListMutation();
+
   const product = productData?.data || null;
 
   if (isLoading) {
@@ -396,6 +399,36 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       </div>
     );
   }
+
+  const handleAddToCart = async () => {
+    try {
+      const data = {
+        product: product._id,
+        saveType: "cart"
+      };
+      const res = await addToCartWishList(data).unwrap();
+      if (res?.success) {
+        toast.success('Added to cart!');
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to add to cart');
+    }
+  };
+
+  const handleAddToWishlist = async () => {
+    try {
+      const data = {
+        product: product._id,
+        saveType: "wishlist"
+      };
+      const res = await addToCartWishList(data).unwrap();
+      if (res?.success) {
+        toast.success('Added to wishlist!');
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to add to wishlist');
+    }
+  };
 
   const events = [
     {
@@ -427,10 +460,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       setShowEventModal(false);
       setSelectedEvent(null);
     }
-  };
-
-  const handleAddToCart = () => {
-    alert(`Added ${quantity} ${product.product_name || product.name}(s) to cart!`);
   };
 
   // Shoe Size Guide Component
@@ -624,9 +653,19 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button className="w-full bg-[#6100FF] hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2">
+              <button 
+                onClick={handleAddToWishlist}
+                className="w-full bg-[#6100FF] hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              >
                 <Heart className="w-5 h-5" />
                 Add to Wishlist
+              </button>
+              <button
+                onClick={handleAddToCart}
+                className="w-full border border-[#6100FF] hover:bg-purple-900/30 text-[#6100FF] cursor-pointer py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                Add to Cart
               </button>
               <button
                 onClick={() => setShowEventModal(true)}

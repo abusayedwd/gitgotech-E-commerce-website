@@ -1,63 +1,70 @@
 "use client";
 
- 
 import { SectionHeader } from '@/customComponent/Header';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
- 
 import { useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
+import { Trash2, Minus, Plus } from 'lucide-react';
+import { useGetWishlistAndCartQuery, useAddToCartWishListMutation, useDeleteSaveListMutation } from '@/redux/features/home/homeSlice';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+import toast from 'react-hot-toast';
 
 export default function ShoppingCart() {
-
     const router = useRouter();
-  const [cartItems, setCartItems] = useState([
-    {
-      id: 1,
-      name: 'Flowy Skirt',
-      image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=150&h=150&fit=crop',
-      price: 14.00,
-      quantity: 5
-    },
-    {
-      id: 2,
-      name: 'Brown Shoes',
-      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=150&h=150&fit=crop',
-      price: 14.00,
-      quantity: 8
-    },
-    {
-      id: 2,
-      name: 'Brown Shoes',
-      image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=150&h=150&fit=crop',
-      price: 14.00,
-      quantity: 8
-    }
-  ]);
+    const [page, setPage] = useState(1);
 
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems(items =>
-      items.map(item => {
-        if (item.id === id) {
-          const newQuantity = Math.max(1, item.quantity + change);
-          return { ...item, quantity: newQuantity };
+    const { data: cartData, isLoading, refetch } = useGetWishlistAndCartQuery({
+        type: "cart",
+        page: page,
+    });
+
+    console.log(cartData)
+
+    const [addToCartWishList] = useAddToCartWishListMutation();
+    const [deleteSaveItem] = useDeleteSaveListMutation();
+
+    const cartItems = cartData?.data || [];
+    const pagination = cartData?.pagination || {};
+
+    const handleRemoveFromCart = async (id: string) => {
+      console.log(id)
+        try {
+            const res = await deleteSaveItem(id).unwrap();
+            console.log(res)
+            if (res?.success) {
+                toast.success('Removed from cart');
+                refetch();
+            }
+        } catch (error: any) {
+            toast.error(error?.data?.message || 'Failed to remove item');
+            console.log(error.data)
         }
-        return item;
-      })
-    );
-  };
+    };
 
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
+    const handleUpdateQuantity = async (item: any, newQuantity: number) => {
+        // TODO: Add API call to update quantity if supported
+        // For now, just refetch
+        refetch();
+    };
 
-  const calculateSubtotal = (item: typeof cartItems[0]) => {
-    return (item.price * item.quantity).toFixed(2);
-  };
+    const getProductImage = (product: any) => {
+        if (product.product_images && product.product_images.length > 0) {
+            return `${IMAGE_BASE_URL}/${product.product_images[0]}`;
+        }
+        return '/images/jacket.png';
+    };
 
-  const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0).toFixed(2);
-  };
+    const getTotalStock = (stocks: any[]) => {
+        if (!stocks || stocks.length === 0) return 0;
+        return stocks.reduce((acc, stock) => acc + stock.stock, 0);
+    };
+
+    const calculateTotal = () => {
+        return cartItems.reduce((total, item) => {
+            return total + (item.product.product_price || 0);
+        }, 0).toFixed(2);
+    };
 
   return (
     <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
@@ -87,78 +94,110 @@ export default function ShoppingCart() {
         <div className="lg:col-span-2">
           <div className="bg-gradient-to-br from-purple-900/10 to-gray-900/50 border-[#B8B8B8] border  rounded-2xl p-4 md:p-6">
             {/* Table Header */}
-            <div className="hidden md:grid grid-cols-12 gap-4 mb-4 pb-4 border-b  text-sm text-gray-400">
+            <div className="hidden md:grid grid-cols-12 gap-4 mb-4 pb-4 border-b text-sm text-gray-400">
               <div className="col-span-5">PRODUCT</div>
               <div className="col-span-2 text-center">PRICE</div>
               <div className="col-span-3 text-center">QUANTITY</div>
               <div className="col-span-2 text-right">SUBTOTAL</div>
             </div>
 
+            {/* Loading State */}
+            {isLoading && (
+              <div className="flex justify-center py-20">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+              </div>
+            )}
+
             {/* Cart Items */}
-            <div className="space-y-4 ">
-              {cartItems.map((item) => (
-                <div 
-                  key={item.id}
-                  className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-purple-900/10 p-4 border-[#B8B8B8] border-b"
-                >
-                  {/* Product */}
-                  <div className="md:col-span-5 flex items-center gap-4">
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
-                      <img 
-                        src={item.image}
-                        alt={item.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-sm md:text-base">{item.name}</h3>
-                      <p className="text-xs text-gray-400 md:hidden mt-1">${item.price.toFixed(2)}</p>
-                    </div>
-                  </div>
+            <div className="space-y-4">
+              {cartItems.length > 0 ? (
+                cartItems.map((item: any) => {
+                  const product = item.product;
+                  const imageUrl = getProductImage(product);
+                  const totalStock = getTotalStock(product.product_stocks);
+                  const isInStock = totalStock > 0;
 
-                  {/* Price */}
-                  <div className="md:col-span-2 text-left md:text-center">
-                    <span className="text-sm md:text-base hidden md:inline">${item.price.toFixed(2)}</span>
-                  </div>
-
-                  {/* Quantity */}
-                  <div className="md:col-span-3 flex justify-start md:justify-center">
-                    <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-3">
-                      <button
-                        onClick={() => updateQuantity(item.id, -1)}
-                        className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
-                      >
-                        
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M20 12H4" />
-                        </svg>
-                      </button>
-                      <span className="text-sm font-semibold min-w-[20px] text-center">{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, 1)}
-                        className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors"
-                      >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Subtotal & Remove */}
-                  <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
-                    <span className="font-semibold text-sm md:text-base">${calculateSubtotal(item)}</span>
-                    <button
-                      onClick={() => removeItem(item.id)}
-                      className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                  return (
+                    <div
+                      key={item._id}
+                      className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-purple-900/10 p-4 border-[#B8B8B8] border-b rounded-lg"
                     >
-                      <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      {/* Product */}
+                      <div className="md:col-span-5 flex items-center gap-4">
+                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
+                          <img
+                            src={imageUrl}
+                            alt={product.product_name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm md:text-base">{product.product_name}</h3>
+                          <p className="text-xs text-gray-400 md:hidden mt-1">${product.product_price?.toFixed(2)}</p>
+                          <p className="text-xs text-gray-500 hidden md:block">{product.product_category}</p>
+                          {!isInStock && (
+                            <p className="text-xs text-red-400 mt-1">Out of Stock</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Price */}
+                      <div className="md:col-span-2 text-left md:text-center">
+                        <span className="text-sm md:text-base hidden md:inline">${product.product_price?.toFixed(2)}</span>
+                      </div>
+
+                      {/* Quantity */}
+                      <div className="md:col-span-3 flex justify-start md:justify-center">
+                        <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-2">
+                          <button
+                            disabled={!isInStock}
+                            className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                          >
+                            <Minus className="w-3 h-3" />
+                          </button>
+                          <span className="text-sm font-semibold min-w-[20px] text-center">1</span>
+                          <button
+                            disabled={!isInStock}
+                            className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                          >
+                            <Plus className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Subtotal & Remove */}
+                      <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
+                        <span className="font-semibold text-sm md:text-base">${product.product_price?.toFixed(2)}</span>
+                        <button
+                          onClick={() => handleRemoveFromCart(product._id)}
+                          className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                          title="Remove from cart"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-400" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                !isLoading && (
+                  <div className="p-12 text-center">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-600/20 flex items-center justify-center">
+                      <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                       </svg>
+                    </div>
+                    <h3 className="text-xl font-semibold mb-2">Your cart is empty</h3>
+                    <p className="text-gray-400 text-sm mb-4">Start adding products to your cart!</p>
+                    <button
+                      onClick={() => router.push('/')}
+                      className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
+                    >
+                      Browse Products
                     </button>
                   </div>
-                </div>
-              ))}
+                )
+              )}
             </div>
           </div>
         </div>

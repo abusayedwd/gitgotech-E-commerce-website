@@ -13,11 +13,21 @@ const eventSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Events"],
     }),
 
-    // Get Events (created / invited)
+    // Get Events
     getEvents: builder.query({
-      query: ({ type = "created", page = 1, limit = 10 }) => 
+      query: ({ type = "created", page = 1, limit = 10 }) =>
         `/event/get?type=${type}&page=${page}&limit=${limit}`,
       providesTags: ["Events"],
+    }),
+
+    // Update Event
+    updateEvent: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/event/update/${id}`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Events"],
     }),
 
   }),
@@ -26,4 +36,5 @@ const eventSlice = apiSlice.injectEndpoints({
 export const {
   useCreateEventMutation,
   useGetEventsQuery,
+  useUpdateEventMutation,
 } = eventSlice;
