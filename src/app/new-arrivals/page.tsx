@@ -1,11 +1,16 @@
 'use client';
 import NewArrivals from "@/components/landingPage/NewArrivals";
 import { useFilterContext } from '@/context/FilterContext';
+import { useState } from 'react';
 import { useEffect } from 'react';
-import { useGetNewestProductsQuery } from '@/redux/features/home/homeSlice';
+import { useGetNewestProductsQuery, useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 
 const page = () => {
-  const { selectedCategory, searchQuery } = useFilterContext();
+  const { searchQuery } = useFilterContext();
+  const [selectedCategory, setSelectedCategory] = useState('');
+  
+  const { data: categoriesRes } = useGetHomeCategoriesQuery();
+  const categories = categoriesRes?.data ?? [];
 
   const { data: newArrivalsData } = useGetNewestProductsQuery({
     searchTerm: searchQuery,
@@ -20,10 +25,12 @@ const page = () => {
 
   return (
     <div>
-      <NewArrivals 
-        searchQuery={searchQuery} 
+      <NewArrivals
+        searchQuery={searchQuery}
         selectedCategory={selectedCategory}
         products={newArrivalsData?.data?.data || []}
+        categories={categories}
+        onCategoryChange={setSelectedCategory}
       />
     </div>
   );

@@ -1,11 +1,16 @@
 'use client';
 import AllHotdealsProduct from "@/components/landingPage/AllHotdealsProduct";
 import { useFilterContext } from '@/context/FilterContext';
+import { useState } from 'react';
 import { useEffect } from 'react';
-import { useGetHotDealsQuery } from '@/redux/features/home/homeSlice';
+import { useGetHotDealsQuery, useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 
 const page = () => {
-  const { selectedCategory, searchQuery } = useFilterContext();
+  const { searchQuery } = useFilterContext();
+  const [selectedCategory, setSelectedCategory] = useState('');
+  
+  const { data: categoriesRes } = useGetHomeCategoriesQuery();
+  const categories = categoriesRes?.data ?? [];
 
   const { data: hotDealsData } = useGetHotDealsQuery({
     searchTerm: searchQuery,
@@ -20,10 +25,12 @@ const page = () => {
 
   return (
     <div>
-      <AllHotdealsProduct 
-        searchQuery={searchQuery} 
+      <AllHotdealsProduct
+        searchQuery={searchQuery}
         selectedCategory={selectedCategory}
         products={hotDealsData?.data?.data || []}
+        categories={categories}
+        onCategoryChange={setSelectedCategory}
       />
     </div>
   );

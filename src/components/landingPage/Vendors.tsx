@@ -114,7 +114,7 @@ export default function VendorsPage() {
                       <p className="text-gray-500 text-xs mb-3">@{vendor.username}</p>
 
                       {/* View Showroom Button */}
-                      <Link href={`/showroom/view-showroom?vendorId=${vendor._id}`}>
+                      <Link href={`/vendors/showrooms?vendorId=${vendor._id}`}>
                         <button className="w-full bg-[#6100FF] text-[16px] cursor-pointer text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2 mt-auto hover:bg-purple-700">
                           <AiOutlineShoppingCart className="w-3 sm:w-4 h-3 md:h-5 md:w-5 sm:h-4" />
                           View Showroom

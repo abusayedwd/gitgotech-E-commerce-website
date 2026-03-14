@@ -1,72 +1,30 @@
 "use client";
+import { useGetAllShowroomQuery, useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 import { Search, Store, Grid3x3 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { FaLocationDot } from 'react-icons/fa6';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 
 export default function ShowroomsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid');
+  const [selectedCategory, setSelectedCategory] = useState('');
+  
+  const { data: categoriesRes } = useGetHomeCategoriesQuery();
+  const categories = categoriesRes?.data ?? [];
 
-  const showrooms = [
-    {
-      id: 1,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    },
-    {
-      id: 2,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    },
-    {
-      id: 3,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    },
-    {
-      id: 4,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    },
-    {
-      id: 5,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    },
-    {
-      id: 6,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    },
-    {
-      id: 7,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    },
-    {
-      id: 8,
-      name: "Luxuries Showroom",
-      branch: "Gulshan Branch",
-      image: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=600&q=80",
-      logo: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=200&q=80"
-    }
-  ];
+  const {data: showroomData, isLoading, error} = useGetAllShowroomQuery();
+  
+  // Extract showrooms from the API response structure
+  const showrooms = showroomData?.data || [];
+  
+  // Filter showrooms based on search query
+  const filteredShowrooms = showrooms.filter((showroom: any) =>
+    showroom.showroom_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    showroom.showroom_address?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div className=" mt-20 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen py-12 px-4">
@@ -103,47 +61,80 @@ export default function ShowroomsPage() {
 
         {/* All Showroom Section */}
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
             <h2 className="text-white font-cormorant text-xl md:text-2xl font-semibold">All Showroom</h2>
-            <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
-              <Grid3x3 className="w-5 h-5 text-gray-400" />
-            </button>
+            <div className="flex items-center gap-4">
+              {/* Category Filter */}
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="bg-[#1B1B1F] backdrop-blur-sm border border-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">All Categories</option>
+                {categories.map((category: any) => (
+                  <option key={category._id} value={category.category_slug}>
+                    {category.category_name}
+                  </option>
+                ))}
+              </select>
+              
+              <button className="p-2 hover:bg-gray-800 rounded-lg transition-colors">
+                <Grid3x3 className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
           </div>
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="flex justify-center items-center py-20">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && (
+            <div className="text-center py-20">
+              <p className="text-red-400 text-lg">Failed to load showrooms. Please try again later.</p>
+            </div>
+          )}
+
+          {/* No Results State */}
+          {!isLoading && !error && filteredShowrooms.length === 0 && (
+            <div className="text-center py-20">
+              <Store className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-400 text-lg">No showrooms found.</p>
+            </div>
+          )}
 
           {/* Showrooms Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {showrooms.map((showroom) => (
+            {filteredShowrooms.map((showroom: any) => (
               <div
-                key={showroom.id}
+                key={showroom._id}
                 className="bg-[#1B1B1F] backdrop-blur-sm h-[380px] rounded-xl overflow-hidden group hover:bg-gray-800/50 transition-all border border-gray-700/50"
               >
                 {/* Showroom Image with Logo Overlay */}
                 <div className="relative h-[210px] overflow-hidden">
                   <img
-                    src={showroom.image}
-                    alt={showroom.name}
+                    src={`${IMAGE_BASE_URL}/${showroom.logo}`}
+                    alt={showroom.showroom_name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  
-                  
                 </div>
 
                 {/* Showroom Info */}
                 <div className="p-4 flex flex-col h-[170px]">
                   <h3 className="text-white font-semibold text-base mb-1">
-                    {showroom.name}
+                    {showroom.showroom_name}
                   </h3>
-                  <p className="text-gray-400 text-sm mb-1">
-                    • {showroom.branch}
-                  </p>
-                  <p className="text-gray-400 text-sm mb-4">
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
                     <FaLocationDot className="inline-block w-4 h-4 mr-1 mb-0.5 text-gray-400" />
-                    1.2 km away
+                    {showroom.showroom_address}
                   </p>
 
                   {/* View Showroom Button */}
-                  <Link href={"/showroom/view-showroom"}>
+                  <Link href={`/showroom/view-showroom?showroomId=${showroom._id}`}>
                   <button className="w-full bg-[#6100FF] text-[16px] cursor-pointer text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2  mt-auto">
                    <AiOutlineShoppingCart className="w-3 sm:w-4 h-3 md:h-5 md:w-5 sm:h-4" />
                     View Showroom

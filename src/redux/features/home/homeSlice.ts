@@ -40,6 +40,35 @@ const homeSlice = apiSlice.injectEndpoints({
       query: () => `/home/category`,
     }),
 
+    ///showroom and showroom product api
+
+      getAllShowroom : builder.query({
+      query: () => `/showroom/get-all`,
+    }),
+
+      getShowroomProduct: builder.query({
+      query: ({id, product_category = ""}) => `/showroom/get-showrooms-products/${id}?product_category=${product_category}`,
+    }),
+
+      getVendorshowroom: builder.query({
+      query: (id) => `/showroom/get-vendor-showrooms/${id}`,
+    }),
+
+    //////add product card and wishlist api data
+
+     getwishlistAndCart: builder.query({
+      query: () => `/product/customer/save?saveType=${type}&page=${page}&limit=10`
+     }),
+
+     addToCartWishList: builder.mutation({
+       query: (data) => ({
+         url: `/product/customer/save`,
+         method: "POST",
+         body: data 
+       })
+     })
+
+
   }),
 });
 
@@ -51,4 +80,11 @@ export const {
   useGetTopProductsQuery,
   useGetHotDealsQuery,
   useGetHomeCategoriesQuery,
+
+  ///
+  useGetAllShowroomQuery,
+  useGetShowroomProductQuery,
+  useGetVendorshowroomQuery
+
+  
 } = homeSlice;

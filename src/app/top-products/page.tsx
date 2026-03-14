@@ -1,11 +1,16 @@
 'use client';
 import TopPoduct from '@/components/landingPage/TopPoduct';
 import { useFilterContext } from '@/context/FilterContext';
+import { useState } from 'react';
 import { useEffect } from 'react';
-import { useGetTopProductsQuery } from '@/redux/features/home/homeSlice';
+import { useGetTopProductsQuery, useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 
 const page = () => {
-  const { selectedCategory, searchQuery } = useFilterContext();
+  const { searchQuery } = useFilterContext();
+  const [selectedCategory, setSelectedCategory] = useState('');
+  
+  const { data: categoriesRes } = useGetHomeCategoriesQuery();
+  const categories = categoriesRes?.data ?? [];
 
   const { data: topProductsData } = useGetTopProductsQuery({
     searchTerm: searchQuery,
@@ -20,10 +25,12 @@ const page = () => {
 
   return (
     <div>
-      <TopPoduct 
-        searchQuery={searchQuery} 
+      <TopPoduct
+        searchQuery={searchQuery}
         selectedCategory={selectedCategory}
         products={topProductsData?.data?.data || []}
+        categories={categories}
+        onCategoryChange={setSelectedCategory}
       />
     </div>
   );

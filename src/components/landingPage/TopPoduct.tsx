@@ -5,39 +5,84 @@ import { useRouter } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
 import styles from "./../../customComponent/Discount.module.css"
 import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import { useGetShowroomProductQuery } from '@/redux/features/home/homeSlice';
 
 export default function TopPoduct({
   searchQuery,
   selectedCategory,
-  products = []
+  products = [],
+  showroomId,
+  product_category,
+  categories = [],
+  onCategoryChange
 }: {
   searchQuery: string;
   selectedCategory: string | null;
   products?: any[];
+  showroomId?: string;
+  product_category?: string;
+  categories?: any[];
+  onCategoryChange?: (category: string) => void;
 }) {
   const router = useRouter();
 
+  // Fetch showroom products if showroomId is provided
+  const { data: showroomProductsData } = useGetShowroomProductQuery(
+    { id: showroomId || "", product_category: product_category || "" },
+    { skip: !showroomId }
+  );
+
+  // Use showroom products if showroomId is provided, otherwise use passed products
+  const displayProducts = showroomId ? (showroomProductsData?.data?.data || []) : products;
+  
+  // Handle category change
+  const handleCategoryChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (onCategoryChange) {
+      onCategoryChange(e.target.value);
+    }
+  };
+
   return (
-    <div className="bg-black py-6 sm:py-8 md:py-10 mt-44 md:mt-52 px-2 sm:px-4">
+    <div className={`bg-black py-6 sm:py-8 md:py-10 ${showroomId ? '' : 'mt-44 md:mt-52'} px-2 sm:px-4`}>
       <div className="container mx-auto">
-        {/* Header */}
-        <div className="container mx-auto flex items-center gap-4 mb-6">
-          <button onClick={() => router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-              <FaArrowLeft className='text-black' />
+        {/* Header - Only show if not in showroom context */}
+        {!showroomId && (
+          <div className="container mx-auto flex items-center justify-between gap-4 mb-6 flex-wrap">
+            <div className="flex items-center gap-4">
+              <button onClick={() => router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+                  <FaArrowLeft className='text-black' />
+                </div>
+              </button>
+              <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Top Product</h1>
             </div>
-          </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Top Product</h1>
-        </div>
+            
+            {/* Category Filter - Show only if categories provided */}
+            {categories.length > 0 && onCategoryChange && (
+              <select
+                value={selectedCategory || ''}
+                onChange={handleCategoryChange}
+                className="bg-[#1B1B1F] backdrop-blur-sm border border-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="">All Categories</option>
+                {categories.map((category: any) => (
+                  <option key={category._id} value={category.category_slug}>
+                    {category.category_name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+        )}
 
         {/* Products Grid */}
-        {products.length === 0 ? (
+        {displayProducts.length === 0 ? (
           <div className="flex items-center justify-center py-20">
             <p className="text-gray-400 text-lg">No products found.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {products.map((product) => {
+            {displayProducts.map((product) => {
               const discount = product.discount?.percentage || 0;
               const imageUrl = product.product_images?.[0]
                 ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
