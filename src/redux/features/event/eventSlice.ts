@@ -20,6 +20,23 @@ const eventSlice = apiSlice.injectEndpoints({
       providesTags: ["Events"],
     }),
 
+    getEventsForProductAdd: builder.query({
+      query: () =>
+        `/event/get?type=created`,
+      
+    }),
+
+   
+      eventProductAdd : builder.mutation({
+      query: (data) => ({
+        url: `//event/product/add`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Events"],
+    }),
+
+
     // Update Event
     updateEvent: builder.mutation({
       query: ({ id, data }) => ({
@@ -35,6 +52,8 @@ const eventSlice = apiSlice.injectEndpoints({
 
 export const {
   useCreateEventMutation,
+  useGetEventsForProductAddQuery,
   useGetEventsQuery,
   useUpdateEventMutation,
+  useEventProductAddMutation,
 } = eventSlice;

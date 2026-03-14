@@ -172,7 +172,7 @@ import { useState } from 'react';
 import { X, Heart, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useDeleteSaveListMutation, useGetWishlistAndCartQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
+import { useDeleteSaveListMutation, useGetWishlistAndCartQuery, useAddToCartWishListMutation, useAddWishlistToCartMutation } from '@/redux/features/home/homeSlice';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 import toast from 'react-hot-toast';
 
@@ -186,7 +186,7 @@ export default function WishlistPage() {
     });
 
     const [deleteSaveItem] = useDeleteSaveListMutation();
-    const [addToCartWishList] = useAddToCartWishListMutation();
+    const [addToCartWishList] = useAddWishlistToCartMutation();
 
     const wishlistItems = wishlistData?.data || [];
     const pagination = wishlistData?.pagination || {};
@@ -212,7 +212,7 @@ export default function WishlistPage() {
                 product: item.product._id,
                 saveType: "cart"
             };
-            const res = await addToCartWishList(data).unwrap();
+            const res = await addToCartWishList(item.product._id).unwrap();
             console.log(res)
             if (res?.success) {
                 toast.success('Added to cart!');

@@ -72,6 +72,15 @@ const homeSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["SaveItems"],
     }),
 
+    addWishlistToCart: builder.mutation({
+      query: (id) => ({
+        url: `/product/customer/update-save/${id}`,
+        method: "PATCH",
+        body: { saveType:"cart"},
+      }),
+      invalidatesTags: ["SaveItems"],
+    }),
+
     deleteSaveList: builder.mutation({
       query: (id) => ({
         url: `/product/customer/delete-save/${id}`,
@@ -98,6 +107,8 @@ export const {
   useGetWishlistAndCartQuery,
   useAddToCartWishListMutation,
   useDeleteSaveListMutation,
+  useAddWishlistToCartMutation,
+  
 
 
 } = homeSlice;
