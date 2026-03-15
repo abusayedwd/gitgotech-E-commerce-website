@@ -1,268 +1,95 @@
-// "use client";
-
-// import { useState } from 'react';
-// import { Send, Image, Paperclip, Smile } from 'lucide-react';
-
-// export default function MessagingPage() {
-//   const [selectedChat, setSelectedChat] = useState(1);
-//   const [message, setMessage] = useState('');
-//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
-//   const contacts = [
-//     { id: 0, name: 'RAbb', avatar: '👤', status: 'Thanks you for reaching', time: '' },
-//     { id: 1, name: 'Habib', avatar: '👤', status: 'Thanks you for reaching', time: '' },
-//     { id: 2, name: 'Arif', avatar: '👤', status: 'Thanks you for reaching', time: '' },
-//     { id: 3, name: 'Jamiylo', avatar: '👤', status: 'Thanks you for reaching', time: '' },
-//     { id: 4, name: 'Taknol', avatar: '👤', status: 'Thanks you for reaching', time: '' },
-//     { id: 5, name: 'Hasif', avatar: '👤', status: 'Thanks you for reaching', time: '' },
-//   ];
-
-//   const messages = [
-//     {
-//       id: 1,
-//       sender: 'Rakibul',
-//       time: '10:45 AM',
-//       text: 'Lorem ipsum dolor sit amet consectetur. Etiam non sit vitae ut velit quis ornat nisl. Faucibus erat sit. Eget facilisi scelerisque. Euismod velit ut quis orci orci est arcu. Vitae odio libero mauris quam nulla.',
-//       isOwn: false
-//     },
-//     {
-//       id: 2,
-//       sender: 'You',
-//       time: '10:48 AM',
-//       text: 'Lorem ipsum dolor sit amet consectetur. Etiam non sit quis ut rullacor urna mi. Volutpat lectus erat. Eget facilisi scelerisque. Euismod.',
-//       isOwn: true
-//     },
-//     {
-//       id: 3,
-//       sender: 'Rakibul',
-//       time: '10:50 AM',
-//       text: 'Lorem ipsum dolor sit amet consectetur. Etiam non sit vitae ut velit quis ornat nisl. Faucibus erat sit. Eget facilisi scelerisque. Euismod velit ut quis orci orci est arcu. Vitae odio libero mauris quam nulla.',
-//       isOwn: false
-//     },
-//     {
-//       id: 4,
-//       sender: 'You',
-//       time: '10:53 AM',
-//       text: 'Lorem ipsum dolor sit amet consectetur. Etiam non sit quis ut rullacor urna mi. Volutpat lectus erat. Eget facilisi scelerisque. Euismod.',
-//       isOwn: true
-//     },
-//   ];
-
-//   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     if (e.target.files && e.target.files[0]) {
-//       setSelectedFile(e.target.files[0]);
-//     }
-//   };
-
-//   const handleSend = () => {
-//     if (message.trim() || selectedFile) {
-//       console.log('Sending:', { message, file: selectedFile });
-//       setMessage('');
-//       setSelectedFile(null);
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen mt-28 bg-gradient-to-br from-gray-950 via-purple-950/20 to-gray-950 flex">
-//       {/* Sidebar - Contacts List */}
-//       <div className="w-80 bg-gray-900/50 backdrop-blur-sm border-r border-purple-500/20 flex flex-col">
-//         <div className="p-6 border-b border-purple-500/20">
-//           <h2 className="text-xl font-bold text-white">Messages</h2>
-//         </div>
-
-//         <div className="flex-1 overflow-y-auto">
-//           {contacts.map((contact) => (
-//             <button
-//               key={contact.id}
-//               onClick={() => setSelectedChat(contact.id)}
-//               className={`w-full p-4 flex items-center gap-4 transition-all border-b border-gray-800/50 ${
-//                 selectedChat === contact.id
-//                   ? 'bg-purple-900/30 border-l-4 border-l-purple-500'
-//                   : 'hover:bg-gray-800/30'
-//               }`}
-//             >
-//               <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center text-2xl flex-shrink-0">
-//                 {contact.avatar}
-//               </div>
-//               <div className="flex-1 text-left">
-//                 <h3 className="text-white font-medium">{contact.name}</h3>
-//                 <p className="text-gray-400 text-sm truncate">{contact.status}</p>
-//               </div>
-//             </button>
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* Main Chat Area */}
-//       <div className="flex-1 flex flex-col">
-//         {/* Chat Header */}
-//         <div className="p-6 bg-gray-900/50 backdrop-blur-sm border-b border-purple-500/20 flex items-center gap-4">
-//           <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center text-2xl">
-//             👤
-//           </div>
-//           <div>
-//             <h2 className="text-white font-semibold text-lg">Rakibul</h2>
-//             <p className="text-gray-400 text-sm">Last seen 5 hours ago</p>
-//           </div>
-//         </div>
-
-//         {/* Messages Area */}
-//         <div className="flex-1 overflow-y-auto p-6 space-y-6">
-//           {messages.map((msg) => (
-//             <div
-//               key={msg.id}
-//               className={`flex gap-3 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}
-//             >
-//               {!msg.isOwn && (
-//                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center text-xl flex-shrink-0">
-//                   👤
-//                 </div>
-//               )}
-
-//               <div className={`max-w-md ${msg.isOwn ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
-//                 <div
-//                   className={`px-5 py-3 rounded-2xl ${
-//                     msg.isOwn
-//                       ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-br-none'
-//                       : 'bg-gray-800/80 text-gray-100 rounded-bl-none'
-//                   }`}
-//                 >
-//                   <p className="text-sm leading-relaxed">{msg.text}</p>
-//                 </div>
-//                 <span className="text-xs text-gray-500 px-2">{msg.time}</span>
-//               </div>
-
-//               {msg.isOwn && (
-//                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-600 to-cyan-800 flex items-center justify-center text-xl flex-shrink-0">
-//                   👤
-//                 </div>
-//               )}
-//             </div>
-//           ))}
-//         </div>
-
-//         {/* Input Area */}
-//         <div className="p-6 bg-gray-900/50 backdrop-blur-sm border-t border-purple-500/20">
-//           {selectedFile && (
-//             <div className="mb-3 p-3 bg-purple-900/30 rounded-lg flex items-center justify-between">
-//               <div className="flex items-center gap-2">
-//                 <Image className="w-5 h-5 text-purple-400" />
-//                 <span className="text-sm text-gray-300">{selectedFile.name}</span>
-//               </div>
-//               <button
-//                 onClick={() => setSelectedFile(null)}
-//                 className="text-gray-400 hover:text-white"
-//               >
-//                 ✕
-//               </button>
-//             </div>
-//           )}
-
-//           <div className="flex items-center gap-3">
-//             <div className="flex-1 relative">
-//               <input
-//                 type="text"
-//                 value={message}
-//                 onChange={(e) => setMessage(e.target.value)}
-//                 onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-//                 placeholder="Type a message..."
-//                 className="w-full bg-gray-800/50 border border-gray-700 rounded-full px-6 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all pr-32"
-//               />
-
-//               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-2">
-//                 <label className="cursor-pointer p-2 hover:bg-gray-700 rounded-full transition-colors">
-//                   <Image className="w-5 h-5 text-gray-400 hover:text-purple-400" />
-//                   <input
-//                     type="file"
-//                     accept="image/*"
-//                     onChange={handleFileSelect}
-//                     className="hidden"
-//                   />
-//                 </label>
-
-//                 <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
-//                   <Paperclip className="w-5 h-5 text-gray-400 hover:text-purple-400" />
-//                 </button>
-
-//                 <button className="p-2 hover:bg-gray-700 rounded-full transition-colors">
-//                   <Smile className="w-5 h-5 text-gray-400 hover:text-purple-400" />
-//                 </button>
-//               </div>
-//             </div>
-
-//             <button
-//               onClick={handleSend}
-//               className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white px-6 py-3.5 rounded-full font-medium transition-all transform hover:scale-105 active:scale-95 shadow-lg shadow-purple-500/30 flex items-center gap-2"
-//             >
-//               <span>Upload Design</span>
-//               <Send className="w-5 h-5" />
-//             </button>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-"use client";
+ 
+"use client"
 
 import React, { useState, useEffect, useRef } from 'react';
+import { useGetChatListQuery, useGetChatMessagesQuery, useSendMessageMutation } from '@/redux/features/messages/messageSlice';
+import { initializeSocket, getSocket, disconnectSocket, onEvent, offEvent } from '@/lib/socket';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+
+interface Message {
+  _id?: string;
+  text?: string;
+  content?: string;
+  sender: 'me' | 'other';
+  time: string;
+  file?: { name: string; type: string; url?: string } | null;
+  receiverId?: string;
+  createdAt?: string;
+}
+
+interface ChatUser {
+  _id: string;
+  name: string;
+  avatar?: string;
+  lastMessage?: string;
+  lastSeen?: string;
+  online?: boolean;
+}
 
 const MessagesPage = () => {
-  const [selectedUser, setSelectedUser] = useState('');
+  const [selectedUser, setSelectedUser] = useState<string>('');
   const [showSidebar, setShowSidebar] = useState(true);
-  const [messages, setMessages] = useState<Record<string, Message[]>>({
-    RAkib: [
-      { id: 1, text: "Thank you for reaching out. I'll get back to you shortly.", sender: 'me', time: '10:45 AM' },
-      { id: 2, text: "I appreciate your message and will respond as soon as possible.", sender: 'other', time: '10:47 AM' },
-      { id: 3, text: "Looking forward to our conversation!", sender: 'me', time: '10:50 AM' }
-    ],
-    Hasib: [
-      { id: 1, text: "Hello! How can I help you today?", sender: 'me', time: '9:30 AM' },
-      { id: 2, text: "Thanks for your message. I'm available to chat now.", sender: 'other', time: '9:32 AM' },
-      { id: 3, text: "Let me know if you have any questions.", sender: 'me', time: '9:35 AM' }
-    ],
-    Arif: [
-      { id: 1, text: "Good morning! I saw your message and wanted to reply.", sender: 'me', time: '8:15 AM' },
-      { id: 2, text: "Thank you for reaching out. I'll get back to you shortly.", sender: 'other', time: '8:18 AM' }
-    ],
-    Jamylo: [
-      { id: 1, text: "Hi there! I'm glad you contacted me.", sender: 'me', time: '11:20 AM' },
-      { id: 2, text: "Thanks for your message. I'm available to chat now.", sender: 'other', time: '11:22 AM' },
-      { id: 3, text: "Looking forward to our conversation!", sender: 'me', time: '11:25 AM' }
-    ],
-    Tokniol: [
-      { id: 1, text: "Hello! How can I assist you today?", sender: 'me', time: '2:30 PM' },
-      { id: 2, text: "Thanks for your message. I'll get back to you shortly.", sender: 'other', time: '2:32 PM' }
-    ],
-    Hasif: [
-      { id: 1, text: "Good afternoon! I saw your message and wanted to reply.", sender: 'me', time: '3:15 PM' },
-      { id: 2, text: "Thank you for reaching out. I'll get back to you shortly.", sender: 'other', time: '3:18 PM' }
-    ]
-  });
-
   const [newMessage, setNewMessage] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [isSocketConnected, setIsSocketConnected] = useState(false);
+  
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Mock user data
-  const users = [
-    { id: 'RAkib', name: 'RAkib', avatar: 'https://i.pravatar.cc/150?img=1', lastSeen: 'Just now' },
-    { id: 'Hasib', name: 'Hasib', avatar: 'https://i.pravatar.cc/150?img=2', lastSeen: 'Just now' },
-    { id: 'Arif', name: 'Arif', avatar: 'https://i.pravatar.cc/150?img=3', lastSeen: 'Just now' },
-    { id: 'Jamylo', name: 'Jamylo', avatar: 'https://i.pravatar.cc/150?img=4', lastSeen: 'Just now' },
-    { id: 'Tokniol', name: 'Tokniol', avatar: 'https://i.pravatar.cc/150?img=5', lastSeen: 'Just now' },
-    { id: 'Hasif', name: 'Hasif', avatar: 'https://i.pravatar.cc/150?img=6', lastSeen: 'Just now' }
-  ];
+  // RTK Query hooks
+  const { data: chatListData, isLoading: chatListLoading } = useGetChatListQuery(undefined, {
+    skip: typeof window === 'undefined',
+  });
+  
+  const { data: messagesData, isLoading: messagesLoading } = useGetChatMessagesQuery(selectedUser, {
+    skip: !selectedUser,
+  });
+  
+  const [sendMessage] = useSendMessageMutation();
 
-  // Set default selected user
+  // Get chat list from API
+  const chatUsers: ChatUser[] = chatListData?.data || [];
+
+  // Get messages for selected chat
+  const messages: Message[] = messagesData?.data || [];
+
+  // Initialize socket connection on mount
   useEffect(() => {
-    if (users.length > 0 && !selectedUser) {
-      setSelectedUser(users[0].id);
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('token');
+      
+      if (token) {
+        const socket = initializeSocket(token);
+        setIsSocketConnected(socket.connected);
+
+        socket.on('connect', () => {
+          setIsSocketConnected(true);
+          console.log('✅ Socket connected, ID:', socket.id);
+        });
+
+        socket.on('disconnect', () => {
+          setIsSocketConnected(false);
+          console.log('❌ Socket disconnected');
+        });
+
+        // Listen for incoming messages
+        socket.on('receiveMessage', (newMessage: Message) => {
+          console.log('📩 New message received:', newMessage);
+          // The RTK Query cache will automatically refetch due to providesTags
+        });
+
+        return () => {
+          socket.off('receiveMessage');
+        };
+      }
     }
+
+    // Cleanup on unmount
+    return () => {
+      disconnectSocket();
+    };
   }, []);
 
   // Scroll to bottom when messages change
@@ -270,7 +97,7 @@ const MessagesPage = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Handle mobile view - hide sidebar when user is selected
+  // Handle mobile view
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const handleResize = () => {
@@ -287,45 +114,39 @@ const MessagesPage = () => {
     }
   }, [selectedUser]);
 
-  interface Message {
-    id: number;
-    text: string;
-    sender: 'me' | 'other';
-    time: string;
-    file?: { name: string; type: string } | null;
-  }
-
-  interface FileData {
-    name: string;
-    type: string;
-  }
-
-  const handleSendMessage = (
+  const handleSendMessage = async (
     e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLInputElement>
-  ): void => {
+  ): Promise<void> => {
     if (e) {
       if ('preventDefault' in e) e.preventDefault();
     }
     if (!newMessage.trim() && !selectedFile) return;
 
     if (selectedUser) {
-      const newMsg: Message = {
-        id: Date.now(),
-        text: newMessage,
-        sender: 'me',
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        file: selectedFile ? { name: selectedFile.name, type: selectedFile.type } : null
-      };
+      try {
+        const socket = getSocket();
+        
+        // Send via socket if connected
+        if (socket?.connected) {
+          socket.emit('sendMessage', {
+            receiverId: selectedUser,
+            content: newMessage,
+          });
+        }
+        
+        // Also send via API for persistence
+        await sendMessage({
+          receiverId: selectedUser,
+          content: newMessage,
+        }).unwrap();
 
-      setMessages((prev: Record<string, Message[]>) => ({
-        ...prev,
-        [selectedUser]: [...(prev[selectedUser] || []), newMsg]
-      }));
-
-      setNewMessage('');
-      setSelectedFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        setNewMessage('');
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      } catch (error) {
+        console.error('Failed to send message:', error);
       }
     }
   };
@@ -342,6 +163,7 @@ const MessagesPage = () => {
     setIsUploading(true);
     setUploadProgress(0);
 
+    // Simulate upload progress
     const interval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 95) {
@@ -349,21 +171,6 @@ const MessagesPage = () => {
           setTimeout(() => {
             setIsUploading(false);
             setUploadProgress(0);
-
-            if (selectedUser) {
-              const uploadMsg: Message = {
-                id: Date.now(),
-                text: `Uploaded: ${selectedFile.name}`,
-                sender: 'me',
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                file: { name: selectedFile.name, type: selectedFile.type }
-              };
-
-              setMessages(prev => ({
-                ...prev,
-                [selectedUser]: [...(prev[selectedUser] || []), uploadMsg]
-              }));
-            }
             setSelectedFile(null);
             if (fileInputRef.current) {
               fileInputRef.current.value = '';
@@ -390,18 +197,19 @@ const MessagesPage = () => {
     }
   };
 
-  const renderMessageBubble = (msg: Message) => {
+  const renderMessageBubble = (msg: Message, index: number) => {
     const isMe = msg.sender === 'me';
     const isFile = msg.file;
+    const messageText = msg.text || msg.content || '';
 
     return (
       <div
-        key={msg.id}
+        key={msg._id || index}
         className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
       >
         {!isMe && (
           <img
-            src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'}
+            src={chatUsers.find(u => u._id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'}
             alt="User"
             className="w-8 h-8 rounded-full mr-2 self-end flex-shrink-0"
           />
@@ -422,17 +230,17 @@ const MessagesPage = () => {
               <span className="text-sm truncate">{msg.file?.name}</span>
             </div>
           ) : (
-            <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+            <p className="text-sm whitespace-pre-wrap">{messageText}</p>
           )}
 
           <div className={`text-xs mt-1 ${isMe ? 'text-purple-200' : 'text-gray-400'}`}>
-            {msg.time}
+            {msg.time || new Date(msg.createdAt || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </div>
         </div>
 
         {isMe && (
           <img
-            src={users.find(u => u.id === selectedUser)?.avatar || 'https://i.pravatar.cc/150?img=1'}
+            src="https://i.pravatar.cc/150?img=1"
             alt="User"
             className="w-8 h-8 rounded-full ml-2 self-end flex-shrink-0"
           />
@@ -441,57 +249,79 @@ const MessagesPage = () => {
     );
   };
 
-  const currentUser = users.find(u => u.id === selectedUser);
+  const currentUser = chatUsers.find(u => u._id === selectedUser);
 
   return (
-    <div className="  mt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex p-2 md:p-4">
+    <div className="mt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex p-2 md:p-4">
+      {/* Connection Status */}
+      <div className="fixed top-20 right-4 z-50">
+        <div className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 ${
+          isSocketConnected 
+            ? 'bg-green-600/20 text-green-400 border border-green-500/30' 
+            : 'bg-red-600/20 text-red-400 border border-red-500/30'
+        }`}>
+          <div className={`w-2 h-2 rounded-full ${isSocketConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
+          {isSocketConnected ? 'Connected' : 'Disconnected'}
+        </div>
+      </div>
+
       {/* Sidebar - User List */}
       <div className={`${showSidebar ? 'block' : 'hidden'} ${selectedUser ? 'w-full md:w-80' : 'w-full md:w-80'} h-[550px] md:h-[750px] bg-gray-900/80 backdrop-blur-sm rounded-xl p-3 md:p-4 md:mr-4 border border-gray-700/50 flex flex-col`}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white">Messages</h2>
           <div className="bg-purple-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
-            {users.length}
+            {chatUsers.length}
           </div>
         </div>
 
         <div className="space-y-2 overflow-y-auto flex-1 custom-scrollbar pr-1">
-          {users.map(user => (
-            <div
-              key={user.id}
-              onClick={() => handleSelectUser(user.id)}
-              className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${
-                selectedUser === user.id
-                  ? 'bg-purple-600/20 border border-purple-500/50 shadow-lg shadow-purple-500/10'
-                  : 'hover:bg-gray-800/50 border border-transparent'
-              }`}
-            >
-              <div className="relative">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-12 h-12 rounded-full mr-3 border-2 border-gray-700"
-                />
-                <div className="absolute bottom-0 right-2 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
-              </div>
-              <div className="flex-1">
-                <div className="font-semibold text-white">{user.name}</div>
-                <div className="text-xs text-gray-400 flex items-center">
-                  <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
-                  {user.lastSeen}
+          {chatListLoading ? (
+            <div className="text-center text-gray-400 py-8">Loading chats...</div>
+          ) : chatUsers.length === 0 ? (
+            <div className="text-center text-gray-400 py-8">No conversations yet</div>
+          ) : (
+            chatUsers.map(user => (
+              <div
+                key={user._id}
+                onClick={() => handleSelectUser(user._id)}
+                className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                  selectedUser === user._id
+                    ? 'bg-purple-600/20 border border-purple-500/50 shadow-lg shadow-purple-500/10'
+                    : 'hover:bg-gray-800/50 border border-transparent'
+                }`}
+              >
+                <div className="relative">
+                  <img
+                    src={user.avatar || 'https://i.pravatar.cc/150?img=1'}
+                    alt={user.name}
+                    className="w-12 h-12 rounded-full mr-3 border-2 border-gray-700"
+                  />
+                  <div className={`absolute bottom-0 right-2 w-3 h-3 rounded-full border-2 border-gray-900 ${user.online ? 'bg-green-500' : 'bg-gray-500'}`}></div>
                 </div>
+                <div className="flex-1">
+                  <div className="font-semibold text-white">{user.name}</div>
+                  <div className="text-xs text-gray-400 flex items-center">
+                    {user.lastMessage && (
+                      <>
+                        <span className="w-2 h-2 bg-green-500 rounded-full mr-1.5"></span>
+                        {user.lastMessage.substring(0, 30)}...
+                      </>
+                    )}
+                  </div>
+                </div>
+                {selectedUser === user._id && (
+                  <svg className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
               </div>
-              {selectedUser === user.id && (
-                <svg className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
 
       {/* Main Chat Area */}
-      <div className={`${!showSidebar || showSidebar ? 'flex' : 'hidden'} flex-1 bg-gray-900/80 backdrop-blur-sm rounded-xl h-[550px] md:h-[750px] p-3 md:p-4 flex-col border border-gray-700/50   overflow-hidden`}>
+      <div className={`${!showSidebar || showSidebar ? 'flex' : 'hidden'} flex-1 bg-gray-900/80 backdrop-blur-sm rounded-xl h-[550px] md:h-[750px] p-3 md:p-4 flex-col border border-gray-700/50 overflow-hidden`}>
         {/* Header */}
         <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-700/50">
           <div className="flex items-center">
@@ -509,13 +339,13 @@ const MessagesPage = () => {
                 alt={currentUser?.name}
                 className="w-10 h-10 rounded-full mr-3 border-2 border-purple-500"
               />
-              <div className="absolute bottom-0 right-2 w-3 h-3 bg-green-500 rounded-full border-2 border-gray-900"></div>
+              <div className={`absolute bottom-0 right-2 w-3 h-3 rounded-full border-2 border-gray-900 ${currentUser?.online ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></div>
             </div>
             <div>
               <div className="font-semibold text-white">{currentUser?.name}</div>
               <div className="text-xs text-green-400 flex items-center">
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1 animate-pulse"></span>
-                Online
+                <span className={`w-1.5 h-1.5 rounded-full mr-1 ${currentUser?.online ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`}></span>
+                {currentUser?.online ? 'Online' : 'Offline'}
               </div>
             </div>
           </div>
@@ -530,9 +360,22 @@ const MessagesPage = () => {
 
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto mb-4 px-1 custom-scrollbar">
-          <div className="space-y-4">
-            {selectedUser && messages[selectedUser]?.map((msg) => renderMessageBubble(msg))}
-          </div>
+          {messagesLoading ? (
+            <div className="flex items-center justify-center h-full text-gray-400">Loading messages...</div>
+          ) : messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full text-gray-400">
+              <div className="text-center">
+                <svg className="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+                <p>No messages yet. Start a conversation!</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {messages.map((msg, index) => renderMessageBubble(msg, index))}
+            </div>
+          )}
           <div ref={messagesEndRef} />
         </div>
 

@@ -58,6 +58,7 @@
 import Providers from "@/redux/Providers";
 import ToastProvider from "@/components/ToastProvider";
 import { FilterProvider } from "@/context/FilterContext";
+import { SocketProvider } from "@/components/providers/SocketProvider";
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
@@ -100,7 +101,9 @@ export default function RootLayout({
       >
         <Providers>
           <FilterProvider>
-            <ConditionalLayout>{children}</ConditionalLayout>
+            <SocketProvider>
+              <ConditionalLayout>{children}</ConditionalLayout>
+            </SocketProvider>
           </FilterProvider>
         </Providers>
         <ToastProvider />
