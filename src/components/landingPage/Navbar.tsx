@@ -1,7 +1,7 @@
  
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, MessageSquare, Bell, User, Search, Menu, X } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -9,6 +9,10 @@ import Link from 'next/link';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
+  
   const pathname = usePathname();
   const router = useRouter();
 
@@ -20,14 +24,16 @@ export default function Navbar() {
     return pathname.startsWith(path);
   };
 
-  // Auth logic - Replace with your actual authentication
-  // const isLoggedIn = true; // Set to false to see login button
-  // const userRole = 'customer'; // Can be 'customer' or 'vendor'
-const storedUserString = typeof window !== 'undefined' ? localStorage.getItem('user') : null;
-const storedUser = storedUserString ? JSON.parse(storedUserString) : null;
-
-const isLoggedIn = storedUser?.isLoggedIn || false;
-const userRole = storedUser?.role || null;
+  // Auth logic - Load from localStorage after hydration
+  useEffect(() => {
+    const storedUserString = localStorage.getItem('user');
+    if (storedUserString) {
+      const storedUser = JSON.parse(storedUserString);
+      setIsLoggedIn(storedUser?.isLoggedIn || false);
+      setUserRole(storedUser?.role || null);
+    }
+    setIsHydrated(true);
+  }, []);
 
   // Dynamic routes based on user role
   const dashboardRoute = userRole === 'vendor' ? '/vendor-dashboard' : '/customer-dashboard';

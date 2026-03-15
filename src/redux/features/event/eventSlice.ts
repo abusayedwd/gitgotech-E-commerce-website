@@ -26,10 +26,15 @@ const eventSlice = apiSlice.injectEndpoints({
       
     }),
 
+    getProductByEvent : builder.query({
+      query: (id) =>
+        `/event/product/get/${id}`, 
+    }),
+
    
       eventProductAdd : builder.mutation({
       query: (data) => ({
-        url: `//event/product/add`,
+        url: `/event/product/add`,
         method: "POST",
         body: data,
       }),
@@ -53,6 +58,7 @@ const eventSlice = apiSlice.injectEndpoints({
 export const {
   useCreateEventMutation,
   useGetEventsForProductAddQuery,
+  useGetProductByEventQuery,
   useGetEventsQuery,
   useUpdateEventMutation,
   useEventProductAddMutation,

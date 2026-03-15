@@ -25,6 +25,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const [selectedSize, setSelectedSize] = useState('M');
   const [showEventModal, setShowEventModal] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   const { data: productData, isLoading } = useGetProductDetailsforCustomerQuery(productId || '', {
     skip: !productId
@@ -41,6 +42,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
         event: eventId,
         product: product._id
       };
+      console.log(data)
       const res = await addproductToEvent(data).unwrap();
       if (res?.success) {
         toast.success('Product added to event!');
@@ -48,6 +50,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       }
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to add to event');
+      console.log(error.data)
     }
   };
 
@@ -493,7 +496,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               <p className="text-gray-400 text-sm mt-2">Select an event to add this product</p>
             </div>
 
-            <div className="p-6 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar">
+            <div className="p-6 space-y-4 max-h-[50vh] overflow-y-auto custom-scrollbar">
               {events.length === 0 ? (
                 <div className="text-center py-8">
                   <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -510,47 +513,73 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 </div>
               ) : (
                 events.map((event: any) => (
-                  <div
+                  <label
                     key={event._id}
-                    onClick={() => handleAddToEvent(event._id)}
-                    className="relative p-5 rounded-2xl border-2 border-gray-700 bg-gray-900/30 hover:border-purple-500 hover:bg-purple-900/20 cursor-pointer transition-all duration-300"
+                    className={`relative flex items-start p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
+                      selectedEventId === event._id
+                        ? 'border-purple-500 bg-purple-900/20'
+                        : 'border-gray-700 bg-gray-900/30 hover:border-purple-500/50 hover:bg-purple-900/10'
+                    }`}
                   >
-                    <h3 className="text-lg font-semibold mb-3">{event.title}</h3>
+                    <input
+                      type="radio"
+                      name="event"
+                      value={event._id}
+                      checked={selectedEventId === event._id}
+                      onChange={() => setSelectedEventId(event._id)}
+                      className="w-5 h-5 text-purple-600 bg-gray-800 border-gray-600 focus:ring-purple-500 focus:ring-2 mt-1"
+                    />
+                    <div className="ml-3 flex-1">
+                      <h3 className="text-lg font-semibold mb-3">{event.title}</h3>
 
-                    <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
-                      <Calendar className="w-4 h-4" />
-                      <span>{event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', {
-                        dateStyle: 'medium',
-                        timeStyle: 'short'
-                      }) : 'Date not set'}</span>
-                    </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
+                        <Calendar className="w-4 h-4" />
+                        <span>{event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', {
+                          dateStyle: 'medium'
+                        }) : 'Date not set'}</span>
+                      </div>
 
-                    <div className="flex items-center gap-2 text-sm text-gray-400">
-                      <MapPin className="w-4 h-4" />
-                      <span>{event.address}</span>
-                    </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <MapPin className="w-4 h-4" />
+                        <span>{event.address}</span>
+                      </div>
 
-                    <div className="mt-3 flex items-center gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        event.purchaseOption === 'creator'
-                          ? 'bg-purple-600/20 text-purple-400'
-                          : 'bg-blue-600/20 text-blue-400'
-                      }`}>
-                        {event.purchaseOption === 'creator' ? 'Buy Creator' : 'By Participants'}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {event.participant || 0} participants
-                      </span>
+                      <div className="mt-3 flex items-center gap-2">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          event.purchaseOption === 'creator'
+                            ? 'bg-purple-600/20 text-purple-400'
+                            : 'bg-blue-600/20 text-blue-400'
+                        }`}>
+                          {event.purchaseOption === 'creator' ? 'Buy Creator' : 'By Participants'}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {event.participant || 0} participants
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  </label>
                 ))
               )}
             </div>
 
-            <div className="p-6 border-t border-gray-800">
-              <p className="text-center text-gray-400 text-sm">
-                Click on an event to add this product
-              </p>
+            <div className="p-6 border-t border-gray-800 flex gap-3">
+              <button
+                onClick={() => setShowEventModal(false)}
+                className="flex-1 px-6 py-3 rounded-xl border border-gray-700 hover:bg-gray-800 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => selectedEventId && handleAddToEvent(selectedEventId)}
+                disabled={!selectedEventId}
+                className={`flex-1 px-6 py-3 rounded-xl font-medium transition-colors ${
+                  selectedEventId
+                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white'
+                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                Add Product to Event
+              </button>
             </div>
           </div>
         </div>

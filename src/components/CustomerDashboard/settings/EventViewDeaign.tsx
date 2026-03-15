@@ -3,60 +3,81 @@
 import React, { useState } from 'react';
 import { ShoppingCart, Eye, Plus } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { useGetProductByEventQuery } from '@/redux/features/event/eventSlice';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 
 type Product = {
-  id: number;
-  name: string;
-  price: string;
-  reviews: number;
-  brand: string;
-  image: string;
+  _id: string;
+  product: {
+    _id: string;
+    product_name: string;
+    product_price: number;
+    review_count?: number | null;
+    review_rating?: number | null;
+    product_images?: string[];
+    vendor?: {
+      name?: string;
+    } | string;
+  };
+  event: string;
+  isOrderd: boolean;
+  createdAt: string;
+  updatedAt: string;
 };
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const router = useRouter()
+  const router = useRouter();
+  
+  const productData = product.product;
+  const imageSrc = productData.product_images?.[0] 
+    ? `${IMAGE_BASE_URL}/${productData.product_images[0]}` 
+    : '/images/jacket.png';
+  
+  const vendorName = typeof productData.vendor === 'object' 
+    ? productData.vendor?.name || 'Vendor' 
+    : productData.vendor || 'Vendor';
+
   return (
     <div
-    // onClick={() => router.push("/profile/event/view-deaign/")}
     className=" text-white bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow">
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
                 <img
-                  src="/images/jacket.png"
-                  alt={product.name}
+                  src={imageSrc}
+                  alt={productData.product_name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 />
         <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
-          No Design
+          {product.isOrderd ? 'Ordered' : 'No Design'}
         </span>
       </div>
 
       {/* Product Info */}
       <div className="p-5 text-white">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-2xl font-bold">${product.price}</span>
+          <span className="text-2xl font-bold">${productData.product_price.toFixed(2)}</span>
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
-              <svg key={i} className="w-4 h-4 fill-yellow-400" viewBox="0 0 20 20">
+              <svg key={i} className={`w-4 h-4 ${i < (productData.review_rating || 0) ? 'fill-yellow-400' : 'fill-gray-600'}`} viewBox="0 0 20 20">
                 <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
               </svg>
             ))}
-            <span className="text-sm   ml-1">{product.reviews} Reviews</span>
+            <span className="text-sm   ml-1">{productData.review_count || 0} Reviews</span>
           </div>
         </div>
 
-        <h3 className="text-xl font-semibold   mb-2">{product.name}</h3>
+        <h3 className="text-xl font-semibold   mb-2">{productData.product_name}</h3>
 
         <div className="flex items-center gap-2 mb-4">
           <ShoppingCart className="w-4 h-4 text-red-500" />
-          <span className="text-[16px] text-[#B8B8B8]">{product.brand}</span>
+          <span className="text-[16px] text-[#B8B8B8]">{vendorName}</span>
         </div>
 
         {/* Action Buttons */}
         <div className="flex gap-3">
-          <button onClick={() => router.push("/profile/event/view-deaign/select-size")} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
+          <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
             View Size
           </button>
 
@@ -74,34 +95,17 @@ const ProductCard = ({ product }: { product: Product }) => {
 
 export default function EventViewDeaign() {
 
+
+ const searchParams = useSearchParams()
+  const id = searchParams.get('id')
+  console.log(id)
+
+  const {data: eventProduct, isLoading, error} = useGetProductByEventQuery(id)
+  console.log(eventProduct)
+
   const router = useRouter()
-  
-  const products = [
-    {
-      id: 1,
-      name: "Men's Bomber Jacket",
-      price: "28.00",
-      reviews: 20,
-      brand: "PRINCE OF DARZI",
-      image: "/images/jacket.png"
-    },
-    {
-      id: 2,
-      name: "Men's Bomber Jacket",
-      price: "28.00",
-      reviews: 20,
-      brand: "PRINCE OF DARZI",
-        image: "/images/jacket.png"
-    },
-    {
-      id: 3,
-      name: "Men's Bomber Jacket",
-      price: "28.00",
-      reviews: 20,
-      brand: "PRINCE OF DARZI",
-        image: "/images/jacket.png"
-    }
-  ];
+
+  const products: Product[] = eventProduct?.data || [];
 
   return (
     <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black  text-white">
@@ -120,18 +124,35 @@ export default function EventViewDeaign() {
           <Link href={"/profile/event/add-design"}>
           <button className="flex items-center w-45 py-2 cursor-pointer px-4 gap-2 bg-gradient-to-l from-blue-600 to-cyan-600 text-white px-2  rounded-lg font-medium transition-colors">
             <Plus className="w-5 h-5" />
-            Add Design 
+            Add Design
           </button>
           </Link>
-          
+
         </div>
 
         {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-purple-400 text-xl">Loading products...</div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-red-400 text-xl">Failed to load products</div>
+          </div>
+        ) : products.length === 0 ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center text-gray-400">
+              <ShoppingCart className="w-16 h-16 mx-auto mb-4" />
+              <p className="text-xl">No products in this event yet</p>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {products.map(product => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
