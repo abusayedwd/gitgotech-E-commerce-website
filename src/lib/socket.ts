@@ -14,24 +14,20 @@ export const initializeSocket = (token: string): Socket => {
 
   // Remove 'Bearer ' prefix if present - server expects raw JWT token
   const rawToken = token.startsWith('Bearer ') ? token.substring(7) : token;
+  console.log(rawToken)
 
-  socket = io(SOCKET_URL, {
-    // Send token in auth object - standard socket.io way
-    auth: {
-      token: rawToken,
-    },
-    // Also send as query parameter for compatibility
-    query: {
-      token: rawToken,
-    },
-    // Use polling first to support headers, then upgrade to websocket
-    transports: ['polling', 'websocket'],
-    reconnection: true,
-    reconnectionDelay: 1000,
-    reconnectionAttempts: 5,
-    // Force new connection to avoid cached connections
-    forceNew: true,
-  });
+socket = io(SOCKET_URL, {
+  extraHeaders: {
+    token: rawToken,   // ← This sends it as an actual HTTP header
+  },
+  transports: ['polling', 'websocket'],  // keep polling first
+  reconnection: true,
+  reconnectionDelay: 1000,
+  reconnectionAttempts: 5,
+  forceNew: true,
+});
+
+
 
   socket.on('connect', () => {
     console.log('✅ Socket connected:', socket?.id);
