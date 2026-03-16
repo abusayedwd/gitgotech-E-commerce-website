@@ -525,8 +525,20 @@ import { getSocket, initializeSocket, disconnectSocket } from '@/lib/socket';
 import { stringify } from 'querystring';
 import url from '@/redux/api/baseUrl';
 
-// ✅ Your logged-in user ID
-const MY_USER_ID = '69997b1b46100978746882dc';
+// Get logged-in user ID from localStorage
+const getMyUserId = () => {
+  if (typeof window === 'undefined') return '';
+  const userStr = localStorage.getItem('user');
+  if (userStr) {
+    try {
+      const user = JSON.parse(userStr);
+      return user?._id || '';
+    } catch {
+      return '';
+    }
+  }
+  return '';
+};
 
 interface Participant {
   _id: string;
@@ -555,6 +567,9 @@ interface ChatUser {
 }
 
 const MessagesPage = () => {
+  // Get logged-in user ID
+  const MY_USER_ID = getMyUserId();
+
   const [selectedChatId, setSelectedChatId] = useState<string>('');
   const [selectedReceiverId, setSelectedReceiverId] = useState<string>('');
   const [showSidebar, setShowSidebar] = useState(true);
@@ -571,6 +586,8 @@ const MessagesPage = () => {
     skip: typeof window === 'undefined',
   });
 
+  console.log(selectedChatId)
+
   const {
     data: messagesData,
     isLoading: messagesLoading,
@@ -579,15 +596,11 @@ const MessagesPage = () => {
     skip: !selectedChatId,
   });
 
-  console.log(messagesData)
-
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
 
   // ─── Data ─────────────────────────────────────────────────────
   const chatUsers: ChatUser[] = chatListData?.data || [];
   const messages: Message[] = messagesData?.data?.messages || [];
-
-
 
   // ─── Get the other participant (not me) ───────────────────────
   const getOtherParticipant = (chat: ChatUser): Participant => {
@@ -667,6 +680,7 @@ const MessagesPage = () => {
   // ─── Select chat ──────────────────────────────────────────────
   const handleSelectChat = (chat: ChatUser) => {
     const otherUser = getOtherParticipant(chat);
+    console.log(otherUser)
     setSelectedChatId(chat._id);
     setSelectedReceiverId(otherUser._id);
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
@@ -686,7 +700,7 @@ const handleSendMessage = async (
    console.log(newMessage)
 const formData = new FormData();
 formData.append("content", JSON.stringify(newMessage));
-
+console.log(selectedReceiverId)
 await sendMessage({
   receiverId: selectedReceiverId,
   formData,  // ✅ key must be named `formData`
@@ -750,11 +764,10 @@ await sendMessage({
   const renderMessageBubble = (msg: Message, index: number) => {
     const isMe = msg.senderId?._id === MY_USER_ID;
 
-    // console.log(msg)
+    console.log(url + msg?.documents)
 
     const myAvatar = msg.senderId?.image || 'https://i.pravatar.cc/150?img=1';
     const otherAvatar = currentOtherUser?.image || 'https://i.pravatar.cc/150?img=2';
-    // console.log(currentOtherUser)
 
     return (
       <div
@@ -785,14 +798,14 @@ await sendMessage({
 console.log(fullUrl);
                 const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(docUrl);
                 
-               return isImage ? (
-  <img
-    key={i}
-    src={fullUrl}
-    alt={`Image ${i + 1}`}
-    className=" h-60 w-60 object-cover rounded-lg cursor-pointer hover:opacity-90 border border-gray-200"
-    onClick={() => window.open(fullUrl, "_blank")}
-  />
+                return isImage ? (
+                  <img
+                    key={i}
+                    src={fullUrl}
+                    alt={`Image ${i + 1}`}
+                    className="w-60 h-60 rounded-lg cursor-pointer hover:opacity-90"
+                    onClick={() => window.open(fullUrl, '_blank')}
+                  />
                 ) : (
                   <a
                     key={i}

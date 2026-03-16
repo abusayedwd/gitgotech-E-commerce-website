@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
 import { useAddProductMutation } from '@/redux/features/vendor/product/productSlice';
 import toast from 'react-hot-toast';
+import { useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 
 export default function AddProductPage() {
   const router = useRouter();
@@ -31,6 +32,10 @@ export default function AddProductPage() {
   // Size & stock management
   const availableSizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '3X', '4X'];
   const [productStocks, setProductStocks] = useState<{ size: string; stock: number }[]>([]);
+
+  // Fetch categories from API
+  const { data: categoryData, isLoading: categoriesLoading } = useGetHomeCategoriesQuery();
+  const categories = categoryData?.data || [];
 
   const toggleSize = (size: string) => {
     const exists = productStocks.find((s) => s.size === size);
@@ -194,9 +199,15 @@ export default function AddProductPage() {
               className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
             >
               <option value="">Choose Category</option>
-              <option value="clothing">Clothing</option>
-              <option value="accessories">Accessories</option>
-              <option value="footwear">Footwear</option>
+              {categoriesLoading ? (
+                <option disabled>Loading categories...</option>
+              ) : (
+                categories.map((cat: any) => (
+                  <option key={cat._id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))
+              )}
             </select>
           </div>
         </div>

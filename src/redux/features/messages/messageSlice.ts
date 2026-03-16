@@ -9,19 +9,19 @@ const messageSlice = apiSlice.injectEndpoints({
     }),
 
     getChatMessages: builder.query({
-      query: (chatId) => `/chat/details/${chatId}`,
-      providesTags: (result, error, chatId) => [{ type: "Messages", id: chatId }],
+      query: ( selectedChatId ) => `/chat/details/${selectedChatId}`,
+      providesTags: (result, error, { chatId }) => [{ type: "Messages", id: chatId }],
     }),
 
     sendMessage: builder.mutation({
-  query: ({ receiverId, formData }) => ({
-    url: `/chat/send/${receiverId}`,
-    method: "POST",
-    body: formData,
-    formData: true,  // ✅ this is the critical flag
-  }),
-  invalidatesTags: ["Messages"],
-}),
+      query: ({ receiverId, formData }) => ({
+        url: `/chat/send/${receiverId}`,
+        method: "POST",
+        body: formData,
+        formData: true,
+      }),
+      invalidatesTags: ["Messages"],
+    }),
 
   }),
 });

@@ -8,6 +8,10 @@ const homeSlice = apiSlice.injectEndpoints({
       query: (category) => `/home/products-by-category/${category}`,
     }),
 
+    getProductsBestSaving: builder.query({
+      query: () => `/home/top-savings`,
+    }),
+
     // Product details
     getProductDetailsforCustomer: builder.query({
       query: (id) => `/product/customer/details/${id}`,
@@ -93,6 +97,7 @@ const homeSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetProductsByCategoryQuery,
+  useGetProductsBestSavingQuery,
   useGetProductDetailsforCustomerQuery,
   useGetNewestProductsQuery,
   useTopVendorsQuery,
