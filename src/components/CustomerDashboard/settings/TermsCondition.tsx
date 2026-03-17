@@ -4,104 +4,18 @@ import React from 'react';
 import { FileText } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
+import { useGetTermsQuery } from '@/redux/features/settings/settingsSlice';
 
 export default function TermsConditionsPage() {
     const router = useRouter();
-  const termsContent = [
-    {
-      title: "1. Acceptance of Terms",
-      text: "By accessing and using this platform, you accept and agree to be bound by the terms and provisions of this agreement. In addition, when using these particular services, you shall be subject to any posted guidelines or rules applicable to such services."
-    },
-    {
-      title: "2. Description of Service",
-      text: "We currently provide users with access to a rich collection of resources, including various communications tools, forums, shopping services, personalized content and branded programming through our network of properties which may be accessed through any various medium or device now known or hereafter developed."
-    },
-    {
-      title: "3. Account Registration",
-      text: "To use certain features of the Site, you will be required to register an account. You agree to:"
-    },
-    {
-      title: "",
-      text: "Provide accurate, current, and complete information during the registration/onboarding."
-    },
-    {
-      title: "",
-      text: "Maintain and update registration information to keep it current and accurate."
-    },
-    {
-      title: "",
-      text: "Keep the confidentiality of any username/s or email associated with your account."
-    },
-    {
-      title: "",
-      text: "Not to transfer your account to any other person or entity without prior approval."
-    },
-    {
-      title: "",
-      text: "Use of the Site"
-    },
-    {
-      title: "",
-      text: "You agree to use the Site in a manner that is consistent with all applicable laws and regulations. You agree not to:"
-    },
-    {
-      title: "",
-      text: "Interfere or violate the integrity or performance."
-    },
-    {
-      title: "",
-      text: "Impersonate others or conduct that could otherwise threaten or harass others with libellously."
-    },
-    {
-      title: "",
-      text: "Upload or share users proprietary to Open Hands through the APP."
-    },
-    {
-      title: "",
-      text: "Attempt to obtain unauthorized access to or otherwise manipulate the App's code or functionality."
-    },
-    {
-      title: "4. Privacy and Data Security",
-      text: "By using the app, you consent to our Privacy Policy, which explains how we collect, use, and disclose your data. See Please review our Privacy Policy for information on our practices."
-    },
-    {
-      title: "5. Subscriptions and Payments",
-      text: "If you opt to purchase a subscription service provided by the App through paid service features, you agree to pay the prices stated during the registration process. You acknowledge that recurring charges will occur unless you actively cancel your subscription. All matters relating to price, payment, refunds and/or account billing are between you and the App provider."
-    },
-    {
-      title: "6. User Content",
-      text: "Users may be permitted to post, submit or share (via \"posts\" feedback or reviews and other materials. Information not limited to the App, you grant the Platform a non-exclusive, transferable, sub-licensable, royalty-free worldwide license to use any User Content you provide in order to use and/or distribute your content as part of the service. When you share any content, whether on Public Mode or Private Mode we do not assume any responsibility for and make no warranties with respect to user content. If you believe your work has been copied in a way that infringes copyright or violates your proprietary rights or others, please act on our website via email contact."
-    },
-    {
-      title: "",
-      text: "We may suspend or terminate your account, if you are in any way, without notice, for any reason at all times, the App reserve the right to terminate your access to."
-    },
-    {
-      title: "",
-      text: "Consistent marketing on Internal."
-    },
-    {
-      title: "",
-      text: "Discreet offensive or disillusion."
-    },
-    {
-      title: "",
-      text: "Unanticipated way behaviours or spam leads."
-    },
-    {
-      title: "7. Limitation of Liability",
-      text: "To the fullest extent permitted by law with us (a) to give to otherwise and his will not liable for consequential, incidental, special, indirect or punitive damages or any loss even whether or direct, arising out of or related to your use of the application."
-    },
-    {
-      title: "8. Changes to the Terms",
-      text: "At any time without notice we can reserve to modify of this app more at any time, and you have to the interests, including their obligation to review them app version that you accept by continuing the App and when any of them might or."
-    }
-  ];
+  const {data: termsData, isLoading} = useGetTermsQuery()
+  
+  const termsInfo = termsData?.data;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-4xl mx-auto">
-        
+
         {/* Header */}
          <div className="container md:mt-24 mt-12 mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
@@ -114,16 +28,18 @@ export default function TermsConditionsPage() {
 
         {/* Content Card */}
         <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 mt-12 border-2 border-blue-500/50 rounded-3xl p-6 md:p-6 backdrop-blur-sm">
-          <div className="space-y-6 text-sm text-gray-400 leading-relaxed  overflow-y-auto pr-2 custom-scrollbar">
-            {termsContent.map((section, index) => (
-              <div key={index}>
-                {section.title && (
-                  <h3 className="text-white font-semibold mb-2">{section.title}</h3>
-                )}
-                <p className="text-gray-400">{section.text}</p>
-              </div>
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-3 text-gray-400">Loading terms and conditions...</span>
+            </div>
+          ) : (
+            <div className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
+              <p className="text-gray-300 whitespace-pre-wrap">
+                {termsInfo?.description || "No terms and conditions content available."}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Accept Button (Optional) */}

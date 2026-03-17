@@ -6,6 +6,9 @@ import { Search, UserCheck } from 'lucide-react';
 const CareerBanner = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
+   
+console.log(searchQuery)
+
   return (
     <div className="relative mt-24 w-full h-[550px] overflow-hidden rounded-xl">
       {/* Background Image */}
