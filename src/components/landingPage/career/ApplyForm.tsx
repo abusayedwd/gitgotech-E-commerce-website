@@ -1,12 +1,12 @@
 "use client"
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Upload, Trash2, Plus, Mail, Phone, Globe } from 'lucide-react';
+import { ChevronDown, ChevronUp, Upload, Trash2, Plus, Globe } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 
 export default function JobApplicationForm() {
-  // State management
   const router = useRouter()
+  
   const [openSections, setOpenSections] = useState({
     personal: true,
     work: false,
@@ -17,62 +17,88 @@ export default function JobApplicationForm() {
     references: false
   });
 
-  const [formData, setFormData] = useState({
+  const [personalInfo, setPersonalInfo] = useState({
     fullName: '',
-    phone: '',
-    location: '',
-    cvFile: null as File | null,
-    tellUs: ''
+    phoneNumber: '',
+    currentLocation: '',
+    cvResume: null as File | null,
+    tellUsWhyYouWantToJoinOurTeam: ''
   });
 
   const [workExperiences, setWorkExperiences] = useState([{
-    id: 1, jobTitle: '', company: '', companyPhone: '', location: '',
-    currentlyWorking: false, startDate: '', endDate: '', roleDescription: ''
+    id: 1,
+    jobTitle: '',
+    company: '',
+    companyPhone: '',
+    companyWebsite: '',
+    location: '',
+    isCurrentlyWorkHere: false,
+    startDate: '',
+    endDate: '',
+    roleDescription: ''
   }]);
 
   const [educations, setEducations] = useState([{
-    id: 1, degree: '', institution: '', graduationYear: '', gpa: ''
+    id: 1,
+    schoolOrUniversityName: '',
+    degree: '',
+    phone: '',
+    email: '',
+    fieldOfStudy: '',
+    overallResultGrade: '',
+    startYear: '',
+    endYear: ''
   }]);
 
   const [certifications, setCertifications] = useState([{
-    id: 1, certName: '', issuingOrg: '', certDate: ''
+    id: 1,
+    certificateName: '',
+    file: null as File | null
   }]);
 
-  const [skills, setSkills] = useState([{
-    id: 1, skill: '', proficiency: ''
-  }]);
+  const [skills, setSkills] = useState<string[]>(['']);
 
-  const [languages, setLanguages] = useState([{
-    id: 1, language: '', proficiency: ''
-  }]);
+  const [languages, setLanguages] = useState<string[]>(['']);
 
   const [references, setReferences] = useState([{
-    id: 1, refName: '', refRelation: '', refEmail: '', refPhone: ''
+    id: 1,
+    name: '',
+    companyName: '',
+    email: '',
+    contactNumber: '',
+    contactEmail: ''
   }]);
 
-  // Handler functions
   const toggleSection = (section: keyof typeof openSections) => {
     setOpenSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handlePersonalInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setPersonalInfo(prev => ({ ...prev, [name]: value }));
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      if (file) setFormData(prev => ({ ...prev, cvFile: file }));
+      setPersonalInfo(prev => ({ ...prev, cvResume: file }));
     }
   };
 
   // Work Experience handlers
   const addWorkExperience = () => {
     setWorkExperiences([...workExperiences, {
-      id: Date.now(), jobTitle: '', company: '', companyPhone: '', location: '',
-      currentlyWorking: false, startDate: '', endDate: '', roleDescription: ''
+      id: Date.now(),
+      jobTitle: '',
+      company: '',
+      companyPhone: '',
+      companyWebsite: '',
+      location: '',
+      isCurrentlyWorkHere: false,
+      startDate: '',
+      endDate: '',
+      roleDescription: ''
     }]);
   };
 
@@ -91,7 +117,15 @@ export default function JobApplicationForm() {
   // Education handlers
   const addEducation = () => {
     setEducations([...educations, {
-      id: Date.now(), degree: '', institution: '', graduationYear: '', gpa: ''
+      id: Date.now(),
+      schoolOrUniversityName: '',
+      degree: '',
+      phone: '',
+      email: '',
+      fieldOfStudy: '',
+      overallResultGrade: '',
+      startYear: '',
+      endYear: ''
     }]);
   };
 
@@ -110,7 +144,9 @@ export default function JobApplicationForm() {
   // Certification handlers
   const addCertification = () => {
     setCertifications([...certifications, {
-      id: Date.now(), certName: '', issuingOrg: '', certDate: ''
+      id: Date.now(),
+      certificateName: '',
+      file: null as File | null
     }]);
   };
 
@@ -120,50 +156,63 @@ export default function JobApplicationForm() {
     }
   };
 
-  const updateCertification = (id: number, field: string, value: string) => {
+  const updateCertification = (id: number, field: string, value: string | File | null) => {
     setCertifications(certifications.map(cert =>
       cert.id === id ? { ...cert, [field]: value } : cert
     ));
   };
 
-  // Skill handlers
-  const addSkill = () => {
-    setSkills([...skills, { id: Date.now(), skill: '', proficiency: '' }]);
-  };
-
-  const removeSkill = (id: number) => {
-    if (skills.length > 1) {
-      setSkills(skills.filter(skill => skill.id !== id));
+  const handleCertificationFileUpload = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      updateCertification(id, 'file', file);
     }
   };
 
-  const updateSkill = (id: number, field: string, value: string) => {
-    setSkills(skills.map(skill =>
-      skill.id === id ? { ...skill, [field]: value } : skill
-    ));
+  // Skill handlers
+  const addSkill = () => {
+    setSkills([...skills, '']);
+  };
+
+  const removeSkill = (index: number) => {
+    if (skills.length > 1) {
+      setSkills(skills.filter((_, i) => i !== index));
+    }
+  };
+
+  const updateSkill = (index: number, value: string) => {
+    const updatedSkills = [...skills];
+    updatedSkills[index] = value;
+    setSkills(updatedSkills);
   };
 
   // Language handlers
   const addLanguage = () => {
-    setLanguages([...languages, { id: Date.now(), language: '', proficiency: '' }]);
+    setLanguages([...languages, '']);
   };
 
-  const removeLanguage = (id: number) => {
+  const removeLanguage = (index: number) => {
     if (languages.length > 1) {
-      setLanguages(languages.filter(lang => lang.id !== id));
+      setLanguages(languages.filter((_, i) => i !== index));
     }
   };
 
-  const updateLanguage = (id: number, field: string, value: string) => {
-    setLanguages(languages.map(lang =>
-      lang.id === id ? { ...lang, [field]: value } : lang
-    ));
+  const updateLanguage = (index: number, value: string) => {
+    const updatedLanguages = [...languages];
+    updatedLanguages[index] = value;
+    setLanguages(updatedLanguages);
   };
 
   // Reference handlers
   const addReference = () => {
     setReferences([...references, {
-      id: Date.now(), refName: '', refRelation: '', refEmail: '', refPhone: ''
+      id: Date.now(),
+      name: '',
+      companyName: '',
+      email: '',
+      contactNumber: '',
+      contactEmail: ''
     }]);
   };
 
@@ -181,7 +230,7 @@ export default function JobApplicationForm() {
 
   const handleSubmit = () => {
     const applicationData = {
-      personal: formData,
+      personalInfo,
       workExperiences,
       educations,
       certifications,
@@ -190,36 +239,32 @@ export default function JobApplicationForm() {
       references
     };
     console.log('Application submitted:', applicationData);
-    alert('Application submitted successfully!');
+    alert('Application submitted successfully! Check console for data.');
   };
 
   return (
     <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#050218] to-black p-4 md:p-8">
       <div className="container mx-auto flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+        <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
             <FaArrowLeft className='text-black'/>
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Application Form</h1>
-        </div>
+        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Application Form</h1>
+      </div>
+      
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
-
-   
         <div className="text-center mb-2">
-            <div className='flex justify-center'> 
-            <img 
-             className='h-44 w-44'
-            src="/images/logo.png" alt="" />
-            </div>
+          <div className='flex justify-center'> 
+            <img className='h-44 w-44' src="/images/logo.png" alt="Logo" />
+          </div>
           <h1 className="text-4xl font-bold font-cormorant text-white mb-2">Submit Your Application</h1>
           <p className="text-gray-400">Provide your important details to complete your job application.</p>
         </div>
 
         <div className="space-y-6">
           {/* Personal Information Section */}
-          <div className=" rounded-xl p-6">
+          <div className="rounded-xl p-6">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection('personal')}
@@ -235,10 +280,10 @@ export default function JobApplicationForm() {
                   <input
                     type="text"
                     name="fullName"
-                    value={formData.fullName}
-                    onChange={handleChange}
+                    value={personalInfo.fullName}
+                    onChange={handlePersonalInfoChange}
                     className="w-full px-4 py-3 bg-[#242428] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Type here"
+                    placeholder="John Michael Smith"
                   />
                 </div>
                 
@@ -251,11 +296,11 @@ export default function JobApplicationForm() {
                     </div>
                     <input
                       type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleChange}
+                      name="phoneNumber"
+                      value={personalInfo.phoneNumber}
+                      onChange={handlePersonalInfoChange}
                       className="flex-1 px-4 py-3 bg-[#242428] border border-gray-600 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="Enter Your Phone No."
+                      placeholder="555-0123"
                     />
                   </div>
                 </div>
@@ -264,11 +309,11 @@ export default function JobApplicationForm() {
                   <label className="block text-sm font-medium text-gray-300 mb-2">Current Location *</label>
                   <input
                     type="text"
-                    name="location"
-                    value={formData.location}
-                    onChange={handleChange}
+                    name="currentLocation"
+                    value={personalInfo.currentLocation}
+                    onChange={handlePersonalInfoChange}
                     className="w-full px-4 py-3 bg-[#242428] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Type here"
+                    placeholder="San Francisco, CA, USA"
                   />
                 </div>
                 
@@ -289,18 +334,21 @@ export default function JobApplicationForm() {
                     >
                       Browse File
                     </label>
+                    {personalInfo.cvResume && (
+                      <p className="text-sm text-green-400 mt-2">{personalInfo.cvResume.name}</p>
+                    )}
                   </div>
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Tell us why you want to join our team *</label>
                   <textarea
-                    name="tellUs"
-                    value={formData.tellUs}
-                    onChange={handleChange}
+                    name="tellUsWhyYouWantToJoinOurTeam"
+                    value={personalInfo.tellUsWhyYouWantToJoinOurTeam}
+                    onChange={handlePersonalInfoChange}
                     rows={4}
                     className="w-full px-4 py-3 bg-[#242428] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="Type here"
+                    placeholder="I am passionate about technology and innovation..."
                   />
                 </div>
               </div>
@@ -308,7 +356,7 @@ export default function JobApplicationForm() {
           </div>
 
           {/* Work Experience Section */}
-          <div className=" border-2 rounded-xl p-6">
+          <div className="border-2 rounded-xl p-6">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection('work')}
@@ -320,7 +368,7 @@ export default function JobApplicationForm() {
             {openSections.work && (
               <div className="mt-6 space-y-6">
                 {workExperiences.map((exp, index) => (
-                  <div key={exp.id} className=" rounded-lg p-4">
+                  <div key={exp.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-medium text-white">Work Experience {index + 1}</h3>
                       {workExperiences.length > 1 && (
@@ -342,7 +390,7 @@ export default function JobApplicationForm() {
                           value={exp.jobTitle}
                           onChange={(e) => updateWorkExperience(exp.id, 'jobTitle', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="Senior Software Engineer"
                         />
                       </div>
                       
@@ -353,12 +401,12 @@ export default function JobApplicationForm() {
                           value={exp.company}
                           onChange={(e) => updateWorkExperience(exp.id, 'company', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="Tech Solutions Inc"
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Company's Phone</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Company Phone</label>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-2 bg-gray-600 border border-gray-500 rounded-l-lg px-3">
                             <img src="https://flagcdn.com/w20/us.png" alt="US Flag" className="w-5 h-5" />
@@ -369,7 +417,21 @@ export default function JobApplicationForm() {
                             value={exp.companyPhone}
                             onChange={(e) => updateWorkExperience(exp.id, 'companyPhone', e.target.value)}
                             className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="Enter Your Phone No."
+                            placeholder="555-0123"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Company Website</label>
+                        <div className="flex items-center gap-2">
+                          <Globe className="text-gray-400" size={20} />
+                          <input
+                            type="url"
+                            value={exp.companyWebsite}
+                            onChange={(e) => updateWorkExperience(exp.id, 'companyWebsite', e.target.value)}
+                            className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="https://www.techsolutions.com"
                           />
                         </div>
                       </div>
@@ -381,7 +443,7 @@ export default function JobApplicationForm() {
                           value={exp.location}
                           onChange={(e) => updateWorkExperience(exp.id, 'location', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="San Francisco, CA"
                         />
                       </div>
                       
@@ -389,8 +451,8 @@ export default function JobApplicationForm() {
                         <label className="flex items-center gap-2">
                           <input
                             type="checkbox"
-                            checked={exp.currentlyWorking}
-                            onChange={(e) => updateWorkExperience(exp.id, 'currentlyWorking', e.target.checked)}
+                            checked={exp.isCurrentlyWorkHere}
+                            onChange={(e) => updateWorkExperience(exp.id, 'isCurrentlyWorkHere', e.target.checked)}
                             className="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-2 focus:ring-purple-500"
                           />
                           <span className="text-gray-300">I am Currently Working here</span>
@@ -414,7 +476,7 @@ export default function JobApplicationForm() {
                             value={exp.endDate}
                             onChange={(e) => updateWorkExperience(exp.id, 'endDate', e.target.value)}
                             className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            disabled={exp.currentlyWorking}
+                            disabled={exp.isCurrentlyWorkHere}
                           />
                         </div>
                       </div>
@@ -426,7 +488,7 @@ export default function JobApplicationForm() {
                           onChange={(e) => updateWorkExperience(exp.id, 'roleDescription', e.target.value)}
                           rows={3}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="Led a team of 5 developers..."
                         />
                       </div>
                     </div>
@@ -445,7 +507,7 @@ export default function JobApplicationForm() {
           </div>
 
           {/* Education Section */}
-          <div className=" border rounded-xl p-6">
+          <div className="border rounded-xl p-6">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection('education')}
@@ -457,7 +519,7 @@ export default function JobApplicationForm() {
             {openSections.education && (
               <div className="mt-6 space-y-6">
                 {educations.map((edu, index) => (
-                  <div key={edu.id} className=" rounded-lg p-4">
+                  <div key={edu.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-medium text-white">Education {index + 1}</h3>
                       {educations.length > 1 && (
@@ -473,46 +535,91 @@ export default function JobApplicationForm() {
                     
                     <div className="space-y-4">
                       <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">School/University Name *</label>
+                        <input
+                          type="text"
+                          value={edu.schoolOrUniversityName}
+                          onChange={(e) => updateEducation(edu.id, 'schoolOrUniversityName', e.target.value)}
+                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="Stanford University"
+                        />
+                      </div>
+                      
+                      <div>
                         <label className="block text-sm font-medium text-gray-300 mb-2">Degree *</label>
                         <input
                           type="text"
                           value={edu.degree}
                           onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="Master of Science"
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Institution *</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Field of Study</label>
                         <input
                           type="text"
-                          value={edu.institution}
-                          onChange={(e) => updateEducation(edu.id, 'institution', e.target.value)}
+                          value={edu.fieldOfStudy}
+                          onChange={(e) => updateEducation(edu.id, 'fieldOfStudy', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="Artificial Intelligence"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">Phone</label>
+                          <input
+                            type="tel"
+                            value={edu.phone}
+                            onChange={(e) => updateEducation(edu.id, 'phone', e.target.value)}
+                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="+1-555-0123"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                          <input
+                            type="email"
+                            value={edu.email}
+                            onChange={(e) => updateEducation(edu.id, 'email', e.target.value)}
+                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="university@example.com"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Overall Result/Grade</label>
+                        <input
+                          type="text"
+                          value={edu.overallResultGrade}
+                          onChange={(e) => updateEducation(edu.id, 'overallResultGrade', e.target.value)}
+                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="3.8 GPA"
                         />
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">Graduation Year *</label>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">Start Year</label>
                           <input
                             type="text"
-                            value={edu.graduationYear}
-                            onChange={(e) => updateEducation(edu.id, 'graduationYear', e.target.value)}
+                            value={edu.startYear}
+                            onChange={(e) => updateEducation(edu.id, 'startYear', e.target.value)}
                             className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="YYYY"
+                            placeholder="2015"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">GPA</label>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">End Year</label>
                           <input
                             type="text"
-                            value={edu.gpa}
-                            onChange={(e) => updateEducation(edu.id, 'gpa', e.target.value)}
+                            value={edu.endYear}
+                            onChange={(e) => updateEducation(edu.id, 'endYear', e.target.value)}
                             className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="e.g. 3.5/4.0"
+                            placeholder="2017"
                           />
                         </div>
                       </div>
@@ -532,7 +639,7 @@ export default function JobApplicationForm() {
           </div>
 
           {/* Certifications Section */}
-          <div className=" border rounded-xl p-6">
+          <div className="border rounded-xl p-6">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection('certifications')}
@@ -544,7 +651,7 @@ export default function JobApplicationForm() {
             {openSections.certifications && (
               <div className="mt-6 space-y-6">
                 {certifications.map((cert, index) => (
-                  <div key={cert.id} className=" rounded-lg p-4">
+                  <div key={cert.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-medium text-white">Certification {index + 1}</h3>
                       {certifications.length > 1 && (
@@ -560,35 +667,37 @@ export default function JobApplicationForm() {
                     
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Certification Name *</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Certificate Name *</label>
                         <input
                           type="text"
-                          value={cert.certName}
-                          onChange={(e) => updateCertification(cert.id, 'certName', e.target.value)}
+                          value={cert.certificateName}
+                          onChange={(e) => updateCertification(cert.id, 'certificateName', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="AWS Certified Solutions Architect - Professional"
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Issuing Organization *</label>
-                        <input
-                          type="text"
-                          value={cert.issuingOrg}
-                          onChange={(e) => updateCertification(cert.id, 'issuingOrg', e.target.value)}
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Certification Date *</label>
-                        <input
-                          type="date"
-                          value={cert.certDate}
-                          onChange={(e) => updateCertification(cert.id, 'certDate', e.target.value)}
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Upload Certificate File</label>
+                        <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center">
+                          <Upload size={24} className="mx-auto text-gray-400 mb-2" />
+                          <p className="text-sm text-gray-400 mb-2">Click to upload certificate image</p>
+                          <input
+                            type="file"
+                            onChange={(e) => handleCertificationFileUpload(cert.id, e)}
+                            className="hidden"
+                            id={`cert-upload-${cert.id}`}
+                          />
+                          <label
+                            htmlFor={`cert-upload-${cert.id}`}
+                            className="inline-block px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-white text-sm font-medium cursor-pointer transition-colors"
+                          >
+                            Browse File
+                          </label>
+                          {cert.file && (
+                            <p className="text-sm text-green-400 mt-2">{cert.file.name}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -606,7 +715,7 @@ export default function JobApplicationForm() {
           </div>
 
           {/* Skills Section */}
-          <div className=" border rounded-xl p-6">
+          <div className="border rounded-xl p-6">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection('skills')}
@@ -616,48 +725,24 @@ export default function JobApplicationForm() {
             </div>
             
             {openSections.skills && (
-              <div className="mt-6 space-y-6">
+              <div className="mt-6 space-y-4">
                 {skills.map((skill, index) => (
-                  <div key={skill.id} className=" rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-medium text-white">Skill {index + 1}</h3>
-                      {skills.length > 1 && (
-                        <button
-                          onClick={() => removeSkill(skill.id)}
-                          className="text-red-400 hover:text-red-300 flex items-center gap-1"
-                        >
-                          <Trash2 size={16} />
-                          Delete
-                        </button>
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Skill *</label>
-                        <input
-                          type="text"
-                          value={skill.skill}
-                          onChange={(e) => updateSkill(skill.id, 'skill', e.target.value)}
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Proficiency *</label>
-                        <select
-                          value={skill.proficiency}
-                          onChange={(e) => updateSkill(skill.id, 'proficiency', e.target.value)}
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                          <option value="">Select proficiency</option>
-                          <option value="Beginner">Beginner</option>
-                          <option value="Intermediate">Intermediate</option>
-                          <option value="Advanced">Advanced</option>
-                          <option value="Expert">Expert</option>
-                        </select>
-                      </div>
-                    </div>
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={skill}
+                      onChange={(e) => updateSkill(index, e.target.value)}
+                      className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="JavaScript"
+                    />
+                    {skills.length > 1 && (
+                      <button
+                        onClick={() => removeSkill(index)}
+                        className="text-red-400 hover:text-red-300 p-2"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    )}
                   </div>
                 ))}
                 
@@ -666,7 +751,7 @@ export default function JobApplicationForm() {
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-white text-sm font-medium transition-colors"
                 >
                   <Plus size={16} />
-                  Add another
+                  Add another skill
                 </button>
               </div>
             )}
@@ -683,48 +768,24 @@ export default function JobApplicationForm() {
             </div>
             
             {openSections.language && (
-              <div className="mt-6 space-y-6">
-                {languages.map((lang, index) => (
-                  <div key={lang.id} className=" rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-medium text-white">Language {index + 1}</h3>
-                      {languages.length > 1 && (
-                        <button
-                          onClick={() => removeLanguage(lang.id)}
-                          className="text-red-400 hover:text-red-300 flex items-center gap-1"
-                        >
-                          <Trash2 size={16} />
-                          Delete
-                        </button>
-                      )}
-                    </div>
-                    
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Language *</label>
-                        <input
-                          type="text"
-                          value={lang.language}
-                          onChange={(e) => updateLanguage(lang.id, 'language', e.target.value)}
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Proficiency *</label>
-                        <select
-                          value={lang.proficiency}
-                          onChange={(e) => updateLanguage(lang.id, 'proficiency', e.target.value)}
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        >
-                          <option value="">Select proficiency</option>
-                          <option value="Basic">Basic</option>
-                          <option value="Conversational">Conversational</option>
-                          <option value="Fluent">Fluent</option>
-                          <option value="Native">Native</option>
-                        </select>
-                      </div>
-                    </div>
+              <div className="mt-6 space-y-4">
+                {languages.map((language, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={language}
+                      onChange={(e) => updateLanguage(index, e.target.value)}
+                      className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      placeholder="English"
+                    />
+                    {languages.length > 1 && (
+                      <button
+                        onClick={() => removeLanguage(index)}
+                        className="text-red-400 hover:text-red-300 p-2"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    )}
                   </div>
                 ))}
                 
@@ -733,14 +794,14 @@ export default function JobApplicationForm() {
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-white text-sm font-medium transition-colors"
                 >
                   <Plus size={16} />
-                  Add another
+                  Add another language
                 </button>
               </div>
             )}
           </div>
 
           {/* References Section */}
-          <div className=" border rounded-xl p-6">
+          <div className="border rounded-xl p-6">
             <div 
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection('references')}
@@ -752,7 +813,7 @@ export default function JobApplicationForm() {
             {openSections.references && (
               <div className="mt-6 space-y-6">
                 {references.map((ref, index) => (
-                  <div key={ref.id} className=" rounded-lg p-4">
+                  <div key={ref.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-medium text-white">Reference {index + 1}</h3>
                       {references.length > 1 && (
@@ -768,40 +829,40 @@ export default function JobApplicationForm() {
                     
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Reference Name *</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Name *</label>
                         <input
                           type="text"
-                          value={ref.refName}
-                          onChange={(e) => updateReference(ref.id, 'refName', e.target.value)}
+                          value={ref.name}
+                          onChange={(e) => updateReference(ref.id, 'name', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Type here"
+                          placeholder="Sarah Johnson"
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Relationship to You *</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Company Name</label>
                         <input
                           type="text"
-                          value={ref.refRelation}
-                          onChange={(e) => updateReference(ref.id, 'refRelation', e.target.value)}
+                          value={ref.companyName}
+                          onChange={(e) => updateReference(ref.id, 'companyName', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="e.g. Manager, Colleague"
+                          placeholder="Tech Solutions Inc"
                         />
                       </div>
                       
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Email Address *</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
                         <input
                           type="email"
-                          value={ref.refEmail}
-                          onChange={(e) => updateReference(ref.id, 'refEmail', e.target.value)}
+                          value={ref.email}
+                          onChange={(e) => updateReference(ref.id, 'email', e.target.value)}
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="Enter email address"
+                          placeholder="sarah@example.com"
                         />
                       </div>
-                      
+
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">Phone Number *</label>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Contact Number</label>
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-2 bg-[#242428] border border-gray-500 rounded-l-lg px-3">
                             <img src="https://flagcdn.com/w20/us.png" alt="US Flag" className="w-5 h-5" />
@@ -809,12 +870,23 @@ export default function JobApplicationForm() {
                           </div>
                           <input
                             type="tel"
-                            value={ref.refPhone}
-                            onChange={(e) => updateReference(ref.id, 'refPhone', e.target.value)}
+                            value={ref.contactNumber}
+                            onChange={(e) => updateReference(ref.id, 'contactNumber', e.target.value)}
                             className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="Enter Your Phone No."
+                            placeholder="555-0198"
                           />
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Contact Email</label>
+                        <input
+                          type="email"
+                          value={ref.contactEmail}
+                          onChange={(e) => updateReference(ref.id, 'contactEmail', e.target.value)}
+                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="sarah.johnson@techsolutions.com"
+                        />
                       </div>
                     </div>
                   </div>
@@ -825,7 +897,7 @@ export default function JobApplicationForm() {
                   className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md text-white text-sm font-medium transition-colors"
                 >
                   <Plus size={16} />
-                  Add another
+                  Add another reference
                 </button>
               </div>
             )}
@@ -835,7 +907,7 @@ export default function JobApplicationForm() {
           <div className="pt-6">
             <button
               onClick={handleSubmit}
-              className="w-full px-6 py-3 cursor-pointer bg-[#6100FF] rounded-lg text-white font-medium text-lg transition-colors"
+              className="w-full px-6 py-3 cursor-pointer bg-[#6100FF] rounded-lg text-white font-medium text-lg transition-colors hover:bg-[#5200d9]"
             >
               Submit Application
             </button>

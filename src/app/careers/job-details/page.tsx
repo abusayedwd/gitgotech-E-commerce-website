@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { MapPin, DollarSign, Briefcase, ArrowLeft } from 'lucide-react';
+import { MapPin, DollarSign, Briefcase, ArrowLeft, ChevronRight } from 'lucide-react';
 import { RiTimeZoneLine } from 'react-icons/ri';
-import { useGetCareerDetailsQuery, useApplyCareerMutation } from '@/redux/features/career/careerSlice';
+import { useGetCareerDetailsQuery, useGetCareersQuery, useApplyCareerMutation } from '@/redux/features/career/careerSlice';
 import toast from 'react-hot-toast';
 
 export default function JobDetailsPage() {
@@ -15,6 +15,9 @@ export default function JobDetailsPage() {
   const { data: jobDetailsData, isLoading } = useGetCareerDetailsQuery(jobId || '', {
     skip: !jobId,
   });
+
+  const { data: allJobsData } = useGetCareersQuery({ page: 1, limit: 10 });
+  const similarJobs = (allJobsData?.data || []).filter((j: any) => j._id !== jobId).slice(0, 3);
 
   const [applyCareer, { isLoading: isApplying }] = useApplyCareerMutation();
 
@@ -43,21 +46,16 @@ export default function JobDetailsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!formData.name || !formData.email || !formData.phone || !formData.resume) {
       toast.error('Please fill in all required fields');
       return;
     }
-
     const applyData = new FormData();
     applyData.append('name', formData.name);
     applyData.append('email', formData.email);
     applyData.append('phone', formData.phone);
     applyData.append('coverLetter', formData.coverLetter);
-    if (formData.resume) {
-      applyData.append('resume', formData.resume);
-    }
-
+    if (formData.resume) applyData.append('resume', formData.resume);
     try {
       await applyCareer({ id: jobId, formData: applyData }).unwrap();
       toast.success('Application submitted successfully!');
@@ -71,10 +69,8 @@ export default function JobDetailsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-gray-400">Loading job details...</span>
-        </div>
+        <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+        <span className="ml-3 text-gray-400">Loading job details...</span>
       </div>
     );
   }
@@ -84,10 +80,7 @@ export default function JobDetailsPage() {
       <div className="min-h-screen bg-black text-white flex items-center justify-center">
         <div className="text-center text-gray-400">
           <p>Job not found</p>
-          <button
-            onClick={() => router.push('/careers')}
-            className="mt-4 px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
-          >
+          <button onClick={() => router.push('/careers')} className="mt-4 px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
             Back to Jobs
           </button>
         </div>
@@ -96,178 +89,225 @@ export default function JobDetailsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
-      <div className="max-w-4xl mx-auto">
-        
-        {/* Back Button */}
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors mb-6"
-        >
-          <ArrowLeft size={20} />
-          Back to Jobs
-        </button>
+    <div className="min-h-screen bg-black text-white">
 
-        {/* Job Details Card */}
-        <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 border-2 border-blue-500/50 rounded-3xl p-6 md:p-10 backdrop-blur-sm">
-          
-          {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold mb-4 font-cormorant">{job.title}</h1>
-            
-            <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-              <span className="flex items-center gap-2">
-                <MapPin className="text-purple-400" size={20} />
-                {job.country} {job.address && `- ${job.address}`}
+      {/* ── Hero Banner ── */}
+      <div className="relative w-full h-52 md:h-64 overflow-hidden">
+        {/* Blue-toned background image overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-950 via-blue-900 to-indigo-900" />
+        {/* Decorative overlay pattern */}
+        <div className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 50%, rgba(99,102,241,0.4) 0%, transparent 60%),
+                              radial-gradient(circle at 80% 30%, rgba(59,130,246,0.3) 0%, transparent 50%)`
+          }}
+        />
+        {/* Job title overlay at bottom-left */}
+        <div className="absolute bottom-0 left-0 right-0 px-6 md:px-10 py-5 flex items-end justify-between">
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-1" style={{ fontFamily: 'Georgia, serif' }}>
+              {job.title}
+            </h1>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+              <span className="flex items-center gap-1.5">
+                <MapPin size={14} className="text-white" />
+                {job.country}{job.address ? ` ${job.address}` : ''}
               </span>
-              <span className="flex items-center gap-2">
-                <DollarSign className="text-purple-400" size={20} />
-                {job.salary}
-              </span>
-              <span className="flex items-center gap-2">
-                <Briefcase className="text-purple-400" size={20} />
+              <span className="flex items-center gap-1.5 bg-blue-700/60 px-2 py-0.5 rounded text-xs">
+                <RiTimeZoneLine size={14} />
                 {job.jobType}
               </span>
             </div>
           </div>
-
-          {/* Job Description */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4 text-white">Job Description</h2>
-            <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">{job.description}</p>
-          </div>
-
-          {/* Additional Info */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div className="bg-gray-800/50 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-gray-400 mb-2">Location</h3>
-              <p className="text-white">{job.country}</p>
-              {job.address && <p className="text-gray-400 text-sm">{job.address}</p>}
-            </div>
-            <div className="bg-gray-800/50 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-gray-400 mb-2">Salary Range</h3>
-              <p className="text-white">{job.salary}</p>
-            </div>
-            <div className="bg-gray-800/50 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-gray-400 mb-2">Job Type</h3>
-              <p className="text-white capitalize">{job.jobType}</p>
-            </div>
-            <div className="bg-gray-800/50 rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-gray-400 mb-2">Posted</h3>
-              <p className="text-white">
-                {new Date(job.createdAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </p>
-            </div>
-          </div>
-
-          {/* Apply Button */}
-          {!showApplyForm ? (
+          {/* Apply Now button — top right in hero */}
+          {!showApplyForm && (
             <button
               onClick={() => setShowApplyForm(true)}
-              className="w-full py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl font-semibold transition-all duration-300 hover:scale-105"
+              className="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold text-sm transition-colors whitespace-nowrap"
             >
               Apply Now
             </button>
-          ) : (
-            /* Application Form */
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <h2 className="text-xl font-semibold mb-4 text-white">Application Form</h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">Full Name *</label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    placeholder="John Doe"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm text-gray-400 mb-2">Email Address *</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    placeholder="john@example.com"
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Phone Number *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  placeholder="+1 234 567 8900"
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Resume/CV *</label>
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileChange}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">Accepted formats: PDF, DOC, DOCX</p>
-              </div>
-
-              <div>
-                <label className="block text-sm text-gray-400 mb-2">Cover Letter</label>
-                <textarea
-                  name="coverLetter"
-                  value={formData.coverLetter}
-                  onChange={handleInputChange}
-                  placeholder="Tell us why you're a great fit for this position..."
-                  rows={4}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500 resize-none"
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <button
-                  type="submit"
-                  disabled={isApplying}
-                  className="flex-1 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                >
-                  {isApplying ? (
-                    <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Submitting...
-                    </>
-                  ) : (
-                    'Submit Application'
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowApplyForm(false)}
-                  className="px-8 py-4 bg-gray-700 hover:bg-gray-600 rounded-xl font-semibold transition-all duration-300"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
           )}
+        </div>
+      </div>
+
+      {/* ── Body ── */}
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-8">
+
+        {/* Back link */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-1.5 text-gray-400 hover:text-white text-sm mb-6 transition-colors"
+        >
+          <ArrowLeft size={16} />
+          Back to Jobs
+        </button>
+
+        <div className="flex flex-col md:flex-row gap-8">
+
+          {/* ── Left: Job Description ── */}
+          <div className="flex-1 min-w-0">
+
+            {!showApplyForm ? (
+              <>
+                {/* Position Overview */}
+                <Section title="Position Overview">
+                  <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+                    {job.description}
+                  </p>
+                </Section>
+
+                {/* Key Responsibilities */}
+                {job.responsibilities && job.responsibilities.length > 0 && (
+                  <Section title="Key Responsibilities">
+                    <ul className="space-y-1.5">
+                      {job.responsibilities.map((item: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </Section>
+                )}
+
+                {/* Qualifications */}
+                {job.qualifications && job.qualifications.length > 0 && (
+                  <Section title="Qualifications & Requirements">
+                    <ul className="space-y-1.5">
+                      {job.qualifications.map((item: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                          <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                  </Section>
+                )}
+
+                {/* Salary */}
+                <Section title="Salary">
+                  <p className="text-gray-400 text-sm">{job.salary}</p>
+                </Section>
+
+                {/* Application Deadline */}
+                {job.deadline && (
+                  <Section title="Application Deadline">
+                    <p className="text-gray-400 text-sm">
+                      {new Date(job.deadline).toLocaleDateString('en-US', {
+                        year: 'numeric', month: 'short', day: 'numeric'
+                      })}
+                    </p>
+                  </Section>
+                )}
+              </>
+            ) : (
+              /* ── Application Form ── */
+              <div>
+                <h2 className="text-xl font-semibold mb-6 text-white">Application Form</h2>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <Field label="Full Name *">
+                      <input type="text" name="name" value={formData.name} onChange={handleInputChange}
+                        placeholder="John Doe" required className={inputCls} />
+                    </Field>
+                    <Field label="Email Address *">
+                      <input type="email" name="email" value={formData.email} onChange={handleInputChange}
+                        placeholder="john@example.com" required className={inputCls} />
+                    </Field>
+                  </div>
+                  <Field label="Phone Number *">
+                    <input type="tel" name="phone" value={formData.phone} onChange={handleInputChange}
+                      placeholder="+1 234 567 8900" required className={inputCls} />
+                  </Field>
+                  <Field label="Resume/CV *">
+                    <input type="file" accept=".pdf,.doc,.docx" onChange={handleFileChange}
+                      required className={inputCls} />
+                    <p className="text-xs text-gray-500 mt-1">Accepted: PDF, DOC, DOCX</p>
+                  </Field>
+                  <Field label="Cover Letter">
+                    <textarea name="coverLetter" value={formData.coverLetter} onChange={handleInputChange}
+                      placeholder="Tell us why you're a great fit..." rows={4}
+                      className={`${inputCls} resize-none`} />
+                  </Field>
+                  <div className="flex gap-4 pt-2">
+                    <button type="submit" disabled={isApplying}
+                      className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-semibold text-sm transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+                      {isApplying
+                        ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Submitting...</>
+                        : 'Submit Application'}
+                    </button>
+                    <button type="button" onClick={() => setShowApplyForm(false)}
+                      className="px-6 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg font-semibold text-sm transition-colors">
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+          </div>
+
+          {/* ── Right: See Similar Jobs ── */}
+          <aside className="w-full md:w-72 shrink-0">
+            <h2 className="text-base font-semibold text-white mb-4">See Similar Jobs</h2>
+            <div className="space-y-4">
+              {similarJobs.length === 0 ? (
+                <p className="text-gray-500 text-sm">No similar jobs found.</p>
+              ) : (
+                similarJobs.map((sj: any) => (
+                  <div key={sj._id}
+                    className="bg-[#111111] border border-gray-800 rounded-xl p-4 hover:border-purple-500/40 transition-all duration-300">
+                    <h3 className="text-sm font-semibold text-white mb-2 leading-snug" style={{ fontFamily: 'Georgia, serif' }}>
+                      {sj.title}
+                    </h3>
+                    <div className="space-y-1 text-xs text-gray-400 mb-3">
+                      <div className="flex items-center gap-1.5">
+                        <MapPin size={12} className="text-white" />
+                        {sj.country}{sj.address ? ` ${sj.address}` : ''}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <DollarSign size={12} className="text-white" />
+                        {sj.salary}
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <RiTimeZoneLine size={12} className="text-white" />
+                        {sj.jobType}
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-500 line-clamp-2 mb-3">{sj.description}</p>
+                    <button
+                      onClick={() => router.push(`/careers/job-details?id=${sj._id}`)}
+                      className="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1">
+                      View Details
+                      <ChevronRight size={12} />
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </aside>
+
         </div>
       </div>
     </div>
   );
 }
+
+/* ─── Helpers ─── */
+const inputCls =
+  "w-full px-4 py-2.5 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors";
+
+const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <div className="mb-7">
+    <h2 className="text-base font-semibold text-black dark:text-white mb-3"
+      style={{ color: '#fff' }}>{title}</h2>
+    {children}
+  </div>
+);
+
+const Field = ({ label, children }: { label: string; children: React.ReactNode }) => (
+  <div>
+    <label className="block text-xs text-gray-400 mb-1.5">{label}</label>
+    {children}
+  </div>
+);

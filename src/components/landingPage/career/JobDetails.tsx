@@ -3,11 +3,16 @@
 import { useState } from 'react';
 import { MapPin, DollarSign, Briefcase, Calendar } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { TfiTimer } from 'react-icons/tfi';
 import { RiTimeZoneLine } from 'react-icons/ri';
 
 const App = () => {
+
+
+    const searchParams = useSearchParams();
+    const jobId = searchParams.get('id');
+    console.log(jobId)
  
   const router = useRouter()
 

@@ -10,10 +10,6 @@ import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } fr
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 import toast from 'react-hot-toast';
 import { useEventProductAddMutation, useGetEventsForProductAddQuery } from '@/redux/features/event/eventSlice';
- 
-
-
- 
 
 interface ProductDetailsProps {
   productId?: string | null;
@@ -31,7 +27,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
     skip: !productId
   });
 
-  const {data: eventdata} = useGetEventsForProductAddQuery();
+  const {data: eventdata} = useGetEventsForProductAddQuery(undefined);
   const [addproductToEvent] = useEventProductAddMutation();
 
   const events = eventdata?.data || [];
@@ -42,7 +38,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
         event: eventId,
         product: product._id
       };
-      console.log(data)
       const res = await addproductToEvent(data).unwrap();
       if (res?.success) {
         toast.success('Product added to event!');
@@ -50,7 +45,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       }
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to add to event');
-      console.log(error.data)
     }
   };
 
@@ -337,14 +331,24 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
             {/* Seller Info */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
-                  <span className="text-sm font-medium">{product.vendor?.name?.charAt(0) || product.vendor?.charAt(0) || 'V'}</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                    <span className="text-sm font-medium">{product.vendor?.name?.charAt(0) || product.vendor?.charAt(0) || 'V'}</span>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium">{product.vendor?.name || product.vendor || 'Vendor'}</p>
+                    <p className="text-xs text-gray-400">Trusted seller with quality products</p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="font-medium">{product.vendor?.name || product.vendor || 'Vendor'}</p>
-                  <p className="text-xs text-gray-400">Trusted seller with quality products</p>
-                </div>
+                <button
+                  // onClick={() => handleSendMessageAuto(product.vendor?._id)}
+                  onClick={() => router.push(`/messaging?vendorId=${product.vendor?._id}`)}
+                  className="bg-[#6100FF] hover:bg-purple-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  Chat
+                </button>
               </div>
             </div>
 
@@ -393,7 +397,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
               <h3 className="font-medium mb-3 font-cormorant text-2xl">Select Size</h3>
               <div className="flex flex-wrap gap-2">
-                {(product.product_stocks || [{ size: 'M', stock: 10 }]).map((stockItem) => (
+                {(product.product_stocks || [{ size: 'M', stock: 10 }]).map((stockItem: { _id?: string; size: string; stock: number }) => (
                   <button
                     key={stockItem._id || stockItem.size}
                     onClick={() => setSelectedSize(stockItem.size)}
@@ -447,13 +451,13 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
             {/* Additional Actions */}
             <div className="grid grid-cols-2 gap-3">
-            
-            <Link href={"/messaging"}>
+
+            <Link href={`/messaging?vendorId=${product.vendor?._id || product.vendor}`}>
                   <button className="bg-gray-800/50 cursor-pointer border w-full border-[#6100FF] hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
                 <MessageCircle className="w-4 h-4" />
                 <span>Chat</span>
               </button>
-            </Link> 
+            </Link>
             
                 
               <button 

@@ -3,7 +3,7 @@
 import { SectionHeader } from '@/customComponent/Header';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { Trash2, Minus, Plus } from 'lucide-react';
 import { useGetWishlistAndCartQuery, useAddToCartWishListMutation, useDeleteSaveListMutation } from '@/redux/features/home/homeSlice';
@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 export default function ShoppingCart() {
     const router = useRouter();
     const [page, setPage] = useState(1);
+    const [quantities, setQuantities] = useState<Record<string, number>>({});
 
     const { data: cartData, isLoading, refetch } = useGetWishlistAndCartQuery({
         type: "cart",
@@ -26,6 +27,17 @@ export default function ShoppingCart() {
 
     const cartItems = cartData?.data || [];
     const pagination = cartData?.pagination || {};
+
+    // Initialize quantities when cart data loads
+    useEffect(() => {
+        if (cartItems.length > 0) {
+            const initialQuantities: Record<string, number> = {};
+            cartItems.forEach((item: any) => {
+                initialQuantities[item._id] = 1;
+            });
+            setQuantities(initialQuantities);
+        }
+    }, [cartItems.length]);
 
     const handleRemoveFromCart = async (id: string) => {
       console.log(id)
@@ -42,10 +54,64 @@ export default function ShoppingCart() {
         }
     };
 
-    const handleUpdateQuantity = async (item: any, newQuantity: number) => {
-        // TODO: Add API call to update quantity if supported
-        // For now, just refetch
-        refetch();
+    const handleIncrement = async (item: any) => {
+        const currentQty = quantities[item._id] || 1;
+        const totalStock = getTotalStock(item.product.product_stocks);
+        
+        if (currentQty >= totalStock) {
+            toast.error('Cannot add more. Out of stock!');
+            return;
+        }
+
+        const newQuantity = currentQty + 1;
+        setQuantities(prev => ({
+            ...prev,
+            [item._id]: newQuantity
+        }));
+
+        // Update cart via API
+        try {
+            const formData = new FormData();
+            formData.append('product', item.product._id);
+            formData.append('saveType', 'cart');
+            
+            await addToCartWishList({
+                product: item.product._id,
+                saveType: 'cart',
+                quantity: newQuantity
+            }).unwrap();
+            
+            refetch();
+        } catch (error: any) {
+            console.error('Failed to update quantity:', error);
+        }
+    };
+
+    const handleDecrement = async (item: any) => {
+        const currentQty = quantities[item._id] || 1;
+        
+        if (currentQty <= 1) {
+            return; // Don't go below 1
+        }
+
+        const newQuantity = currentQty - 1;
+        setQuantities(prev => ({
+            ...prev,
+            [item._id]: newQuantity
+        }));
+
+        // Update cart via API
+        try {
+            await addToCartWishList({
+                product: item.product._id,
+                saveType: 'cart',
+                quantity: newQuantity
+            }).unwrap();
+            
+            refetch();
+        } catch (error: any) {
+            console.error('Failed to update quantity:', error);
+        }
     };
 
     const getProductImage = (product: any) => {
@@ -61,8 +127,9 @@ export default function ShoppingCart() {
     };
 
     const calculateTotal = () => {
-        return cartItems.reduce((total, item) => {
-            return total + (item.product.product_price || 0);
+        return cartItems.reduce((total: number, item: any) => {
+            const quantity = quantities[item._id] || 1;
+            return total + ((item.product.product_price || 0) * quantity);
         }, 0).toFixed(2);
     };
 
@@ -150,13 +217,15 @@ export default function ShoppingCart() {
                       <div className="md:col-span-3 flex justify-start md:justify-center">
                         <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-2">
                           <button
+                            onClick={() => handleDecrement(item)}
                             disabled={!isInStock}
                             className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="text-sm font-semibold min-w-[20px] text-center">1</span>
+                          <span className="text-sm font-semibold min-w-[20px] text-center">{quantities[item._id] || 1}</span>
                           <button
+                            onClick={() => handleIncrement(item)}
                             disabled={!isInStock}
                             className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                           >
@@ -167,9 +236,9 @@ export default function ShoppingCart() {
 
                       {/* Subtotal & Remove */}
                       <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
-                        <span className="font-semibold text-sm md:text-base">${product.product_price?.toFixed(2)}</span>
+                        <span className="font-semibold text-sm md:text-base">${((product.product_price || 0) * (quantities[item._id] || 1)).toFixed(2)}</span>
                         <button
-                          onClick={() => handleRemoveFromCart(product._id)}
+                          onClick={() => handleRemoveFromCart(item._id)}
                           className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
                           title="Remove from cart"
                         >
