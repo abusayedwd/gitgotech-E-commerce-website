@@ -238,7 +238,7 @@ export default function ShoppingCart() {
                       <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
                         <span className="font-semibold text-sm md:text-base">${((product.product_price || 0) * (quantities[item._id] || 1)).toFixed(2)}</span>
                         <button
-                          onClick={() => handleRemoveFromCart(item._id)}
+                          onClick={() => handleRemoveFromCart(item.product._id)}
                           className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
                           title="Remove from cart"
                         >

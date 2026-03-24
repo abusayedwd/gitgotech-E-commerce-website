@@ -247,6 +247,8 @@ const Joblist = () => {
 
   const jobs = joblistData?.data || [];
 
+  console.log(jobs)
+
   const countries = useMemo(() => {
     const uniqueCountries = Array.from(new Set(jobs.map(job => job.country)));
     return uniqueCountries;

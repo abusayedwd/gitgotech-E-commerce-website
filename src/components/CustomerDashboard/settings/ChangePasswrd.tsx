@@ -1,7 +1,9 @@
 "use client";
+import { useChangePasswordMutation } from "@/redux/features/auth/authSlice";
 import { ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 
 export default function ChangePasswordPage() {
@@ -12,7 +14,10 @@ export default function ChangePasswordPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleUpdate = () => {
+  const [changePassword] = useChangePasswordMutation()
+
+
+  const handleUpdate = async () => {
     setError("");
 
     if (newPassword.length < 8) {
@@ -28,7 +33,30 @@ export default function ChangePasswordPage() {
     console.log("Current Password:", currentPassword);
     console.log("New Password:", newPassword);
     console.log("Confirm Password:", confirmPassword);
+    const data = 
+      {
+     oldPassword: currentPassword, 
+     newPassword: newPassword,
+     confirmPassword: confirmPassword
+   } 
+    try{
+      const res = await changePassword(data).unwrap()
+      console.log(res) 
+      if(res?.status === 200){
+        toast.success(res?.message)
+      }
+      router.push("/settings")
+    }catch(error){
+      console.log(error?.data?.message)
+      setError(error.data.message)
+    }
+   
+  
+
+
   };
+
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-[#120a2a] to-black flex items-center justify-center p-6">
@@ -45,13 +73,9 @@ export default function ChangePasswordPage() {
 
         {/* Card */}
         <div className="relative rounded-2xl p-8 bg-gradient-to-br from-[#1b1233] to-[#0e0a1f] shadow-xl border border-purple-500/40">
-          <p className="text-center text-sm text-gray-300 mb-6">
-            Password must be minimum 8 characters, include letters & numbers.
-          </p>
+       
 
-          {error && (
-            <p className="mb-4 text-sm text-red-400 text-center">{error}</p>
-          )}
+        
 
           {/* Inputs */}
           <div className="space-y-4">
@@ -59,11 +83,14 @@ export default function ChangePasswordPage() {
             <PasswordInput label="New Password" value={newPassword} setValue={setNewPassword} show={show} setShow={setShow} />
             <PasswordInput label="Confirm Password" value={confirmPassword} setValue={setConfirmPassword} show={show} setShow={setShow} />
           </div>
+         {error && (
+            <p className="mb-4 text-sm text-red-400 mt-4">{error}</p>
+          )}
 
           {/* Button */}
           <button
             onClick={handleUpdate}
-            className="mt-8 w-full py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-700 transition"
+            className="mt-4 w-full py-3 rounded-xl bg-purple-600 text-white font-medium hover:bg-purple-700 transition"
           >
             Update
           </button>

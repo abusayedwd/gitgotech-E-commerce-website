@@ -2,10 +2,15 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Upload, Trash2, Plus, Globe } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useApplyCareerMutation } from '@/redux/features/career/careerSlice';
+import toast from 'react-hot-toast';
 
 export default function JobApplicationForm() {
-  const router = useRouter()
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const jobId = searchParams.get('id');
+  const [applyCareer, { isLoading: isApplying }] = useApplyCareerMutation();
   
   const [openSections, setOpenSections] = useState({
     personal: true,
@@ -228,18 +233,92 @@ export default function JobApplicationForm() {
     ));
   };
 
-  const handleSubmit = () => {
-    const applicationData = {
-      personalInfo,
-      workExperiences,
-      educations,
-      certifications,
-      skills,
-      languages,
-      references
-    };
-    console.log('Application submitted:', applicationData);
-    alert('Application submitted successfully! Check console for data.');
+  const handleSubmit = async () => {
+    // Validation
+    if (!personalInfo.fullName || !personalInfo.phoneNumber || !personalInfo.cvResume) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (!jobId) {
+      toast.error('Job ID not found');
+      return;
+    }
+
+    // Build FormData to match the Postman body structure
+    const formData = new FormData();
+    
+    // Personal Info
+    formData.append('fullName', personalInfo.fullName);
+    formData.append('phoneNumber', personalInfo.phoneNumber);
+    formData.append('currentLocation', personalInfo.currentLocation);
+    formData.append('tellUsWhyYouWantToJoinOurTeam', personalInfo.tellUsWhyYouWantToJoinOurTeam);
+    if (personalInfo.cvResume) {
+      formData.append('cvResume', personalInfo.cvResume);
+    }
+
+    // Work Experiences
+    workExperiences.forEach((exp, index) => {
+      formData.append(`workExperiences[${index}][jobTitle]`, exp.jobTitle);
+      formData.append(`workExperiences[${index}][company]`, exp.company);
+      formData.append(`workExperiences[${index}][companyPhone]`, exp.companyPhone);
+      formData.append(`workExperiences[${index}][companyWebsite]`, exp.companyWebsite);
+      formData.append(`workExperiences[${index}][location]`, exp.location);
+      formData.append(`workExperiences[${index}][isCurrentlyWorkHere]`, exp.isCurrentlyWorkHere.toString());
+      formData.append(`workExperiences[${index}][startDate]`, exp.startDate);
+      if (exp.endDate) {
+        formData.append(`workExperiences[${index}][endDate]`, exp.endDate);
+      }
+      formData.append(`workExperiences[${index}][roleDescription]`, exp.roleDescription);
+    });
+
+    // Educations
+    educations.forEach((edu, index) => {
+      formData.append(`educations[${index}][schoolOrUniversityName]`, edu.schoolOrUniversityName);
+      formData.append(`educations[${index}][degree]`, edu.degree);
+      formData.append(`educations[${index}][phone]`, edu.phone);
+      formData.append(`educations[${index}][email]`, edu.email);
+      formData.append(`educations[${index}][fieldOfStudy]`, edu.fieldOfStudy);
+      formData.append(`educations[${index}][overallResultGrade]`, edu.overallResultGrade);
+      formData.append(`educations[${index}][startYear]`, edu.startYear);
+      formData.append(`educations[${index}][endYear]`, edu.endYear);
+    });
+
+    // Certifications
+    certifications.forEach((cert, index) => {
+      formData.append(`certifications[${index}][certificateName]`, cert.certificateName);
+      if (cert.file) {
+        formData.append(`certifications[${index}][file]`, cert.file);
+      }
+    });
+
+    // Skills
+    skills.filter(s => s.trim()).forEach((skill, index) => {
+      formData.append(`skills[${index}]`, skill);
+    });
+
+    // Languages
+    languages.filter(l => l.trim()).forEach((lang, index) => {
+      formData.append(`languages[${index}]`, lang);
+    });
+
+    // References
+    references.forEach((ref, index) => {
+      formData.append(`references[${index}][name]`, ref.name);
+      formData.append(`references[${index}][companyName]`, ref.companyName);
+      formData.append(`references[${index}][email]`, ref.email);
+      formData.append(`references[${index}][contactNumber]`, ref.contactNumber);
+      formData.append(`references[${index}][contactEmail]`, ref.contactEmail);
+    });
+
+    try {
+     const res = await applyCareer({ id: jobId, formData }).unwrap();
+     console.log(res)
+      toast.success('Application submitted successfully!');
+      router.push('/careers');
+    } catch (err: any) {
+      toast.error(err?.data?.message || 'Failed to submit application');
+    }
   };
 
   return (
@@ -270,7 +349,7 @@ export default function JobApplicationForm() {
               onClick={() => toggleSection('personal')}
             >
               <h2 className="text-xl font-semibold text-white">Personal Info</h2>
-              {openSections.personal ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20} className="text-gray-400" />}
+              {openSections.personal ? <ChevronUp size={20} className="text-gray-400" /> : <ChevronDown size={20}className="text-gray-400" />}
             </div>
             
             {openSections.personal && (
@@ -907,9 +986,17 @@ export default function JobApplicationForm() {
           <div className="pt-6">
             <button
               onClick={handleSubmit}
-              className="w-full px-6 py-3 cursor-pointer bg-[#6100FF] rounded-lg text-white font-medium text-lg transition-colors hover:bg-[#5200d9]"
+              disabled={isApplying}
+              className="w-full px-6 py-3 cursor-pointer bg-[#6100FF] rounded-lg text-white font-medium text-lg transition-colors hover:bg-[#5200d9] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Submit Application
+              {isApplying ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit Application'
+              )}
             </button>
           </div>
         </div>

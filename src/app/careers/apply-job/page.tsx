@@ -1,12 +1,20 @@
+"use client";
+
 import ApplyForm from '@/components/landingPage/career/ApplyForm';
-import React from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-const page = () => {
-    return (
-        <div>
-             <ApplyForm />
-        </div>
-    );
-};
+export default function ApplyJobPage() {
+  const router = useRouter();
 
-export default page;
+  return (
+    <div className="min-h-screen bg-black">
+    
+
+      {/* Application Form */}
+      <div className="pb-12">
+        <ApplyForm />
+      </div>
+    </div>
+  );
+}
