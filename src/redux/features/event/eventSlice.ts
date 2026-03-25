@@ -31,7 +31,27 @@ const eventSlice = apiSlice.injectEndpoints({
         `/event/product/get/${id}`, 
     }),
 
+    ///size data get event
+getProductEventWishesSize: builder.query({
+  query: (data) => ({
+    url: `/event/size/get-product-size`,
+    method: "GET",
+    params: data, // ✅ FIXED
+  }),
+}),
+
+   eventProductSizeAddEdit : builder.mutation({
+      query: (data) => ({
+        url: `/event/size/add`,
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Events"],
+    }),
+
    
+
+
       eventProductAdd : builder.mutation({
       query: (data) => ({
         url: `/event/product/add`,
@@ -62,4 +82,8 @@ export const {
   useGetEventsQuery,
   useUpdateEventMutation,
   useEventProductAddMutation,
+
+  ///size get event product
+  useEventProductSizeAddEditMutation,
+  useGetProductEventWishesSizeQuery
 } = eventSlice;
