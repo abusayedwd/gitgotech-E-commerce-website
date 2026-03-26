@@ -557,7 +557,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                           {event.purchaseOption === 'creator' ? 'Buy Creator' : 'By Participants'}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {event.participant || 0} participants
+                          {event?.participant.leanght || 0} participants
                         </span>
                       </div>
                     </div>

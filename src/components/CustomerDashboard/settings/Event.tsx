@@ -45,8 +45,11 @@ export default function Event() {
     limit: 10
   });
 
-  const events: EventType[] = eventsData?.data || [];
+  const events: EventType[] = eventsData?.data?.data || [];
   console.log(events)
+
+  const eventStatus = eventsData?.data.eventType
+  console.log(eventStatus)
 
 // Define the event type
 type EventType = {
@@ -105,7 +108,7 @@ type EventType = {
   };
 
   // Filter events based on active tab
-  const filteredEvents = events.filter(event => {
+  const filteredEvents = events?.filter(event => {
     if (activeTab === 'created') {
       return event.status === 'Buy Creator';
     } else if (activeTab === 'invitations') {
@@ -209,7 +212,7 @@ type EventType = {
                     />
                   </div>
 
-                  <Link href={`/profile/event/view-deaign?id=${event._id}`}>
+                  <Link href={`/profile/event/view-deaign?id=${event._id}&type=${event?.purchaseOption}&status=${eventStatus}`}>
                     <button className="px-4 py-2 cursor-pointer w-full mt-16 bg-[#912DAD] text-white rounded-lg hover:bg-[#7A2491] transition-all duration-200 text-sm">
                       View Design
                     </button>

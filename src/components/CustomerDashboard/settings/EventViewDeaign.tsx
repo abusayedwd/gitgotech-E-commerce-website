@@ -29,7 +29,14 @@ type Product = {
 
 const ProductCard = ({ product }: { product: Product }) => {
   const router = useRouter();
+  const searchParams = useSearchParams()
+  const status = searchParams.get("status")
+   const type = searchParams.get('type')
+   console.log(type)
+   console.log(status)
   
+
+
   const productData = product.product;
   const imageSrc = productData.product_images?.[0] 
     ? `${IMAGE_BASE_URL}/${productData.product_images[0]}` 
@@ -76,18 +83,17 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3">
-          <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
-            View Size
-          </button>
+        {status !== "invited" && (
+          <div className="flex gap-3">
+            <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
+              View Size
+            </button>
 
-          <button  onClick={() => router.push("/checkout")} className="flex-1 w-full cursor-pointer bg-[#6100FF] text-white py-2.5 rounded-lg font-medium transition-colors">
-            Place Order
-          </button>
-
-
-
-        </div>
+            <button  onClick={() => router.push("/checkout")} className="flex-1 w-full cursor-pointer bg-[#6100FF] text-white py-2.5 rounded-lg font-medium transition-colors">
+              Place Order
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -97,8 +103,7 @@ export default function EventViewDeaign() {
 
 
  const searchParams = useSearchParams()
-  const id = searchParams.get('id')
-  console.log(id)
+  const id = searchParams.get('id') 
 
   const {data: eventProduct, isLoading, error} = useGetProductByEventQuery(id)
   console.log(eventProduct)
