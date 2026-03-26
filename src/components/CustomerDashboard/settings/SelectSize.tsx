@@ -5,6 +5,7 @@ import { ChevronDown } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGetProductEventWishesSizeQuery, useEventProductSizeAddEditMutation } from '@/redux/features/event/eventSlice';
+import url from '@/redux/api/baseUrl';
 
 export default function SelectSize() {
     const router = useRouter()
@@ -18,6 +19,8 @@ export default function SelectSize() {
       event: event
     }
 
+    console.log(url)
+
     const { data: sizesData, isLoading } = useGetProductEventWishesSizeQuery(data)
     console.log(sizesData)
 
@@ -29,6 +32,7 @@ export default function SelectSize() {
     const sizes = ["XS", "S", "M", "L", "XL", "XXL", "S/28", "M/30", "L/32", "XL/34"];
 
     const handleSizeSelect = (itemId: string, size: string) => {
+      console.log(itemId)
       setSelectedSizes(prev => ({
         ...prev,
         [itemId]: size
@@ -42,12 +46,13 @@ export default function SelectSize() {
     };
 
     const handleUpdate = async () => {
+
       console.log('Selected sizes to update:', selectedSizes);
 
       try {
         const updatePromises = Object.entries(selectedSizes).map(([itemId, size]) => {
           const updateData = {
-            _id: itemId,
+            member: itemId,
             product: product,
             event: event,
             size: size
@@ -65,7 +70,7 @@ export default function SelectSize() {
 
     // Extract users from API data
     const users = sizesData?.data?.map((item: any) => ({
-      _id: item._id,
+      _id: item?.customer._id,
       name: item.customer?.name || 'Unknown',
       email: item.customer?.email || '',
       image: item.customer?.image || '/images/person.png',
@@ -102,7 +107,7 @@ export default function SelectSize() {
                   {/* User Info */}
                   <div className="flex items-center gap-4">
                     <img
-                      src={user.image || "/images/person.png"}
+                      src={url + user.image || "/images/person.png"}
                       alt={user.name}
                       className="w-12 h-12 rounded-full object-cover border-2 border-purple-400"
                     />
