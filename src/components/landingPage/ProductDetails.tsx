@@ -26,6 +26,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const { data: productData, isLoading } = useGetProductDetailsforCustomerQuery(productId || '', {
     skip: !productId
   });
+  console.log(productData)
 
   const {data: eventdata} = useGetEventsForProductAddQuery(undefined);
   const [addproductToEvent] = useEventProductAddMutation();

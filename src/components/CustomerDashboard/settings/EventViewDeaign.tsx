@@ -31,31 +31,31 @@ const ProductCard = ({ product }: { product: Product }) => {
   const router = useRouter();
   const searchParams = useSearchParams()
   const status = searchParams.get("status")
+  const eventId = searchParams.get("id")
    const type = searchParams.get('type')
    console.log(type)
-   console.log(status)
-  
+   console.log(eventId)
 
+  const isInvited = status === "invited";
 
   const productData = product.product;
-  const imageSrc = productData.product_images?.[0] 
-    ? `${IMAGE_BASE_URL}/${productData.product_images[0]}` 
+  const imageSrc = productData.product_images?.[0]
+    ? `${IMAGE_BASE_URL}/${productData.product_images[0]}`
     : '/images/jacket.png';
-  
-  const vendorName = typeof productData.vendor === 'object' 
-    ? productData.vendor?.name || 'Vendor' 
+
+  const vendorName = typeof productData.vendor === 'object'
+    ? productData.vendor?.name || 'Vendor'
     : productData.vendor || 'Vendor';
 
-  return (
-    <div
-    className=" text-white bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow">
+  const cardContent = (
+    <>
       {/* Product Image */}
       <div className="relative aspect-square overflow-hidden">
-                <img
-                  src={imageSrc}
-                  alt={productData.product_name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
+        <img
+          src={imageSrc}
+          alt={productData.product_name}
+          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+        />
         <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
           {product.isOrderd ? 'Ordered' : 'No Design'}
         </span>
@@ -83,7 +83,7 @@ const ProductCard = ({ product }: { product: Product }) => {
         </div>
 
         {/* Action Buttons */}
-        {status !== "invited" && (
+        {!isInvited && (
           <div className="flex gap-3">
             <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
               View Size
@@ -95,6 +95,20 @@ const ProductCard = ({ product }: { product: Product }) => {
           </div>
         )}
       </div>
+    </>
+  );
+
+  return (
+    <div className="text-white bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow">
+      {isInvited ? (
+        <Link href={`/profile/event/details?id=${productData._id}&type=${type}&eventId=${eventId}`}>
+          <div className="cursor-pointer">
+            {cardContent}
+          </div>
+        </Link>
+      ) : (
+        cardContent
+      )}
     </div>
   );
 };
