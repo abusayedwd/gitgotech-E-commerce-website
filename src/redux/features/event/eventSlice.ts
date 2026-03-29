@@ -28,7 +28,12 @@ const eventSlice = apiSlice.injectEndpoints({
 
     getProductByEvent : builder.query({
       query: (id) =>
-        `/event/product/get/${id}`, 
+        `/event/product/get/${id}`,
+    }),
+
+    getEventById: builder.query({
+      query: (id) =>
+        `/event/get/${id}`,
     }),
 
     ///size data get event
@@ -82,6 +87,7 @@ export const {
   useGetEventsQuery,
   useUpdateEventMutation,
   useEventProductAddMutation,
+  useGetEventByIdQuery,
 
   ///size get event product
   useEventProductSizeAddEditMutation,

@@ -1,11 +1,11 @@
 "use client"
 
 import React, { useState } from 'react';
-import { ShoppingCart, Eye, Plus } from 'lucide-react';
+import { ShoppingCart, Eye, Plus, ChevronDown } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { useGetProductByEventQuery } from '@/redux/features/event/eventSlice';
+import { useGetProductByEventQuery, useGetEventByIdQuery } from '@/redux/features/event/eventSlice';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 
 type Product = {
@@ -27,16 +27,15 @@ type Product = {
   updatedAt: string;
 };
 
-const ProductCard = ({ product }: { product: Product }) => {
+const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOption: string }) => {
   const router = useRouter();
   const searchParams = useSearchParams()
   const status = searchParams.get("status")
   const eventId = searchParams.get("id")
    const type = searchParams.get('type')
-   console.log(type)
-   console.log(eventId)
 
   const isInvited = status === "invited";
+  const isParticipator = purchaseOption === 'participator';
 
   const productData = product.product;
   const imageSrc = productData.product_images?.[0]
@@ -46,6 +45,28 @@ const ProductCard = ({ product }: { product: Product }) => {
   const vendorName = typeof productData.vendor === 'object'
     ? productData.vendor?.name || 'Vendor'
     : productData.vendor || 'Vendor';
+
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string>('');
+
+  const sizes = ["XS", "S", "M", "L", "XL", "XXL", "S/28", "M/30", "L/32", "XL/34"];
+
+  const toggleDropdown = () => {
+    setOpenDropdown(openDropdown === productData._id ? null : productData._id);
+  };
+
+  const handleSizeSelect = (size: string) => {
+    setSelectedSize(size);
+    setOpenDropdown(null);
+  };
+
+  const handleCheckout = () => {
+    if (isInvited && isParticipator && !selectedSize) {
+      alert('Please select a size before checkout');
+      return;
+    }
+    router.push(`/checkout?productId=${productData._id}&eventId=${product.event}&size=${selectedSize}`);
+  };
 
   const cardContent = (
     <>
@@ -82,17 +103,82 @@ const ProductCard = ({ product }: { product: Product }) => {
           <span className="text-[16px] text-[#B8B8B8]">{vendorName}</span>
         </div>
 
+        {/* Size Selection for Invited Participator Events */}
+        {isInvited && isParticipator && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-300 mb-2">Select Size</label>
+            <div className="relative">
+              <button
+                onClick={toggleDropdown}
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${
+                  selectedSize
+                    ? 'bg-[#242428] text-purple-400 border border-purple-500'
+                    : 'bg-[#242428] text-gray-400 border border-gray-600'
+                } `}
+              >
+                <span className="font-medium">{selectedSize || 'Select Size'}</span>
+                <ChevronDown
+                  size={18}
+                  className={`transition-transform ${openDropdown === productData._id ? 'rotate-180' : ''}`}
+                />
+              </button>
+
+              {/* Dropdown Menu */}
+              {openDropdown === productData._id && (
+                <div className="absolute top-full mt-2 left-0 right-0 bg-[#2a2438] border border-purple-500 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto">
+                  {sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => handleSizeSelect(size)}
+                      className={`w-full px-4 py-2.5 text-left hover:bg-purple-600/30 transition-colors ${
+                        selectedSize === size ? 'bg-purple-600/20 text-purple-400' : 'text-gray-300'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Selected Size Display */}
+            {selectedSize && (
+              <div className="mt-3 flex items-center justify-between px-4 py-3 bg-[#242428] border border-purple-500 rounded-lg">
+                <span className="text-gray-300 text-sm">Selected Size:</span>
+                <span className="text-purple-400 font-semibold text-lg">{selectedSize}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Action Buttons */}
         {!isInvited && (
           <div className="flex gap-3">
-            <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
-              View Size
-            </button>
+            {!isParticipator && (
+              <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
+                View Size
+              </button>
+            )}
 
-            <button  onClick={() => router.push("/checkout")} className="flex-1 w-full cursor-pointer bg-[#6100FF] text-white py-2.5 rounded-lg font-medium transition-colors">
+            <button onClick={handleCheckout} className="flex-1 w-full cursor-pointer bg-[#6100FF] text-white py-2.5 rounded-lg font-medium transition-colors">
               Place Order
             </button>
           </div>
+        )}
+
+        {/* Checkout Button for Invited Participator */}
+        {isInvited && isParticipator && (
+          <button 
+            onClick={handleCheckout} 
+            disabled={!selectedSize}
+            className={`flex-1 w-full cursor-pointer py-2.5 rounded-lg font-medium transition-colors ${
+              selectedSize 
+                ? 'bg-[#6100FF] text-white hover:bg-purple-700' 
+                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            {selectedSize ? `Checkout - Size: ${selectedSize}` : 'Select Size to Checkout'}
+          </button>
         )}
       </div>
     </>
@@ -117,10 +203,13 @@ export default function EventViewDeaign() {
 
 
  const searchParams = useSearchParams()
-  const id = searchParams.get('id') 
+  const id = searchParams.get('id')
 
   const {data: eventProduct, isLoading, error} = useGetProductByEventQuery(id)
-  console.log(eventProduct)
+  
+  const {data: eventData} = useGetEventByIdQuery(id || '')
+  
+  const purchaseOption = eventData?.data?.purchaseOption || 'creator';
 
   const router = useRouter()
 
@@ -168,7 +257,7 @@ export default function EventViewDeaign() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {products.map(product => (
-              <ProductCard key={product._id} product={product} />
+              <ProductCard key={product._id} product={product} purchaseOption={purchaseOption} />
             ))}
           </div>
         )}

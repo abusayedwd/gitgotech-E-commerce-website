@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { MessageCircle, Ruler, Calendar } from 'lucide-react';
+import { MessageCircle, Ruler, Calendar, ChevronDown } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useGetProductDetailsforCustomerQuery } from '@/redux/features/home/homeSlice';
@@ -13,6 +13,7 @@ export default function EventProductDetails() {
   const [activeTab, setActiveTab] = useState('description');
   const [user, setUser] = useState<any>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [openDropdown, setOpenDropdown] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const productId = searchParams.get('id');
@@ -32,9 +33,9 @@ export default function EventProductDetails() {
   }, []);
 
   const productData = eventProductData?.data;
- 
 
   const isCreator = eventType === 'creator';
+  const isInvited = eventType === 'invited';
 
   const imageSrc = productData?.product_images?.[0]
     ? `${IMAGE_BASE_URL}/${productData.product_images[0]}`
@@ -46,36 +47,56 @@ export default function EventProductDetails() {
 
   const [eventProductSizeAddEdit] = useEventProductSizeAddEditMutation()
 
-const handleSubmitSize = async () => {
-  if (!selectedSize) {
-    alert('Please select a size');
-    return;
-  }
+  const sizes = ["XS", "S", "M", "L", "XL", "XXL", "S/28", "M/30", "L/32", "XL/34"];
 
-  if (!eventId || !productId || !user?._id) {
-    console.log("Missing required data");
-    return;
-  }
+  const handleSubmitSize = async () => {
+    if (!selectedSize) {
+      alert('Please select a size');
+      return;
+    }
 
-  const updateData = {
-    event: eventId,
-    product: productId,
-    member: user?._id,
-    size: selectedSize
+    if (!eventId || !productId || !user?._id) {
+      console.log("Missing required data");
+      return;
+    }
+
+    const updateData = {
+      event: eventId,
+      product: productId,
+      member: user?._id,
+      size: selectedSize
+    };
+
+    console.log(updateData);
+
+    try {
+      const res = await eventProductSizeAddEdit(updateData).unwrap();
+      if(res?.status ===200){
+        toast.success(res?.message)
+      }
+      console.log("Success:", res);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
-  console.log(updateData);
-
-  try {
-    const res = await eventProductSizeAddEdit(updateData).unwrap();
-    if(res?.status ===200){
-      toast.success(res?.message)
+  const handleCheckout = () => {
+    if (isInvited && !selectedSize) {
+      alert('Please select a size before checkout');
+      return;
     }
-    console.log("Success:", res);
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
+    router.push(`/checkout?productId=${productId}&eventId=${eventId}&size=${selectedSize}`);
+  };
+
+  const toggleDropdown = () => {
+    setOpenDropdown(!openDropdown);
+  };
+
+  const handleSizeSelect = (size: string) => {
+    setSelectedSize(size);
+    setOpenDropdown(false);
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#130a36] to-black p-6">
@@ -174,7 +195,7 @@ const handleSubmitSize = async () => {
               </div>
             </div>
 
-            {/* Size Selection - Only for creator */}
+            {/* Size Selection for Creator - Submit Size API */}
             {isCreator && productData?.product_stocks && productData.product_stocks.length > 0 && (
               <div className="border border-[#6100FF] p-4 rounded-xl">
                 <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
@@ -199,6 +220,36 @@ const handleSubmitSize = async () => {
               </div>
             )}
 
+            {/* Size Selection for Invited - No API Call, Just Checkout */}
+            {isInvited && productData?.product_stocks && productData.product_stocks.length > 0 && (
+              <div className="border border-[#6100FF] p-4 rounded-xl">
+                <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
+                <div className="flex flex-wrap gap-3">
+                  {productData.product_stocks.map((stock: any, index: number) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedSize(stock.size)}
+                      className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+                        selectedSize === stock.size
+                          ? 'bg-[#6100FF] text-white border-2 border-[#6100FF]'
+                          : 'bg-[#272238] text-gray-300 border-2 border-[#3d3648] hover:border-[#6100FF]'
+                      }`}
+                    >
+                      {stock.size}
+                      {stock.stock === 0 && ' (Out)'}
+                      {stock.stock > 0 && ` (${stock.stock})`}
+                    </button>
+                  ))}
+                </div>
+                {selectedSize && (
+                  <div className="mt-3 flex items-center justify-between px-4 py-3 bg-[#242428] border border-purple-500 rounded-lg">
+                    <span className="text-gray-300 text-sm">Selected Size:</span>
+                    <span className="text-purple-400 font-semibold text-lg">{selectedSize}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-4">
               {isCreator ? (
@@ -211,11 +262,18 @@ const handleSubmitSize = async () => {
                 </button>
               ) : (
                 <button
-                  onClick={() => router.push("/checkout")}
-                  className="flex items-center justify-center gap-2 bg-[#6100FF] cursor-pointer border border-[#3d3648] text-white py-4 rounded-xl hover:bg-[#7A2491] transition-all duration-200 col-span-2"
+                  onClick={handleCheckout}
+                  disabled={isInvited && !selectedSize}
+                  className={`flex items-center justify-center gap-2 border border-[#3d3648] text-white py-4 rounded-xl transition-all duration-200 col-span-2 ${
+                    isInvited && !selectedSize
+                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                      : 'bg-[#6100FF] cursor-pointer hover:bg-[#7A2491]'
+                  }`}
                 >
                   <MessageCircle size={20} />
-                  <span className="font-medium">Checkout</span>
+                  <span className="font-medium">
+                    {isInvited && selectedSize ? `Checkout - Size: ${selectedSize}` : isInvited ? 'Select Size to Checkout' : 'Checkout'}
+                  </span>
                 </button>
               )}
             </div>
