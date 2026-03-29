@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
-import { Trash2, Minus, Plus } from 'lucide-react';
+import { Trash2, Minus, Plus, X } from 'lucide-react';
 import { useGetWishlistAndCartQuery, useAddToCartWishListMutation, useDeleteSaveListMutation } from '@/redux/features/home/homeSlice';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 import toast from 'react-hot-toast';
@@ -14,21 +14,18 @@ export default function ShoppingCart() {
     const router = useRouter();
     const [page, setPage] = useState(1);
     const [quantities, setQuantities] = useState<Record<string, number>>({});
+    const [showTipModal, setShowTipModal] = useState(false);
+    const [tipAmount, setTipAmount] = useState('5');
 
     const { data: cartData, isLoading, refetch } = useGetWishlistAndCartQuery({
         type: "cart",
         page: page,
     });
 
-    console.log(cartData)
-
     const [addToCartWishList] = useAddToCartWishListMutation();
     const [deleteSaveItem] = useDeleteSaveListMutation();
 
-    // Filter out items with null products (deleted products)
     const cartItems = cartData?.data?.filter((item: any) => item.product !== null) || [];
-
-    const pagination = cartData?.pagination || {};
 
     // Initialize quantities when cart data loads
     useEffect(() => {
@@ -42,23 +39,20 @@ export default function ShoppingCart() {
     }, [cartItems.length]);
 
     const handleRemoveFromCart = async (id: string) => {
-      console.log(id)
         try {
             const res = await deleteSaveItem(id).unwrap();
-            console.log(res)
             if (res?.success) {
                 toast.success('Removed from cart');
                 refetch();
             }
         } catch (error: any) {
             toast.error(error?.data?.message || 'Failed to remove item');
-            console.log(error.data)
         }
     };
 
     const handleIncrement = async (item: any) => {
         const currentQty = quantities[item._id] || 1;
-        const totalStock = getTotalStock(item.product.product_stocks);
+        const totalStock = getTotalStock(item.product?.product_stocks);
         
         if (currentQty >= totalStock) {
             toast.error('Cannot add more. Out of stock!');
@@ -71,12 +65,7 @@ export default function ShoppingCart() {
             [item._id]: newQuantity
         }));
 
-        // Update cart via API
         try {
-            const formData = new FormData();
-            formData.append('product', item.product._id);
-            formData.append('saveType', 'cart');
-            
             await addToCartWishList({
                 product: item.product._id,
                 saveType: 'cart',
@@ -84,6 +73,7 @@ export default function ShoppingCart() {
             }).unwrap();
             
             refetch();
+            toast.success('Quantity updated');
         } catch (error: any) {
             console.error('Failed to update quantity:', error);
         }
@@ -93,7 +83,7 @@ export default function ShoppingCart() {
         const currentQty = quantities[item._id] || 1;
         
         if (currentQty <= 1) {
-            return; // Don't go below 1
+            return;
         }
 
         const newQuantity = currentQty - 1;
@@ -102,7 +92,6 @@ export default function ShoppingCart() {
             [item._id]: newQuantity
         }));
 
-        // Update cart via API
         try {
             await addToCartWishList({
                 product: item.product._id,
@@ -111,6 +100,7 @@ export default function ShoppingCart() {
             }).unwrap();
             
             refetch();
+            toast.success('Quantity updated');
         } catch (error: any) {
             console.error('Failed to update quantity:', error);
         }
@@ -126,35 +116,57 @@ export default function ShoppingCart() {
 
     const getTotalStock = (stocks: any[]) => {
         if (!stocks || stocks.length === 0) return 0;
-        return stocks.reduce((acc, stock) => acc + stock.stock, 0);
+        return stocks.reduce((acc, stock) => acc + (stock.stock || 0), 0);
+    };
+
+    const calculateSubtotal = () => {
+        return cartItems.reduce((total: number, item: any) => {
+            const quantity = quantities[item._id] || 1;
+            return total + ((item.product?.product_price || 0) * quantity);
+        }, 0);
     };
 
     const calculateTotal = () => {
-        return cartItems.reduce((total: number, item: any) => {
-            const quantity = quantities[item._id] || 1;
-            return total + ((item.product.product_price || 0) * quantity);
-        }, 0).toFixed(2);
+        const subtotal = calculateSubtotal();
+        const deliveryCharge = 20.00;
+        const tax = subtotal * 0.1;
+        const tip = parseFloat(tipAmount) || 0;
+        return subtotal + deliveryCharge + tax + tip;
+    };
+
+    const handleTipSubmit = () => {
+        setShowTipModal(false);
+        toast.success('Tip amount saved!');
+    };
+
+    // Prepare cart data for checkout
+    const getCartDataForCheckout = () => {
+        return cartItems.map((item: any) => ({
+            productId: item.product._id,
+            quantity: quantities[item._id] || 1,
+            price: item.product.product_price || 0
+        }));
     };
 
   return (
     <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+        <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">My Cart</h1>
-        </div>
+        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">My Cart</h1>
+      </div>
 
       {/* Header */}
-      <div className=" mb-6 md:mb-8 text-center">
+      <div className="mb-6 md:mb-8 text-center">
         <h1 className="flex items-center justify-center text-3xl md:text-4xl font-bold mb-3">
-                 <SectionHeader title='My Shopping Cart'></SectionHeader>
-               </h1>
+          <SectionHeader title='My Shopping Cart'></SectionHeader>
+        </h1>
         <p className="text-gray-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
-          Review your selected items before completing your order. You can update quantities, remove products, or continue shopping to add more. When you're ready, proceed to checkout for secure payment and delivery.
+          Review your selected items before completing your order.
         </p>
       </div>
 
@@ -162,15 +174,7 @@ export default function ShoppingCart() {
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-br from-purple-900/10 to-gray-900/50 border-[#B8B8B8] border  rounded-2xl p-4 md:p-6">
-            {/* Table Header */}
-            <div className="hidden md:grid grid-cols-12 gap-4 mb-4 pb-4 border-b text-sm text-gray-400">
-              <div className="col-span-5">PRODUCT</div>
-              <div className="col-span-2 text-center">PRICE</div>
-              <div className="col-span-3 text-center">QUANTITY</div>
-              <div className="col-span-2 text-right">SUBTOTAL</div>
-            </div>
-
+          <div className="bg-gradient-to-br from-purple-900/10 to-gray-900/50 border-[#B8B8B8] border rounded-2xl p-4 md:p-6">
             {/* Loading State */}
             {isLoading && (
               <div className="flex justify-center py-20">
@@ -186,6 +190,8 @@ export default function ShoppingCart() {
                   const imageUrl = getProductImage(product);
                   const totalStock = getTotalStock(product?.product_stocks);
                   const isInStock = totalStock > 0;
+                  const quantity = quantities[item._id] || 1;
+                  const subtotal = (product?.product_price || 0) * quantity;
 
                   return (
                     <div
@@ -195,25 +201,17 @@ export default function ShoppingCart() {
                       {/* Product */}
                       <div className="md:col-span-5 flex items-center gap-4">
                         <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
-                          <img
-                            src={imageUrl}
-                            alt={product?.product_name}
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={imageUrl} alt={product?.product_name} className="w-full h-full object-cover" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-sm md:text-base">{product.product_name}</h3>
-                          <p className="text-xs text-gray-400 md:hidden mt-1">${product.product_price?.toFixed(2)}</p>
-                          <p className="text-xs text-gray-500 hidden md:block">{product.product_category}</p>
-                          {!isInStock && (
-                            <p className="text-xs text-red-400 mt-1">Out of Stock</p>
-                          )}
+                          <h3 className="font-semibold text-sm md:text-base">{product?.product_name}</h3>
+                          <p className="text-xs text-gray-400 md:hidden mt-1">${(product?.product_price || 0).toFixed(2)}</p>
                         </div>
                       </div>
 
                       {/* Price */}
                       <div className="md:col-span-2 text-left md:text-center">
-                        <span className="text-sm md:text-base hidden md:inline">${product.product_price?.toFixed(2)}</span>
+                        <span className="text-sm md:text-base hidden md:inline">${(product?.product_price || 0).toFixed(2)}</span>
                       </div>
 
                       {/* Quantity */}
@@ -221,15 +219,15 @@ export default function ShoppingCart() {
                         <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-2">
                           <button
                             onClick={() => handleDecrement(item)}
-                            disabled={!isInStock}
+                            disabled={!isInStock || quantity <= 1}
                             className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
-                          <span className="text-sm font-semibold min-w-[20px] text-center">{quantities[item._id] || 1}</span>
+                          <span className="text-sm font-semibold min-w-[20px] text-center">{quantity}</span>
                           <button
                             onClick={() => handleIncrement(item)}
-                            disabled={!isInStock}
+                            disabled={!isInStock || quantity >= totalStock}
                             className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                           >
                             <Plus className="w-3 h-3" />
@@ -239,11 +237,10 @@ export default function ShoppingCart() {
 
                       {/* Subtotal & Remove */}
                       <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
-                        <span className="font-semibold text-sm md:text-base">${((product.product_price || 0) * (quantities[item._id] || 1)).toFixed(2)}</span>
+                        <span className="font-semibold text-sm md:text-base">${subtotal.toFixed(2)}</span>
                         <button
-                          onClick={() => handleRemoveFromCart(item.product._id)}
+                          onClick={() => handleRemoveFromCart(item.product?._id || item._id)}
                           className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
-                          title="Remove from cart"
                         >
                           <Trash2 className="w-4 h-4 text-red-400" />
                         </button>
@@ -260,11 +257,7 @@ export default function ShoppingCart() {
                       </svg>
                     </div>
                     <h3 className="text-xl font-semibold mb-2">Your cart is empty</h3>
-                    <p className="text-gray-400 text-sm mb-4">Start adding products to your cart!</p>
-                    <button
-                      onClick={() => router.push('/')}
-                      className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
-                    >
+                    <button onClick={() => router.push('/')} className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors">
                       Browse Products
                     </button>
                   </div>
@@ -286,22 +279,93 @@ export default function ShoppingCart() {
               </div>
             </div>
 
-            <div className="border-t border-gray-800 pt-4 mb-6">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400 text-sm">Total:</span>
-                <span className="text-2xl font-bold">${calculateTotal()}</span>
+            {/* Price Breakdown */}
+            <div className="space-y-3 mb-6">
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Subtotal ({cartItems.length} items)</span>
+                <span className="font-medium">${calculateSubtotal().toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Delivery Charge</span>
+                <span className="font-medium">$20.00</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Tax (10%)</span>
+                <span className="font-medium">${(calculateSubtotal() * 0.1).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-400">Tip</span>
+                <button onClick={() => setShowTipModal(true)} className="text-purple-400 hover:text-purple-300 font-medium">
+                  ${tipAmount}
+                </button>
+              </div>
+              <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
+                <span>Total</span>
+                <span className="text-purple-400">${calculateTotal().toFixed(2)}</span>
               </div>
             </div>
 
-           <Link href="/checkout">
-            <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700   rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
-              Proceed to Checkout
+            <Link href={{
+              pathname: '/checkout',
+              query: {
+                tip: tipAmount,
+                cartData: JSON.stringify(getCartDataForCheckout())
+              }
+            }}>
+              <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
+                Proceed to Checkout
+              </button>
+            </Link>
+
+            <button
+              onClick={() => setShowTipModal(true)}
+              className="w-full mt-3 py-3 border border-purple-500/30 hover:bg-purple-500/10 rounded-full font-semibold transition-all duration-300"
+            >
+              Tip Your Driver
             </button>
-          </Link>
-          
           </div>
         </div>
       </div>
+
+      {/* Tip Modal */}
+      {showTipModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
+            <button onClick={() => setShowTipModal(false)} className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors">
+              <X className="w-6 h-6" />
+            </button>
+
+            <h2 className="text-2xl font-bold text-center mb-6">Add Tip</h2>
+            <p className="text-gray-400 text-sm text-center mb-6">Show appreciation for your delivery person</p>
+
+            <div className="grid grid-cols-4 gap-3 mb-6">
+              {['0', '5', '10', '15'].map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => setTipAmount(amount)}
+                  className={`py-3 rounded-lg font-medium transition-colors ${
+                    tipAmount === amount ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  }`}
+                >
+                  ${amount}
+                </button>
+              ))}
+            </div>
+
+            <input
+              type="number"
+              value={tipAmount}
+              onChange={(e) => setTipAmount(e.target.value)}
+              placeholder="Custom amount"
+              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4"
+            />
+
+            <button onClick={handleTipSubmit} className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all">
+              Save Tip
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

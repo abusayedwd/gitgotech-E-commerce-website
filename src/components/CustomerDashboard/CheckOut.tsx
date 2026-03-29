@@ -1,348 +1,211 @@
-// "use client";
-
-// import { useState } from 'react';
-// import Link from 'next/link';
-// import BackButton from '@/customComponent/BackButton';
-// import { useRouter } from 'next/navigation';
-
-// export default function CheckoutPage() {
-//     const router = useRouter();
-//   const [deliveryMethod, setDeliveryMethod] = useState('delivery');
-//   const [paymentMethod, setPaymentMethod] = useState('credit-card');
-//   const [formData, setFormData] = useState({
-//     fullName: 'Dianne',
-//     getLocation: '4440 Poin',
-//     country: 'United States',
-//     state: 'Washington DC',
-//     zipCode: '20013',
-//     email: 'dianne.russell@gmail.com',
-//     phone: ''
-//   });
-
-//   const orderItems = [
-//     { id: 1, name: 'Lemon body serv', variant: 'X2', price: 1100.00, image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=100&h=100&fit=crop' },
-//     { id: 2, name: 'Jo Mker Pline', variant: 'X2', price: 1100.00, image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=100&h=100&fit=crop' }
-//   ];
-
-//   const subtotal = 1900.00;
-//   const deliveryCharge = 20.00;
-//   const tax = 10.00;
-//   const discount = 40.00;
-//   const total = subtotal + deliveryCharge + tax - discount;
-
-//   const handleInputChange = (e) => {
-//     setFormData({
-//       ...formData,
-//       [e.target.name]: e.target.value
-//     });
-//   };
-
-//   return (
-//     <div className="min-h-screen md:mt-20 mt-16 bg-black text-white p-4 md:p-8">
-//       {/* Back Button */}
-//       <div className="container mx-auto">
-//        <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-//           <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-//             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-//             </svg>
-//           </div>
-//         </button>
-//       </div>
-
-//       {/* Header */}
-//       <div className="max-w-7xl mx-auto mb-6 md:mb-8 text-center">
-//         <h1 className="text-3xl md:text-4xl font-bold mb-2">Checkout</h1>
-//         <p className="text-gray-400 text-sm">One step away from your dream purchase.</p>
-//       </div>
-
-//       {/* Main Content */}
-//       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-//         {/* Left Column - Forms */}
-//         <div className="lg:col-span-2 space-y-6">
-//           {/* Delivery Method */}
-//           <div className="space-y-3">
-//             <div className="flex items-center gap-3">
-//               <input
-//                 type="radio"
-//                 id="delivery"
-//                 name="deliveryMethod"
-//                 checked={deliveryMethod === 'delivery'}
-//                 onChange={() => setDeliveryMethod('delivery')}
-//                 className="w-4 h-4 text-purple-600"
-//               />
-//               <label htmlFor="delivery" className="text-sm font-medium">Delivery</label>
-//             </div>
-//             <div className="flex items-center gap-3">
-//               <input
-//                 type="radio"
-//                 id="pickup"
-//                 name="deliveryMethod"
-//                 checked={deliveryMethod === 'pickup'}
-//                 onChange={() => setDeliveryMethod('pickup')}
-//                 className="w-4 h-4 text-purple-600"
-//               />
-//               <label htmlFor="pickup" className="text-sm font-medium">Pick up</label>
-//             </div>
-//           </div>
-
-//           {/* Delivery Address */}
-//           <div className=" rounded-2xl p- md:p-2 border border-[#b88ccc]  relative">
-//             <div className=" top-6 right-6 bg-gradient-to-r from-[#2ACCED] to-[#B630F4] p-4 flex rounded-t">
-              
-//             <h2 className="text-xl font-bold">Delivery Address</h2>
-//             </div>
-
-
-//             <div className="space-y-4">
-//               {/* Full Name */}
-//               <div>
-//                 <label className="block text-sm mb-2">Full name</label>
-//                 <input
-//                   type="text"
-//                   name="fullName"
-//                   value={formData.fullName}
-//                   onChange={handleInputChange}
-//                   className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-//                 />
-//               </div>
-
-//               {/* Get Location */}
-//               <div>
-//                 <label className="block text-sm mb-2">Get Location</label>
-//                 <div className="relative">
-//                   <input
-//                     type="text"
-//                     name="getLocation"
-//                     value={formData.getLocation}
-//                     onChange={handleInputChange}
-//                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-//                   />
-//                   <button className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-300">
-//                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-//                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-//                     </svg>
-//                   </button>
-//                 </div>
-//               </div>
-
-//               {/* Country, State, Zip */}
-//               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//                 <div>
-//                   <label className="block text-sm mb-2">Country / Region</label>
-//                   <select
-//                     name="country"
-//                     value={formData.country}
-//                     onChange={handleInputChange}
-//                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-//                   >
-//                     <option>United States</option>
-//                     <option>Canada</option>
-//                     <option>UK</option>
-//                   </select>
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm mb-2">States</label>
-//                   <input
-//                     type="text"
-//                     name="state"
-//                     value={formData.state}
-//                     onChange={handleInputChange}
-//                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-//                   />
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm mb-2">Zip Code</label>
-//                   <input
-//                     type="text"
-//                     name="zipCode"
-//                     value={formData.zipCode}
-//                     onChange={handleInputChange}
-//                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-//                   />
-//                 </div>
-//               </div>
-
-//               {/* Email & Phone */}
-//               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                 <div>
-//                   <label className="block text-sm mb-2">Email</label>
-//                   <div className="relative">
-//                     <input
-//                       type="email"
-//                       name="email"
-//                       value={formData.email}
-//                       onChange={handleInputChange}
-//                       className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-//                     />
-//                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
-//                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-xs font-bold">
-//                         G
-//                       </div>
-//                     </div>
-//                   </div>
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm mb-2">Phone</label>
-//                   <input
-//                     type="tel"
-//                     name="phone"
-//                     value={formData.phone}
-//                     onChange={handleInputChange}
-//                     placeholder="Enter phone number"
-//                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-//                   />
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-
-//         {/* Right Column - Order Summary */}
-//         <div className="lg:col-span-1">
-//           <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl p-6 sticky top-8">
-//             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-
-//             {/* Order Items */}
-//             <div className="space-y-4 mb-6">
-//               {orderItems.map((item) => (
-//                 <div key={item.id} className="flex items-center gap-3">
-//                   <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
-//                     <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-//                   </div>
-//                   <div className="flex-1 min-w-0">
-//                     <p className="text-sm font-medium truncate">{item.name}</p>
-//                     <p className="text-xs text-gray-400">{item.variant}</p>
-//                   </div>
-//                   <p className="text-sm font-semibold">${item.price.toFixed(2)}</p>
-//                 </div>
-//               ))}
-//             </div>
-
-//             {/* Price Breakdown */}
-//             <div className="space-y-3 border-t border-gray-800 pt-4 mb-6">
-//               <div className="flex justify-between text-sm">
-//                 <span className="text-gray-400">Subtotal:</span>
-//                 <span>${subtotal.toFixed(2)}</span>
-//               </div>
-//               <div className="flex justify-between text-sm">
-//                 <span className="text-gray-400">Delivery Charge:</span>
-//                 <span>${deliveryCharge.toFixed(2)}</span>
-//               </div>
-//               <div className="flex justify-between text-sm">
-//                 <span className="text-gray-400">Tip:</span>
-//                 <span>${tax.toFixed(2)}</span>
-//               </div>
-//               <div className="flex justify-between text-sm">
-//                 <span className="text-gray-400">Discount:</span>
-//                 <span className="text-green-400">-${discount.toFixed(2)}</span>
-//               </div>
-//               <div className="flex justify-between text-lg font-bold border-t border-gray-800 pt-3">
-//                 <span>Total:</span>
-//                 <span className="text-purple-400">${total.toFixed(2)}</span>
-//               </div>
-//             </div>
-
-//             {/* Payment Method */}
-//             <div className="mb-6">
-//               <h3 className="text-lg font-bold mb-4">Payment Method</h3>
-//               <div className="space-y-3">
-//                 <div className="flex items-center gap-3">
-//                   <input
-//                     type="radio"
-//                     id="credit-card"
-//                     name="paymentMethod"
-//                     checked={paymentMethod === 'credit-card'}
-//                     onChange={() => setPaymentMethod('credit-card')}
-//                     className="w-4 h-4 text-purple-600"
-//                   />
-//                   <label htmlFor="credit-card" className="text-sm">Credit Card</label>
-//                 </div>
-//                 <div className="flex items-center gap-3">
-//                   <input
-//                     type="radio"
-//                     id="debit-card"
-//                     name="paymentMethod"
-//                     checked={paymentMethod === 'debit-card'}
-//                     onChange={() => setPaymentMethod('debit-card')}
-//                     className="w-4 h-4 text-purple-600"
-//                   />
-//                   <label htmlFor="debit-card" className="text-sm">Debit Card</label>
-//                 </div>
-//               </div>
-              
-//               {/* Profile Icon */}
-//               <div className="flex justify-end mt-4">
-                
-//               </div>
-//             </div>
-
-//             {/* Action Buttons */}
-//             <div className="">
-//                <button className='text-[#6100FF] flex items-center justify-center w-full font-semibold py-1 cursor-pointer '>Apply Coupon</button>
-//               <Link href="/order-confirmation">
-//                 <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
-//                   Place to Order
-//                 </button>
-//               </Link>
-//               <button className="w-full mt-2 py-3 border border-purple-500/30 hover:bg-purple-500/10 rounded-full font-semibold transition-all duration-300">
-//                Trip your driver
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
+ 
 "use client";
-import React, { useState } from 'react';
-import { X, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, MapPin, Loader2, Search } from 'lucide-react';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useAddVendorOrderMutation } from '@/redux/features/order/orderSlice';
+import { useGetWishlistAndCartQuery } from '@/redux/features/home/homeSlice';
+import toast from 'react-hot-toast';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
+
+// Fix for default marker icon in Next.js
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
+
+// Map click handler component
+function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
+  useMapEvents({
+    click(e) {
+      onLocationSelect(e.latlng.lat, e.latlng.lng);
+    },
+  });
+  return null;
+}
+
+// Map component to update view when location changes
+function MapUpdater({ location }: { location: { lat: number; lng: number } | null }) {
+  const map = useMap();
+  useEffect(() => {
+    if (location) {
+      map.setView([location.lat, location.lng], 13);
+    }
+  }, [location, map]);
+  return null;
+}
+
+// Search location component
+function LocationSearch({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number, address: string) => void }) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const searchLocation = async (query: string) => {
+    if (query.length < 3) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
+      );
+      const data = await response.json();
+      setSearchResults(data);
+    } catch (error) {
+      console.error('Search error:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchQuery) {
+        searchLocation(searchQuery);
+      } else {
+        setSearchResults([]);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const handleSelectLocation = (result: any) => {
+    onLocationSelect(parseFloat(result.lat), parseFloat(result.lon), result.display_name);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
+
+  return (
+    <div className="relative mb-4">
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search for a location..."
+          className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+        />
+      </div>
+      {isSearching && (
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
+        </div>
+      )}
+      {searchResults.length > 0 && (
+        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-purple-500/30 rounded-lg max-h-60 overflow-y-auto z-10">
+          {searchResults.map((result, index) => (
+            <button
+              key={index}
+              onClick={() => handleSelectLocation(result)}
+              className="w-full text-left px-4 py-3 hover:bg-purple-900/30 transition-colors border-b border-gray-800 last:border-b-0"
+            >
+              <p className="text-sm text-white">{result.display_name}</p>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function CheckoutPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  // Get cart data from URL params (passed from shopping cart)
+  const tipFromCart = searchParams.get('tip') || '5';
+  const cartDataFromUrl = searchParams.get('cartData');
+  const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
+  
   const [deliveryMethod, setDeliveryMethod] = useState('delivery');
-  const [paymentMethod, setPaymentMethod] = useState('credit-card');
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showTipModal, setShowTipModal] = useState(false);
+  const [showMap, setShowMap] = useState(false);
   const [couponCode, setCouponCode] = useState('');
-  const [tipAmount, setTipAmount] = useState('');
-  const router = useRouter()
-  
+  const [tipAmount, setTipAmount] = useState(tipFromCart);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+
+  const [orderSubmitted] = useAddVendorOrderMutation();
+
+  // Get cart items from API (for product details)
+  const { data: cartData } = useGetWishlistAndCartQuery({
+    type: "cart",
+    page: 1,
+  });
+
+  const allCartItems = cartData?.data?.filter((item: any) => item.product !== null) || [];
+
+  // Merge cart items with quantities from URL
+  const cartItems = allCartItems.map((item: any) => {
+    const cartItem = parsedCartData.find((c: any) => c.productId === item.product._id);
+    return {
+      ...item,
+      quantity: cartItem ? cartItem.quantity : 1
+    };
+  });
+
   const [formData, setFormData] = useState({
-    fullName: 'Dianne',
-    getLocation: '4440 Poin',
+    fullName: '',
+    address: '',
     country: 'United States',
-    state: 'Washington DC',
-    zipCode: '20013',
-    email: 'dianne.russell@gmail.com',
+    state: '',
+    zipcode: '',
+    email: '',
     phone: ''
   });
 
-  const orderItems = [
-    { id: 1, name: 'Lemon body serv', variant: 'X2', price: 1100.00, image: 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=100&h=100&fit=crop' },
-    { id: 2, name: 'Jo Mker Pline', variant: 'X2', price: 1100.00, image: 'https://images.unsplash.com/photo-1571781926291-c477ebfd024b?w=100&h=100&fit=crop' }
-  ];
+  // Calculate totals with quantities from cart
+  const calculateSubtotal = () => {
+    return cartItems.reduce((sum: number, item: any) => {
+      return sum + ((item.product.product_price || 0) * (item.quantity || 1));
+    }, 0);
+  };
 
-  const subtotal = 1900.00;
   const deliveryCharge = 20.00;
-  const tax = 10.00;
-  const discount = 40.00;
-  const total = subtotal + deliveryCharge + tax - discount;
+  const tax = calculateSubtotal() * 0.1;
+  const discount = couponCode ? calculateSubtotal() * 0.1 : 0;
+  const tip = parseFloat(tipAmount) || 0;
+  const total = calculateSubtotal() + deliveryCharge + tax - discount + tip;
 
-  interface FormData {
-    fullName: string;
-    getLocation: string;
-    country: string;
-    state: string;
-    zipCode: string;
-    email: string;
-    phone: string;
-  }
+  // Get current location
+  const getCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
+          toast.success('Location detected successfully!');
+        },
+        (error) => {
+          toast.error('Unable to get your location. Please enter manually.');
+          console.error('Geolocation error:', error);
+        }
+      );
+    } else {
+      toast.error('Geolocation is not supported by your browser');
+    }
+  };
+
+  // Handle map location selection
+  const handleMapLocationSelect = (lat: number, lng: number) => {
+    setLocation({ lat, lng });
+    setShowMap(false);
+    toast.success('Location selected from map!');
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
     setFormData({
@@ -352,28 +215,101 @@ export default function CheckoutPage() {
   };
 
   const handleCouponSubmit = () => {
-    console.log('Coupon Code:', couponCode);
+    if (couponCode.trim()) {
+      toast.success('Coupon applied successfully!');
+    }
     setShowCouponModal(false);
     setCouponCode('');
   };
 
   const handleTipSubmit = () => {
-    console.log('Tip Amount:', tipAmount);
     setShowTipModal(false);
-    setTipAmount('');
+  };
+
+  const handleSubmitOrder = async () => {
+    // Validation
+    if (!formData.fullName || !formData.address || !formData.email || !formData.phone) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
+    if (!location) {
+      toast.error('Please provide your delivery location');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Create order for each cart item
+      const orderPromises = cartItems.map((item: any) => {
+        const orderData = {
+          product: item.product._id,
+          size: item.product.product_stocks?.map((stock: any) => ({
+            type: stock.size,
+            quantity: 1
+          })) || [{ type: 'M', quantity: 1 }],
+          orderType: 'vendor',
+          deliveryType: deliveryMethod,
+          price: {
+            unit: 'usd',
+            amount: item.product.product_price || 0,
+            tip: tip,
+            coupon: couponCode,
+            deliveryCharge: deliveryCharge
+          },
+          deliveryInfo: {
+            name: formData.fullName,
+            address: formData.address,
+            country: formData.country,
+            state: formData.state,
+            zipcode: formData.zipcode,
+            email: formData.email,
+            phone: formData.phone,
+            location: {
+              type: 'Point',
+              coordinates: [location.lng, location.lat]
+            }
+          }
+        };
+        console.log(orderData)
+
+        return orderSubmitted(orderData).unwrap();
+      });
+
+      await Promise.all(orderPromises);
+
+      toast.success('Order placed successfully!');
+      
+      // Clear cart and redirect
+      setTimeout(() => {
+        router.push('/customer-dashboard');
+      }, 2000);
+
+    } catch (error: any) {
+      console.error('Order submission error:', error);
+      toast.error(error?.data?.message || 'Failed to place order. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen mt-24 bg-linear-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
+    <div className="min-h-screen mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+        <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Check Out</h1>
-        </div>
+        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Check Out</h1>
+      </div>
 
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6 md:mb-8 text-center">
@@ -420,65 +356,97 @@ export default function CheckoutPage() {
             <div className="p-6 space-y-4">
               {/* Full Name */}
               <div>
-                <label className="block text-sm mb-2">Full name</label>
+                <label className="block text-sm mb-2">Full name *</label>
                 <input
                   type="text"
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleInputChange}
+                  placeholder="John Doe"
                   className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                 />
               </div>
 
-              {/* Get Location */}
+              {/* Address */}
               <div>
-                <label className="block text-sm mb-2">Get Location</label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="getLocation"
-                    value={formData.getLocation}
-                    onChange={handleInputChange}
-                    className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                  />
-                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-purple-400 hover:text-purple-300">
+                <label className="block text-sm mb-2">Address *</label>
+                <input
+                  type="text"
+                  name="address"
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  placeholder="123 Main Street, Apartment 4B"
+                  className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+
+              {/* Location Selection */}
+              <div>
+                <label className="block text-sm mb-2">Delivery Location *</label>
+                <div className="flex gap-3 mb-3">
+                  <button
+                    type="button"
+                    onClick={getCurrentLocation}
+                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  >
                     <MapPin className="w-5 h-5" />
+                    {location ? '✓ Detected' : 'Get Current Location'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowMap(true)}
+                    className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
+                  >
+                    Select on Map
                   </button>
                 </div>
+                {location && (
+                  <div className="p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+                    <p className="text-xs text-gray-300">
+                      <span className="font-medium">Selected Location:</span>
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      Latitude: {location.lat.toFixed(6)}, Longitude: {location.lng.toFixed(6)}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Country, State, Zip */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Country / Region</label>
+                  <label className="block text-sm mb-2">Country / Region *</label>
                   <select
                     name="country"
                     value={formData.country}
                     onChange={handleInputChange}
                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                   >
-                    <option>United States</option>
-                    <option>Canada</option>
-                    <option>UK</option>
+                    <option value="United States">United States</option>
+                    <option value="Canada">Canada</option>
+                    <option value="UK">UK</option>
+                    <option value="Australia">Australia</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">States</label>
+                  <label className="block text-sm mb-2">State *</label>
                   <input
                     type="text"
                     name="state"
                     value={formData.state}
                     onChange={handleInputChange}
+                    placeholder="New York"
                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Zip Code</label>
+                  <label className="block text-sm mb-2">Zip Code *</label>
                   <input
                     type="text"
-                    name="zipCode"
-                    value={formData.zipCode}
+                    name="zipcode"
+                    value={formData.zipcode}
                     onChange={handleInputChange}
+                    placeholder="10001"
                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
@@ -487,33 +455,24 @@ export default function CheckoutPage() {
               {/* Email & Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Email</label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                    />
-                    <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-1">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-xs font-bold">
-                        G
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-xs font-bold">
-                        M
-                      </div>
-                    </div>
-                  </div>
+                  <label className="block text-sm mb-2">Email *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="john.doe@example.com"
+                    className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  />
                 </div>
                 <div>
-                  <label className="block text-sm mb-2">Phone</label>
+                  <label className="block text-sm mb-2">Phone *</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleInputChange}
-                    placeholder="Enter phone number"
+                    placeholder="+1 212 555 1234"
                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
@@ -528,135 +487,121 @@ export default function CheckoutPage() {
             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
 
             {/* Order Items */}
-            <div className="space-y-4 mb-6">
-              {orderItems.map((item) => (
-                <div key={item.id} className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+            <div className="space-y-4 mb-6 max-h-60 overflow-y-auto">
+              {cartItems.length > 0 ? (
+                cartItems.map((item: any) => (
+                  <div key={item._id} className="flex items-center gap-3 pb-3 border-b border-gray-700 last:border-b-0">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
+                      <img 
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product.product_images?.[0]}`} 
+                        alt={item.product.product_name} 
+                        className="w-full h-full object-cover" 
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{item.product.product_name}</p>
+                      <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
+                    </div>
+                    <p className="text-sm font-semibold">${((item.product.product_price || 0) * item.quantity).toFixed(2)}</p>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{item.name}</p>
-                    <p className="text-xs text-gray-400">{item.variant}</p>
-                  </div>
-                  <p className="text-sm font-semibold">${item.price.toFixed(2)}</p>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-gray-400 text-sm">No items in cart</p>
+              )}
             </div>
 
             {/* Price Breakdown */}
-            <div className="space-y-3 border-t border-gray-800 pt-4 mb-6">
+            <div className="space-y-3 border-t border-gray-700 pt-4 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Subtotal:</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span className="text-gray-400">Subtotal</span>
+                <span className="font-medium">${calculateSubtotal().toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Delivery Charge:</span>
-                <span>${deliveryCharge.toFixed(2)}</span>
+                <span className="text-gray-400">Delivery Charge</span>
+                <span className="font-medium">${deliveryCharge.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Tip:</span>
-                <span>${tax.toFixed(2)}</span>
+                <span className="text-gray-400">Tax (10%)</span>
+                <span className="font-medium">${tax.toFixed(2)}</span>
               </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-green-400">
+                  <span>Discount</span>
+                  <span className="font-medium">-${discount.toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Discount:</span>
-                <span className="text-green-400">-${discount.toFixed(2)}</span>
+                <span className="text-gray-400">Tip</span>
+                <button 
+                  onClick={() => setShowTipModal(true)}
+                  className="text-purple-400 hover:text-purple-300 font-medium"
+                >
+                  ${tip.toFixed(2)}
+                </button>
               </div>
-              <div className="flex justify-between text-lg font-bold border-t border-gray-800 pt-3">
-                <span>Total:</span>
+              <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
+                <span>Total</span>
                 <span className="text-purple-400">${total.toFixed(2)}</span>
               </div>
             </div>
 
-            {/* Payment Method */}
-            <div className="mb-6">
-              <h3 className="text-lg font-bold mb-4">Payment Method</h3>
-              <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    id="credit-card"
-                    name="paymentMethod"
-                    checked={paymentMethod === 'credit-card'}
-                    onChange={() => setPaymentMethod('credit-card')}
-                    className="w-4 h-4 text-purple-600"
-                  />
-                  <label htmlFor="credit-card" className="text-sm">Credit Card</label>
-                </div>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    id="debit-card"
-                    name="paymentMethod"
-                    checked={paymentMethod === 'debit-card'}
-                    onChange={() => setPaymentMethod('debit-card')}
-                    className="w-4 h-4 text-purple-600"
-                  />
-                  <label htmlFor="debit-card" className="text-sm">Debit Card</label>
-                </div>
-              </div>
-            </div>
+            {/* Coupon Code */}
+            <button
+              onClick={() => setShowCouponModal(true)}
+              className="w-full mb-4 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
+            >
+              Apply Coupon Code
+            </button>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
-              <button 
-                onClick={() => setShowCouponModal(true)}
-                className='text-[#6100FF] flex items-center justify-center w-full font-semibold py-1 cursor-pointer hover:text-purple-400 transition-colors'
-              >
-                Apply Coupon
-              </button>
-            <Link href="/success-order">
-              <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
-                Place to Order
-              </button>
-            </Link>
-              <button 
-                onClick={() => setShowTipModal(true)}
-                className="w-full py-3 border border-purple-500/30 hover:bg-purple-500/10 rounded-full font-semibold transition-all duration-300"
-              >
-                Tip your driver
-              </button>
-            </div>
+            {/* Place Order Button */}
+            <button
+              onClick={handleSubmitOrder}
+              disabled={isSubmitting || cartItems.length === 0}
+              className={`w-full py-4 rounded-lg font-semibold transition-all duration-300 ${
+                isSubmitting || cartItems.length === 0
+                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transform hover:scale-105'
+              }`}
+            >
+              {isSubmitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  Processing...
+                </span>
+              ) : (
+                'Place Order'
+              )}
+            </button>
           </div>
         </div>
       </div>
 
       {/* Coupon Modal */}
       {showCouponModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-black border-2 border-purple-500 rounded-2xl p-8 max-w-md w-full relative">
-            <button 
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
+            <button
               onClick={() => setShowCouponModal(false)}
-              className="absolute top-4 right-4 text-white hover:text-purple-400 transition-colors"
+              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
-            
+
             <h2 className="text-2xl font-bold text-center mb-6">Apply Coupon</h2>
-            
-            <div className="flex justify-center mb-6">
-              <div className="flex gap-1">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center text-xs font-bold">
-                  G
-                </div>
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-500 flex items-center justify-center text-xs font-bold">
-                  M
-                </div>
-              </div>
-            </div>
 
             <input
               type="text"
               value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value)}
-              placeholder="Enter your discount code"
-              className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-6"
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              placeholder="Enter coupon code"
+              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4 uppercase"
             />
 
-            <button 
+            <button
               onClick={handleCouponSubmit}
-              className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-colors"
+              className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all"
             >
-              Submit
+              Apply Coupon
             </button>
           </div>
         </div>
@@ -664,33 +609,119 @@ export default function CheckoutPage() {
 
       {/* Tip Modal */}
       {showTipModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-          <div className="bg-black border-2 border-purple-500 rounded-2xl p-8 max-w-md w-full relative">
-            <button 
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
+            <button
               onClick={() => setShowTipModal(false)}
-              className="absolute top-4 right-4 text-white hover:text-purple-400 transition-colors"
+              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
-            
-            <h2 className="text-2xl font-bold text-center mb-4">Tips</h2>
-            
-            <p className="text-purple-400 text-center mb-6">Support your driver with a tip</p>
+
+            <h2 className="text-2xl font-bold text-center mb-6">Add Tip</h2>
+
+            <p className="text-gray-400 text-sm text-center mb-6">Show appreciation for your delivery person</p>
+
+            <div className="grid grid-cols-4 gap-3 mb-6">
+              {['0', '5', '10', '15'].map((amount) => (
+                <button
+                  key={amount}
+                  onClick={() => setTipAmount(amount)}
+                  className={`py-3 rounded-lg font-medium transition-colors ${
+                    tipAmount === amount
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  }`}
+                >
+                  ${amount}
+                </button>
+              ))}
+            </div>
 
             <input
               type="number"
               value={tipAmount}
               onChange={(e) => setTipAmount(e.target.value)}
-              placeholder="Enter Amount"
-              className="w-full bg-transparent border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-6"
+              placeholder="Custom amount"
+              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4"
             />
 
-            <button 
+            <button
               onClick={handleTipSubmit}
-              className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-semibold transition-colors"
+              className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all"
             >
-              Submit
+              Save Tip
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Map Modal */}
+      {showMap && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowMap(false)}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <h2 className="text-2xl font-bold text-center mb-6">Select Delivery Location</h2>
+
+            {/* Search Field */}
+            <LocationSearch onLocationSelect={handleMapLocationSelect} />
+
+            {/* Map */}
+            <div className="rounded-lg overflow-hidden border border-purple-500/30" style={{ height: '400px' }}>
+              <MapContainer
+                center={[40.7128, -74.0060]}
+                zoom={13}
+                className="w-full h-full"
+                style={{ height: '100%', width: '100%' }}
+              >
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {location && (
+                  <Marker position={[location.lat, location.lng]}>
+                    <Popup>Selected Location</Popup>
+                  </Marker>
+                )}
+                <MapClickHandler onLocationSelect={handleMapLocationSelect} />
+                <MapUpdater location={location} />
+              </MapContainer>
+            </div>
+
+            {/* Location Info */}
+            {location && (
+              <div className="mt-4 p-4 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+                <p className="text-sm text-gray-300">
+                  <span className="font-medium">Selected Location:</span>
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Latitude: {location.lat.toFixed(6)}, Longitude: {location.lng.toFixed(6)}
+                </p>
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={getCurrentLocation}
+                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+              >
+                <MapPin className="w-5 h-5" />
+                Use Current Location
+              </button>
+              <button
+                onClick={() => setShowMap(false)}
+                className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
       )}
