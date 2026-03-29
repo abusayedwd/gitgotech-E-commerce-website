@@ -31,6 +31,16 @@ export const orderSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+     // ✅ POST - Add Vendor Order
+    addVendorOrder: builder.mutation({
+      query: (body) => ({
+        url: "/order/vendor/add",
+        method: "POST",
+        body,
+      }),
+    }),
+
+
     // ✅ POST - Add Custom Order
     addCustomOrder: builder.mutation({
       query: (body) => ({
@@ -49,15 +59,7 @@ export const orderSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    // ✅ POST - Add Vendor Order
-    addVendorOrder: builder.mutation({
-      query: (body) => ({
-        url: "/order/vendor/add",
-        method: "POST",
-        body,
-      }),
-    }),
-
+   
   }),
 });
 

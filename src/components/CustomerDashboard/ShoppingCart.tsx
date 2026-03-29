@@ -25,7 +25,9 @@ export default function ShoppingCart() {
     const [addToCartWishList] = useAddToCartWishListMutation();
     const [deleteSaveItem] = useDeleteSaveListMutation();
 
-    const cartItems = cartData?.data || [];
+    // Filter out items with null products (deleted products)
+    const cartItems = cartData?.data?.filter((item: any) => item.product !== null) || [];
+
     const pagination = cartData?.pagination || {};
 
     // Initialize quantities when cart data loads
@@ -115,6 +117,7 @@ export default function ShoppingCart() {
     };
 
     const getProductImage = (product: any) => {
+        if (!product) return '/images/jacket.png';
         if (product.product_images && product.product_images.length > 0) {
             return `${IMAGE_BASE_URL}/${product.product_images[0]}`;
         }
@@ -181,7 +184,7 @@ export default function ShoppingCart() {
                 cartItems.map((item: any) => {
                   const product = item.product;
                   const imageUrl = getProductImage(product);
-                  const totalStock = getTotalStock(product.product_stocks);
+                  const totalStock = getTotalStock(product?.product_stocks);
                   const isInStock = totalStock > 0;
 
                   return (
@@ -194,7 +197,7 @@ export default function ShoppingCart() {
                         <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
                           <img
                             src={imageUrl}
-                            alt={product.product_name}
+                            alt={product?.product_name}
                             className="w-full h-full object-cover"
                           />
                         </div>
