@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Star, User, Shield, MessageCircle } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import BackButton from '@/customComponent/BackButton';
 
@@ -13,6 +13,9 @@ const OrderDetails = () => {
   const [reason, setReason] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("id")
 
   const product = {
     name: "Jacket",
