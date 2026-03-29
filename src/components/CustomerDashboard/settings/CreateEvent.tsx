@@ -33,12 +33,13 @@ export default function CreateEvent() {
         description: formData.description,
         customer: localStorage.getItem('userId') || '' // Get from auth context
       };
-      
+      console.log(eventData)
       await createEvent(eventData).unwrap();
       toast.success('Event created successfully!');
-      router.push('/settings/events'); // Redirect to events list
+      router.push('/profile/event'); // Redirect to events list
     } catch (err: any) {
       toast.error(err?.data?.message || 'Failed to create event');
+      console.log(err.data)
     }
   };
 
@@ -138,8 +139,8 @@ export default function CreateEvent() {
               <input
                 type="radio"
                 name="purchaseOption"
-                value="participator"
-                checked={formData.purchaseOption === 'participator'}
+                value="invited"
+                checked={formData.purchaseOption === 'invited'}
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 focus:ring-blue-500"
               />

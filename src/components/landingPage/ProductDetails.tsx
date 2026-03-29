@@ -31,7 +31,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const {data: eventdata} = useGetEventsForProductAddQuery(undefined);
   const [addproductToEvent] = useEventProductAddMutation();
 
-  const events = eventdata?.data || [];
+  const events = Array.isArray(eventdata?.data?.data) ? eventdata?.data?.data : [];
+  console.log(eventdata)
 
   const handleAddToEvent = async (eventId: string) => {
     try {
@@ -517,7 +518,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                   </button>
                 </div>
               ) : (
-                events.map((event: any) => (
+                events?.map((event: any) => (
                   <label
                     key={event._id}
                     className={`relative flex items-start p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${

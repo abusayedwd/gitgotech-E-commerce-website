@@ -30,8 +30,8 @@ export default function UpdateEvent() {
 
   // Pre-fill form with existing event data
   useEffect(() => {
-    if (eventId && eventsData?.data) {
-      const event = eventsData.data.find((e: any) => e._id === eventId);
+    if (eventId && eventsData?.data?.data) {
+      const event = eventsData.data.data.find((e: any) => e._id === eventId);
       if (event) {
         const eventDate = new Date(event.eventDate);
         setFormData({
