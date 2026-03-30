@@ -221,6 +221,11 @@ export default function MyDashboard() {
                       Completed
                     </span>
                   )}
+                  {order.status === 'Order Placed' && (
+                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium">
+                      Order Placed
+                    </span>
+                  )}
                   {order.status === 'Driver Accepted' && (
                     <span className="px-3 py-1 bg-blue-500/20 text-blue-500 rounded-full text-xs font-medium">
                       Driver Accepted
