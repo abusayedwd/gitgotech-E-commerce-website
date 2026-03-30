@@ -31,6 +31,13 @@ export const orderSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    getOrderDetails: builder.query({
+      query: (id) => ({
+        url: `/order/vendor/details/${id}`,
+        method: "GET",
+      }),
+    }),
+
      // ✅ POST - Add Vendor Order
     addVendorOrder: builder.mutation({
       query: (body) => ({

@@ -90,9 +90,21 @@ export default function Navbar() {
               {/* Desktop Icon Buttons - Customer only icons */}
               {userRole === 'customer' && (
                 <>
+                  <Link href="/custom-orders">
+                    <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                      isActive('/custom-orders') ? 'bg-purple-600/40' : '' 
+                    }`}>
+                      <Image 
+                        src="/images/customOrder.png"
+                        alt="Wishlist"
+                        width={40}
+                        height={30}
+                      />
+                    </button>
+                  </Link>
                   <Link href="/wishlist">
                     <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
-                      isActive('/wishlist') ? 'bg-purple-600/40' : ''
+                      isActive('/wishlist') ? 'bg-purple-600/40' : '' 
                     }`}>
                       <Image 
                         src="/images/love.png"
@@ -272,6 +284,22 @@ export default function Navbar() {
               {/* Mobile Icon Buttons */}
               <div className="flex items-center space-x-2 sm:space-x-3 pt-2 sm:pt-3 pb-2">
                 {/* Heart icon - Only for customers */}
+
+            {userRole === 'customer' && (
+                  <Link href="/custom-orders">
+                    <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                      isActive('/custom-orders') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
+                    }`}>
+                      <Image 
+                        src="/images/customOrder.png"
+                        alt="Custom Orders"
+                        width={40}
+                        height={30}
+                      />
+                    </button>
+                  </Link>
+                )}
+
                 {userRole === 'customer' && (
                   <Link href="/wishlist">
                     <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
@@ -286,6 +314,8 @@ export default function Navbar() {
                     </button>
                   </Link>
                 )}
+
+                
 
                 {/* Common icons for both */}
                 <Link href="/messaging">

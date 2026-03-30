@@ -471,16 +471,18 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               </button>
             </div>
 
-            {/* Custom Design Feature */}
-            <div className="bg-purple-900/20 border border-purple-600 rounded-lg p-4">
-              <h3 className="font-medium mb-2 text-purple-300">Custom Design Feature</h3>
-              <p className="text-sm text-gray-300 mb-4">This design supports custom mix-mixing! You can combine elements from different products to create your unique style.</p>
-              <Link href={"/design-request"}>
-              <button className="w-full cursor-pointer bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
-                Custom Design
-              </button>
-              </Link> 
-            </div>
+            {/* Custom Design Feature - Show only if product.isCustom is true */}
+            {product.isCustom && (
+              <div className="bg-purple-900/20 border border-purple-600 rounded-lg p-4">
+                <h3 className="font-medium mb-2 text-purple-300">Custom Design Feature</h3>
+                <p className="text-sm text-gray-300 mb-4">This design supports custom mix-mixing! You can combine elements from different products to create your unique style.</p>
+                <Link href={`/design-request?productId=${product._id}`}>
+                <button className="w-full cursor-pointer bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
+                  Custom Design
+                </button>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </div>

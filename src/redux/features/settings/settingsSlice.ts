@@ -30,6 +30,22 @@ const settingsSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    getMyProfile: builder.query({
+      query: () => "/auth/my-profile",
+      providesTags: ["Profile"],
+    }),
+
+    updateProfile: builder.mutation({
+      query: (data) => ({
+        url: "/auth/profile-update",    
+        method: "PATCH",
+        body: data,
+      }),
+      invalidatesTags: ["Profile"],
+    }),
+
+
+
   }),
 });
 
@@ -38,4 +54,6 @@ export const {
   useGetAboutQuery,
   useGetPrivacyQuery,
   useChangePasswordMutation,
+  useGetMyProfileQuery,
+  useUpdateProfileMutation,
 } = settingsSlice;
