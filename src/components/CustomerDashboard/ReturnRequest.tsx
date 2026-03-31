@@ -1,12 +1,32 @@
 "use client";
 import BackButton from "@/customComponent/BackButton";
-import { useGetMainOrderDetailsQuery } from "@/redux/features/order/orderSlice";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import {
+  useAddReturnOrderMutation,
+  useGetMainOrderDetailsQuery,
+} from "@/redux/features/order/orderSlice";
+import { useSearchParams,useRouter } from "next/navigation";
+import { useState } from "react";
+import MapComponent from "./Location";
+import toast from "react-hot-toast";
+import { rootCertificates } from "tls";
+ 
+
+interface SelectedLocation {
+  name?: string;
+  address?: string;
+  displayName?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+}
 
 export default function ReturnRequestForm() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("id");
+  const router = useRouter();
+  const [returnOrderSubmitted] = useAddReturnOrderMutation();
 
   // Fetch main order details
   const { data: mainOrderDetails, isLoading } = useGetMainOrderDetailsQuery(
@@ -26,23 +46,38 @@ export default function ReturnRequestForm() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [productUnused, setProductUnused] = useState(false);
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocation | null>(null);
 
   // Extract order data
   const orderData = mainOrderDetails?.data;
+  console.log(orderData);
   const product = orderData?.product;
   const price = orderData?.price;
-  const deliveryInfo = orderData?.deliveryInfo;
 
-  // Pre-fill delivery info if available
-  useEffect(() => {
-    if (deliveryInfo) {
-      setFullName(deliveryInfo.name || "");
-      setLocation(deliveryInfo.address || "");
-      setCountry(deliveryInfo.country || "United States");
-      setState(deliveryInfo.state || "");
-      setZipCode(deliveryInfo.zipcode?.toString() || "");
-    }
-  }, [deliveryInfo]);
+  // console.log("===== RETURN REQUEST PAGE DATA =====");
+  // console.log("Order ID:", orderId);
+  // console.log("Main Order Details:", mainOrderDetails);
+  // console.log("Product:", product);
+  // console.log("Price:", price);
+  // console.log("====================================");
+
+  // Handle location save from MapComponent
+  const handleLocationSave = (selectedLocation: SelectedLocation) => {
+    console.log("Saved location:", selectedLocation);
+    setSelectedLocation(selectedLocation);
+
+    // Extract coordinates from the nested structure
+    const lat = selectedLocation.coordinates?.latitude;
+    const lng = selectedLocation.coordinates?.longitude;
+    const address =
+      selectedLocation.name ||
+      selectedLocation.address ||
+      selectedLocation.displayName;
+
+    // Update location field
+    setLocation(address || "");
+  };
 
   if (isLoading) {
     return (
@@ -75,22 +110,59 @@ export default function ReturnRequestForm() {
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = () => {
-    console.log({
-      images: uploadedImages,
-      reason,
-      deliveryAddress: {
-        fullName,
-        location,
-        country,
-        state,
-        zipCode,
-        email,
-        phone,
+  const handleSubmit = async () => {
+    // Prepare form data matching the expected structure
+    const formData = {
+      clientReason: reason,
+      isUsed: !productUnused,
+      price: {
+        unit: price?.unit || "usd",
+        tip: price?.tip || 0,
+        deliveryCharge: price?.deliveryCharge || 0,
       },
-      productUnused,
-    });
-    alert("Return request submitted successfully!");
+      pickUpInfo: {
+        name: fullName,
+        address: location,
+        country: country,
+        state: state,
+        zipcode: zipCode,
+        email: email,
+        phone: phone,
+        location: selectedLocation?.coordinates
+          ? {
+              type: "Point" as const,
+              coordinates: [
+                selectedLocation.coordinates.longitude,
+                selectedLocation.coordinates.latitude,
+              ],
+            }
+          : {
+              type: "Point" as const,
+              coordinates: [-74.006, 40.7128], // Default coordinates (New York)
+            },
+      },
+    };
+
+    // Console log the form data
+    console.log("===== RETURN REQUEST FORM DATA ===== orderId:", orderId);
+    console.log("return request data:", JSON.stringify(formData, null, 2));
+    console.log("====================================");
+
+    try {
+      // Send return request
+      const result = await returnOrderSubmitted({
+        orderId: orderId,
+        data: formData,
+      }).unwrap();
+      console.log("Return request submitted successfully:", result);
+      if (result?.success) {  
+        toast.success("Return request submitted successfully!");
+        router.push("/customer-dashboard"); // Redirect to returns page after successful submission
+      } 
+    } catch (error: any) {
+      console.error("Failed to submit return request:", error);
+     
+    }
   };
 
   return (
@@ -190,41 +262,12 @@ export default function ReturnRequestForm() {
                 />
               </div>
 
-              {/* Set Location */}
+              {/* Set Location - Map Component */}
               <div className="mb-4">
                 <label className="block text-sm text-gray-400 mb-2">
-                  Set Location
+                  Set Location on Map
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    placeholder="4140 Psh"
-                    className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 pr-12 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
-                  />
-                  <button className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white">
-                    <svg
-                      className="w-5 h-5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </button>
-                </div>
+                <MapComponent onLocationSave={handleLocationSave} />
               </div>
 
               {/* Country, State, Zip Code */}

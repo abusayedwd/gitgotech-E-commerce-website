@@ -9,6 +9,16 @@ import { Circle, Eye, ShoppingCart, X } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 
+interface SelectedLocation {
+  name?: string;
+  address?: string;
+  displayName?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
 // --- Types ---
 type OrderStatus =
   | "Order Placed"
@@ -253,14 +263,73 @@ const OrderNowModal = ({
     quantity: order.quantity || 1,
     deliveryCharge: 30,
     tips: 10,
+    // Location fields - manual input like ReturnRequest
+    fullName: "",
+    location: "",
+    country: "United States",
+    state: "Washington DC",
+    zipCode: "",
+    email: "",
+    phone: "",
   });
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocation | null>(null);
 
   const [customOrderPlace] = useCustomOrderPlaceMutation();
 
+  // Handle location save from MapComponent
+  const handleLocationSave = (loc: SelectedLocation) => {
+    console.log("Saved location:", loc);
+    setSelectedLocation(loc);
+
+    // Extract coordinates and address
+    const lat = loc.coordinates?.latitude;
+    const lng = loc.coordinates?.longitude;
+    const address = loc.name || loc.address || loc.displayName;
+
+    // Update location field
+    setFormData((prev) => ({
+      ...prev,
+      location: address || "",
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Order Now Data:", formData, order.id);
-    const res = await customOrderPlace({ id: order.id, data: formData });
+
+    // Prepare data matching ReturnRequest structure
+    const submitData = {
+      ...formData,
+      price: {
+        unit: "usd",
+        tip: formData.tips,
+        deliveryCharge: formData.deliveryCharge,
+      },
+      pickUpInfo: {
+        name: formData.fullName,
+        address: formData.location,
+        country: formData.country,
+        state: formData.state,
+        zipcode: formData.zipCode,
+        email: formData.email,
+        phone: formData.phone,
+        location: selectedLocation?.coordinates
+          ? {
+              type: "Point" as const,
+              coordinates: [
+                selectedLocation.coordinates.longitude,
+                selectedLocation.coordinates.latitude,
+              ],
+            }
+          : {
+              type: "Point" as const,
+              coordinates: [-74.006, 40.7128], // Default coordinates (New York)
+            },
+      },
+    };
+
+    console.log("Order Now Data:", submitData, order.id);
+    const res = await customOrderPlace({ id: order.id, data: submitData });
     if (res?.data) {
       toast.success("Order confirmed!");
     } else {
@@ -272,7 +341,7 @@ const OrderNowModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/80 flex mt-20 items-center justify-center p-4 z-50">
-      <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
+      <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Complete Order</h2>
           <button
@@ -307,8 +376,6 @@ const OrderNowModal = ({
 
         {/* Order Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-       
-
           {/* Quantity */}
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -364,6 +431,137 @@ const OrderNowModal = ({
               className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
               min="0"
             />
+          </div>
+
+          {/* Delivery Address Section */}
+          <div className="border border-gray-700 p-4 rounded-xl mt-6">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              Delivery Address
+            </h3>
+
+            {/* Full Name */}
+            <div className="mb-4">
+              <label className="block text-sm text-gray-400 mb-2">
+                Full name
+              </label>
+              <input
+                type="text"
+                value={formData.fullName}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    fullName: e.target.value,
+                  })
+                }
+                placeholder="Dianne"
+                className="w-full bg-purple-950/40 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+              />
+            </div>
+
+            {/* Set Location - Map Component */}
+            <div className="mb-4">
+              <label className="block text-sm text-gray-400 mb-2">
+                Set Location on Map
+              </label>
+              <MapComponent onLocationSave={handleLocationSave} />
+            </div>
+
+            {/* Country, State, Zip Code */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Country / Region
+                </label>
+                <select
+                  value={formData.country}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      country: e.target.value,
+                    })
+                  }
+                  className="w-full bg-purple-950/40 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                >
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>United Kingdom</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  States
+                </label>
+                <select
+                  value={formData.state}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      state: e.target.value,
+                    })
+                  }
+                  className="w-full bg-purple-950/40 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                >
+                  <option>Washington DC</option>
+                  <option>California</option>
+                  <option>New York</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Zip Code
+                </label>
+                <input
+                  type="text"
+                  value={formData.zipCode}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      zipCode: e.target.value,
+                    })
+                  }
+                  placeholder="20033"
+                  className="w-full bg-purple-950/40 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+            </div>
+
+            {/* Email and Phone */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      email: e.target.value,
+                    })
+                  }
+                  placeholder="dianne.russell@gmail.com"
+                  className="w-full bg-purple-950/40 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Phone
+                </label>
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      phone: e.target.value,
+                    })
+                  }
+                  placeholder="(603) 555-0123"
+                  className="w-full bg-purple-950/40 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Total */}
