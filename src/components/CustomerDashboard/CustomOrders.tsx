@@ -1,14 +1,32 @@
 "use client";
 
-import React, { useState } from "react";
-import { Circle, Eye, X, ShoppingCart } from "lucide-react";
-import { useGetCustomerCustomOrdersQuery } from "@/redux/features/order/orderSlice";
 import url from "@/redux/api/baseUrl";
+import {
+  useCustomOrderPlaceMutation,
+  useGetCustomerCustomOrdersQuery,
+} from "@/redux/features/order/orderSlice";
+import { Circle, Eye, ShoppingCart, X } from "lucide-react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 
 // --- Types ---
-type OrderStatus = "Order Placed" | "Vendor Accepted" | "Vendor Rejected" | "Customer Accepted" | "Customer Rejected" | "Paid" | "Ready for Pickup" | "Driver Accepted" | "Picked Up" | "Delivered";
-type DisplayStatus = "Approved" | "Pending" | "Cancel" | "Delivered" | "Processing";
+type OrderStatus =
+  | "Order Placed"
+  | "Vendor Accepted"
+  | "Vendor Rejected"
+  | "Customer Accepted"
+  | "Customer Rejected"
+  | "Paid"
+  | "Ready for Pickup"
+  | "Driver Accepted"
+  | "Picked Up"
+  | "Delivered";
+type DisplayStatus =
+  | "Approved"
+  | "Pending"
+  | "Cancel"
+  | "Delivered"
+  | "Processing";
 
 interface DesignItem {
   id: string;
@@ -30,16 +48,27 @@ interface DesignItem {
 const StatusBadge = ({ status }: { status: OrderStatus }) => {
   // Map API statuses to display statuses
   const getDisplayStatus = (orderStatus: OrderStatus): DisplayStatus => {
-    if (orderStatus === 'Order Placed') return 'Pending';
-    if (orderStatus === 'Vendor Accepted') return 'Approved';
-    if (orderStatus === 'Vendor Rejected') return 'Cancel';
-    if (orderStatus === 'Delivered') return 'Delivered';
-    if (['Processing', 'Paid', 'Ready for Pickup', 'Driver Accepted', 'Picked Up', 'Customer Accepted', 'Customer Rejected'].includes(orderStatus)) return 'Processing';
-    return 'Pending';
+    if (orderStatus === "Order Placed") return "Pending";
+    if (orderStatus === "Vendor Accepted") return "Approved";
+    if (orderStatus === "Vendor Rejected") return "Cancel";
+    if (orderStatus === "Delivered") return "Delivered";
+    if (
+      [
+        "Processing",
+        "Paid",
+        "Ready for Pickup",
+        "Driver Accepted",
+        "Picked Up",
+        "Customer Accepted",
+        "Customer Rejected",
+      ].includes(orderStatus)
+    )
+      return "Processing";
+    return "Pending";
   };
 
   const displayStatus = getDisplayStatus(status);
-  
+
   const styles: any = {
     Approved: "bg-blue-500/10 text-blue-400 border-blue-500/20",
     Pending: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
@@ -58,7 +87,13 @@ const StatusBadge = ({ status }: { status: OrderStatus }) => {
 };
 
 // Order Details Modal Component
-const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () => void }) => {
+const OrderDetailsModal = ({
+  order,
+  onClose,
+}: {
+  order: DesignItem;
+  onClose: () => void;
+}) => {
   if (!order) return null;
 
   return (
@@ -66,7 +101,10 @@ const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () 
       <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Order Details</h2>
-          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors">
+          <button
+            onClick={onClose}
+            className="text-white hover:text-gray-300 transition-colors"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -79,27 +117,35 @@ const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () 
               alt={order.productName}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.currentTarget.src = '/images/jacket.png';
+                e.currentTarget.src = "/images/jacket.png";
               }}
             />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">{order.productName}</h3>
+            <h3 className="text-lg font-semibold text-white">
+              {order.productName}
+            </h3>
             <p className="text-sm text-gray-400">Quantity: {order.quantity}</p>
-            <p className="text-sm text-purple-400 font-medium">${order.price}</p>
+            <p className="text-sm text-purple-400 font-medium">
+              ${order.price}
+            </p>
           </div>
         </div>
 
         {/* Order Status */}
         <div className="mb-6">
-          <h4 className="text-sm font-semibold text-gray-300 mb-2">Order Status</h4>
+          <h4 className="text-sm font-semibold text-gray-300 mb-2">
+            Order Status
+          </h4>
           <StatusBadge status={order.orderStatus} />
         </div>
 
         {/* Measurements */}
         {order.measurements && Object.keys(order.measurements).length > 0 && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Measurements</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-2">
+              Measurements
+            </h4>
             <div className="grid grid-cols-2 gap-3">
               {Object.entries(order.measurements).map(([key, value]: any) => (
                 <div key={key} className="bg-gray-800/50 rounded-lg p-3">
@@ -114,13 +160,30 @@ const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () 
         {/* Delivery Info */}
         {order.deliveryInfo && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Delivery Information</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-2">
+              Delivery Information
+            </h4>
             <div className="bg-gray-800/50 rounded-lg p-4 space-y-2">
-              <p className="text-sm text-gray-300"><span className="text-gray-400">Name:</span> {order.deliveryInfo.name}</p>
-              <p className="text-sm text-gray-300"><span className="text-gray-400">Address:</span> {order.deliveryInfo.address}</p>
-              <p className="text-sm text-gray-300"><span className="text-gray-400">City:</span> {order.deliveryInfo.state}</p>
-              <p className="text-sm text-gray-300"><span className="text-gray-400">ZIP:</span> {order.deliveryInfo.zipcode}</p>
-              <p className="text-sm text-gray-300"><span className="text-gray-400">Country:</span> {order.deliveryInfo.country}</p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">Name:</span>{" "}
+                {order.deliveryInfo.name}
+              </p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">Address:</span>{" "}
+                {order.deliveryInfo.address}
+              </p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">City:</span>{" "}
+                {order.deliveryInfo.state}
+              </p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">ZIP:</span>{" "}
+                {order.deliveryInfo.zipcode}
+              </p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">Country:</span>{" "}
+                {order.deliveryInfo.country}
+              </p>
             </div>
           </div>
         )}
@@ -128,10 +191,18 @@ const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () 
         {/* Pickup Info */}
         {order.pickUpInfo && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Pickup Information</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-2">
+              Pickup Information
+            </h4>
             <div className="bg-gray-800/50 rounded-lg p-4 space-y-2">
-              <p className="text-sm text-gray-300"><span className="text-gray-400">Showroom:</span> {order.pickUpInfo.name}</p>
-              <p className="text-sm text-gray-300"><span className="text-gray-400">Address:</span> {order.pickUpInfo.address}</p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">Showroom:</span>{" "}
+                {order.pickUpInfo.name}
+              </p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">Address:</span>{" "}
+                {order.pickUpInfo.address}
+              </p>
             </div>
           </div>
         )}
@@ -139,9 +210,16 @@ const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () 
         {/* Tracking */}
         {order.trackingNumber && (
           <div className="mb-6">
-            <h4 className="text-sm font-semibold text-gray-300 mb-2">Tracking Information</h4>
+            <h4 className="text-sm font-semibold text-gray-300 mb-2">
+              Tracking Information
+            </h4>
             <div className="bg-gray-800/50 rounded-lg p-4">
-              <p className="text-sm text-gray-300"><span className="text-gray-400">Tracking Number:</span> <span className="font-mono text-white">{order.trackingNumber}</span></p>
+              <p className="text-sm text-gray-300">
+                <span className="text-gray-400">Tracking Number:</span>{" "}
+                <span className="font-mono text-white">
+                  {order.trackingNumber}
+                </span>
+              </p>
             </div>
           </div>
         )}
@@ -149,8 +227,12 @@ const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () 
         {/* Total Price */}
         <div className="border-t border-gray-700 pt-4">
           <div className="flex justify-between items-center">
-            <span className="text-lg font-semibold text-gray-300">Total Price</span>
-            <span className="text-2xl font-bold text-purple-400">${order.price}</span>
+            <span className="text-lg font-semibold text-gray-300">
+              Total Price
+            </span>
+            <span className="text-2xl font-bold text-purple-400">
+              ${order.price}
+            </span>
           </div>
         </div>
       </div>
@@ -159,18 +241,32 @@ const OrderDetailsModal = ({ order, onClose }: { order: DesignItem; onClose: () 
 };
 
 // Order Now Modal Component
-const OrderNowModal = ({ order, onClose }: { order: DesignItem; onClose: () => void }) => {
+const OrderNowModal = ({
+  order,
+  onClose,
+}: {
+  order: DesignItem;
+  onClose: () => void;
+}) => {
   const [formData, setFormData] = useState({
-    action: 'accepted',
+    action: "accepted",
     quantity: order.quantity || 1,
     deliveryCharge: 30,
-    tips: 10
+    tips: 10,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [customOrderPlace] = useCustomOrderPlaceMutation();
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Order Now Data:', formData);
-    toast.success('Order confirmed!');
+    console.log("Order Now Data:", formData, order.id);
+    const res = await customOrderPlace({ id: order.id, data: formData });
+    if (res?.data) {
+      toast.success("Order confirmed!");
+    } else {
+      toast.error("Failed to place order");
+    }
+
     onClose();
   };
 
@@ -179,7 +275,10 @@ const OrderNowModal = ({ order, onClose }: { order: DesignItem; onClose: () => v
       <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Complete Order</h2>
-          <button onClick={onClose} className="text-white hover:text-gray-300 transition-colors">
+          <button
+            onClick={onClose}
+            className="text-white hover:text-gray-300 transition-colors"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -192,38 +291,38 @@ const OrderNowModal = ({ order, onClose }: { order: DesignItem; onClose: () => v
               alt={order.productName}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.currentTarget.src = '/images/jacket.png';
+                e.currentTarget.src = "/images/jacket.png";
               }}
             />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">{order.productName}</h3>
-            <p className="text-sm text-purple-400 font-medium">${order.price}</p>
+            <h3 className="text-lg font-semibold text-white">
+              {order.productName}
+            </h3>
+            <p className="text-sm text-purple-400 font-medium">
+              ${order.price}
+            </p>
           </div>
         </div>
 
         {/* Order Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Action */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Action</label>
-            <select
-              value={formData.action}
-              onChange={(e) => setFormData({ ...formData, action: e.target.value })}
-              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-            >
-              <option value="accepted">Accepted</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
+       
 
           {/* Quantity */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Quantity</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Quantity
+            </label>
             <input
               type="number"
               value={formData.quantity}
-              onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  quantity: parseInt(e.target.value) || 1,
+                })
+              }
               className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
               min="1"
             />
@@ -231,11 +330,18 @@ const OrderNowModal = ({ order, onClose }: { order: DesignItem; onClose: () => v
 
           {/* Delivery Charge */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Delivery Charge ($)</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Delivery Charge ($)
+            </label>
             <input
               type="number"
               value={formData.deliveryCharge}
-              onChange={(e) => setFormData({ ...formData, deliveryCharge: parseInt(e.target.value) || 0 })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  deliveryCharge: parseInt(e.target.value) || 0,
+                })
+              }
               className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
               min="0"
             />
@@ -243,11 +349,18 @@ const OrderNowModal = ({ order, onClose }: { order: DesignItem; onClose: () => v
 
           {/* Tips */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Tips ($)</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Tips ($)
+            </label>
             <input
               type="number"
               value={formData.tips}
-              onChange={(e) => setFormData({ ...formData, tips: parseInt(e.target.value) || 0 })}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  tips: parseInt(e.target.value) || 0,
+                })
+              }
               className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
               min="0"
             />
@@ -258,7 +371,12 @@ const OrderNowModal = ({ order, onClose }: { order: DesignItem; onClose: () => v
             <div className="flex justify-between items-center">
               <span className="text-lg font-semibold text-gray-300">Total</span>
               <span className="text-2xl font-bold text-purple-400">
-                ${(parseFloat(order.price) + formData.deliveryCharge + formData.tips).toFixed(2)}
+                $
+                {(
+                  parseFloat(order.price) +
+                  formData.deliveryCharge +
+                  formData.tips
+                ).toFixed(2)}
               </span>
             </div>
           </div>
@@ -282,24 +400,34 @@ export default function CustomDesignManagement() {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showOrderNowModal, setShowOrderNowModal] = useState(false);
 
-  const { data: customOrdersData, isLoading, error } = useGetCustomerCustomOrdersQuery({ page: 1, limit: 10 });
+  const {
+    data: customOrdersData,
+    isLoading,
+    error,
+  } = useGetCustomerCustomOrdersQuery({ page: 1, limit: 10 });
   console.log(customOrdersData);
 
   // Transform API data
-  const designItems: DesignItem[] = customOrdersData?.data?.map((order: any) => ({
-    id: order._id,
-    productName: order.productId?.product_name || 'Custom Order',
-    brand: order.showroomId?.showroom_name || 'Custom',
-    price: (order.price?.amount || 0).toFixed(2),
-    status: order.orderStatus === 'Delivered' ? 'Delivered' : order.orderStatus === 'Processing' ? 'Processing' : 'Pending',
-    imageUrl: order.productId?.product_images?.[0] || '/images/jacket.png',
-    quantity: order.quantity || 1,
-    measurements: order.measurements || {},
-    deliveryInfo: order.deliveryInfo || {},
-    pickUpInfo: order.pickUpInfo || {},
-    trackingNumber: order.trackingNumber || '',
-    orderStatus: order.orderStatus || 'Order Placed',
-  })) || [];
+  const designItems: DesignItem[] =
+    customOrdersData?.data?.map((order: any) => ({
+      id: order._id,
+      productName: order.productId?.product_name || "Custom Order",
+      brand: order.showroomId?.showroom_name || "Custom",
+      price: (order.price?.amount || 0).toFixed(2),
+      status:
+        order.orderStatus === "Delivered"
+          ? "Delivered"
+          : order.orderStatus === "Processing"
+            ? "Processing"
+            : "Pending",
+      imageUrl: order.productId?.product_images?.[0] || "/images/jacket.png",
+      quantity: order.quantity || 1,
+      measurements: order.measurements || {},
+      deliveryInfo: order.deliveryInfo || {},
+      pickUpInfo: order.pickUpInfo || {},
+      trackingNumber: order.trackingNumber || "",
+      orderStatus: order.orderStatus || "Order Placed",
+    })) || [];
 
   const handleViewDetails = (order: DesignItem) => {
     setSelectedOrder(order);
@@ -338,13 +466,16 @@ export default function CustomDesignManagement() {
 
         {/* Main Table Container */}
         <div className="border border-blue-500/50 rounded-lg overflow-hidden bg-[#0f0f13]/80 backdrop-blur-sm shadow-2xl shadow-blue-900/10">
-
           {/* Table Header */}
           <div className="grid grid-cols-12 gap-4 p-4 border-b border-gray-800 bg-white/5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
             <div className="col-span-6 md:col-span-5">Product</div>
-            <div className="col-span-3 md:col-span-2 text-center md:text-left">Price</div>
+            <div className="col-span-3 md:col-span-2 text-center md:text-left">
+              Price
+            </div>
             <div className="col-span-3 md:col-span-3 text-center">Status</div>
-            <div className="col-span-3 md:col-span-2 text-right hidden md:block">Action</div>
+            <div className="col-span-3 md:col-span-2 text-right hidden md:block">
+              Action
+            </div>
           </div>
 
           {/* Table Rows */}
@@ -363,12 +494,14 @@ export default function CustomDesignManagement() {
                         alt={item.productName}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          e.currentTarget.src = '/images/jacket.png';
+                          e.currentTarget.src = "/images/jacket.png";
                         }}
                       />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-200">{item.productName}</h3>
+                      <h3 className="font-medium text-gray-200">
+                        {item.productName}
+                      </h3>
                       <div className="flex items-center gap-1.5 mt-1">
                         <Circle className="w-2 h-2 fill-red-500 text-red-500" />
                         <span className="text-xs text-gray-500 uppercase tracking-wide">
@@ -400,12 +533,11 @@ export default function CustomDesignManagement() {
                     </button>
 
                     {/* Order Now Button - Show only for Vendor Accepted */}
-                    {item.orderStatus === 'Vendor Accepted' && (
+                    {item.orderStatus === "Vendor Accepted" && (
                       <button
                         onClick={() => handleOrderNow(item)}
-                        className="px-4 py-2 rounded-full text-sm font-medium bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20 transition-all duration-200 flex items-center gap-1"
+                        className="px-4 py-1 w-44 rounded-full text-sm font-medium bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-900/20 transition-all duration-200 flex items-center gap-1"
                       >
-                        <ShoppingCart className="w-4 h-4" />
                         <span className="hidden md:inline">Order Now</span>
                       </button>
                     )}
@@ -423,12 +555,18 @@ export default function CustomDesignManagement() {
 
       {/* Order Details Modal */}
       {showDetailsModal && selectedOrder && (
-        <OrderDetailsModal order={selectedOrder} onClose={() => setShowDetailsModal(false)} />
+        <OrderDetailsModal
+          order={selectedOrder}
+          onClose={() => setShowDetailsModal(false)}
+        />
       )}
 
       {/* Order Now Modal */}
       {showOrderNowModal && selectedOrder && (
-        <OrderNowModal order={selectedOrder} onClose={() => setShowOrderNowModal(false)} />
+        <OrderNowModal
+          order={selectedOrder}
+          onClose={() => setShowOrderNowModal(false)}
+        />
       )}
     </div>
   );

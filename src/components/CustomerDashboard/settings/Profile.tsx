@@ -174,6 +174,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useGetMyProfileQuery } from '@/redux/features/settings/settingsSlice';
+import url from '@/redux/api/baseUrl';
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -193,9 +194,8 @@ export default function ProfilePage() {
   };
 
   // Helper for profile image URL (adjust base URL as needed)
-  const profileImageUrl = profile?.image 
-    ? `https://your-api-base-url.com/uploads/${profile.image}` 
-    : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop";
+ const profileImageUrl = url + "/" + profile?.image;
+ 
 
   return (
     <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
@@ -215,7 +215,7 @@ export default function ProfilePage() {
         <div className="flex flex-col items-center mb-8">
           <div className="relative mb-4">
             <img
-              src={profileImageUrl}
+              src={profileImageUrl} // Assuming profileImage is the path returned by the API
               alt="Profile"
               className="w-24 h-24 rounded-full object-cover border-4 border-purple-600"
             />

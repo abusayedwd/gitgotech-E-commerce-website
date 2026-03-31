@@ -12,6 +12,7 @@ export const orderSlice = apiSlice.injectEndpoints({
         method: "GET",
         params: { page, limit },
       }),
+      providesTags: ["Orders"],
     }),
 
     // ✅ GET - Customer Return Orders
@@ -19,7 +20,8 @@ export const orderSlice = apiSlice.injectEndpoints({
       query: ( ) => ({
         url: "/order/customer/return/get",
         method: "GET",
-       
+        
+        providesTags: ["Orders"],
       }),
     }),
 
@@ -29,13 +31,23 @@ export const orderSlice = apiSlice.injectEndpoints({
         url: "/order/customer/main/get",
         method: "GET",
       }),
+      providesTags: ["Orders"],
     }),
 
-    getOrderDetails: builder.query({
+    getMainOrderDetails: builder.query({
       query: (id) => ({
         url: `/order/vendor/details/${id}`,
         method: "GET",
       }),
+      providesTags: ["Orders"],
+    }),
+
+    getReturnOrderDetails: builder.query({
+      query: (id) => ({
+        url: `/order/vendor/return-details/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["Orders"],
     }),
 
      // ✅ POST - Add Vendor Order
@@ -45,6 +57,7 @@ export const orderSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+     invalidatesTags: ["Orders"], 
     }),
 
 
@@ -55,6 +68,7 @@ export const orderSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+     invalidatesTags: ["Orders"],
     }),
 
     // ✅ POST - Add Return Order (with ID)
@@ -64,6 +78,16 @@ export const orderSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+     invalidatesTags: ["Orders"],
+    }),
+
+    customOrderPlace: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `/order/customer/design-request/accept/${id}`, 
+        method: "PATCH",
+        body:data,
+      }),
+      invalidatesTags: [{type:"Orders"}],
     }),
 
    
@@ -77,4 +101,8 @@ export const {
   useAddCustomOrderMutation,
   useAddReturnOrderMutation,
   useAddVendorOrderMutation,
+
+  useGetMainOrderDetailsQuery,
+  useGetReturnOrderDetailsQuery,
+  useCustomOrderPlaceMutation,
 } = orderSlice;
