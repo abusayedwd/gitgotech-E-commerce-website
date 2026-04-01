@@ -1,15 +1,25 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Clock, Package, BarChart3, Menu, X, ChevronDown, Store } from 'lucide-react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useGetShowroomQuery } from '@/redux/features/vendor/showroomSlice/showroomSlice';
+import url from "@/redux/api/baseUrl.js";
 import {
-  setSelectedShowroom,
   selectShowroom,
-} from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
-import url from '@/redux/api/baseUrl.js';
+  setSelectedShowroom,
+} from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
+import { useGetShowroomQuery } from "@/redux/features/vendor/showroomSlice/showroomSlice";
+import {
+  BarChart3,
+  ChevronDown,
+  Clock,
+  FileText,
+  LayoutDashboard,
+  Menu,
+  Package,
+  Store,
+  X,
+} from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 function ShowroomSelector() {
   const dispatch = useDispatch();
@@ -24,24 +34,33 @@ function ShowroomSelector() {
   useEffect(() => {
     if (showrooms.length > 0 && !selected) {
       const first = showrooms[0];
-      dispatch(setSelectedShowroom({ id: first._id, name: first.showroom_name, logo: first.logo }));
+      dispatch(
+        setSelectedShowroom({
+          id: first._id,
+          name: first.showroom_name,
+          logo: first.logo,
+        }),
+      );
     }
   }, [showrooms, selected]);
 
   // Close on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   if (showrooms.length === 0) return null;
 
   return (
     <div ref={ref} className="relative mb-4">
-      <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 px-1">Showroom</p>
+      <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 px-1">
+        Showroom
+      </p>
 
       {/* Trigger */}
       <button
@@ -54,7 +73,9 @@ function ShowroomSelector() {
               src={`${url}/${selected.logo}`}
               alt={selected.name}
               className="w-7 h-7 rounded-full object-cover border border-gray-600 shrink-0"
-              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = "none";
+              }}
             />
             <span className="text-white text-sm font-medium truncate flex-1 text-left">
               {selected.name}
@@ -63,12 +84,14 @@ function ShowroomSelector() {
         ) : (
           <>
             <Store size={16} className="text-gray-400 shrink-0" />
-            <span className="text-gray-400 text-sm flex-1 text-left">Select Showroom</span>
+            <span className="text-gray-400 text-sm flex-1 text-left">
+              Select Showroom
+            </span>
           </>
         )}
         <ChevronDown
           size={14}
-          className={`text-gray-400 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`text-gray-400 shrink-0 transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
 
@@ -79,21 +102,31 @@ function ShowroomSelector() {
             <button
               key={s._id}
               onClick={() => {
-                dispatch(setSelectedShowroom({ id: s._id, name: s.showroom_name, logo: s.logo }));
+                dispatch(
+                  setSelectedShowroom({
+                    id: s._id,
+                    name: s.showroom_name,
+                    logo: s.logo,
+                  }),
+                );
                 setOpen(false);
               }}
               className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-800 transition-colors ${
-                selected?.id === s._id ? 'bg-purple-900/30' : ''
+                selected?.id === s._id ? "bg-purple-900/30" : ""
               }`}
             >
               <img
                 src={`${url}/${s.logo}`}
                 alt={s.showroom_name}
                 className="w-7 h-7 rounded-full object-cover border border-gray-600 shrink-0"
-                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
               />
               <div className="flex-1 text-left min-w-0">
-                <p className="text-white text-sm font-medium truncate">{s.showroom_name}</p>
+                <p className="text-white text-sm font-medium truncate">
+                  {s.showroom_name}
+                </p>
                 {!s.isApprove && (
                   <p className="text-yellow-500 text-xs">Pending Approval</p>
                 )}
@@ -119,10 +152,15 @@ export default function VendorDashboardLayout({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const menuItems = [
-    { name: 'Dashboard', icon: LayoutDashboard, path: '/vendor-dashboard' },
-    { name: 'Order History', icon: Clock, path: '/vendor-dashboard/orders' },
-    { name: 'My Product', icon: Package, path: '/vendor-dashboard/products' },
-    { name: 'Analytics', icon: BarChart3, path: '/vendor-dashboard/analytics' },
+    { name: "Dashboard", icon: LayoutDashboard, path: "/vendor-dashboard" },
+    { name: "Order History", icon: Clock, path: "/vendor-dashboard/orders" },
+    { name: "My Product", icon: Package, path: "/vendor-dashboard/products" },
+    {
+      name: "Custom Orders",
+      icon: FileText,
+      path: "/vendor-dashboard/custom-orders",
+    },
+    { name: "Analytics", icon: BarChart3, path: "/vendor-dashboard/analytics" },
   ];
 
   const handleNavigation = (path: string) => {
@@ -153,8 +191,8 @@ export default function VendorDashboardLayout({
                     onClick={() => handleNavigation(item.path)}
                     className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all ${
                       pathname === item.path
-                        ? 'bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white'
-                        : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                        ? "bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white"
+                        : "text-gray-400 hover:bg-gray-800 hover:text-white"
                     }`}
                   >
                     <item.icon size={20} />
@@ -181,8 +219,8 @@ export default function VendorDashboardLayout({
                       onClick={() => handleNavigation(item.path)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                         pathname === item.path
-                          ? 'bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white'
-                          : 'text-gray-400 hover:bg-gray-800 hover:text-white'
+                          ? "bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white"
+                          : "text-gray-400 hover:bg-gray-800 hover:text-white"
                       }`}
                     >
                       <item.icon size={20} />
@@ -195,9 +233,7 @@ export default function VendorDashboardLayout({
           )}
 
           {/* Main Content */}
-          <div className="flex-1 pb-8 mt-4 w-full lg:w-auto">
-            {children}
-          </div>
+          <div className="flex-1 pb-8 mt-4 w-full lg:w-auto">{children}</div>
         </div>
       </div>
     </div>

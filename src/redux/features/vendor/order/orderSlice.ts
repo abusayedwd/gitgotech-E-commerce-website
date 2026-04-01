@@ -157,7 +157,7 @@ const orderSlice = apiSlice.injectEndpoints({
         },
       }),
       transformResponse: (response: { data: any }) => {
-        return response.data;
+        return response.data || response;
       },
       providesTags: ["CustomOrders"],
     }),

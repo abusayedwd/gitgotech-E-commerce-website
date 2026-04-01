@@ -52,7 +52,6 @@ export default function CustomRequest() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const showroomId = useSelector(selectShowroomId);
-  console.log(showroomId)
   const limit = 10;
 
   const [acceptOrDeclineCustomOrder] = useAcceptOrDeclineCustomOrderMutation();
@@ -101,14 +100,18 @@ export default function CustomRequest() {
     if (!selectedOrder) return;
 
     try {
-      await acceptOrDeclineCustomOrder({
+     const res = await acceptOrDeclineCustomOrder({
         id: selectedOrder._id,
         action: "accepted",
         price: parseFloat(price),
         priceUnit,
         showroomId,
       }).unwrap();
+
+      console.log(res);
+      
       refetch();
+
       closeModal();
     } catch (err) {
       console.error("Failed to accept order:", err);
@@ -170,19 +173,19 @@ export default function CustomRequest() {
   };
 
   return (
-    <div className="mt-24 min-h-screen bg-linear-to-r from-black via-[#0f0924] to-black text-white font-sans">
-      {/* Main Content */}
-      <div className="max-w-6xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-6 text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-blue-500">
-          Custom Requests
-        </h1>
+    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 rounded-xl md:rounded-2xl p-4 md:p-8">
+      {/* Header */}
+      <div className="mb-4 md:mb-6">
+        <h2 className="text-xl md:text-2xl font-bold font-cormorant mb-4 md:mb-6 text-white">
+          Custom Orders
+        </h2>
 
         {/* Filter and Search */}
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mb-4 md:mb-6">
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-full sm:w-auto px-4 py-2.5 bg-[#1a1a2e] border border-[#4d4dff] rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-white text-sm"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
           >
             <option>Filter</option>
             {CUSTOM_ORDER_FILTERS.map((filter) => (
@@ -195,10 +198,10 @@ export default function CustomRequest() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-[#1a1a2e] border border-[#4d4dff] rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white placeholder-[#8a8a9d]"
+              className="w-full px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
             />
             <svg
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#8a8a9d]"
+              className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -212,160 +215,208 @@ export default function CustomRequest() {
             </svg>
           </div>
         </div>
+      </div>
 
-        {/* Requests Table */}
-        <div className="bg-[#1a1a2e] border border-[#4d4dff] rounded-xl overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="bg-[#22223b]">
-                  <th className="text-left px-6 py-4 font-medium text-[#a8a8b8]">
-                    Order
-                  </th>
-                  <th className="text-left px-6 py-4 font-medium text-[#a8a8b8]">
-                    Date
-                  </th>
-                  <th className="text-left px-6 py-4 font-medium text-[#a8a8b8]">
-                    Customer
-                  </th>
-                  <th className="text-left px-6 py-4 font-medium text-[#a8a8b8]">
-                    Status
-                  </th>
-                  <th className="text-left px-6 py-4 font-medium text-[#a8a8b8]">
-                    View
-                  </th>
-                  <th className="text-left px-6 py-4 font-medium text-[#a8a8b8]">
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-[#a8a8b8]">
-                      Loading...
-                    </td>
-                  </tr>
-                ) : filteredOrders.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="py-8 text-center text-[#a8a8b8]">
-                      No custom orders found
-                    </td>
-                  </tr>
-                ) : (
-                  filteredOrders.map((order) => (
-                    <tr
-                      key={order._id}
-                      className="border-t border-[#2d2d41] hover:bg-[#22223b] transition-colors"
-                    >
-                      <td className="px-6 py-4 font-mono text-[#e0e0ff]">
-                        #{order._id.slice(-8)}
-                      </td>
-                      <td className="px-6 py-4 text-[#c7c7d9]">
-                        {new Date(order.createdAt).toLocaleString()}
-                      </td>
-                      <td className="px-6 py-4 text-[#c7c7d9]">
-                        {order.customer?.name}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
-                            order.orderStatus,
-                          )}`}
-                        >
-                          {order.orderStatus}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <Link
-                          href={`/vendor-dashboard/custom-orders/details?id=${order._id}`}
-                        >
-                          <button className="bg-[#4d4dff] hover:bg-[#5d5dff] text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm">
-                            View Details
-                          </button>
-                        </Link>
-                      </td>
-                      <td className="px-6 py-4 flex space-x-2">
-                        <button
-                          onClick={() => handleAccept(order)}
-                          disabled={
-                            order.orderStatus === "Vendor Accepted" ||
-                            order.orderStatus === "Vendor Rejected"
-                          }
-                          className="bg-[#4d4dff] hover:bg-[#5d5dff] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
-                        >
-                          Accept
-                        </button>
-                        <button
-                          onClick={() => handleDecline(order)}
-                          disabled={
-                            order.orderStatus === "Vendor Accepted" ||
-                            order.orderStatus === "Vendor Rejected"
-                          }
-                          className="bg-[#ff4d6d] hover:bg-[#ff6b8b] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
-                        >
-                          Decline
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-3 mb-4">
+        {isLoading ? (
+          <div className="text-center text-gray-400 py-8">Loading...</div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="text-center text-gray-400 py-8">
+            No custom orders found
           </div>
-
-          {/* Pagination */}
-          {meta && meta.totalPages > 1 && (
-            <div className="bg-[#22223b] border-t border-[#2d2d41] px-6 py-4 flex items-center justify-between">
-              <div className="text-[#a8a8b8] text-sm">{meta.total} Results</div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#2d2d41] hover:bg-[#4d4dff] disabled:opacity-50 transition-colors text-white"
+        ) : (
+          filteredOrders.map((order) => (
+            <div
+              key={order._id}
+              className="bg-gray-800/20 border border-gray-700/30 rounded-lg p-4 hover:bg-gray-800/30 transition-colors"
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div>
+                  <div className="text-sm font-medium text-white mb-1">
+                    #{order._id.slice(-8)}
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    {new Date(order.createdAt).toLocaleString()}
+                  </div>
+                </div>
+                <span
+                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                    order.orderStatus,
+                  )}`}
                 >
-                  ←
-                </button>
-                {Array.from(
-                  { length: Math.min(5, meta.totalPages) },
-                  (_, i) => {
-                    let pageNum;
-                    if (meta.totalPages <= 5) {
-                      pageNum = i + 1;
-                    } else if (currentPage <= 3) {
-                      pageNum = i + 1;
-                    } else if (currentPage >= meta.totalPages - 2) {
-                      pageNum = meta.totalPages - 4 + i;
-                    } else {
-                      pageNum = currentPage - 2 + i;
-                    }
-                    return pageNum;
-                  },
-                ).map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
-                    className={`w-8 h-8 rounded-lg transition-colors text-sm ${
-                      page === currentPage
-                        ? "bg-[#4d4dff] text-white font-medium"
-                        : "bg-[#2d2d41] hover:bg-[#4d4dff] text-[#a8a8b8]"
-                    }`}
+                  {order.orderStatus}
+                </span>
+              </div>
+              <div className="flex justify-between items-center pt-2 border-t border-gray-700/30">
+                <span className="text-sm text-white">
+                  {order.customer?.name}
+                </span>
+                <div className="flex gap-2">
+                  <Link
+                    href={`/vendor-dashboard/custom-orders/details?id=${order._id}`}
                   >
-                    {page}
-                  </button>
-                ))}
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage === meta.totalPages}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#2d2d41] hover:bg-[#4d4dff] disabled:opacity-50 transition-colors text-white"
-                >
-                  →
-                </button>
+                    <button className="px-3 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                      View Details
+                    </button>
+                  </Link>
+                </div>
               </div>
             </div>
-          )}
-        </div>
+          ))
+        )}
       </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="border-b border-gray-400">
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Order
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Date & Time
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Customer
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Status
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                View
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-gray-400">
+                  Loading...
+                </td>
+              </tr>
+            ) : filteredOrders.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-gray-400">
+                  No custom orders found
+                </td>
+              </tr>
+            ) : (
+              filteredOrders.map((order) => (
+                <tr
+                  key={order._id}
+                  className="border-b border-gray-800/30 hover:bg-gray-800/20 transition-colors"
+                >
+                  <td className="py-3 px-4 text-sm text-white">
+                    #{order._id.slice(-8)}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-400">
+                    {new Date(order.createdAt).toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-white">
+                    {order.customer?.name}
+                  </td>
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                        order.orderStatus,
+                      )}`}
+                    >
+                      {order.orderStatus}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <Link
+                      href={`/vendor-dashboard/custom-orders/details?id=${order._id}`}
+                    >
+                      <button className="px-4 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                        View Details
+                      </button>
+                    </Link>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => handleAccept(order)}
+                        disabled={
+                          order.orderStatus === "Vendor Accepted" ||
+                          order.orderStatus === "Vendor Rejected"
+                        }
+                        className="bg-[#4d4dff] hover:bg-[#5d5dff] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={() => handleDecline(order)}
+                        disabled={
+                          order.orderStatus === "Vendor Accepted" ||
+                          order.orderStatus === "Vendor Rejected"
+                        }
+                        className="bg-[#ff4d6d] hover:bg-[#ff6b8b] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
+                      >
+                        Decline
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      {meta && meta.totalPages > 1 && (
+        <div className="flex items-center justify-center gap-1.5 md:gap-2 mt-4 md:mt-6 overflow-x-auto pb-2">
+          <button
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            ←
+          </button>
+
+          {Array.from({ length: Math.min(5, meta.totalPages) }, (_, i) => {
+            let pageNum;
+            if (meta.totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= meta.totalPages - 2) {
+              pageNum = meta.totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            return pageNum;
+          }).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center rounded-lg transition-colors text-xs md:text-sm ${
+                currentPage === page
+                  ? "bg-purple-600"
+                  : "bg-gray-800 hover:bg-gray-700"
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={() =>
+              setCurrentPage(Math.min(meta.totalPages, currentPage + 1))
+            }
+            disabled={currentPage === meta.totalPages}
+            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            →
+          </button>
+        </div>
+      )}
 
       {/* Modals */}
       {isModalOpen && (

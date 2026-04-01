@@ -6,23 +6,30 @@ import {
   useGetCustomOrderDetailsQuery,
 } from "@/redux/features/vendor/order/orderSlice";
 import { selectShowroomId } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
 interface CustomOrderDetails {
   _id: string;
-  customer: {
-    _id: string;
-    name: string;
-    email?: string;
-    phone?: string;
-    image?: string;
-  };
-  product: {
+  customer:
+    | string
+    | {
+        _id: string;
+        name: string;
+        email?: string;
+        phone?: string;
+        image?: string;
+      };
+  productId: {
     _id: string;
     product_name: string;
     product_images?: string[];
+  };
+  showroomId: {
+    _id: string;
+    showroom_name: string;
+    logo?: string;
   };
   orderStatus: string;
   customDetail?: string;
@@ -40,7 +47,12 @@ interface CustomOrderDetails {
     country: string;
     state: string;
     zipcode: number;
-    phone?: string;
+    phone?: number | string;
+    email?: string;
+    location?: {
+      type: string;
+      coordinates: number[];
+    };
   };
   pickUpInfo?: {
     name: string;
@@ -48,7 +60,12 @@ interface CustomOrderDetails {
     country: string;
     state: string;
     zipcode: number;
-    phone?: string;
+    phone?: number | string;
+    email?: string;
+    location?: {
+      type: string;
+      coordinates: number[];
+    };
   };
   deliveryType?: string;
   reason?: string;
@@ -69,7 +86,6 @@ const CUSTOM_ORDER_STATUS_OPTIONS = [
 
 export default function CustomRequestDetails() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const orderId = searchParams.get("id");
 
   const showroomId = useSelector(selectShowroomId);
@@ -201,8 +217,12 @@ export default function CustomRequestDetails() {
     );
   }
 
+  // Get customer name - handle both string ID and object
+  const customerName =
+    typeof order.customer === "object" ? order.customer?.name : "Customer";
+
   const productImage =
-    order.product?.product_images?.[0] || "/images/placeholder.png";
+    order.productId?.product_images?.[0] || "/images/placeholder.png";
 
   const canEditStatus =
     order.orderStatus !== "Vendor Rejected" &&
@@ -242,7 +262,7 @@ export default function CustomRequestDetails() {
           <div className="bg-white rounded-xl p-6 flex items-center justify-center h-80">
             <img
               src={productImage}
-              alt={order.product?.product_name}
+              alt={order.productId?.product_name}
               className="object-contain max-h-full max-w-full"
             />
           </div>
@@ -256,7 +276,7 @@ export default function CustomRequestDetails() {
               <div className="space-y-4">
                 <DetailRow
                   label="Product Name:"
-                  value={order.product?.product_name || "N/A"}
+                  value={order.productId?.product_name || "N/A"}
                 />
                 <DetailRow label="Size:" value={order.size || "N/A"} />
                 <DetailRow
@@ -311,9 +331,7 @@ export default function CustomRequestDetails() {
                   👤
                 </div>
                 <div>
-                  <div className="text-sm font-medium">
-                    {order.customer?.name}
-                  </div>
+                  <div className="text-sm font-medium">{customerName}</div>
                   <div className="text-xs text-gray-400">
                     {new Date(order.createdAt).toLocaleDateString()}
                   </div>
@@ -328,10 +346,22 @@ export default function CustomRequestDetails() {
               <div className="space-y-4">
                 <DetailRow
                   label="Full Name:"
-                  value={order.customer?.name || "N/A"}
+                  value={order.deliveryInfo?.name || customerName}
                 />
                 {order.deliveryInfo && (
                   <>
+                    <DetailRow
+                      label="Email:"
+                      value={order.deliveryInfo.email || "N/A"}
+                    />
+                    <DetailRow
+                      label="Phone:"
+                      value={
+                        order.deliveryInfo.phone?.toString() ||
+                        order.customer?.toString() ||
+                        "N/A"
+                      }
+                    />
                     <DetailRow
                       label="Country:"
                       value={order.deliveryInfo.country || "N/A"}
@@ -348,20 +378,8 @@ export default function CustomRequestDetails() {
                       label="Street Address:"
                       value={order.deliveryInfo.address || "N/A"}
                     />
-                    <DetailRow
-                      label="Phone:"
-                      value={
-                        order.deliveryInfo.phone ||
-                        order.customer?.phone ||
-                        "N/A"
-                      }
-                    />
                   </>
                 )}
-                <DetailRow
-                  label="Email:"
-                  value={order.customer?.email || "N/A"}
-                />
                 {order.deliveryType && (
                   <DetailRow
                     label="Delivery Type:"
@@ -373,6 +391,40 @@ export default function CustomRequestDetails() {
                 )}
               </div>
             </div>
+
+            {/* Showroom Details Card */}
+            {order.showroomId && (
+              <div className="bg-[#1e1e32]/80 border border-purple-500/30 rounded-xl p-6">
+                <h2 className="text-xl font-semibold mb-6">Showroom Details</h2>
+
+                <div className="space-y-4">
+                  <DetailRow
+                    label="Showroom Name:"
+                    value={
+                      typeof order.showroomId === "object"
+                        ? order.showroomId.showroom_name
+                        : "N/A"
+                    }
+                  />
+                  {order.pickUpInfo && (
+                    <>
+                      <DetailRow
+                        label="Pickup Address:"
+                        value={order.pickUpInfo.address || "N/A"}
+                      />
+                      <DetailRow
+                        label="Pickup Phone:"
+                        value={order.pickUpInfo.phone?.toString() || "N/A"}
+                      />
+                      <DetailRow
+                        label="Pickup Email:"
+                        value={order.pickUpInfo.email || "N/A"}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
