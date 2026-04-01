@@ -2,16 +2,34 @@ import { apiSlice } from "@/redux/api/apiSlice";
 
 const orderSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-
     // Get Vendor Orders
     getVendorOrders: builder.query({
-      query: ({ page = 1, limit = 10, searchQ = "", filter = "", showroomId }) => ({
-        url: `/order/vendor/get?page=${page}&limit=${limit}&searchQ=${searchQ}&filter=${filter}`,
-        method: "GET",
-        headers: {
-          showroom: showroomId,
-        },
-      }),
+      query: ({
+        page = 1,
+        limit = 10,
+        searchQ = "",
+        filter = "",
+        showroomId,
+      }) => {
+        // Build query params object, only include params with values
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (searchQ) params.append("searchTerm", searchQ);
+        if (filter && filter !== "Filter" && filter !== "All Orders")
+          params.append("orderStatus", filter);
+
+        return {
+          url: `/order/vendor/get?${params.toString()}`,
+          method: "GET",
+          headers: {
+            showroom: showroomId,
+          },
+        };
+      },
+      transformResponse: (response: { data: { data: any[]; meta: any } }) => {
+        return response.data;
+      },
       providesTags: ["Orders"],
     }),
 
@@ -44,13 +62,32 @@ const orderSlice = apiSlice.injectEndpoints({
 
     // Get Vendor Return Orders
     getVendorReturns: builder.query({
-      query: ({ page = 1, limit = 10, searchQ = "", filter = "", showroomId }) => ({
-        url: `/order/vendor/return?searchQ=${searchQ}&page=${page}&limit=${limit}&filter=${filter}`,
-        method: "GET",
-        headers: {
-          showroom: showroomId,
-        },
-      }),
+      query: ({
+        page = 1,
+        limit = 10,
+        searchQ = "",
+        filter = "",
+        showroomId,
+      }) => {
+        // Build query params object, only include params with values
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (searchQ) params.append("searchTerm", searchQ);
+        if (filter && filter !== "Filter" && filter !== "All Returns")
+          params.append("filter", filter);
+
+        return {
+          url: `/order/vendor/return?${params.toString()}`,
+          method: "GET",
+          headers: {
+            showroom: showroomId,
+          },
+        };
+      },
+      transformResponse: (response: { data: { data: any[]; meta: any } }) => {
+        return response.data;
+      },
       providesTags: ["Returns"],
     }),
 
@@ -78,6 +115,104 @@ const orderSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Returns"],
     }),
 
+    // ==================== CUSTOM ORDERS ====================
+
+    // Get Custom Design Orders
+    getCustomOrders: builder.query({
+      query: ({
+        page = 1,
+        limit = 10,
+        searchQ = "",
+        filter = "",
+        showroomId,
+      }) => {
+        const params = new URLSearchParams();
+        params.append("page", page.toString());
+        params.append("limit", limit.toString());
+        if (searchQ) params.append("searchTerm", searchQ);
+        if (filter && filter !== "Filter" && filter !== "All Custom Orders")
+          params.append("orderStatus", filter);
+
+        return {
+          url: `/order/vendor/custom?${params.toString()}`,
+          method: "GET",
+          headers: {
+            showroom: showroomId,
+          },
+        };
+      },
+      transformResponse: (response: { data: { data: any[]; meta: any } }) => {
+        return response.data;
+      },
+      providesTags: ["CustomOrders"],
+    }),
+
+    // Get Custom Order Details
+    getCustomOrderDetails: builder.query({
+      query: ({ id, showroomId }) => ({
+        url: `/order/vendor/custom-details/${id}`,
+        method: "GET",
+        headers: {
+          showroom: showroomId,
+        },
+      }),
+      transformResponse: (response: { data: any }) => {
+        return response.data;
+      },
+      providesTags: ["CustomOrders"],
+    }),
+
+    // Accept or Decline Custom Order (Design Request Action)
+    acceptOrDeclineCustomOrder: builder.mutation({
+      query: ({ id, action, price, priceUnit, reason, showroomId }) => {
+        const body: any = {
+          action, // "accepted" or "declined"
+        };
+
+        if (action === "accepted") {
+          body.price = price;
+          body.priceUnit = priceUnit;
+        } else if (action === "declined") {
+          body.reason = reason;
+        }
+
+        return {
+          url: `/order/vendor/design-request/action/${id}`,
+          method: "PATCH",
+          headers: {
+            showroom: showroomId,
+          },
+          body,
+        };
+      },
+      invalidatesTags: ["CustomOrders"],
+    }),
+
+    // Change Custom Order Status
+    changeCustomOrderStatus: builder.mutation({
+      query: ({ id, action, price, priceUnit, reason, showroomId }) => {
+        const body: any = {
+          action, // "accepted" or "declined"
+        };
+
+        if (action === "accepted") {
+          body.price = price;
+          body.priceUnit = priceUnit;
+        } else if (action === "declined") {
+          body.reason = reason;
+        }
+
+        return {
+          url: `/order/vendor/custom/change-status/${id}`,
+          method: "PATCH",
+          headers: {
+            showroom: showroomId,
+          },
+          body,
+        };
+      },
+      invalidatesTags: ["CustomOrders"],
+    }),
   }),
 });
 
@@ -88,4 +223,9 @@ export const {
   useGetVendorReturnsQuery,
   useGetReturnDetailsQuery,
   useReturnOrderActionMutation,
+  // Custom Orders
+  useGetCustomOrdersQuery,
+  useGetCustomOrderDetailsQuery,
+  useAcceptOrDeclineCustomOrderMutation,
+  useChangeCustomOrderStatusMutation,
 } = orderSlice;

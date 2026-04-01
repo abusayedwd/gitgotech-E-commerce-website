@@ -17,6 +17,9 @@ export default function MyProducts() {
   const showroomId = useSelector(selectShowroomId);
 
   const { data: productData, isLoading } = useGetProductsQuery({ showroomId }, { skip: !showroomId });
+ 
+  console.log(productData)
+
   const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
@@ -41,9 +44,10 @@ export default function MyProducts() {
  
   
 
-  const allProducts: any[] = productData?.data ?? [];
+  const allProducts: any[] = productData?.data?.data ?? [];
+ 
 
-  const products = allProducts.filter((p) => {
+  const products = allProducts?.filter((p) => {
     const matchSearch = p.product_name?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchFilter =
       filterType === 'Filter' || filterType === 'All Products'
