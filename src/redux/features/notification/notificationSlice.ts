@@ -8,6 +8,9 @@ const nofiticationSlice = apiSlice.injectEndpoints({
         url: `/notification/get?page=${page}&limit=${limit}`,
         method: "GET",
       }),
+      transformResponse: (response: { data: any }) => {
+        return response.data;
+      },
     }),
   }),
 });
