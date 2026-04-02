@@ -15,6 +15,11 @@ const showroomSlice = apiSlice.injectEndpoints({
             query: (vendorId) => `/showroom/get-vendor-showrooms/${vendorId}`,
             providesTags: [{type: "Showroom"}]
         }),
+        getShowroomByVendor: builder.query({
+            query: () => `/showroom/get`,
+            providesTags: [{type: "Showroom"}]
+        }),
+
         addShowroom: builder.mutation({
             query: (data) => ({
                 url: `/showroom/add`,
@@ -54,5 +59,6 @@ export const {
     useGetVendorShowroomsQuery,
     useUpdateShowroomMutation,
     useDeleteShowroomMutation,
+    useGetShowroomByVendorQuery
 
 } = showroomSlice;

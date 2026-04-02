@@ -1,12 +1,10 @@
 "use client";
 
-import Image from "next/image";
-import React from "react";
-import { useRouter } from "next/navigation";
-import { useDashboardStatusQuery } from "@/redux/features/vendor/dashboardOverview";
-import { useSelector } from "react-redux";
-import { selectShowroomId } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
 import baseUrl from "@/redux/api/baseUrl";
+import { useDashboardStatusQuery } from "@/redux/features/vendor/dashboardOverview";
+import { selectShowroomId } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
+import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
 
 export default function DashboardHome() {
   const router = useRouter();
@@ -14,6 +12,7 @@ export default function DashboardHome() {
   const { data: dashboardOverviewData } = useDashboardStatusQuery(showroomId);
 
   const dashData = dashboardOverviewData?.data;
+  console.log(dashData);
 
   const stats = [
     {
@@ -25,14 +24,17 @@ export default function DashboardHome() {
     },
     {
       title: "Total Orders",
-      value: (dashData?.recentOrders?.length ?? 0),
+      value: dashData?.recentOrders?.length ?? 0,
       icon: "/images/order.png",
       borderColor: "border-blue-500/30",
       color: "from-blue-500 to-blue-600",
     },
     {
       title: "Total Revenue",
-      value: dashData?.totalSalesAmount != null ? `$${dashData.totalSalesAmount}` : "—",
+      value:
+        dashData?.totalSalesAmount != null
+          ? `$${dashData.totalSalesAmount?.total || 0}`
+          : "—",
       icon: "/images/earn.png",
       borderColor: "border-cyan-500/30",
       color: "from-green-500 to-green-600",
@@ -127,7 +129,9 @@ export default function DashboardHome() {
         </div>
 
         {recentOrders.length === 0 ? (
-          <p className="text-center text-gray-500 py-6 text-sm">No recent orders found.</p>
+          <p className="text-center text-gray-500 py-6 text-sm">
+            No recent orders found.
+          </p>
         ) : (
           <>
             {/* Mobile Card View */}
@@ -140,17 +144,32 @@ export default function DashboardHome() {
                   <div className="flex justify-between items-start mb-3">
                     <div>
                       <div className="text-sm font-medium mb-1">
-                        #{order.trackingNumber ?? order._id?.slice(-6).toUpperCase()}
+                        #
+                        {order.trackingNumber ??
+                          order._id?.slice(-6).toUpperCase()}
                       </div>
-                      <div className="text-xs text-gray-400">{formatDate(order.createdAt)}</div>
+                      <div className="text-xs text-gray-400">
+                        {formatDate(order.createdAt)}
+                      </div>
                     </div>
-                    <span className={`px-3 py-1 border rounded-full text-xs font-medium ${getStatusStyle(order.orderStatus)}`}>
+                    <span
+                      className={`px-3 py-1 border rounded-full text-xs font-medium ${getStatusStyle(order.orderStatus)}`}
+                    >
                       {order.orderStatus}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-sm">{order.deliveryInfo?.name ?? "—"}</span>
-                    <button className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                    <span className="text-sm">
+                      {order.deliveryInfo?.name ?? "—"}
+                    </span>
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/vendor-dashboard/orders/details?id=${order._id}`,
+                        )
+                      }
+                      className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+                    >
                       View Details
                     </button>
                   </div>
@@ -163,11 +182,21 @@ export default function DashboardHome() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-700/50">
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Order ID</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Date & Time</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Customer</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Order Status</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Action</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Order ID
+                    </th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Date & Time
+                    </th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Customer
+                    </th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Order Status
+                    </th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -177,17 +206,27 @@ export default function DashboardHome() {
                       className="border-b border-gray-800/30 hover:bg-purple-900/10 transition-colors"
                     >
                       <td className="py-3 px-4 text-sm">
-                        #{order.trackingNumber ?? order._id?.slice(-6).toUpperCase()}
+                        #
+                        {order.trackingNumber ??
+                          order._id?.slice(-6).toUpperCase()}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-400">{formatDate(order.createdAt)}</td>
-                      <td className="py-3 px-4 text-sm">{order.deliveryInfo?.name ?? "—"}</td>
+                      <td className="py-3 px-4 text-sm text-gray-400">
+                        {formatDate(order.createdAt)}
+                      </td>
+                      <td className="py-3 px-4 text-sm">
+                        {order.deliveryInfo?.name ?? "—"}
+                      </td>
                       <td className="py-3 px-4">
-                        <span className={`px-3 py-1 border rounded-full text-xs font-medium ${getStatusStyle(order.orderStatus)}`}>
+                        <span
+                          className={`px-3 py-1 border rounded-full text-xs font-medium ${getStatusStyle(order.orderStatus)}`}
+                        >
                           {order.orderStatus}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <button className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                        <button
+                          onClick={() => router.push(`/vendor-dashboard/orders/details?id=${order._id}`)}
+                         className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
                           View Details
                         </button>
                       </td>
@@ -215,7 +254,9 @@ export default function DashboardHome() {
         </div>
 
         {recentProducts.length === 0 ? (
-          <p className="text-center text-gray-500 py-6 text-sm">No recent products found.</p>
+          <p className="text-center text-gray-500 py-6 text-sm">
+            No recent products found.
+          </p>
         ) : (
           <>
             {/* Mobile Card View */}
@@ -228,37 +269,56 @@ export default function DashboardHome() {
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                       {product.product_images?.[0] ? (
-                        <img src={`${baseUrl}/${product.product_images[0]}`} alt={product.product_name} className="w-full h-full object-cover" />
+                        <img
+                          src={`${baseUrl}/${product.product_images[0]}`}
+                          alt={product.product_name}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <span>🧥</span>
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className="text-sm font-medium mb-1">{product.product_name}</div>
-                      <div className="text-sm text-gray-400">${product.product_price}</div>
+                      <div className="text-sm font-medium mb-1">
+                        {product.product_name}
+                      </div>
+                      <div className="text-sm text-gray-400">
+                        ${product.product_price}
+                      </div>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 rounded-full text-xs font-medium">
                       {product.isDeleted ? "Deleted" : "In Stock"}
                     </span>
-                    <button className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
-                      View Details
+                    <button 
+                      onClick={() => router.push(`/vendor-dashboard/products/details?id=${product._id}`)}
+                      className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                      View Details  
                     </button>
                   </div>
                 </div>
               ))}
-            </div>
-
+            </div> 
+                    
+                   
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-700/50">
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Product</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Price</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Action</th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Product
+                    </th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Price
+                    </th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -271,22 +331,32 @@ export default function DashboardHome() {
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-gradient-to-br from-amber-700 to-amber-900 rounded-lg flex items-center justify-center overflow-hidden">
                             {product.product_images?.[0] ? (
-                              <img src={`${baseUrl}/${product.product_images[0]}`} alt={product.product_name} className="w-full h-full object-cover" />
+                              <img
+                                src={`${baseUrl}/${product.product_images[0]}`}
+                                alt={product.product_name}
+                                className="w-full h-full object-cover"
+                              />
                             ) : (
                               <span>🧥</span>
                             )}
                           </div>
-                          <span className="text-sm">{product.product_name}</span>
+                          <span className="text-sm">
+                            {product.product_name}
+                          </span>
                         </div>
                       </td>
-                      <td className="py-3 px-4 text-sm">${product.product_price}</td>
+                      <td className="py-3 px-4 text-sm">
+                        ${product.product_price}
+                      </td>
                       <td className="py-3 px-4">
                         <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 rounded-full text-xs font-medium">
                           {product.isDeleted ? "Deleted" : "In Stock"}
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <button className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                        <button
+                          onClick={() => router.push(`/vendor-dashboard/products/details?id=${product._id}`)}
+                         className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
                           View Details
                         </button>
                       </td>

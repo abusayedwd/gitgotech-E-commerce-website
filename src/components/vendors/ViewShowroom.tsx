@@ -38,6 +38,8 @@ export default function ViewShowroomPage() {
   });
   const showrooms = vendorShowroomData?.data?.showrooms || [];
   const vendorProfile = vendorShowroomData?.data?.vendorProfile;
+  
+  console.log(showrooms);
 
   // Get showroom details for the selected showroom
   const { data: showroomDetails } = useGetShowroomDetailsQuery(id, { skip: !id });

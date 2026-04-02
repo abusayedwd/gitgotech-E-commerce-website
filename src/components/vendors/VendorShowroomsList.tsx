@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useGetVendorShowroomsQuery } from '@/redux/features/vendor/showroomSlice/showroomSlice';
+import { useGetShowroomByVendorQuery, useGetVendorShowroomsQuery } from '@/redux/features/vendor/showroomSlice/showroomSlice';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 import { Store, MapPin, CheckCircle, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -16,11 +16,11 @@ export default function VendorShowroomsPage() {
     setVendorId(vId);
   }, [searchParams]);
   
-  const { data: vendorShowroomData, isLoading } = useGetVendorShowroomsQuery(vendorId, {
-    skip: !vendorId
-  });
+  const { data: vendorShowroomData, isLoading } = useGetShowroomByVendorQuery();
   
-  const showrooms = vendorShowroomData?.data?.showrooms || [];
+  console.log(vendorShowroomData);
+
+  const showrooms = vendorShowroomData?.data || [];
   const vendorProfile = vendorShowroomData?.data?.vendorProfile;
 
   if (isLoading) {

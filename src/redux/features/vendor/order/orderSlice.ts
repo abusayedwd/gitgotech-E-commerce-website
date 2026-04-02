@@ -106,7 +106,7 @@ const orderSlice = apiSlice.injectEndpoints({
     // Return Order Action (accept/decline)
     returnOrderAction: builder.mutation({
       query: ({ id, action, showroomId }) => ({
-        url: `/order/vendor/return-action/${id}?action=${action}`,
+        url: `/order/vendor/return-action?order=${id}&action=${action}`,
         method: "PATCH",
         headers: {
           showroom: showroomId,

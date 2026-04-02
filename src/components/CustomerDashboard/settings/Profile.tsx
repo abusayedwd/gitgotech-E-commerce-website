@@ -169,7 +169,7 @@
 
 "use client";
 import React, { useState } from 'react';
-import { Edit2, Calendar, Settings, LogOut } from 'lucide-react';
+import { Edit2, Calendar, Settings, LogOut, Wallet } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { FaArrowLeft } from 'react-icons/fa';
@@ -230,7 +230,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-4 mb-8">
           <button 
             onClick={() => router.push("/profile/event")}
             className="bg-[#29223A] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
@@ -243,6 +243,12 @@ export default function ProfilePage() {
             className="bg-[#29223A] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
             <Settings className="w-6 h-6" />
             <span className="text-sm">Settings</span>
+          </button>
+          <button 
+            onClick={() => router.push("/profile/wallet")}
+            className="bg-[#29223A] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2">
+            <Wallet className="w-6 h-6" />
+            <span className="text-sm">Wallet</span>
           </button>
           
           <button
