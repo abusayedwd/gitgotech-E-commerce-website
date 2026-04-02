@@ -1,14 +1,15 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 
-const paymetnTransactionSlice = apiSlice.injectEndpoints({
+const paymentTransactionSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // ✅ GET Wallet Transactions
     getWalletTransactions: builder.query({
       query: ({ page = 1, limit = 10 }) => ({
         url: `/auth/wallet`,
         method: "GET",
-        params: { page, limit }, // ✅ cleaner than string concat
+        params: { page, limit },
       }),
+      providesTags: ["Wallet"],
     }),
 
     // ✅ POST Add Money
@@ -18,6 +19,7 @@ const paymetnTransactionSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Wallet"],
     }),
 
     // ✅ POST Store Card Info
@@ -27,7 +29,7 @@ const paymetnTransactionSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["CardInfo"], // ✅ invalidate card info cache on add
+      invalidatesTags: ["CardInfo"],
     }),
 
     // ✅ GET All Card Info
@@ -36,30 +38,30 @@ const paymetnTransactionSlice = apiSlice.injectEndpoints({
         url: `/payment-card/get-all-card-info`,
         method: "GET",
       }),
-      providesTags: ["CardInfo"], // ✅ add tag for cache management
+     providesTags: [{ type: "CardInfo" }],
     }),
 
     // ✅ DELETE Card Info
     deleteCardInfo: builder.mutation({
       query: (cardId) => ({
         url: `/payment-card/delete-card-info`,
-        method: "DELETE", // ⚠️ if your backend uses GET, change it
+        method: "DELETE",
         params: { cardId },
       }),
-      invalidatesTags: ["CardInfo"], // ✅ invalidate card info cache on delete
+      invalidatesTags: [{ type: "CardInfo" }],
     }),
 
     // ✅ GET Withdraw List
     getWithdrawList: builder.query({
-      query: ({ searchTerm = "", page = 1, limit = 10 }) => ({
+      query: ({ page = 1, limit = 10 }) => ({
         url: `/withdraw`,
         method: "GET",
-        params: {
-          searchTerm,
+        params: { 
           page,
           limit,
         },
       }),
+      providesTags: ["Withdraw"],
     }),
 
     // ✅ POST Withdraw Request
@@ -69,6 +71,7 @@ const paymetnTransactionSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+      invalidatesTags: ["Wallet", "Withdraw"],
     }),
   }),
 });
@@ -79,7 +82,6 @@ export const {
   useDeleteCardInfoMutation,
   useGetAllCardInfoQuery,
   useStoreCardInfoMutation,
-
   useGetWithdrawListQuery,
   useWithdrawRequestMutation,
-} = paymetnTransactionSlice;
+} = paymentTransactionSlice;

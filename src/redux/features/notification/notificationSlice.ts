@@ -1,18 +1,33 @@
 import { apiSlice } from "@/redux/api/apiSlice";
+ 
 
 const nofiticationSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Get Notifications
     getNotifications: builder.query({
-      query: ({ page = 1, limit = 10, showroomId }) => ({
-        url: `/notification/get?page=${page}&limit=${limit}`,
+      query: ({ page = 1, limit = 10 }) => ({
+        url: `/notification?page=${page}&limit=${limit}`,
         method: "GET",
       }),
-      transformResponse: (response: { data: any }) => {
-        return response.data;
-      },
+       providesTags: [{type: "Notifications"}]
     }),
+
+  readNotification: builder.mutation({
+    query: (id) => ({
+      url: `/notification/read/${id}`,
+        method: "PATCH",
+    }),
+    invalidatesTags: [{type: "Notifications"}]
+ 
+    }),
+
+
+
   }),
 });
 
-export const { useGetNotificationsQuery } = nofiticationSlice;
+export const {
+     useGetNotificationsQuery
+        , useReadNotificationMutation
+
+    } = nofiticationSlice;
