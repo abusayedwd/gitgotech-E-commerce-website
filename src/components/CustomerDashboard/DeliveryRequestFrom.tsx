@@ -1,418 +1,496 @@
 "use client";
 import BackButton from "@/customComponent/BackButton";
-import { Mail, MapPin, Package, Phone, Upload } from "lucide-react";
+import { useCreateDeliveryRequestMutation } from "@/redux/features/deliveryRequest/deliveryRequest";
+import {
+  CheckCircle2,
+  Loader2,
+  Mail,
+  MapPin,
+  Package,
+  Upload,
+} from "lucide-react";
 import React, { useState } from "react";
+import MapComponent from "../CustomerDashboard/Location";
 
+// ─── Types ────────────────────────────────────────────────────────────────────
+interface SelectedLocation {
+  lat?: number;
+  lng?: number;
+  address?: string;
+  displayName?: string;
+  name?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+interface LocationDetails {
+  name: string;
+  phone: string;
+  location: string;
+  email: string;
+  coordinates: [number, number];
+  country: string;
+  state: string;
+  zipCode: string;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 const DeliveryRequestFrom = () => {
-  const [formData, setFormData] = useState<FormData>({
-    productImage: null,
-    category: "Clothes",
-    numberOfItems: "2",
-    totalWeight: "1.5 kg",
-    pickupLocation: "4940 Pari",
-    fullName: "Dianne Russell",
-    deliveryLocation: "4940 Pari",
-    country: "United States",
-    state: "Washington DC",
-    zipCode: "20033",
-    email: "dianne.russell@gmail.com",
-    phone: "(603) 555-0123",
+  const [formData, setFormData] = useState({
+    productImage: null as File | null,
+    productImagePreview: null as string | null,
+    category: "",
+    numberOfItems: "1",
+    totalWeight: "",
+    weightUnit: "kg",
+    tip: "0",
+    deliveryFee: "0",
+    currency: "usd",
   });
 
-  const [selectedWeightUnit, setSelectedWeightUnit] = useState("Grams (g)");
-  const [isFormValid, setIsFormValid] = useState(false);
+  const [pickupLocation, setPickupLocation] = useState<LocationDetails>({
+    name: "",
+    phone: "",
+    location: "",
+    email: "",
+    coordinates: [0, 0],
+    country: "",
+    state: "",
+    zipCode: "",
+  });
 
-  interface FormData {
-    productImage: null | string;
-    category: string;
-    numberOfItems: string;
-    totalWeight: string;
-    pickupLocation: string;
-    fullName: string;
-    deliveryLocation: string;
-    country: string;
-    state: string;
-    zipCode: string;
-    email: string;
-    phone: string;
-  }
+  const [deliveryAddress, setDeliveryAddress] = useState<LocationDetails>({
+    name: "",
+    phone: "",
+    location: "",
+    email: "",
+    coordinates: [0, 0],
+    country: "",
+    state: "",
+    zipCode: "",
+  });
+
+  const [pickupMapLocation, setPickupMapLocation] = useState<SelectedLocation | null>(null);
+  const [deliveryMapLocation, setDeliveryMapLocation] = useState<SelectedLocation | null>(null);
+  const [activeMapSection, setActiveMapSection] = useState<"pickup" | "delivery" | null>(null);
+
+  const [deliveryRequest, { isLoading }] = useCreateDeliveryRequestMutation();
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    section: "pickup" | "delivery" | "product"
   ): void => {
     const { name, value } = e.target;
-    setFormData((prev: FormData) => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Validate form (simple validation)
-    const isValid = !!(
-      formData.productImage &&
-      formData.fullName &&
-      formData.email &&
-      formData.phone &&
-      formData.deliveryLocation
-    );
-    setIsFormValid(isValid);
+    if (section === "product") {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    } else if (section === "pickup") {
+      setPickupLocation((prev) => ({ ...prev, [name]: value }));
+    } else {
+      setDeliveryAddress((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files[0]) {
-      const file: File = e.target.files[0];
-      setFormData((prev: FormData) => ({
+      const file = e.target.files[0];
+      setFormData((prev) => ({
         ...prev,
-        productImage: URL.createObjectURL(file),
+        productImage: file,
+        productImagePreview: URL.createObjectURL(file),
       }));
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLButtonElement>): void => {
-    e.preventDefault();
-    if (isFormValid) {
-      alert("Delivery request submitted successfully!");
+  const handleLocationSave = (selectedLocation: SelectedLocation, section: "pickup" | "delivery"): void => {
+    console.log(`📍 ${section} location saved:`, selectedLocation);
+
+    let lat = 0, lng = 0;
+    if (selectedLocation.coordinates) {
+      lat = selectedLocation.coordinates.latitude;
+      lng = selectedLocation.coordinates.longitude;
+    } else if (selectedLocation.lat !== undefined && selectedLocation.lng !== undefined) {
+      lat = selectedLocation.lat;
+      lng = selectedLocation.lng;
+    }
+
+    const address = selectedLocation.name || selectedLocation.address || selectedLocation.displayName || "";
+
+    if (section === "pickup") {
+      setPickupMapLocation(selectedLocation);
+      setPickupLocation((prev) => ({
+        ...prev,
+        location: address,
+        coordinates: [lng, lat] as [number, number], // GeoJSON: [longitude, latitude]
+      }));
     } else {
-      alert("Please fill in all required fields.");
+      setDeliveryMapLocation(selectedLocation);
+      setDeliveryAddress((prev) => ({
+        ...prev,
+        location: address,
+        coordinates: [lng, lat] as [number, number],
+      }));
+    }
+    setActiveMapSection(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
+    e.preventDefault();
+
+    // ── Validation ──
+    const errors: string[] = [];
+    if (!formData.category.trim()) errors.push("Category is required");
+    if (parseInt(formData.numberOfItems) < 1) errors.push("Number of items must be at least 1");
+    
+    const weightVal = parseFloat(formData.totalWeight);
+    if (isNaN(weightVal) || weightVal <= 0) {
+      errors.push("Weight value must be greater than 0");
+    }
+    
+    const validUnits = ["kg", "mg", "gm", "pound", "ounce"];
+    if (!validUnits.includes(formData.weightUnit)) {
+      errors.push("Invalid weight unit selected");
+    }
+
+    if (!pickupMapLocation) errors.push("Please select a pickup location from the map");
+    if (!deliveryMapLocation) errors.push("Please select a delivery location from the map");
+    if (!pickupLocation.name || !pickupLocation.phone || !pickupLocation.email) {
+      errors.push("Pickup contact information is incomplete");
+    }
+    if (!deliveryAddress.name || !deliveryAddress.phone || !deliveryAddress.email) {
+      errors.push("Delivery contact information is incomplete");
+    }
+
+    if (errors.length > 0) {
+      alert(errors.join("\n"));
+      return;
+    }
+
+    // ── Build Payload ──
+    const requestBody = {
+      category: formData.category,
+      numberOfItems: parseInt(formData.numberOfItems),
+      weight: {
+        unit: formData.weightUnit, // Backend enum: 'kg' | 'mg' | 'gm' | 'pound' | 'ounce'
+        value: weightVal,          // Must be > 0
+      },
+      pickupLocation: {
+        name: pickupLocation.name,
+        phone: pickupLocation.phone,
+        location: pickupLocation.location,
+        email: pickupLocation.email,
+        coordinates: pickupLocation.coordinates,
+        country: pickupLocation.country,
+        state: pickupLocation.state,
+        zipCode: pickupLocation.zipCode,
+      },
+      deliveryAddress: {
+        name: deliveryAddress.name,
+        phone: deliveryAddress.phone,
+        location: deliveryAddress.location,
+        email: deliveryAddress.email,
+        coordinates: deliveryAddress.coordinates,
+        country: deliveryAddress.country,
+        state: deliveryAddress.state,
+        zipCode: deliveryAddress.zipCode,
+      },
+      price: {
+        tip: parseFloat(formData.tip) || 0,
+        deliveryFee: parseFloat(formData.deliveryFee) || 0,
+        currency: formData.currency.toLowerCase(),
+      },
+    };
+
+    console.log("📦 Delivery Request Payload:", JSON.stringify(requestBody, null, 2));
+
+    // ── Submit ──
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("data", JSON.stringify(requestBody));
+      if (formData.productImage) {
+        formDataToSend.append("images", formData.productImage);
+      }
+
+      const response = await deliveryRequest(formDataToSend).unwrap();
+      console.log("✅ Success Response:", response);
+
+      alert("Delivery request submitted successfully!");
+
+      // Reset Form
+      setFormData({
+        productImage: null,
+        productImagePreview: null,
+        category: "",
+        numberOfItems: "1",
+        totalWeight: "",
+        weightUnit: "kg",
+        tip: "0",
+        deliveryFee: "0",
+        currency: "usd",
+      });
+      setPickupLocation({ name: "", phone: "", location: "", email: "", coordinates: [0, 0], country: "", state: "", zipCode: "" });
+      setDeliveryAddress({ name: "", phone: "", location: "", email: "", coordinates: [0, 0], country: "", state: "", zipCode: "" });
+      setPickupMapLocation(null);
+      setDeliveryMapLocation(null);
+    } catch (error: any) {
+      console.error("❌ Submission Error:", error);
+      const backendMessage = error?.data?.message || error?.message || "Failed to submit request. Please try again.";
+      alert(backendMessage);
     }
   };
 
   const weightUnits = [
-    "Milligram (mg)",
-    "Grams (g)",
-    "Kilogram (kg)",
-    "Pound (lb)",
-    "Ounce (oz)",
+    { value: "kg", label: "Kilogram (kg)" },
+    { value: "mg", label: "Milligram (mg)" },
+    { value: "gm", label: "Gram (gm)" },
+    { value: "pound", label: "Pound (pound)" },
+    { value: "ounce", label: "Ounce (ounce)" },
   ];
+
+  const inputClass = "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] transition-colors";
+  const totalAmount = (parseFloat(formData.deliveryFee || "0") + parseFloat(formData.tip || "0")).toFixed(2);
 
   return (
     <div className="min-h-screen mt-24 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
-        
         <div>
-          <h1 className="text-2xl font-bold">
-    <BackButton title="New Request" />
-          </h1>
-          <p className="text-gray-400 mt-1">
-            Request a delivery to send products to your friends.
-          </p>
+          <h1 className="text-2xl font-bold"><BackButton title="New Request" /></h1>
+          <p className="text-gray-400 mt-1">Request a delivery to send products to your friends.</p>
         </div>
-
-        
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Product Information */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className=" rounded-lg p-4 border border-purple-500">
-            <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
-              <h2 className="text-xl font-semibold py-2">
-                Product Information
-              </h2>
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Left Column */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Product Information */}
+            <div className="rounded-lg p-4 border border-purple-500">
+              <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
+                <h2 className="text-xl font-semibold py-2">Product Information</h2>
+              </div>
+              <div className="space-y-4">
+                {/* Image Upload */}
+                <div className="flex items-center space-x-4">
+                  <div className="relative w-24 h-24 bg-gray-800 rounded-md overflow-hidden">
+                    {formData.productImagePreview ? (
+                      <img src={formData.productImagePreview} alt="Product" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center"><Package className="w-8 h-8 text-gray-400" /></div>
+                    )}
+                    {formData.productImage && (
+                      <button type="button" className="absolute top-1 right-1 bg-red-600 rounded-full p-1" onClick={() => setFormData(prev => ({ ...prev, productImage: null, productImagePreview: null }))}>
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0L0 8l8 8 8-8z" /></svg>
+                      </button>
+                    )}
+                  </div>
+                  <label className="cursor-pointer bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md flex items-center space-x-2">
+                    <Upload className="w-5 h-5" /><span>Upload</span>
+                    <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
+                  </label>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Category</label>
+                  <input type="text" name="category" value={formData.category} onChange={(e) => handleInputChange(e, "product")} className={inputClass} placeholder="e.g., cake, clothes, electronics" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Number of Items</label>
+                  <input type="number" name="numberOfItems" value={formData.numberOfItems} onChange={(e) => handleInputChange(e, "product")} className={inputClass} min="1" placeholder="3" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Total Weight</label>
+                  <div className="flex items-center space-x-2">
+                    <input type="number" name="totalWeight" value={formData.totalWeight} onChange={(e) => handleInputChange(e, "product")} className="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] text-white" placeholder="2.5" step="0.1" min="0.1" />
+                    <select name="weightUnit" value={formData.weightUnit} onChange={(e) => handleInputChange(e, "product")} className="bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] text-white">
+                      {weightUnits.map((unit) => (<option key={unit.value} value={unit.value}>{unit.label}</option>))}
+                    </select>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              {/* Product Image Upload */}
-              <div className="flex items-center space-x-4">
-                <div className="relative w-24 h-24 bg-gray-800 rounded-md overflow-hidden">
-                  {formData.productImage ? (
-                    <img
-                      src={formData.productImage}
-                      alt="Product"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Package className="w-8 h-8 text-gray-400" />
+            {/* Pickup Location */}
+            <div className="rounded-lg p-4 border border-purple-500">
+              <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
+                <h2 className="text-xl font-semibold py-2">Pickup Location</h2>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Full Name</label>
+                    <input type="text" name="name" value={pickupLocation.name} onChange={(e) => handleInputChange(e, "pickup")} className={inputClass} placeholder="John Doe" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Phone</label>
+                    <input type="tel" name="phone" value={pickupLocation.phone} onChange={(e) => handleInputChange(e, "pickup")} className={inputClass} placeholder="1234567890" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Email</label>
+                    <div className="relative">
+                      <input type="email" name="email" value={pickupLocation.email} onChange={(e) => handleInputChange(e, "pickup")} className={inputClass} placeholder="john@example.com" />
+                      <Mail className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
                     </div>
-                  )}
-                  {formData.productImage && (
-                    <button
-                      className="absolute top-1 right-1 bg-red-600 rounded-full p-1"
-                      onClick={() =>
-                        setFormData((prev) => ({ ...prev, productImage: null }))
-                      }
-                    >
-                      <svg
-                        width="12"
-                        height="12"
-                        fill="currentColor"
-                        viewBox="0 0 16 16"
-                      >
-                        <path d="M8 0L0 8l8 8 8-8z" />
-                      </svg>
-                    </button>
-                  )}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Location (Auto-filled)</label>
+                    <input type="text" value={pickupLocation.location} readOnly className={`${inputClass} bg-gray-700 cursor-not-allowed`} placeholder="Select from map" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div><label className="block text-sm font-medium mb-1">Country</label><input type="text" name="country" value={pickupLocation.country} onChange={(e) => handleInputChange(e, "pickup")} className={inputClass} placeholder="US" /></div>
+                  <div><label className="block text-sm font-medium mb-1">State</label><input type="text" name="state" value={pickupLocation.state} onChange={(e) => handleInputChange(e, "pickup")} className={inputClass} placeholder="CA" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Zip Code</label><input type="text" name="zipCode" value={pickupLocation.zipCode} onChange={(e) => handleInputChange(e, "pickup")} className={inputClass} placeholder="94103" /></div>
                 </div>
 
-                <label className="cursor-pointer bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md flex items-center space-x-2">
-                  <Upload className="w-5 h-5" />
-                  <span>Upload</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Category
-                </label>
-                <input
-                  type="text"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* Number of Items */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Number of Items
-                </label>
-                <input
-                  type="text"
-                  name="numberOfItems"
-                  value={formData.numberOfItems}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* Total Weight */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Total Weight
-                </label>
-                <div className="flex items-center space-x-2">
-                  <input
-                    type="text"
-                    name="totalWeight"
-                    value={formData.totalWeight}
-                    onChange={handleInputChange}
-                    className="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <select
-                    value={selectedWeightUnit}
-                    onChange={(e) => setSelectedWeightUnit(e.target.value)}
-                    className="bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    {weightUnits.map((unit) => (
-                      <option key={unit} value={unit}>
-                        {unit}
-                      </option>
-                    ))}
-                  </select>
+                {/* Map Button */}
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-[#2ACCED]" /> Pickup Location on Map</label>
+                  <button type="button" onClick={() => setActiveMapSection("pickup")} className="w-full py-3 px-4 rounded-lg border-2 border-dashed border-[#2ACCED]/50 hover:border-[#2ACCED] hover:bg-[#2ACCED]/10 transition-all text-left">
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-5 h-5 text-[#2ACCED]" />
+                      <div>
+                        <p className="text-white font-medium">{pickupMapLocation ? "Change Pickup Location" : "Select Pickup Location"}</p>
+                        <p className="text-sm text-gray-400">{pickupMapLocation?.displayName || "Click to open map picker"}</p>
+                      </div>
+                    </div>
+                  </button>
                 </div>
-              </div>
 
-              {/* Pickup Location */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Pick-up location
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="pickupLocation"
-                    value={formData.pickupLocation}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <MapPin className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
+                {/* Map Modal */}
+                {activeMapSection === "pickup" && (
+                  <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+                    <div className="bg-[#0f0d1e] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-purple-600/30">
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                        <h3 className="text-white font-semibold">Select Pickup Location</h3>
+                        <button type="button" onClick={() => setActiveMapSection(null)} className="text-gray-400 hover:text-white">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                      <div className="p-4"><MapComponent onLocationSave={(loc) => handleLocationSave(loc, "pickup")} /></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Confirmation Chip */}
+                {pickupMapLocation && (
+                  <div className="flex items-start gap-2 bg-green-600/10 border border-green-600/20 rounded-lg px-3 py-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-green-400 font-medium mb-0.5">Pickup Location Saved ✓</p>
+                      <p className="text-sm text-white">{pickupMapLocation.displayName || pickupMapLocation.address}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Coordinates: [{pickupMapLocation.coordinates?.longitude || pickupMapLocation.lng || 0}, {pickupMapLocation.coordinates?.latitude || pickupMapLocation.lat || 0}]</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Delivery Address */}
+            <div className="rounded-lg p-4 border border-purple-500">
+              <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
+                <h2 className="text-xl font-semibold py-2">Delivery Address</h2>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div><label className="block text-sm font-medium mb-1">Full Name</label><input type="text" name="name" value={deliveryAddress.name} onChange={(e) => handleInputChange(e, "delivery")} className={inputClass} placeholder="Jane Doe" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Phone</label><input type="tel" name="phone" value={deliveryAddress.phone} onChange={(e) => handleInputChange(e, "delivery")} className={inputClass} placeholder="0987654321" /></div>
                 </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Email</label>
+                    <div className="relative"><input type="email" name="email" value={deliveryAddress.email} onChange={(e) => handleInputChange(e, "delivery")} className={inputClass} placeholder="jane@example.com" /><Mail className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" /></div>
+                  </div>
+                  <div><label className="block text-sm font-medium mb-1">Location (Auto-filled)</label><input type="text" value={deliveryAddress.location} readOnly className={`${inputClass} bg-gray-700 cursor-not-allowed`} placeholder="Select from map" /></div>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div><label className="block text-sm font-medium mb-1">Country</label><input type="text" name="country" value={deliveryAddress.country} onChange={(e) => handleInputChange(e, "delivery")} className={inputClass} placeholder="US" /></div>
+                  <div><label className="block text-sm font-medium mb-1">State</label><input type="text" name="state" value={deliveryAddress.state} onChange={(e) => handleInputChange(e, "delivery")} className={inputClass} placeholder="CA" /></div>
+                  <div><label className="block text-sm font-medium mb-1">Zip Code</label><input type="text" name="zipCode" value={deliveryAddress.zipCode} onChange={(e) => handleInputChange(e, "delivery")} className={inputClass} placeholder="94105" /></div>
+                </div>
+
+                {/* Map Button */}
+                <div>
+                  <label className="block text-sm text-gray-300 mb-2 flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-[#2ACCED]" /> Delivery Location on Map</label>
+                  <button type="button" onClick={() => setActiveMapSection("delivery")} className="w-full py-3 px-4 rounded-lg border-2 border-dashed border-[#2ACCED]/50 hover:border-[#2ACCED] hover:bg-[#2ACCED]/10 transition-all text-left">
+                    <div className="flex items-center gap-3">
+                      <MapPin className="w-5 h-5 text-[#2ACCED]" />
+                      <div>
+                        <p className="text-white font-medium">{deliveryMapLocation ? "Change Delivery Location" : "Select Delivery Location"}</p>
+                        <p className="text-sm text-gray-400">{deliveryMapLocation?.displayName || "Click to open map picker"}</p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+
+                {/* Map Modal */}
+                {activeMapSection === "delivery" && (
+                  <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+                    <div className="bg-[#0f0d1e] rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-purple-600/30">
+                      <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+                        <h3 className="text-white font-semibold">Select Delivery Location</h3>
+                        <button type="button" onClick={() => setActiveMapSection(null)} className="text-gray-400 hover:text-white">
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                      </div>
+                      <div className="p-4"><MapComponent onLocationSave={(loc) => handleLocationSave(loc, "delivery")} /></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Confirmation Chip */}
+                {deliveryMapLocation && (
+                  <div className="flex items-start gap-2 bg-green-600/10 border border-green-600/20 rounded-lg px-3 py-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-green-400 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-green-400 font-medium mb-0.5">Delivery Location Saved ✓</p>
+                      <p className="text-sm text-white">{deliveryMapLocation.displayName || deliveryMapLocation.address}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">Coordinates: [{deliveryMapLocation.coordinates?.longitude || deliveryMapLocation.lng || 0}, {deliveryMapLocation.coordinates?.latitude || deliveryMapLocation.lat || 0}]</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Delivery Address */}
-          <div className=" rounded-lg p-4 border border-purple-500">
-            <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
-              <h2 className="text-xl font-semibold py-2">Delivery Address</h2>
+          {/* Right Column - Order Summary */}
+          <div className="space-y-6">
+            <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
+              <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+              <div className="space-y-3">
+                <div><label className="block text-sm text-gray-400 mb-1">Delivery Fee ($)</label><input type="number" name="deliveryFee" value={formData.deliveryFee} onChange={(e) => handleInputChange(e, "product")} className={inputClass} placeholder="100" min="0" step="0.01" /></div>
+                <div><label className="block text-sm text-gray-400 mb-1">Tip ($)</label><input type="number" name="tip" value={formData.tip} onChange={(e) => handleInputChange(e, "product")} className={inputClass} placeholder="20" min="0" step="0.01" /></div>
+                <div><label className="block text-sm text-gray-400 mb-1">Currency</label>
+                  <select name="currency" value={formData.currency} onChange={(e) => handleInputChange(e, "product")} className={inputClass}>
+                    <option value="usd">USD ($)</option>
+                    <option value="eur">EUR (€)</option>
+                    <option value="gbp">GBP (£)</option>
+                  </select>
+                </div>
+                <div className="flex justify-between pt-2 border-t border-gray-700"><span className="font-semibold">Total:</span><span className="font-semibold">${totalAmount}</span></div>
+              </div>
+
+              <button type="submit" disabled={isLoading} className={`w-full mt-4 py-3 rounded-lg font-medium transition-colors ${isLoading ? "bg-gray-700 cursor-not-allowed" : "bg-gradient-to-r from-[#2ACCED] to-[#B630F4] hover:opacity-90"}`}>
+                {isLoading ? <span className="flex items-center justify-center gap-2"><Loader2 className="w-5 h-5 animate-spin" />Submitting...</span> : "Place Delivery Request"}
+              </button>
             </div>
 
-            <div className="space-y-4">
-              {/* Full Name */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Full name
-                </label>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={formData.fullName}
-                  onChange={handleInputChange}
-                  className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* Set Location */}
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Set location
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    name="deliveryLocation"
-                    value={formData.deliveryLocation}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                  <MapPin className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
-                </div>
-              </div>
-
-              {/* Country, State, Zip Code */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Country / Region
-                  </label>
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    States
-                  </label>
-                  <select
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  >
-                    <option value="Washington DC">Washington DC</option>
-                    <option value="California">California</option>
-                    <option value="New York">New York</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Zip Code
-                  </label>
-                  <input
-                    type="text"
-                    name="zipCode"
-                    value={formData.zipCode}
-                    onChange={handleInputChange}
-                    className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  />
-                </div>
-              </div>
-
-              {/* Email and Phone */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Email
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                    <Mail className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Phone
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    />
-                    <Phone className="absolute right-3 top-2.5 w-5 h-5 text-gray-400" />
-                  </div>
-                </div>
+            <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
+              <h3 className="text-lg font-semibold mb-3">Weight Units</h3>
+              <div className="space-y-2">
+                {weightUnits.map((unit) => (
+                  <button key={unit.value} type="button" onClick={() => setFormData(prev => ({ ...prev, weightUnit: unit.value }))} className={`w-full py-2 px-3 rounded-md text-sm font-medium transition-colors text-left ${formData.weightUnit === unit.value ? "bg-gradient-to-r from-[#2ACCED] to-[#B630F4] text-white" : "bg-gray-800 hover:bg-gray-700 text-gray-300"}`}>
+                    {unit.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
         </div>
-
-        {/* Order Summary */}
-        <div className="space-y-6">
-          <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
-            <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
-
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-400">Delivery Charge</span>
-                <span>$20.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-sm text-gray-400">Tax</span>
-                <span>$20.00</span>
-              </div>
-              <div className="flex justify-between pt-2 border-t border-gray-700">
-                <span className="font-semibold">Total:</span>
-                <span className="font-semibold">$40.00</span>
-              </div>
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              disabled={!isFormValid}
-              className={`w-full mt-4 py-2 rounded-lg font-medium transition-colors ${
-                isFormValid
-                  ? "bg-purple-600 hover:bg-purple-700"
-                  : "bg-gray-700 cursor-not-allowed"
-              }`}
-            >
-              Place Delivery Request
-            </button>
-
-            <button className="w-full mt-3 py-2 rounded-lg border border-gray-700 text-sm font-medium hover:bg-gray-800 transition-colors">
-              Tip your driver
-            </button>
-          </div>
-
-          {/* Weight Unit Selector */}
-          <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
-            <h3 className="text-lg font-semibold mb-3">Weight Units</h3>
-            <div className="space-y-2">
-              {weightUnits.map((unit) => (
-                <button
-                  key={unit}
-                  onClick={() => setSelectedWeightUnit(unit)}
-                  className={`w-full py-2 px-3 rounded-md text-sm font-medium transition-colors ${
-                    selectedWeightUnit === unit
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-800 hover:bg-gray-700"
-                  }`}
-                >
-                  {unit}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+      </form>
     </div>
   );
 };
