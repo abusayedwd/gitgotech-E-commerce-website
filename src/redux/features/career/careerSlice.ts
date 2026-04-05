@@ -2,11 +2,14 @@ import { apiSlice } from "@/redux/api/apiSlice";
 
 const careerSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-
     // Get careers list
     getCareers: builder.query({
-      query: ({ page = 1, limit = 10 }) =>
-        `/career/get?page=${page}&limit=${limit}`,
+      query: ({ page = 1, limit = 10, searchQ = "", country = "" }) => {
+        let url = `/career/get?page=${page}&limit=${limit}`;
+        if (searchQ) url += `&searchQ=${encodeURIComponent(searchQ)}`;
+        if (country) url += `&country=${encodeURIComponent(country)}`;
+        return url;
+      },
       providesTags: ["Careers"],
     }),
 
@@ -25,7 +28,6 @@ const careerSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Careers"],
     }),
-
   }),
 });
 

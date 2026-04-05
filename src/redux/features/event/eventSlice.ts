@@ -2,7 +2,6 @@ import { apiSlice } from "@/redux/api/apiSlice";
 
 const eventSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-
     // Create Event
     createEvent: builder.mutation({
       query: (data) => ({
@@ -21,31 +20,27 @@ const eventSlice = apiSlice.injectEndpoints({
     }),
 
     getEventsForProductAdd: builder.query({
-      query: () =>
-        `/event/get?type=created`,
-      
+      query: () => `/event/get?type=created`,
     }),
 
-    getProductByEvent : builder.query({
-      query: (id) =>
-        `/event/product/get/${id}`,
+    getProductByEvent: builder.query({
+      query: (id) => `/event/product/get/${id}`,
     }),
 
     getEventById: builder.query({
-      query: (id) =>
-        `/event/get/${id}`,
+      query: (id) => `/event/get/${id}`,
     }),
 
     ///size data get event
-getProductEventWishesSize: builder.query({
-  query: (data) => ({
-    url: `/event/size/get-product-size`,
-    method: "GET",
-    params: data, // ✅ FIXED
-  }),
-}),
+    getProductEventWishesSize: builder.query({
+      query: (data) => ({
+        url: `/event/size/get-product-size`,
+        method: "GET",
+        params: data, // ✅ FIXED
+      }),
+    }),
 
-   eventProductSizeAddEdit : builder.mutation({
+    eventProductSizeAddEdit: builder.mutation({
       query: (data) => ({
         url: `/event/size/add`,
         method: "PATCH",
@@ -54,10 +49,7 @@ getProductEventWishesSize: builder.query({
       invalidatesTags: ["Events"],
     }),
 
-   
-
-
-      eventProductAdd : builder.mutation({
+    eventProductAdd: builder.mutation({
       query: (data) => ({
         url: `/event/product/add`,
         method: "POST",
@@ -65,7 +57,6 @@ getProductEventWishesSize: builder.query({
       }),
       invalidatesTags: ["Events"],
     }),
-
 
     // Update Event
     updateEvent: builder.mutation({
@@ -77,6 +68,30 @@ getProductEventWishesSize: builder.query({
       invalidatesTags: ["Events"],
     }),
 
+    // Add Event Member (Send Invitation)
+    addEventMember: builder.mutation({
+      query: ({ eventId, memberDetails, file }) => {
+        const formData = new FormData();
+        // Add member details as JSON string in 'data' field
+        formData.append(
+          "data",
+          JSON.stringify({
+            event: eventId,
+            memberDetails: memberDetails,
+          }),
+        );
+        // Add card file (PDF or image)
+        if (file) {
+          formData.append("file", file);
+        }
+        return {
+          url: "/event/member/add",
+          method: "POST",
+          body: formData,
+        };
+      },
+      invalidatesTags: ["Events"],
+    }),
   }),
 });
 
@@ -91,5 +106,6 @@ export const {
 
   ///size get event product
   useEventProductSizeAddEditMutation,
-  useGetProductEventWishesSizeQuery
+  useGetProductEventWishesSizeQuery,
+  useAddEventMemberMutation,
 } = eventSlice;

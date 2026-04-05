@@ -14,7 +14,7 @@
 //   const [isLocationOpen, setIsLocationOpen] = useState(false);
 
 //   const { data: joblistData, isLoading } = useGetCareersQuery({ page: 1, limit: 10 });
-  
+
 //   const jobs = joblistData?.data || [];
 
 //   // Extract unique countries from job list
@@ -52,7 +52,7 @@
 //           {/* Filter Panel */}
 //           {isFilterOpen && (
 //             <div className="md:w-full rounded-2xl shadow-2xl animate-slide-down">
-              
+
 //               {/* Search Input */}
 //               <div className="mb-6">
 //                 <div className="relative">
@@ -166,7 +166,6 @@
 //         </header>
 //       </div>
 
-
 //       {/* Job Listings Grid */}
 //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 //         {isLoading ? (
@@ -224,54 +223,109 @@
 
 // export default Joblist;
 
+"use client";
 
-
-
-
-"use client"
-
-import { useState, useMemo } from 'react';
-import { Filter, MapPin, DollarSign, ChevronRight, ChevronDown, ChevronUp, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { RiTimeZoneLine } from 'react-icons/ri';
-import { useGetCareersQuery } from '@/redux/features/career/careerSlice';
+import { useGetCareersQuery } from "@/redux/features/career/careerSlice";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  DollarSign,
+  Filter,
+  MapPin,
+  Search,
+} from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import { RiTimeZoneLine } from "react-icons/ri";
 
 const Joblist = () => {
   const router = useRouter();
-  const [selectedCountry, setSelectedCountry] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
+  const searchParams = useSearchParams();
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("searchQ") || "",
+  );
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    searchParams.get("searchQ") || "",
+  );
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [isLocationOpen, setIsLocationOpen] = useState(true);
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const { data: joblistData, isLoading } = useGetCareersQuery({ page: 1, limit: 10 });
+  // Sync search query from URL parameters
+  useEffect(() => {
+    const urlSearchQ = searchParams.get("searchQ") || "";
+    const urlCountry = searchParams.get("country") || "";
+    setSearchQuery(urlSearchQ);
+    setDebouncedSearch(urlSearchQ);
+    setSelectedCountry(urlCountry);
+  }, [searchParams]);
+
+  // Debounce search query
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Pass searchQ and country to the API for server-side filtering
+  const { data: joblistData, isLoading } = useGetCareersQuery({
+    page,
+    limit,
+    searchQ: debouncedSearch,
+    country: selectedCountry,
+  });
 
   const jobs = joblistData?.data || [];
+  const totalPages = joblistData?.totalPages || 1;
 
-  console.log(jobs)
+  console.log(jobs);
 
+  // Extract unique countries from job list
   const countries = useMemo(() => {
-    const uniqueCountries = Array.from(new Set(jobs.map(job => job.country)));
+    const uniqueCountries = Array.from(new Set(jobs.map((job) => job.country)));
     return uniqueCountries;
   }, [jobs]);
 
-  const filteredJobs = useMemo(() => {
-    return jobs.filter(job => {
-      const matchesSearch =
-        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        job.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCountry = !selectedCountry || job.country === selectedCountry;
-      return matchesSearch && matchesCountry;
-    });
-  }, [jobs, searchQuery, selectedCountry]);
+  // Handler for search
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPage(1); // Reset to first page on new search
+    // Update URL with search query
+    if (searchQuery.trim()) {
+      router.push(`/careers?searchQ=${encodeURIComponent(searchQuery.trim())}`);
+    } else {
+      router.push("/careers");
+    }
+  };
+
+  // Handler for country change
+  const handleCountryChange = (country: string) => {
+    setSelectedCountry(country);
+    setPage(1); // Reset to first page on country change
+    // Update URL with country
+    const params = new URLSearchParams();
+    if (searchQuery) params.set("searchQ", searchQuery);
+    if (country) params.set("country", country);
+    router.push(`/careers?${params.toString()}`);
+  };
+
+  // Handler for page change
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="container mx-auto px-6 py-8">
         <div className="flex gap-8">
-
           {/* ── Sidebar ── */}
           <aside className="w-56 shrink-0">
-
             {/* Filter toggle button */}
             <button
               onClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -284,9 +338,12 @@ const Joblist = () => {
             {isFilterOpen && (
               <div>
                 {/* Search */}
-                <div className="mb-5">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={16} />
+                <form onSubmit={handleSearch} className="mb-5">
+                  <div className="relative mb-2">
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+                      size={16}
+                    />
                     <input
                       type="text"
                       placeholder="Search by job title..."
@@ -295,7 +352,13 @@ const Joblist = () => {
                       className="w-full pl-9 pr-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                     />
                   </div>
-                </div>
+                  <button
+                    type="submit"
+                    className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm text-white font-medium transition-colors"
+                  >
+                    Search
+                  </button>
+                </form>
 
                 {/* Select Location */}
                 <button
@@ -303,9 +366,11 @@ const Joblist = () => {
                   className="flex items-center justify-between w-full text-white text-base font-semibold mb-4 hover:text-purple-400 transition-colors"
                 >
                   <span>Select Location</span>
-                  {isLocationOpen
-                    ? <ChevronUp size={18} className="text-gray-400" />
-                    : <ChevronDown size={18} className="text-gray-400" />}
+                  {isLocationOpen ? (
+                    <ChevronUp size={18} className="text-gray-400" />
+                  ) : (
+                    <ChevronDown size={18} className="text-gray-400" />
+                  )}
                 </button>
 
                 {isLocationOpen && (
@@ -314,16 +379,16 @@ const Joblist = () => {
                     <RadioOption
                       id="all"
                       label="All Countries"
-                      checked={selectedCountry === ''}
-                      onChange={() => setSelectedCountry('')}
+                      checked={selectedCountry === ""}
+                      onChange={() => handleCountryChange("")}
                     />
-                    {countries.map(country => (
+                    {countries.map((country) => (
                       <RadioOption
                         key={country}
                         id={country}
                         label={country}
                         checked={selectedCountry === country}
-                        onChange={() => setSelectedCountry(country)}
+                        onChange={() => handleCountryChange(country)}
                       />
                     ))}
                   </div>
@@ -339,19 +404,51 @@ const Joblist = () => {
                 <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
                 <span className="ml-3 text-gray-400">Loading jobs...</span>
               </div>
-            ) : filteredJobs.length === 0 ? (
+            ) : jobs.length === 0 ? (
               <div className="flex items-center justify-center py-20 text-gray-400">
                 No jobs found matching your criteria.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {filteredJobs.map((job) => (
-                  <JobCard key={job._id} job={job} onView={() => router.push(`/careers/job-details?id=${job._id}`)} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {jobs.map((job) => (
+                    <JobCard
+                      key={job._id}
+                      job={job}
+                      onView={() =>
+                        router.push(`/careers/job-details?id=${job._id}`)
+                      }
+                    />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-2 mt-8">
+                    <button
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page === 1}
+                      className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed hover:border-purple-500 transition-colors"
+                    >
+                      Previous
+                    </button>
+
+                    <span className="text-gray-400 text-sm">
+                      Page {page} of {totalPages}
+                    </span>
+
+                    <button
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page === totalPages}
+                      className="px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg text-sm text-white disabled:opacity-50 disabled:cursor-not-allowed hover:border-purple-500 transition-colors"
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </main>
-
         </div>
       </div>
     </div>
@@ -360,7 +457,10 @@ const Joblist = () => {
 
 /* ─── Radio Option ─── */
 const RadioOption = ({ id, label, checked, onChange }) => (
-  <label htmlFor={`loc-${id}`} className="flex items-center gap-3 cursor-pointer group">
+  <label
+    htmlFor={`loc-${id}`}
+    className="flex items-center gap-3 cursor-pointer group"
+  >
     <input
       type="radio"
       id={`loc-${id}`}
@@ -373,12 +473,16 @@ const RadioOption = ({ id, label, checked, onChange }) => (
     {/* Custom circle */}
     <div
       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-        checked ? 'border-purple-500 bg-purple-500' : 'border-gray-600 group-hover:border-purple-400'
+        checked
+          ? "border-purple-500 bg-purple-500"
+          : "border-gray-600 group-hover:border-purple-400"
       }`}
     >
       {checked && <div className="w-2 h-2 rounded-full bg-white" />}
     </div>
-    <span className={`text-sm transition-colors ${checked ? 'text-white font-medium' : 'text-gray-400 group-hover:text-gray-300'}`}>
+    <span
+      className={`text-sm transition-colors ${checked ? "text-white font-medium" : "text-gray-400 group-hover:text-gray-300"}`}
+    >
       {label}
     </span>
   </label>
@@ -387,9 +491,11 @@ const RadioOption = ({ id, label, checked, onChange }) => (
 /* ─── Job Card ─── */
 const JobCard = ({ job, onView }) => (
   <div className="bg-[#111111] border border-gray-800 rounded-xl p-5 flex flex-col gap-4 hover:border-blue-500/40 hover:shadow-[0_0_16px_rgba(99,102,241,0.2)] transition-all duration-300 group">
-
     {/* Title */}
-    <h3 className="text-xl font-bold leading-snug" style={{ fontFamily: 'Georgia, serif' }}>
+    <h3
+      className="text-xl font-bold leading-snug"
+      style={{ fontFamily: "Georgia, serif" }}
+    >
       {job.title}
     </h3>
 
@@ -397,7 +503,10 @@ const JobCard = ({ job, onView }) => (
     <div className="space-y-1.5 text-sm text-gray-400">
       <div className="flex items-center gap-2">
         <MapPin size={16} className="text-white shrink-0" />
-        <span>{job.country}{job.address ? ` - ${job.address}` : ''}</span>
+        <span>
+          {job.country}
+          {job.address ? ` - ${job.address}` : ""}
+        </span>
       </div>
       <div className="flex items-center gap-2">
         <DollarSign size={16} className="text-white shrink-0" />
@@ -422,7 +531,10 @@ const JobCard = ({ job, onView }) => (
         transition-all duration-300 group"
     >
       View Details
-      <ChevronRight size={16} className="group-hover:translate-x-0.5 transition-transform" />
+      <ChevronRight
+        size={16}
+        className="group-hover:translate-x-0.5 transition-transform"
+      />
     </button>
   </div>
 );

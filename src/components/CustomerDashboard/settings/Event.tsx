@@ -229,9 +229,14 @@ export default function Event() {
                   </Link>
 
                   <button
-                    onClick={() =>
-                      router.push(`/profile/event/ainvite?id=${event._id}`)
-                    }
+                    onClick={() => {
+                      // Store event data in sessionStorage before navigation
+                      sessionStorage.setItem(
+                        "selectedEvent",
+                        JSON.stringify(event),
+                      );
+                      router.push(`/profile/event/ainvite?id=${event._id}`);
+                    }}
                     className="px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:from-blue-700 hover:to-cyan-700 transition-all duration-200 text-sm flex items-center justify-center gap-2"
                   >
                     <IoIosShareAlt size={24} />
