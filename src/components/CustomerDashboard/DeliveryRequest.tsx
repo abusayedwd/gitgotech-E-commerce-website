@@ -90,6 +90,11 @@ const DeliveryRequest = () => {
 
   const deliveries: Delivery[] = deliveriesData?.data || [];
 
+  // Safely calculate total price with null checks
+  const getTotalPrice = (price: Price): number => {
+    return (price?.deliveryFee || 0) + (price?.tip || 0);
+  };
+
   const handleViewDetails = (delivery: Delivery) => {
     setSelectedDelivery(delivery);
     setIsModalOpen(true);
@@ -155,9 +160,12 @@ const DeliveryRequest = () => {
     return price.deliveryFee + price.tip;
   };
 
-  if (error) {
-    toast.error("Failed to load delivery requests");
-  }
+  // Show error toast only once when error occurs
+  useEffect(() => {
+    if (error) {
+      toast.error("Failed to load delivery requests");
+    }
+  }, [error]);
 
   return (
     <div className="container mx-auto mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6 min-h-screen">
