@@ -86,11 +86,10 @@ const DeliveryRequest = () => {
     data: deliveriesData,
     isLoading,
     error,
-  } = useGetDeliveryRequestsQuery();
+  } = useGetDeliveryRequestsQuery({});
 
   const deliveries: Delivery[] = deliveriesData?.data || [];
 
-  // Safely calculate total price with null checks
   const getTotalPrice = (price: Price): number => {
     return (price?.deliveryFee || 0) + (price?.tip || 0);
   };
@@ -156,12 +155,8 @@ const DeliveryRequest = () => {
     });
   };
 
-  const getTotalPrice = (price: Price): number => {
-    return price.deliveryFee + price.tip;
-  };
-
   // Show error toast only once when error occurs
-  useEffect(() => {
+  React.useEffect(() => {
     if (error) {
       toast.error("Failed to load delivery requests");
     }

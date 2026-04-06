@@ -24,8 +24,9 @@ type Category = {
 export default function CategoryMarquee() {
   const router = useRouter();
 
-  const { data: categoriesRes, isLoading } = useGetHomeCategoriesQuery();
+  const { data: categoriesRes, isLoading } = useGetHomeCategoriesQuery({});
   const categories: Category[] = categoriesRes?.data ?? [];
+  console.log(categories)
 
   if (isLoading || categories.length === 0) return null;
 

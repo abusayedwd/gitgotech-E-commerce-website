@@ -206,6 +206,7 @@ export default function EventViewDeaign() {
   const id = searchParams.get('id')
 
   const {data: eventProduct, isLoading, error} = useGetProductByEventQuery(id)
+  console.log(eventProduct)
   
   const {data: eventData} = useGetEventByIdQuery(id || '')
   

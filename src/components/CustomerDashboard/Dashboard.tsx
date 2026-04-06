@@ -100,25 +100,24 @@ export default function MyDashboard() {
     setShowRewardModal(false);
   };
 
-  const handleSubmitProductReview = () => {
-    console.log({
-      type: 'Product Review',
-      orderId: selectedOrder?.id,
-      productName: selectedOrder?.productName,
-      rating: productRating,
-      review: productReview
-    });
+ const handleSubmitReviews = () => {
+  const payload = {
+    driver: {
+      rating: driverRating,   // 1–5
+      comment: driverReview,
+    },
+    product: {
+      rating: productRating,  // 1–5
+      comment: productReview,
+    },
   };
 
-  const handleSubmitDriverReview = () => {
-    console.log({
-      type: 'Driver Review',
-      orderId: selectedOrder?.id,
-      productName: selectedOrder?.productName,
-      rating: driverRating,
-      review: driverReview
-    });
-  };
+  console.log(payload); // or send to your API
+
+  // e.g. await api.post('/reviews', payload)
+
+  setShowReviewModal(false);
+};
 
   const StarRating = ({ rating, onRate }: { rating: number; onRate: (star: number) => void }) => {
     return (
@@ -334,63 +333,67 @@ export default function MyDashboard() {
       </div>
 
       {/* Review Modal */}
-      {showReviewModal && (
-        <div className="fixed inset-0 mt-16 bg-black/70 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-3xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
-            {/* Close Button */}
-            <button
-              onClick={() => setShowReviewModal(false)}
-              className="float-right text-white hover:text-purple-400 transition-colors"
-            >
-              <svg className="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+ {/* Review Modal */}
+{showReviewModal && (
+  <div className="fixed inset-0 mt-16 bg-black/70 flex items-center justify-center p-4 z-50">
+    <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-3xl p-6 md:p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
+      
+      {/* Close Button */}
+      <button
+        onClick={() => setShowReviewModal(false)}
+        className="float-right text-white hover:text-purple-400 transition-colors"
+      >
+        <svg className="w-6 h-6 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
-            {/* Product Rating Section */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold text-white text-center mb-6">Product Rating</h2>
-              <div className="flex justify-center mb-4">
-                <StarRating rating={productRating} onRate={setProductRating} />
-              </div>
-              <p className="text-purple-400 text-center text-sm mb-4">How satisfied are you with product quality?</p>
-              <textarea
-                value={productReview}
-                onChange={(e) => setProductReview(e.target.value)}
-                placeholder="Write your review"
-                className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
-              />
-              <button
-                onClick={handleSubmitProductReview}
-                className="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
-              >
-                Submit
-              </button>
-            </div>
+      <h2 className="text-2xl font-bold text-white text-center mb-8">Rate Your Experience</h2>
 
-            {/* Driver Rating Section */}
-            <div>
-              <h2 className="text-2xl font-bold text-white text-center mb-6">Driver Rating</h2>
-              <div className="flex justify-center mb-4">
-                <StarRating rating={driverRating} onRate={setDriverRating} />
-              </div>
-              <p className="text-purple-400 text-center text-sm mb-4">How was your experience with the driver?</p>
-              <textarea
-                value={driverReview}
-                onChange={(e) => setDriverReview(e.target.value)}
-                placeholder="Write your review"
-                className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
-              />
-              <button
-                onClick={handleSubmitDriverReview}
-                className="w-full mt-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
-              >
-                Submit
-              </button>
-            </div>
-          </div>
+      {/* Product Rating Section */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-white text-center mb-4">Product Rating</h3>
+        <div className="flex justify-center mb-4">
+          <StarRating rating={productRating} onRate={setProductRating} />
         </div>
-      )}
+        <p className="text-purple-400 text-center text-sm mb-4">How satisfied are you with product quality?</p>
+        <textarea
+          value={productReview}
+          onChange={(e) => setProductReview(e.target.value)}
+          placeholder="Write your review"
+          className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
+        />
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-purple-500/20 mb-8" />
+
+      {/* Driver Rating Section */}
+      <div className="mb-8">
+        <h3 className="text-lg font-semibold text-white text-center mb-4">Driver Rating</h3>
+        <div className="flex justify-center mb-4">
+          <StarRating rating={driverRating} onRate={setDriverRating} />
+        </div>
+        <p className="text-purple-400 text-center text-sm mb-4">How was your experience with the driver?</p>
+        <textarea
+          value={driverReview}
+          onChange={(e) => setDriverReview(e.target.value)}
+          placeholder="Write your review"
+          className="w-full bg-black/50 border border-gray-700 rounded-xl p-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[120px] resize-none"
+        />
+      </div>
+
+      {/* Single Submit Button */}
+      <button
+        onClick={handleSubmitReviews}
+        className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
+      >
+        Submit
+      </button>
+
+    </div>
+  </div>
+)}
 
       {/* Reward Modal */}
       {showRewardModal && (

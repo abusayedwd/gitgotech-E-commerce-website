@@ -22,6 +22,8 @@ export default function ShoppingCart() {
         page: page,
     });
 
+    console.log(cartData)
+
     const [addToCartWishList] = useAddToCartWishListMutation();
     const [deleteSaveItem] = useDeleteSaveListMutation();
 
