@@ -1,171 +1,213 @@
 "use client";
 
-import { SectionHeader } from '@/customComponent/Header';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import { FaArrowLeft } from 'react-icons/fa';
-import { Trash2, Minus, Plus, X } from 'lucide-react';
-import { useGetWishlistAndCartQuery, useAddToCartWishListMutation, useDeleteSaveListMutation } from '@/redux/features/home/homeSlice';
-import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
-import toast from 'react-hot-toast';
+import { SectionHeader } from "@/customComponent/Header";
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import {
+  useAddToCartWishListMutation,
+  useDeleteSaveListMutation,
+  useGetWishlistAndCartQuery,
+} from "@/redux/features/home/homeSlice";
+import { Minus, Plus, Trash2, X } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function ShoppingCart() {
-    const router = useRouter();
-    const [page, setPage] = useState(1);
-    const [quantities, setQuantities] = useState<Record<string, number>>({});
-    const [showTipModal, setShowTipModal] = useState(false);
-    const [tipAmount, setTipAmount] = useState('5');
+  const router = useRouter();
+  const [page, setPage] = useState(1);
+  const [quantities, setQuantities] = useState<Record<string, number>>({});
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>(
+    {},
+  );
+  const [showTipModal, setShowTipModal] = useState(false);
+  const [tipAmount, setTipAmount] = useState("5");
 
-    const { data: cartData, isLoading, refetch } = useGetWishlistAndCartQuery({
-        type: "cart",
-        page: page,
-    });
+  const {
+    data: cartData,
+    isLoading,
+    refetch,
+  } = useGetWishlistAndCartQuery({
+    type: "cart",
+    page: page,
+  });
 
-    console.log(cartData)
+  console.log(cartData);
 
-    const [addToCartWishList] = useAddToCartWishListMutation();
-    const [deleteSaveItem] = useDeleteSaveListMutation();
+  const [addToCartWishList] = useAddToCartWishListMutation();
+  const [deleteSaveItem] = useDeleteSaveListMutation();
 
-    const cartItems = cartData?.data?.filter((item: any) => item.product !== null) || [];
+  const cartItems =
+    cartData?.data?.filter((item: any) => item.product !== null) || [];
 
-    // Initialize quantities when cart data loads
-    useEffect(() => {
-        if (cartItems.length > 0) {
-            const initialQuantities: Record<string, number> = {};
-            cartItems.forEach((item: any) => {
-                initialQuantities[item._id] = 1;
-            });
-            setQuantities(initialQuantities);
+  // Initialize quantities and sizes when cart data loads
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      const initialQuantities: Record<string, number> = {};
+      const initialSizes: Record<string, string> = {};
+      cartItems.forEach((item: any) => {
+        initialQuantities[item._id] = 1;
+        // Set default size to first available size
+        if (
+          item.product?.product_stocks &&
+          item.product.product_stocks.length > 0
+        ) {
+          initialSizes[item._id] = item.product.product_stocks[0].size;
         }
-    }, [cartItems.length]);
+      });
+      setQuantities(initialQuantities);
+      setSelectedSizes(initialSizes);
+    }
+  }, [cartItems.length]);
 
-    const handleRemoveFromCart = async (id: string) => {
-        try {
-            const res = await deleteSaveItem(id).unwrap();
-            if (res?.success) {
-                toast.success('Removed from cart');
-                refetch();
-            }
-        } catch (error: any) {
-            toast.error(error?.data?.message || 'Failed to remove item');
-        }
-    };
+  const handleRemoveFromCart = async (id: string) => {
+    try {
+      const res = await deleteSaveItem(id).unwrap();
+      if (res?.success) {
+        toast.success("Removed from cart");
+        refetch();
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to remove item");
+    }
+  };
 
-    const handleIncrement = async (item: any) => {
-        const currentQty = quantities[item._id] || 1;
-        const totalStock = getTotalStock(item.product?.product_stocks);
-        
-        if (currentQty >= totalStock) {
-            toast.error('Cannot add more. Out of stock!');
-            return;
-        }
+  const handleIncrement = async (item: any) => {
+    const currentQty = quantities[item._id] || 1;
+    const totalStock = getTotalStock(item.product?.product_stocks);
 
-        const newQuantity = currentQty + 1;
-        setQuantities(prev => ({
-            ...prev,
-            [item._id]: newQuantity
-        }));
+    if (currentQty >= totalStock) {
+      toast.error("Cannot add more. Out of stock!");
+      return;
+    }
 
-        try {
-            await addToCartWishList({
-                product: item.product._id,
-                saveType: 'cart',
-                quantity: newQuantity
-            }).unwrap();
-            
-            refetch();
-            toast.success('Quantity updated');
-        } catch (error: any) {
-            console.error('Failed to update quantity:', error);
-        }
-    };
+    const newQuantity = currentQty + 1;
+    setQuantities((prev) => ({
+      ...prev,
+      [item._id]: newQuantity,
+    }));
 
-    const handleDecrement = async (item: any) => {
-        const currentQty = quantities[item._id] || 1;
-        
-        if (currentQty <= 1) {
-            return;
-        }
+    try {
+      await addToCartWishList({
+        product: item.product._id,
+        saveType: "cart",
+        quantity: newQuantity,
+      }).unwrap();
 
-        const newQuantity = currentQty - 1;
-        setQuantities(prev => ({
-            ...prev,
-            [item._id]: newQuantity
-        }));
+      refetch();
+      toast.success("Quantity updated");
+    } catch (error: any) {
+      console.error("Failed to update quantity:", error);
+    }
+  };
 
-        try {
-            await addToCartWishList({
-                product: item.product._id,
-                saveType: 'cart',
-                quantity: newQuantity
-            }).unwrap();
-            
-            refetch();
-            toast.success('Quantity updated');
-        } catch (error: any) {
-            console.error('Failed to update quantity:', error);
-        }
-    };
+  const handleDecrement = async (item: any) => {
+    const currentQty = quantities[item._id] || 1;
 
-    const getProductImage = (product: any) => {
-        if (!product) return '/images/jacket.png';
-        if (product.product_images && product.product_images.length > 0) {
-            return `${IMAGE_BASE_URL}/${product.product_images[0]}`;
-        }
-        return '/images/jacket.png';
-    };
+    if (currentQty <= 1) {
+      return;
+    }
 
-    const getTotalStock = (stocks: any[]) => {
-        if (!stocks || stocks.length === 0) return 0;
-        return stocks.reduce((acc, stock) => acc + (stock.stock || 0), 0);
-    };
+    const newQuantity = currentQty - 1;
+    setQuantities((prev) => ({
+      ...prev,
+      [item._id]: newQuantity,
+    }));
 
-    const calculateSubtotal = () => {
-        return cartItems.reduce((total: number, item: any) => {
-            const quantity = quantities[item._id] || 1;
-            return total + ((item.product?.product_price || 0) * quantity);
-        }, 0);
-    };
+    try {
+      await addToCartWishList({
+        product: item.product._id,
+        saveType: "cart",
+        quantity: newQuantity,
+      }).unwrap();
 
-    const calculateTotal = () => {
-        const subtotal = calculateSubtotal();
-        const deliveryCharge = 20.00;
-        const tax = subtotal * 0.1;
-        const tip = parseFloat(tipAmount) || 0;
-        return subtotal + deliveryCharge + tax + tip;
-    };
+      refetch();
+      toast.success("Quantity updated");
+    } catch (error: any) {
+      console.error("Failed to update quantity:", error);
+    }
+  };
 
-    const handleTipSubmit = () => {
-        setShowTipModal(false);
-        toast.success('Tip amount saved!');
-    };
+  const getProductImage = (product: any) => {
+    if (!product) return "/images/jacket.png";
+    if (product.product_images && product.product_images.length > 0) {
+      return `${IMAGE_BASE_URL}/${product.product_images[0]}`;
+    }
+    return "/images/jacket.png";
+  };
 
-    // Prepare cart data for checkout
-    const getCartDataForCheckout = () => {
-        return cartItems.map((item: any) => ({
-            productId: item.product._id,
-            quantity: quantities[item._id] || 1,
-            price: item.product.product_price || 0
-        }));
-    };
+  const getTotalStock = (stocks: any[]) => {
+    if (!stocks || stocks.length === 0) return 0;
+    return stocks.reduce((acc, stock) => acc + (stock.stock || 0), 0);
+  };
+
+  const calculateSubtotal = () => {
+    return cartItems.reduce((total: number, item: any) => {
+      const quantity = quantities[item._id] || 1;
+      return total + (item.product?.product_price || 0) * quantity;
+    }, 0);
+  };
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    const deliveryCharge = 20.0;
+    const tax = subtotal * 0.1;
+    const tip = parseFloat(tipAmount) || 0;
+    return subtotal + deliveryCharge + tax + tip;
+  };
+
+  const handleTipSubmit = () => {
+    setShowTipModal(false);
+    toast.success("Tip amount saved!");
+  };
+
+  // Prepare cart data for checkout in the required order format
+  const getCartDataForCheckout = () => {
+    return cartItems.map((item: any) => ({
+      product: item.product._id,
+      size: [
+        {
+          type:
+            selectedSizes[item._id] ||
+            item.product.product_stocks?.[0]?.size ||
+            "",
+          quantity: quantities[item._id] || 1,
+        },
+      ],
+      orderType: item.product.vendor ? "vendor" : "custom",
+      deliveryType: "delivery", // Default to delivery, can be changed to "pick-up"
+      price: {
+        unit: "usd",
+        amount: item.product.product_price || 0,
+        tip: parseFloat(tipAmount) || 0,
+        coupon: "",
+        deliveryCharge: 30,
+      },
+    }));
+  };
 
   return (
     <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto flex items-center gap-4">
-        <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
+        >
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-            <FaArrowLeft className='text-black' />
+            <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">My Cart</h1>
+        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">
+          My Cart
+        </h1>
       </div>
 
       {/* Header */}
       <div className="mb-6 md:mb-8 text-center">
         <h1 className="flex items-center justify-center text-3xl md:text-4xl font-bold mb-3">
-          <SectionHeader title='My Shopping Cart'></SectionHeader>
+          <SectionHeader title="My Shopping Cart"></SectionHeader>
         </h1>
         <p className="text-gray-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
           Review your selected items before completing your order.
@@ -186,85 +228,143 @@ export default function ShoppingCart() {
 
             {/* Cart Items */}
             <div className="space-y-4">
-              {cartItems.length > 0 ? (
-                cartItems.map((item: any) => {
-                  const product = item.product;
-                  const imageUrl = getProductImage(product);
-                  const totalStock = getTotalStock(product?.product_stocks);
-                  const isInStock = totalStock > 0;
-                  const quantity = quantities[item._id] || 1;
-                  const subtotal = (product?.product_price || 0) * quantity;
+              {cartItems.length > 0
+                ? cartItems.map((item: any) => {
+                    const product = item.product;
+                    const imageUrl = getProductImage(product);
+                    const totalStock = getTotalStock(product?.product_stocks);
+                    const isInStock = totalStock > 0;
+                    const quantity = quantities[item._id] || 1;
+                    const subtotal = (product?.product_price || 0) * quantity;
 
-                  return (
-                    <div
-                      key={item._id}
-                      className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-purple-900/10 p-4 border-[#B8B8B8] border-b rounded-lg"
-                    >
-                      {/* Product */}
-                      <div className="md:col-span-5 flex items-center gap-4">
-                        <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
-                          <img src={imageUrl} alt={product?.product_name} className="w-full h-full object-cover" />
+                    return (
+                      <div
+                        key={item._id}
+                        className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-purple-900/10 p-4 border-[#B8B8B8] border-b rounded-lg"
+                      >
+                        {/* Product */}
+                        <div className="md:col-span-4 flex items-center gap-4">
+                          <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
+                            <img
+                              src={imageUrl}
+                              alt={product?.product_name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <h3 className="font-semibold text-sm md:text-base">
+                              {product?.product_name}
+                            </h3>
+                            <p className="text-xs text-gray-400 md:hidden mt-1">
+                              ${(product?.product_price || 0).toFixed(2)}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-sm md:text-base">{product?.product_name}</h3>
-                          <p className="text-xs text-gray-400 md:hidden mt-1">${(product?.product_price || 0).toFixed(2)}</p>
+
+                        {/* Size Selector */}
+                        <div className="md:col-span-2 text-left md:text-center">
+                          {product?.product_stocks &&
+                          product.product_stocks.length > 0 ? (
+                            <select
+                              value={selectedSizes[item._id] || ""}
+                              onChange={(e) => {
+                                setSelectedSizes((prev) => ({
+                                  ...prev,
+                                  [item._id]: e.target.value,
+                                }));
+                              }}
+                              className="bg-[#2E2E34] text-white px-3 py-2 rounded-lg text-sm border border-purple-500/30 focus:outline-none focus:border-purple-500"
+                            >
+                              {product.product_stocks.map((stock: any) => (
+                                <option key={stock._id} value={stock.size}>
+                                  {stock.size} ({stock.stock} in stock)
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <span className="text-xs text-gray-400">
+                              No sizes available
+                            </span>
+                          )}
                         </div>
-                      </div>
 
-                      {/* Price */}
-                      <div className="md:col-span-2 text-left md:text-center">
-                        <span className="text-sm md:text-base hidden md:inline">${(product?.product_price || 0).toFixed(2)}</span>
-                      </div>
+                        {/* Price */}
+                        <div className="md:col-span-2 text-left md:text-center">
+                          <span className="text-sm md:text-base hidden md:inline">
+                            ${(product?.product_price || 0).toFixed(2)}
+                          </span>
+                        </div>
 
-                      {/* Quantity */}
-                      <div className="md:col-span-3 flex justify-start md:justify-center">
-                        <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-2">
+                        {/* Quantity */}
+                        <div className="md:col-span-2 flex justify-start md:justify-center">
+                          <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-2">
+                            <button
+                              onClick={() => handleDecrement(item)}
+                              disabled={!isInStock || quantity <= 1}
+                              className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <span className="text-sm font-semibold min-w-[20px] text-center">
+                              {quantity}
+                            </span>
+                            <button
+                              onClick={() => handleIncrement(item)}
+                              disabled={!isInStock || quantity >= totalStock}
+                              className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Subtotal & Remove */}
+                        <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
+                          <span className="font-semibold text-sm md:text-base">
+                            ${subtotal.toFixed(2)}
+                          </span>
                           <button
-                            onClick={() => handleDecrement(item)}
-                            disabled={!isInStock || quantity <= 1}
-                            className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                            onClick={() =>
+                              handleRemoveFromCart(
+                                item.product?._id || item._id,
+                              )
+                            }
+                            className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
                           >
-                            <Minus className="w-3 h-3" />
-                          </button>
-                          <span className="text-sm font-semibold min-w-[20px] text-center">{quantity}</span>
-                          <button
-                            onClick={() => handleIncrement(item)}
-                            disabled={!isInStock || quantity >= totalStock}
-                            className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
-                          >
-                            <Plus className="w-3 h-3" />
+                            <Trash2 className="w-4 h-4 text-red-400" />
                           </button>
                         </div>
                       </div>
-
-                      {/* Subtotal & Remove */}
-                      <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
-                        <span className="font-semibold text-sm md:text-base">${subtotal.toFixed(2)}</span>
-                        <button
-                          onClick={() => handleRemoveFromCart(item.product?._id || item._id)}
-                          className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
+                    );
+                  })
+                : !isLoading && (
+                    <div className="p-12 text-center">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-600/20 flex items-center justify-center">
+                        <svg
+                          className="w-10 h-10 text-purple-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
                         >
-                          <Trash2 className="w-4 h-4 text-red-400" />
-                        </button>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
+                        </svg>
                       </div>
+                      <h3 className="text-xl font-semibold mb-2">
+                        Your cart is empty
+                      </h3>
+                      <button
+                        onClick={() => router.push("/")}
+                        className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
+                      >
+                        Browse Products
+                      </button>
                     </div>
-                  );
-                })
-              ) : (
-                !isLoading && (
-                  <div className="p-12 text-center">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-600/20 flex items-center justify-center">
-                      <svg className="w-10 h-10 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                    </div>
-                    <h3 className="text-xl font-semibold mb-2">Your cart is empty</h3>
-                    <button onClick={() => router.push('/')} className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors">
-                      Browse Products
-                    </button>
-                  </div>
-                )
-              )}
+                  )}
             </div>
           </div>
         </div>
@@ -275,8 +375,18 @@ export default function ShoppingCart() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">Cart Total</h2>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                <svg
+                  className="w-5 h-5 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  />
                 </svg>
               </div>
             </div>
@@ -284,8 +394,12 @@ export default function ShoppingCart() {
             {/* Price Breakdown */}
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Subtotal ({cartItems.length} items)</span>
-                <span className="font-medium">${calculateSubtotal().toFixed(2)}</span>
+                <span className="text-gray-400">
+                  Subtotal ({cartItems.length} items)
+                </span>
+                <span className="font-medium">
+                  ${calculateSubtotal().toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Delivery Charge</span>
@@ -293,27 +407,36 @@ export default function ShoppingCart() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
-                <span className="font-medium">${(calculateSubtotal() * 0.1).toFixed(2)}</span>
+                <span className="font-medium">
+                  ${(calculateSubtotal() * 0.1).toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tip</span>
-                <button onClick={() => setShowTipModal(true)} className="text-purple-400 hover:text-purple-300 font-medium">
+                <button
+                  onClick={() => setShowTipModal(true)}
+                  className="text-purple-400 hover:text-purple-300 font-medium"
+                >
                   ${tipAmount}
                 </button>
               </div>
               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
                 <span>Total</span>
-                <span className="text-purple-400">${calculateTotal().toFixed(2)}</span>
+                <span className="text-purple-400">
+                  ${calculateTotal().toFixed(2)}
+                </span>
               </div>
             </div>
 
-            <Link href={{
-              pathname: '/checkout',
-              query: {
-                tip: tipAmount,
-                cartData: JSON.stringify(getCartDataForCheckout())
-              }
-            }}>
+            <Link
+              href={{
+                pathname: "/checkout",
+                query: {
+                  tip: tipAmount,
+                  cartData: JSON.stringify(getCartDataForCheckout()),
+                },
+              }}
+            >
               <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
                 Proceed to Checkout
               </button>
@@ -333,20 +456,27 @@ export default function ShoppingCart() {
       {showTipModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
-            <button onClick={() => setShowTipModal(false)} className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors">
+            <button
+              onClick={() => setShowTipModal(false)}
+              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
+            >
               <X className="w-6 h-6" />
             </button>
 
             <h2 className="text-2xl font-bold text-center mb-6">Add Tip</h2>
-            <p className="text-gray-400 text-sm text-center mb-6">Show appreciation for your delivery person</p>
+            <p className="text-gray-400 text-sm text-center mb-6">
+              Show appreciation for your delivery person
+            </p>
 
             <div className="grid grid-cols-4 gap-3 mb-6">
-              {['0', '5', '10', '15'].map((amount) => (
+              {["0", "5", "10", "15"].map((amount) => (
                 <button
                   key={amount}
                   onClick={() => setTipAmount(amount)}
                   className={`py-3 rounded-lg font-medium transition-colors ${
-                    tipAmount === amount ? 'bg-purple-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                    tipAmount === amount
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
                   }`}
                 >
                   ${amount}
@@ -362,7 +492,10 @@ export default function ShoppingCart() {
               className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4"
             />
 
-            <button onClick={handleTipSubmit} className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all">
+            <button
+              onClick={handleTipSubmit}
+              className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all"
+            >
               Save Tip
             </button>
           </div>

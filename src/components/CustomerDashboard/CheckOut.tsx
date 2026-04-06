@@ -1,27 +1,39 @@
- 
 "use client";
-import React, { useState, useEffect } from 'react';
-import { X, MapPin, Loader2, Search } from 'lucide-react';
-import Link from 'next/link';
-import { FaArrowLeft } from 'react-icons/fa';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useAddVendorOrderMutation } from '@/redux/features/order/orderSlice';
-import { useGetWishlistAndCartQuery } from '@/redux/features/home/homeSlice';
-import toast from 'react-hot-toast';
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
+import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Loader2, MapPin, Search, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { FaArrowLeft } from "react-icons/fa";
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  useMap,
+  useMapEvents,
+} from "react-leaflet";
 
 // Fix for default marker icon in Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
 // Map click handler component
-function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number) => void }) {
+function MapClickHandler({
+  onLocationSelect,
+}: {
+  onLocationSelect: (lat: number, lng: number) => void;
+}) {
   useMapEvents({
     click(e) {
       onLocationSelect(e.latlng.lat, e.latlng.lng);
@@ -31,7 +43,11 @@ function MapClickHandler({ onLocationSelect }: { onLocationSelect: (lat: number,
 }
 
 // Map component to update view when location changes
-function MapUpdater({ location }: { location: { lat: number; lng: number } | null }) {
+function MapUpdater({
+  location,
+}: {
+  location: { lat: number; lng: number } | null;
+}) {
   const map = useMap();
   useEffect(() => {
     if (location) {
@@ -42,8 +58,12 @@ function MapUpdater({ location }: { location: { lat: number; lng: number } | nul
 }
 
 // Search location component
-function LocationSearch({ onLocationSelect }: { onLocationSelect: (lat: number, lng: number, address: string) => void }) {
-  const [searchQuery, setSearchQuery] = useState('');
+function LocationSearch({
+  onLocationSelect,
+}: {
+  onLocationSelect: (lat: number, lng: number, address: string) => void;
+}) {
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
 
@@ -56,12 +76,12 @@ function LocationSearch({ onLocationSelect }: { onLocationSelect: (lat: number, 
     setIsSearching(true);
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
       );
       const data = await response.json();
       setSearchResults(data);
     } catch (error) {
-      console.error('Search error:', error);
+      console.error("Search error:", error);
     } finally {
       setIsSearching(false);
     }
@@ -80,8 +100,12 @@ function LocationSearch({ onLocationSelect }: { onLocationSelect: (lat: number, 
   }, [searchQuery]);
 
   const handleSelectLocation = (result: any) => {
-    onLocationSelect(parseFloat(result.lat), parseFloat(result.lon), result.display_name);
-    setSearchQuery('');
+    onLocationSelect(
+      parseFloat(result.lat),
+      parseFloat(result.lon),
+      result.display_name,
+    );
+    setSearchQuery("");
     setSearchResults([]);
   };
 
@@ -122,20 +146,22 @@ function LocationSearch({ onLocationSelect }: { onLocationSelect: (lat: number, 
 export default function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   // Get cart data from URL params (passed from shopping cart)
-  const tipFromCart = searchParams.get('tip') || '5';
-  const cartDataFromUrl = searchParams.get('cartData');
+  const tipFromCart = searchParams.get("tip") || "5";
+  const cartDataFromUrl = searchParams.get("cartData");
   const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
-  
-  const [deliveryMethod, setDeliveryMethod] = useState('delivery');
+
+  const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showTipModal, setShowTipModal] = useState(false);
   const [showMap, setShowMap] = useState(false);
-  const [couponCode, setCouponCode] = useState('');
+  const [couponCode, setCouponCode] = useState("");
   const [tipAmount, setTipAmount] = useState(tipFromCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
+    null,
+  );
 
   const [orderSubmitted] = useAddVendorOrderMutation();
 
@@ -145,35 +171,50 @@ export default function CheckoutPage() {
     page: 1,
   });
 
-  const allCartItems = cartData?.data?.filter((item: any) => item.product !== null) || [];
+  const allCartItems =
+    cartData?.data?.filter((item: any) => item.product !== null) || [];
 
-  // Merge cart items with quantities from URL
+  // Merge cart items with quantities and sizes from URL
   const cartItems = allCartItems.map((item: any) => {
-    const cartItem = parsedCartData.find((c: any) => c.productId === item.product._id);
+    const cartItem = parsedCartData.find(
+      (c: any) => c.product === item.product._id,
+    );
     return {
       ...item,
-      quantity: cartItem ? cartItem.quantity : 1
+      quantity: cartItem ? cartItem.size[0]?.quantity : 1,
+      selectedSize: cartItem
+        ? cartItem.size[0]?.type
+        : item.product.product_stocks?.[0]?.size || "M",
+      orderData: cartItem
+        ? {
+            product: cartItem.product,
+            size: cartItem.size,
+            orderType: cartItem.orderType,
+            deliveryType: cartItem.deliveryType,
+            price: cartItem.price,
+          }
+        : null,
     };
   });
 
   const [formData, setFormData] = useState({
-    fullName: '',
-    address: '',
-    country: 'United States',
-    state: '',
-    zipcode: '',
-    email: '',
-    phone: ''
+    fullName: "",
+    address: "",
+    country: "United States",
+    state: "",
+    zipcode: "",
+    email: "",
+    phone: "",
   });
 
   // Calculate totals with quantities from cart
   const calculateSubtotal = () => {
     return cartItems.reduce((sum: number, item: any) => {
-      return sum + ((item.product.product_price || 0) * (item.quantity || 1));
+      return sum + (item.product.product_price || 0) * (item.quantity || 1);
     }, 0);
   };
 
-  const deliveryCharge = 20.00;
+  const deliveryCharge = 20.0;
   const tax = calculateSubtotal() * 0.1;
   const discount = couponCode ? calculateSubtotal() * 0.1 : 0;
   const tip = parseFloat(tipAmount) || 0;
@@ -186,17 +227,17 @@ export default function CheckoutPage() {
         (position) => {
           setLocation({
             lat: position.coords.latitude,
-            lng: position.coords.longitude
+            lng: position.coords.longitude,
           });
-          toast.success('Location detected successfully!');
+          toast.success("Location detected successfully!");
         },
         (error) => {
-          toast.error('Unable to get your location. Please enter manually.');
-          console.error('Geolocation error:', error);
-        }
+          toast.error("Unable to get your location. Please enter manually.");
+          console.error("Geolocation error:", error);
+        },
       );
     } else {
-      toast.error('Geolocation is not supported by your browser');
+      toast.error("Geolocation is not supported by your browser");
     }
   };
 
@@ -204,22 +245,24 @@ export default function CheckoutPage() {
   const handleMapLocationSelect = (lat: number, lng: number) => {
     setLocation({ lat, lng });
     setShowMap(false);
-    toast.success('Location selected from map!');
+    toast.success("Location selected from map!");
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>): void => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ): void => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleCouponSubmit = () => {
     if (couponCode.trim()) {
-      toast.success('Coupon applied successfully!');
+      toast.success("Coupon applied successfully!");
     }
     setShowCouponModal(false);
-    setCouponCode('');
+    setCouponCode("");
   };
 
   const handleTipSubmit = () => {
@@ -228,18 +271,23 @@ export default function CheckoutPage() {
 
   const handleSubmitOrder = async () => {
     // Validation
-    if (!formData.fullName || !formData.address || !formData.email || !formData.phone) {
-      toast.error('Please fill in all required fields');
+    if (
+      !formData.fullName ||
+      !formData.address ||
+      !formData.email ||
+      !formData.phone
+    ) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
     if (cartItems.length === 0) {
-      toast.error('Your cart is empty');
+      toast.error("Your cart is empty");
       return;
     }
 
     if (!location) {
-      toast.error('Please provide your delivery location');
+      toast.error("Please provide your delivery location");
       return;
     }
 
@@ -250,18 +298,20 @@ export default function CheckoutPage() {
       const orderPromises = cartItems.map((item: any) => {
         const orderData = {
           product: item.product._id,
-          size: item.product.product_stocks?.map((stock: any) => ({
-            type: stock.size,
-            quantity: 1
-          })) || [{ type: 'M', quantity: 1 }],
-          orderType: 'vendor',
-          deliveryType: deliveryMethod,
+          size: [
+            {
+              type: item.selectedSize || "M",
+              quantity: item.quantity || 1,
+            },
+          ],
+          orderType: item.orderData?.orderType || "vendor",
+          deliveryType: item.orderData?.deliveryType || deliveryMethod,
           price: {
-            unit: 'usd',
+            unit: "usd",
             amount: item.product.product_price || 0,
             tip: tip,
             coupon: couponCode,
-            deliveryCharge: deliveryCharge
+            deliveryCharge: deliveryCharge,
           },
           deliveryInfo: {
             name: formData.fullName,
@@ -272,28 +322,30 @@ export default function CheckoutPage() {
             email: formData.email,
             phone: formData.phone,
             location: {
-              type: 'Point',
-              coordinates: [location.lng, location.lat]
-            }
-          }
+              type: "Point",
+              coordinates: [location.lng, location.lat],
+            },
+          },
         };
-        console.log(orderData)
+
+        console.log("Order Data:", orderData);
 
         return orderSubmitted(orderData).unwrap();
       });
 
       await Promise.all(orderPromises);
 
-      toast.success('Order placed successfully!');
-      
+      toast.success("Order placed successfully!");
+
       // Clear cart and redirect
       setTimeout(() => {
-        router.push('/customer-dashboard');
+        router.push("/customer-dashboard");
       }, 2000);
-
     } catch (error: any) {
-      console.error('Order submission error:', error);
-      toast.error(error?.data?.message || 'Failed to place order. Please try again.');
+      console.error("Order submission error:", error);
+      toast.error(
+        error?.data?.message || "Failed to place order. Please try again.",
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -303,18 +355,27 @@ export default function CheckoutPage() {
     <div className="min-h-screen mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto flex items-center gap-4">
-        <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
+        >
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-            <FaArrowLeft className='text-black' />
+            <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Check Out</h1>
+        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">
+          Check Out
+        </h1>
       </div>
 
       {/* Header */}
       <div className="max-w-7xl mx-auto mb-6 md:mb-8 text-center">
-        <h1 className="text-3xl md:text-4xl font-bold font-cormorant mb-2">Checkout</h1>
-        <p className="text-gray-400 font-poppins text-sm">One step away from your dream purchase.</p>
+        <h1 className="text-3xl md:text-4xl font-bold font-cormorant mb-2">
+          Checkout
+        </h1>
+        <p className="text-gray-400 font-poppins text-sm">
+          One step away from your dream purchase.
+        </p>
       </div>
 
       {/* Main Content */}
@@ -328,22 +389,26 @@ export default function CheckoutPage() {
                 type="radio"
                 id="delivery"
                 name="deliveryMethod"
-                checked={deliveryMethod === 'delivery'}
-                onChange={() => setDeliveryMethod('delivery')}
+                checked={deliveryMethod === "delivery"}
+                onChange={() => setDeliveryMethod("delivery")}
                 className="w-4 h-4 text-purple-600"
               />
-              <label htmlFor="delivery" className="text-sm font-medium">Delivery</label>
+              <label htmlFor="delivery" className="text-sm font-medium">
+                Delivery
+              </label>
             </div>
             <div className="flex items-center gap-3">
               <input
                 type="radio"
                 id="pickup"
                 name="deliveryMethod"
-                checked={deliveryMethod === 'pickup'}
-                onChange={() => setDeliveryMethod('pickup')}
+                checked={deliveryMethod === "pickup"}
+                onChange={() => setDeliveryMethod("pickup")}
                 className="w-4 h-4 text-purple-600"
               />
-              <label htmlFor="pickup" className="text-sm font-medium">Pick up</label>
+              <label htmlFor="pickup" className="text-sm font-medium">
+                Pick up
+              </label>
             </div>
           </div>
 
@@ -382,7 +447,9 @@ export default function CheckoutPage() {
 
               {/* Location Selection */}
               <div>
-                <label className="block text-sm mb-2">Delivery Location *</label>
+                <label className="block text-sm mb-2">
+                  Delivery Location *
+                </label>
                 <div className="flex gap-3 mb-3">
                   <button
                     type="button"
@@ -390,7 +457,7 @@ export default function CheckoutPage() {
                     className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   >
                     <MapPin className="w-5 h-5" />
-                    {location ? '✓ Detected' : 'Get Current Location'}
+                    {location ? "✓ Detected" : "Get Current Location"}
                   </button>
                   <button
                     type="button"
@@ -406,7 +473,8 @@ export default function CheckoutPage() {
                       <span className="font-medium">Selected Location:</span>
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Latitude: {location.lat.toFixed(6)}, Longitude: {location.lng.toFixed(6)}
+                      Latitude: {location.lat.toFixed(6)}, Longitude:{" "}
+                      {location.lng.toFixed(6)}
                     </p>
                   </div>
                 )}
@@ -415,7 +483,9 @@ export default function CheckoutPage() {
               {/* Country, State, Zip */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm mb-2">Country / Region *</label>
+                  <label className="block text-sm mb-2">
+                    Country / Region *
+                  </label>
                   <select
                     name="country"
                     value={formData.country}
@@ -490,19 +560,31 @@ export default function CheckoutPage() {
             <div className="space-y-4 mb-6 max-h-60 overflow-y-auto">
               {cartItems.length > 0 ? (
                 cartItems.map((item: any) => (
-                  <div key={item._id} className="flex items-center gap-3 pb-3 border-b border-gray-700 last:border-b-0">
+                  <div
+                    key={item._id}
+                    className="flex items-center gap-3 pb-3 border-b border-gray-700 last:border-b-0"
+                  >
                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
-                      <img 
-                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product.product_images?.[0]}`} 
-                        alt={item.product.product_name} 
-                        className="w-full h-full object-cover" 
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product.product_images?.[0]}`}
+                        alt={item.product.product_name}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{item.product.product_name}</p>
-                      <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
+                      <p className="text-sm font-medium truncate">
+                        {item.product.product_name}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Qty: {item.quantity}
+                      </p>
                     </div>
-                    <p className="text-sm font-semibold">${((item.product.product_price || 0) * item.quantity).toFixed(2)}</p>
+                    <p className="text-sm font-semibold">
+                      $
+                      {(
+                        (item.product.product_price || 0) * item.quantity
+                      ).toFixed(2)}
+                    </p>
                   </div>
                 ))
               ) : (
@@ -514,11 +596,15 @@ export default function CheckoutPage() {
             <div className="space-y-3 border-t border-gray-700 pt-4 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Subtotal</span>
-                <span className="font-medium">${calculateSubtotal().toFixed(2)}</span>
+                <span className="font-medium">
+                  ${calculateSubtotal().toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Delivery Charge</span>
-                <span className="font-medium">${deliveryCharge.toFixed(2)}</span>
+                <span className="font-medium">
+                  ${deliveryCharge.toFixed(2)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
@@ -532,7 +618,7 @@ export default function CheckoutPage() {
               )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tip</span>
-                <button 
+                <button
                   onClick={() => setShowTipModal(true)}
                   className="text-purple-400 hover:text-purple-300 font-medium"
                 >
@@ -559,8 +645,8 @@ export default function CheckoutPage() {
               disabled={isSubmitting || cartItems.length === 0}
               className={`w-full py-4 rounded-lg font-semibold transition-all duration-300 ${
                 isSubmitting || cartItems.length === 0
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transform hover:scale-105'
+                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transform hover:scale-105"
               }`}
             >
               {isSubmitting ? (
@@ -569,7 +655,7 @@ export default function CheckoutPage() {
                   Processing...
                 </span>
               ) : (
-                'Place Order'
+                "Place Order"
               )}
             </button>
           </div>
@@ -587,7 +673,9 @@ export default function CheckoutPage() {
               <X className="w-6 h-6" />
             </button>
 
-            <h2 className="text-2xl font-bold text-center mb-6">Apply Coupon</h2>
+            <h2 className="text-2xl font-bold text-center mb-6">
+              Apply Coupon
+            </h2>
 
             <input
               type="text"
@@ -620,17 +708,19 @@ export default function CheckoutPage() {
 
             <h2 className="text-2xl font-bold text-center mb-6">Add Tip</h2>
 
-            <p className="text-gray-400 text-sm text-center mb-6">Show appreciation for your delivery person</p>
+            <p className="text-gray-400 text-sm text-center mb-6">
+              Show appreciation for your delivery person
+            </p>
 
             <div className="grid grid-cols-4 gap-3 mb-6">
-              {['0', '5', '10', '15'].map((amount) => (
+              {["0", "5", "10", "15"].map((amount) => (
                 <button
                   key={amount}
                   onClick={() => setTipAmount(amount)}
                   className={`py-3 rounded-lg font-medium transition-colors ${
                     tipAmount === amount
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      ? "bg-purple-600 text-white"
+                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
                   }`}
                 >
                   ${amount}
@@ -667,18 +757,23 @@ export default function CheckoutPage() {
               <X className="w-6 h-6" />
             </button>
 
-            <h2 className="text-2xl font-bold text-center mb-6">Select Delivery Location</h2>
+            <h2 className="text-2xl font-bold text-center mb-6">
+              Select Delivery Location
+            </h2>
 
             {/* Search Field */}
             <LocationSearch onLocationSelect={handleMapLocationSelect} />
 
             {/* Map */}
-            <div className="rounded-lg overflow-hidden border border-purple-500/30" style={{ height: '400px' }}>
+            <div
+              className="rounded-lg overflow-hidden border border-purple-500/30"
+              style={{ height: "400px" }}
+            >
               <MapContainer
-                center={[40.7128, -74.0060]}
+                center={[40.7128, -74.006]}
                 zoom={13}
                 className="w-full h-full"
-                style={{ height: '100%', width: '100%' }}
+                style={{ height: "100%", width: "100%" }}
               >
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -701,7 +796,8 @@ export default function CheckoutPage() {
                   <span className="font-medium">Selected Location:</span>
                 </p>
                 <p className="text-xs text-gray-400 mt-1">
-                  Latitude: {location.lat.toFixed(6)}, Longitude: {location.lng.toFixed(6)}
+                  Latitude: {location.lat.toFixed(6)}, Longitude:{" "}
+                  {location.lng.toFixed(6)}
                 </p>
               </div>
             )}
