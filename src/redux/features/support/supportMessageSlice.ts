@@ -9,7 +9,7 @@ const supportMessageSlice = apiSlice.injectEndpoints({
       query: (body) => ({
         url: `/support/init`,
         method: "POST",
-        body,
+         body: { message: body.message },
       }),
       invalidatesTags: ["Support"],
     }),

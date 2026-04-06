@@ -7,8 +7,9 @@ export const initializeSocket = (token: string): Socket => {
     return socket;
   }
 
-  const SOCKET_URL = process.env.SOCKET_BASE_URL || 'https://rat-drum-unto-hawk.trycloudflare.com';
+  const SOCKET_URL = process.env.SOCKET_BASE_URL || 'https://news-rays-portfolio-starsmerchant.trycloudflare.com';
 
+ 
   console.log('🔌 Connecting to socket:', SOCKET_URL);
   console.log('🔑 Token:', token ? `${token.substring(0, 20)}...` : 'No token');
 

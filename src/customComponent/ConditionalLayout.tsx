@@ -21,7 +21,9 @@ const isDashboardRoute =
     // Only return children for vendor dashboard (no navbar, footer)
     return <>
     <Navbar />
-    {children}</>;
+    {children}
+    <SupportMessage />
+    </>;
   }
 
   // Return full layout with navbar and footer for other routes
