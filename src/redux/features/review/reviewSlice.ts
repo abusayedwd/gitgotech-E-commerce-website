@@ -12,14 +12,13 @@ const reviewSlice = apiSlice.injectEndpoints({
         method: "GET",
         params: { page, limit },
       }),
-      providesTags: (result, error, arg) => 
-        result ? [...result.map((r) => ({ type: "Review", id: r.id })), "Review"] : ["Review"],
+      providesTags: ["Review"],
     }),
 
     // ✅ POST Add Review
     addProductReview: builder.mutation({
-      query: ({ productId, body }) => ({
-        url: `/review/add/${productId}`,
+      query: ({ id, body }) => ({
+        url: `/review/add/${id}`,
         method: "POST",
         body,
         

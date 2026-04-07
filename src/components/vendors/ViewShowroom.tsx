@@ -36,9 +36,12 @@ export default function ViewShowroomPage() {
   const { data: vendorShowroomData, isLoading: isLoadingShowrooms } = useGetVendorShowroomsQuery(vendorId, {
     skip: !vendorId
   });
+
+  console.log(vendorShowroomData)
   const showrooms = vendorShowroomData?.data?.showrooms || [];
   const vendorProfile = vendorShowroomData?.data?.vendorProfile;
   
+  console.log(showrooms);
   console.log(showrooms);
 
   // Get showroom details for the selected showroom

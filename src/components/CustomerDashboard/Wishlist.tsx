@@ -219,7 +219,7 @@ export default function WishlistPage() {
             }
         } catch (error: any) {
             toast.error(error?.data?.message || 'Failed to add to cart');
-            console.log(error.data)
+            console.log(error.data, 'add to cart error');
         }
     };
 

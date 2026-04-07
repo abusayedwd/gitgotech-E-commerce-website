@@ -160,7 +160,7 @@ export default function VendorDashboardLayout({
       icon: FileText,
       path: "/vendor-dashboard/custom-orders",
     },
-    { name: "Analytics", icon: BarChart3, path: "/vendor-dashboard/analytics" },
+    // { name: "Analytics", icon: BarChart3, path: "/vendor-dashboard/analytics" },
   ];
 
   const handleNavigation = (path: string) => {

@@ -5,6 +5,7 @@
 "use client";
 import url from '@/redux/api/baseUrl';
 import { useGetCustomerMainOrdersQuery, useGetCustomerReturnOrdersQuery } from '@/redux/features/order/orderSlice';
+import { useAddProductReviewMutation } from '@/redux/features/review/reviewSlice';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -24,26 +25,40 @@ export default function MyDashboard() {
 
  const {data: mainOrderData } = useGetCustomerMainOrdersQuery();
  const {data: returnOrderData } = useGetCustomerReturnOrdersQuery();
-
  console.log(mainOrderData)
- console.log(url)
+ const [reviewProduct] = useAddProductReviewMutation();
 
  // Transform API data for orders
- const orders = mainOrderData?.data?.map((order: any) => ({
+//  const orders = mainOrderData?.data?.map((order: any) => ({
  
-   id: order.id || order._id,
-   productName: order.name,
-   brand: order.showroom_name,
-   image: order.product_images?.[0] || '/images/jacket.png',
-   price: order.price?.amount || 0,
-   quantity: 1,
-   otp: 'N/A',
-   total: (order.price?.amount || 0) + (order.price?.tip || 0) + (order.price?.deliveryCharge || 0) - (order.price?.coupon || 0),
-   status: order.status,
-   hasReview: false,
-   productId: order.productId,
-   size: order.size
- })) || [];
+//    id: order.id || order._id,
+//    productName: order.name,
+//    brand: order.showroom_name,
+//    image: order.product_images?.[0] || '/images/jacket.png',
+//    price: order.price?.amount || 0,
+//    quantity: 1,
+//    otp: 'N/A',
+//    total: (order.price?.amount || 0) + (order.price?.tip || 0) + (order.price?.deliveryCharge || 0) - (order.price?.coupon || 0),
+//    status: order.status,
+//    hasReview: false,
+//    productId: order.productId,
+//    size: order.size
+//  })) || [];
+
+const orders = mainOrderData?.data?.map((order: any) => ({
+  id: order.id,
+  productName: order.name,
+  brand: order.showroom_name,
+  image: order.product_images?.[0] || '/images/jacket.png',
+  price: order.price?.amount || 0,
+  quantity: order.size?.reduce((acc: number, s: any) => acc + s.quantity, 0) || 1, // ← sum all size quantities
+  otp: 'N/A',
+  total: (order.price?.amount || 0) + (order.price?.tip || 0) + (order.price?.deliveryCharge || 0) - (Number(order.price?.coupon) || 0),
+  status: order.status,
+  hasReview: false,
+  productId: order.productId || null,
+  size: order.size
+})) || [];
 
 
 
@@ -100,21 +115,29 @@ export default function MyDashboard() {
     setShowRewardModal(false);
   };
 
- const handleSubmitReviews = () => {
+
+
+const handleSubmitReviews = async (orderId: string | number) => {
+  console.log(orderId)
   const payload = {
+ 
     driver: {
-      rating: driverRating,   // 1–5
+      rating: driverRating,
       comment: driverReview,
     },
     product: {
-      rating: productRating,  // 1–5
+      rating: productRating,
       comment: productReview,
     },
   };
+  console.log(payload)
 
-  console.log(payload); // or send to your API
-
-  // e.g. await api.post('/reviews', payload)
+  try {
+    const res = await reviewProduct({ body: payload, id: orderId }).unwrap();
+    console.log(res);
+  } catch (error) {
+    console.error('Error submitting review:', error);
+  }
 
   setShowReviewModal(false);
 };
@@ -384,12 +407,12 @@ export default function MyDashboard() {
       </div>
 
       {/* Single Submit Button */}
-      <button
-        onClick={handleSubmitReviews}
-        className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
-      >
-        Submit
-      </button>
+     <button
+  onClick={() => handleSubmitReviews(selectedOrder?.id)}
+  className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
+>
+  Submit
+</button>
 
     </div>
   </div>

@@ -8,6 +8,7 @@ import {
 import { Circle, Eye, ShoppingCart, X } from "lucide-react";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import MapComponent from "./Location";
 
 interface SelectedLocation {
   name?: string;
