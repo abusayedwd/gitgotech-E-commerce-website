@@ -70,7 +70,7 @@ export default function Navbar() {
               className="object-contain"
               priority  
             /> */}
-            <img className="h-16" src="/images/logos.svg" alt="" />
+            <img className="h-16 w-full" src="/images/logo.png" alt="" />
           </div>
         </Link>
 
