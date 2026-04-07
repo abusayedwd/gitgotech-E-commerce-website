@@ -286,7 +286,9 @@ const Joblist = () => {
 
   // Extract unique countries from job list
   const countries = useMemo(() => {
-    const uniqueCountries = Array.from(new Set(jobs.map((job) => job.country)));
+    const uniqueCountries = Array.from(
+      new Set(jobs.map((job: any) => job.country)),
+    ) as string[];
     return uniqueCountries;
   }, [jobs]);
 
@@ -411,7 +413,7 @@ const Joblist = () => {
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  {jobs.map((job) => (
+                  {jobs.map((job: any) => (
                     <JobCard
                       key={job._id}
                       job={job}
@@ -456,7 +458,17 @@ const Joblist = () => {
 };
 
 /* ─── Radio Option ─── */
-const RadioOption = ({ id, label, checked, onChange }) => (
+const RadioOption = ({
+  id,
+  label,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: () => void;
+}) => (
   <label
     htmlFor={`loc-${id}`}
     className="flex items-center gap-3 cursor-pointer group"
@@ -489,7 +501,7 @@ const RadioOption = ({ id, label, checked, onChange }) => (
 );
 
 /* ─── Job Card ─── */
-const JobCard = ({ job, onView }) => (
+const JobCard = ({ job, onView }: { job: any; onView: () => void }) => (
   <div className="bg-[#111111] border border-gray-800 rounded-xl p-5 flex flex-col gap-4 hover:border-blue-500/40 hover:shadow-[0_0_16px_rgba(99,102,241,0.2)] transition-all duration-300 group">
     {/* Title */}
     <h3

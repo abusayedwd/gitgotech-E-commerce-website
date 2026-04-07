@@ -27,7 +27,7 @@ const OrderDetails = () => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   // Fetch order details
-  const { data: orderData, isLoading } = useGetCustomerMainOrdersQuery();
+  const { data: orderData, isLoading } = useGetCustomerMainOrdersQuery({});
 
   const { data: mainOrderDetails, isLoading: isMainOrderDetailsLoading } =
     useGetMainOrderDetailsQuery(id);
@@ -125,27 +125,27 @@ const OrderDetails = () => {
     setReason("");
   };
 
-//   const reviews = [
-//     {
-//       id: 1,
-//       name: "William Alex",
-//       avatar: "https://placehold.co/40x40/6C757D/FFFFFF?text=WA",
-//       comment:
-//         "Lorem ipsum dolor sit amet consectetur. Lacus et venenatis gravida vivamus mauris.",
-//     },
-//     {
-//       id: 2,
-//       name: "Sarah Johnson",
-//       avatar: "https://placehold.co/40x40/6C757D/FFFFFF?text=SJ",
-//       comment: "Excellent quality and fit! Very happy with my purchase.",
-//     },
-//     {
-//       id: 3,
-//       name: "Mike Chen",
-//       avatar: "https://placehold.co/40x40/6C757D/FFFFFF?text=MC",
-//       comment: "Great jacket for the price. Shipping was fast too!",
-//     },
-//   ];
+  //   const reviews = [
+  //     {
+  //       id: 1,
+  //       name: "William Alex",
+  //       avatar: "https://placehold.co/40x40/6C757D/FFFFFF?text=WA",
+  //       comment:
+  //         "Lorem ipsum dolor sit amet consectetur. Lacus et venenatis gravida vivamus mauris.",
+  //     },
+  //     {
+  //       id: 2,
+  //       name: "Sarah Johnson",
+  //       avatar: "https://placehold.co/40x40/6C757D/FFFFFF?text=SJ",
+  //       comment: "Excellent quality and fit! Very happy with my purchase.",
+  //     },
+  //     {
+  //       id: 3,
+  //       name: "Mike Chen",
+  //       avatar: "https://placehold.co/40x40/6C757D/FFFFFF?text=MC",
+  //       comment: "Great jacket for the price. Shipping was fast too!",
+  //     },
+  //   ];
 
   const stars = Array.from({ length: 5 }, (_, i) => (
     <Star
@@ -200,9 +200,7 @@ const OrderDetails = () => {
                 <div className="flex items-center space-x-2">
                   {/* Show Return button only for Delivered status */}
                   {isCompleted && (
-                    <Link
-                      href={`/customer-dashboard/return-request?id=${id}`}
-                    >
+                    <Link href={`/customer-dashboard/return-request?id=${id}`}>
                       <div className="bg-[#6100FF] px-4 py-2 rounded-lg text-sm font-medium cursor-pointer hover:bg-[#6100FF]/80">
                         Return
                       </div>

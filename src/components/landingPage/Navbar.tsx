@@ -1,43 +1,61 @@
- 
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Heart, ShoppingCart, MessageSquare, Bell, User, Search, Menu, X } from 'lucide-react';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { Menu, X } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
-  
+
   const pathname = usePathname();
   const router = useRouter();
 
   // Function to determine if link is active
   const isActive = (path: string) => {
-    if (path === '/') {
-      return pathname === '/';
+    if (path === "/") {
+      return pathname === "/";
     }
     return pathname.startsWith(path);
   };
 
   // Auth logic - Load from localStorage after hydration
   useEffect(() => {
-    const storedUserString = localStorage.getItem('user');
-    if (storedUserString) {
-      const storedUser = JSON.parse(storedUserString);
-      setIsLoggedIn(storedUser?.isLoggedIn || false);
-      setUserRole(storedUser?.role || null);
-    }
-    setIsHydrated(true);
+    const updateAuthState = () => {
+      const storedUserString = localStorage.getItem("user");
+      if (storedUserString) {
+        const storedUser = JSON.parse(storedUserString);
+        setIsLoggedIn(storedUser?.isLoggedIn || false);
+        setUserRole(storedUser?.role || null);
+      } else {
+        setIsLoggedIn(false);
+        setUserRole(null);
+      }
+      setIsHydrated(true);
+    };
+
+    updateAuthState();
+
+    // Listen for storage changes (for logout/login across components)
+    window.addEventListener("storage", updateAuthState);
+
+    // Also listen for custom auth change events
+    window.addEventListener("authChanged", updateAuthState);
+
+    return () => {
+      window.removeEventListener("storage", updateAuthState);
+      window.removeEventListener("authChanged", updateAuthState);
+    };
   }, []);
 
   // Dynamic routes based on user role
-  const dashboardRoute = userRole === 'vendor' ? '/vendor-dashboard' : '/customer-dashboard';
-  const profileRoute = userRole === 'vendor' ? '/v-profile' : '/profile';
+  const dashboardRoute =
+    userRole === "vendor" ? "/vendor-dashboard" : "/customer-dashboard";
+  const profileRoute = userRole === "vendor" ? "/v-profile" : "/profile";
 
   return (
     <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white fixed pb-1.5 top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg">
@@ -59,14 +77,14 @@ export default function Navbar() {
         {/* Desktop Navigation & Icons - Hidden on mobile */}
         <div className="hidden lg:flex items-center space-x-2 xl:space-x-1">
           {/* Desktop Navigation Links - Only show for logged in customers */}
-          {isLoggedIn && userRole === 'customer' && (
+          {isLoggedIn && userRole === "customer" && (
             <div className="flex items-center space-x-4 mr-4">
               <Link
                 href="/vendors"
                 className={`${
-                  isActive('/vendors')
-                    ? 'text-purple-500 font-medium text-[20px]'
-                    : 'text-[20px] text-white hover:text-white text-2xl '
+                  isActive("/vendors")
+                    ? "text-purple-500 font-medium text-[20px]"
+                    : "text-[20px] text-white hover:text-white text-2xl "
                 } transition-colors  font-cormorant  `}
               >
                 Vendors
@@ -74,9 +92,9 @@ export default function Navbar() {
               <Link
                 href="/showroom"
                 className={`${
-                  isActive('/showroom')
-                   ? 'text-purple-500 font-medium text-[20px]'
-                    : 'text-[20px] text-white hover:text-white text-2xl '
+                  isActive("/showroom")
+                    ? "text-purple-500 font-medium text-[20px]"
+                    : "text-[20px] text-white hover:text-white text-2xl "
                 } transition-colors   font-cormorant  `}
               >
                 Showrooms
@@ -88,13 +106,15 @@ export default function Navbar() {
           {isLoggedIn ? (
             <>
               {/* Desktop Icon Buttons - Customer only icons */}
-              {userRole === 'customer' && (
+              {userRole === "customer" && (
                 <>
                   <Link href="/custom-orders">
-                    <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
-                      isActive('/custom-orders') ? 'bg-purple-600/40' : '' 
-                    }`}>
-                      <Image 
+                    <button
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                        isActive("/custom-orders") ? "bg-purple-600/40" : ""
+                      }`}
+                    >
+                      <Image
                         src="/images/customOrder.png"
                         alt="Wishlist"
                         width={40}
@@ -103,10 +123,12 @@ export default function Navbar() {
                     </button>
                   </Link>
                   <Link href="/wishlist">
-                    <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
-                      isActive('/wishlist') ? 'bg-purple-600/40' : '' 
-                    }`}>
-                      <Image 
+                    <button
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                        isActive("/wishlist") ? "bg-purple-600/40" : ""
+                      }`}
+                    >
+                      <Image
                         src="/images/love.png"
                         alt="Wishlist"
                         width={40}
@@ -114,12 +136,14 @@ export default function Navbar() {
                       />
                     </button>
                   </Link>
-                   
+
                   <Link href="/shopping-cart">
-                    <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative ${
-                      isActive('/shopping-cart') ? 'bg-purple-600/40' : ''
-                    }`}>
-                      <Image 
+                    <button
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative ${
+                        isActive("/shopping-cart") ? "bg-purple-600/40" : ""
+                      }`}
+                    >
+                      <Image
                         src="/images/cart.png"
                         alt="Cart"
                         width={40}
@@ -134,12 +158,14 @@ export default function Navbar() {
               )}
 
               {/* Common icons for both customer and vendor */}
-              
+
               <Link href="/messaging">
-                <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
-                  isActive('/messaging') ? 'bg-purple-600/40' : ''
-                }`}>
-                  <Image 
+                <button
+                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                    isActive("/messaging") ? "bg-purple-600/40" : ""
+                  }`}
+                >
+                  <Image
                     src="/images/message.png"
                     alt="Messages"
                     width={40}
@@ -149,10 +175,12 @@ export default function Navbar() {
               </Link>
 
               <Link href={profileRoute}>
-                <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
-                  isActive(profileRoute) ? 'bg-purple-600/40' : ''
-                }`}>
-                  <Image 
+                <button
+                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                    isActive(profileRoute) ? "bg-purple-600/40" : ""
+                  }`}
+                >
+                  <Image
                     src="/images/profile.png"
                     alt="Profile"
                     width={40}
@@ -162,10 +190,12 @@ export default function Navbar() {
               </Link>
 
               <Link href="/notification">
-                <button className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
-                  isActive('/notification') ? 'bg-purple-600/40' : ''
-                }`}>
-                  <Image 
+                <button
+                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                    isActive("/notification") ? "bg-purple-600/40" : ""
+                  }`}
+                >
+                  <Image
                     src="/images/notification.png"
                     alt="Notifications"
                     width={40}
@@ -173,11 +203,15 @@ export default function Navbar() {
                   />
                 </button>
               </Link>
-               
+
               <Link href={dashboardRoute}>
-                <button className={` text-white px-5 xl:px-6 font-poppins  py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
-                  isActive(dashboardRoute) ? 'bg-purple-600/40 ring-2 ring-purple-400' : 'bg-[#6100FF]'
-                }`}>
+                <button
+                  className={` text-white px-5 xl:px-6 font-poppins  py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
+                    isActive(dashboardRoute)
+                      ? "bg-purple-600/40 ring-2 ring-purple-400"
+                      : "bg-[#6100FF]"
+                  }`}
+                >
                   Dashboard
                 </button>
               </Link>
@@ -195,12 +229,16 @@ export default function Navbar() {
         {/* Mobile Icons - Visible on mobile/tablet */}
         <div className="flex lg:hidden items-center space-x-1 sm:space-x-2">
           {/* Cart Icon - Only show for logged in customers */}
-          {isLoggedIn && userRole === 'customer' && (
+          {isLoggedIn && userRole === "customer" && (
             <Link href="/shopping-cart">
-              <button className={`p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors relative ${
-                isActive('/shopping-cart') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
-              }`}>
-                <Image 
+              <button
+                className={`p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors relative ${
+                  isActive("/shopping-cart")
+                    ? "bg-purple-600/20 ring-2 ring-purple-500"
+                    : ""
+                }`}
+              >
+                <Image
                   src="/images/cart.png"
                   alt="Cart"
                   width={40}
@@ -229,20 +267,20 @@ export default function Navbar() {
       {/* Mobile Menu - Slides down when open */}
       <div
         className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${
-          isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
         <div className="container mx-auto pt-3 sm:pt-4 pb-2 space-y-2 sm:space-y-3 border-t border-gray-800 mt-3 sm:mt-4 px-3 sm:px-4">
           {/* Mobile Navigation Links - Only show for logged in customers */}
-          {isLoggedIn && userRole === 'customer' && (
+          {isLoggedIn && userRole === "customer" && (
             <>
               <Link
                 href="/vendors"
                 onClick={() => setIsMenuOpen(false)}
                 className={`block ${
-                  isActive('/vendors')
-                    ? 'text-purple-500 font-medium'
-                    : 'text-gray-400 hover:text-white'
+                  isActive("/vendors")
+                    ? "text-purple-500 font-medium"
+                    : "text-gray-400 hover:text-white"
                 } transition-colors py-2 text-sm sm:text-base`}
               >
                 vendors
@@ -251,9 +289,9 @@ export default function Navbar() {
                 href="/showroom"
                 onClick={() => setIsMenuOpen(false)}
                 className={`block ${
-                  isActive('/showroom')
-                    ? 'text-purple-500 font-medium'
-                    : 'text-gray-400 hover:text-white'
+                  isActive("/showroom")
+                    ? "text-purple-500 font-medium"
+                    : "text-gray-400 hover:text-white"
                 } transition-colors py-2 text-sm sm:text-base`}
               >
                 showroom
@@ -268,12 +306,16 @@ export default function Navbar() {
               <div className="flex items-center space-x-2 sm:space-x-3 pt-2 sm:pt-3 pb-2">
                 {/* Heart icon - Only for customers */}
 
-            {userRole === 'customer' && (
+                {userRole === "customer" && (
                   <Link href="/custom-orders">
-                    <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
-                      isActive('/custom-orders') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
-                    }`}>
-                      <Image 
+                    <button
+                      className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                        isActive("/custom-orders")
+                          ? "bg-purple-600/20 ring-2 ring-purple-500"
+                          : ""
+                      }`}
+                    >
+                      <Image
                         src="/images/customOrder.png"
                         alt="Custom Orders"
                         width={40}
@@ -283,12 +325,16 @@ export default function Navbar() {
                   </Link>
                 )}
 
-                {userRole === 'customer' && (
+                {userRole === "customer" && (
                   <Link href="/wishlist">
-                    <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
-                      isActive('/wishlist') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
-                    }`}>
-                      <Image 
+                    <button
+                      className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                        isActive("/wishlist")
+                          ? "bg-purple-600/20 ring-2 ring-purple-500"
+                          : ""
+                      }`}
+                    >
+                      <Image
                         src="/images/love.png"
                         alt="Wishlist"
                         width={40}
@@ -298,14 +344,16 @@ export default function Navbar() {
                   </Link>
                 )}
 
-                
-
                 {/* Common icons for both */}
                 <Link href="/messaging">
-                  <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
-                    isActive('/messaging') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
-                  }`}>
-                    <Image 
+                  <button
+                    className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                      isActive("/messaging")
+                        ? "bg-purple-600/20 ring-2 ring-purple-500"
+                        : ""
+                    }`}
+                  >
+                    <Image
                       src="/images/message.png"
                       alt="Messages"
                       width={40}
@@ -315,10 +363,14 @@ export default function Navbar() {
                 </Link>
 
                 <Link href={profileRoute}>
-                  <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
-                    isActive(profileRoute) ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
-                  }`}>
-                    <Image 
+                  <button
+                    className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                      isActive(profileRoute)
+                        ? "bg-purple-600/20 ring-2 ring-purple-500"
+                        : ""
+                    }`}
+                  >
+                    <Image
                       src="/images/profile.png"
                       alt="Profile"
                       width={40}
@@ -328,10 +380,14 @@ export default function Navbar() {
                 </Link>
 
                 <Link href="/notification">
-                  <button className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
-                    isActive('/notification') ? 'bg-purple-600/20 ring-2 ring-purple-500' : ''
-                  }`}>
-                    <Image 
+                  <button
+                    className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                      isActive("/notification")
+                        ? "bg-purple-600/20 ring-2 ring-purple-500"
+                        : ""
+                    }`}
+                  >
+                    <Image
                       src="/images/notification.png"
                       alt="Notifications"
                       width={40}
@@ -343,9 +399,13 @@ export default function Navbar() {
 
               {/* Mobile Dashboard Button */}
               <Link href={dashboardRoute}>
-                <button className={`w-full cursor-pointer text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base ${
-                  isActive(dashboardRoute) ? 'bg-purple-600/20 ring-2 ring-purple-400' : 'bg-[#6100FF]'
-                }`}>
+                <button
+                  className={`w-full cursor-pointer text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base ${
+                    isActive(dashboardRoute)
+                      ? "bg-purple-600/20 ring-2 ring-purple-400"
+                      : "bg-[#6100FF]"
+                  }`}
+                >
                   Dashboard
                 </button>
               </Link>

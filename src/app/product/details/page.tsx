@@ -1,15 +1,17 @@
-'use client';
-import ProductDetails from '@/components/landingPage/ProductDetails';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from "react";
+import ProductDetailsClient from "./ProductDetailsClient";
 
 const page = () => {
-  const searchParams = useSearchParams();
-  const productId = searchParams.get('id');
-
   return (
-    <div>
-      <ProductDetails productId={productId} />
-    </div>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
+        </div>
+      }
+    >
+      <ProductDetailsClient />
+    </Suspense>
   );
 };
 

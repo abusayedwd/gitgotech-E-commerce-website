@@ -1,61 +1,64 @@
 "use client";
 
-import { useState } from 'react';
-import { User, Lock, Eye, EyeOff } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useUserLoginMutation } from '@/redux/features/auth/authSlice';
-import toast from 'react-hot-toast';
+import { useUserLoginMutation } from "@/redux/features/auth/authSlice";
+import { Eye, EyeOff, Lock, User } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
   const [login] = useUserLoginMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
       const res = await login({ email, password }).unwrap();
       console.log(res);
 
       if (res?.success || res?.status === 200) {
-        toast.success(res?.message || 'Login successful!');
+        toast.success(res?.message || "Login successful!");
 
         // Store token
         const token = res?.token || res?.data?.token;
         if (token) {
-          localStorage.setItem('token', token);
+          localStorage.setItem("token", token);
         }
 
         // Get user data and store with isLoggedIn flag
         const user = res?.data?.user || res?.user;
-        const role = user?.role || 'customer';
-        
+        const role = user?.role || "customer";
+
         // Store user with isLoggedIn flag for Navbar
         const userToStore = {
           ...user,
           isLoggedIn: true,
-          role: role
+          role: role,
         };
-        localStorage.setItem('user', JSON.stringify(userToStore));
-        
-        setTimeout(() => {
-          if (role === 'vendor') {
-            router.push('/vendor-dashboard');
-          } else {
-            router.push('/');
-          }
-        }, 1000);
+        localStorage.setItem("user", JSON.stringify(userToStore));
+
+        // Notify Navbar to update
+        window.dispatchEvent(new Event("authChanged"));
+
+        // Navigate without reload
+        if (role === "vendor") {
+          router.push("/vendor-dashboard");
+        } else {
+          router.push("/");
+        }
       }
     } catch (err: any) {
       console.log(err);
-      const errorMessage = err?.data?.message || err?.message || 'Login failed. Please try again.';
+      const errorMessage =
+        err?.data?.message || err?.message || "Login failed. Please try again.";
       setError(errorMessage);
       toast.error(errorMessage);
     }
@@ -65,11 +68,9 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex items-center justify-center p-4">
       {/* Animated gradient orbs in background */}
 
-
       {/* Login Card */}
       <div className="relative w-full max-w-lg">
         {/* Cyan border glow effect */}
-
 
         <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 ">
           {/* Logo and brand badges */}
@@ -83,15 +84,16 @@ export default function LoginPage() {
               />
             </div>
 
-
             {/* Gradient badges */}
-
           </div>
 
           {/* Welcome text */}
           <div className="mb-8">
             <h1 className="text-[36px] font-cormorant font-bold text-white mb-2">
-              Welcome back to <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">SleeKnit</span>
+              Welcome back to{" "}
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
+                SleeKnit
+              </span>
             </h1>
             <p className="text-gray-400 text-sm">You've been missed!</p>
           </div>
@@ -123,7 +125,7 @@ export default function LoginPage() {
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="• • • • • • • • •"

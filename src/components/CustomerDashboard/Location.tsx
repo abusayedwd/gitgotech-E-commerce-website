@@ -1,12 +1,9 @@
- 
-
-
-import { useState, useEffect, useRef } from "react";
-import { ChevronUp, ChevronDown, MapPin, Search, Loader2 } from "lucide-react";
+import { ChevronDown, ChevronUp, MapPin } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 // Simple notification system
 const showNotification = (type: string, text: string) => {
-  const notification = document.createElement('div');
+  const notification = document.createElement("div");
   notification.style.cssText = `
     position: fixed;
     top: 20px;
@@ -21,9 +18,9 @@ const showNotification = (type: string, text: string) => {
   `;
 
   const colors: any = {
-    success: '#52c41a',
-    warning: '#faad14',
-    error: '#ff4d4f'
+    success: "#52c41a",
+    warning: "#faad14",
+    error: "#ff4d4f",
   };
 
   notification.style.backgroundColor = colors[type] || colors.success;
@@ -40,30 +37,35 @@ const showNotification = (type: string, text: string) => {
 
 // Load Leaflet dynamically
 const loadLeaflet = () => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     if (window.L) {
-      resolve();
+      resolve(undefined);
       return;
     }
 
     // Add CSS
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css';
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href =
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.css";
     document.head.appendChild(link);
 
     // Add JS
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js';
+    const script = document.createElement("script");
+    script.src =
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/leaflet.js";
     script.onload = () => {
       // Fix marker icons
-      delete window.L.Icon.Default.prototype._getIconUrl;
+      delete (window.L.Icon.Default as any).prototype._getIconUrl;
       window.L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-        iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+        iconRetinaUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+        iconUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+        shadowUrl:
+          "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
       });
-      resolve();
+      resolve(undefined);
     };
     script.onerror = reject;
     document.head.appendChild(script);
@@ -72,9 +74,9 @@ const loadLeaflet = () => {
 
 // The main map container
 const LeafletMap = ({ onMapClick, center, markerPosition }: any) => {
-  const mapRef = useRef(null);
-  const mapInstanceRef = useRef(null);
-  const markerRef = useRef(null);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Initialize map
@@ -92,13 +94,17 @@ const LeafletMap = ({ onMapClick, center, markerPosition }: any) => {
           });
 
           // Add tile layer
-          window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
-            maxZoom: 19,
-          }).addTo(map);
+          window.L.tileLayer(
+            "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+            {
+              attribution:
+                '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+              maxZoom: 19,
+            },
+          ).addTo(map);
 
           // Add click handler
-          map.on('click', (e: any) => {
+          map.on("click", (e: any) => {
             onMapClick(e.latlng);
           });
 
@@ -106,8 +112,8 @@ const LeafletMap = ({ onMapClick, center, markerPosition }: any) => {
           setIsLoaded(true);
         }
       } catch (error) {
-        console.error('Failed to load map:', error);
-        showNotification('error', 'Failed to load map');
+        console.error("Failed to load map:", error);
+        showNotification("error", "Failed to load map");
       }
     };
 
@@ -127,7 +133,7 @@ const LeafletMap = ({ onMapClick, center, markerPosition }: any) => {
     if (mapInstanceRef.current && center && isLoaded) {
       mapInstanceRef.current.flyTo([center.lat, center.lng], 12, {
         animate: true,
-        duration: 1.5
+        duration: 1.5,
       });
     }
   }, [center, isLoaded]);
@@ -143,18 +149,17 @@ const LeafletMap = ({ onMapClick, center, markerPosition }: any) => {
 
       // Add new marker if position exists
       if (markerPosition && markerPosition.lat && markerPosition.lng) {
-        markerRef.current = window.L.marker([markerPosition.lat, markerPosition.lng])
-          .addTo(mapInstanceRef.current);
+        markerRef.current = window.L.marker([
+          markerPosition.lat,
+          markerPosition.lng,
+        ]).addTo(mapInstanceRef.current);
       }
     }
   }, [markerPosition, isLoaded]);
 
   return (
     <div className="w-full relative">
-      <div
-        ref={mapRef}
-        className="w-full h-96"
-      />
+      <div ref={mapRef} className="w-full h-96" />
       {!isLoaded && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <div className="text-center">
@@ -179,7 +184,10 @@ const GeocodeForm = ({ onGeocode, onSave }: any) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2 p-4 shadow-lg rounded-lg">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col sm:flex-row gap-2 p-4 shadow-lg rounded-lg"
+    >
       <input
         type="text"
         placeholder="Enter a location (e.g., New York, London, Paris)"
@@ -226,7 +234,7 @@ const ResponseBox = ({ address, lat, lng }: any) => (
 
 // ----- MAIN MAP COMPONENT -----
 
-interface SelectedLocation {
+export interface SelectedLocation {
   name: string;
   coordinates: {
     latitude: number;
@@ -239,7 +247,7 @@ interface MapComponentProps {
 }
 
 const MapComponent = ({ onLocationSave }: MapComponentProps) => {
-  const defaultCenter = { lat: 40.7128, lng: -74.0060 };
+  const defaultCenter = { lat: 40.7128, lng: -74.006 };
   const defaultAddress = "New York, NY, USA";
 
   const [center, setCenter] = useState(defaultCenter);
@@ -279,12 +287,12 @@ const MapComponent = ({ onLocationSave }: MapComponentProps) => {
     try {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          address
-        )}&addressdetails=1&limit=1`
+          address,
+        )}&addressdetails=1&limit=1`,
       );
 
       if (!response.ok) {
-        throw new Error('Search request failed');
+        throw new Error("Search request failed");
       }
 
       const data = await response.json();
@@ -306,7 +314,10 @@ const MapComponent = ({ onLocationSave }: MapComponentProps) => {
 
         showNotification("success", `Found: ${result.name || address}`);
       } else {
-        showNotification("warning", "No location found. Try a different search term.");
+        showNotification(
+          "warning",
+          "No location found. Try a different search term.",
+        );
       }
     } catch (error) {
       console.error("Geocoding error:", error);
@@ -322,11 +333,11 @@ const MapComponent = ({ onLocationSave }: MapComponentProps) => {
 
     try {
       const response = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`,
       );
 
       if (!response.ok) {
-        throw new Error('Reverse geocoding failed');
+        throw new Error("Reverse geocoding failed");
       }
 
       const data = await response.json();
@@ -343,8 +354,13 @@ const MapComponent = ({ onLocationSave }: MapComponentProps) => {
         setLat(lat);
         setLng(lng);
         setCenter({ lat, lng });
-        setFormattedAddress(`Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-        showNotification("warning", "Address not found, but coordinates updated");
+        setFormattedAddress(
+          `Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`,
+        );
+        showNotification(
+          "warning",
+          "Address not found, but coordinates updated",
+        );
       }
     } catch (error) {
       console.error("Reverse geocoding error:", error);
@@ -353,7 +369,10 @@ const MapComponent = ({ onLocationSave }: MapComponentProps) => {
       setLng(lng);
       setCenter({ lat, lng });
       setFormattedAddress(`Coordinates: ${lat.toFixed(6)}, ${lng.toFixed(6)}`);
-      showNotification("error", "Could not get address, but coordinates updated");
+      showNotification(
+        "error",
+        "Could not get address, but coordinates updated",
+      );
     } finally {
       setLoading(false);
     }
@@ -405,7 +424,7 @@ const MapComponent = ({ onLocationSave }: MapComponentProps) => {
           {/* Location details */}
           <div className="flex items-start gap-4 flex-wrap">
             <ResponseBox address={formattedAddress} lat={lat} lng={lng} />
-            
+
             <button
               type="button"
               onClick={handleAddAddress}

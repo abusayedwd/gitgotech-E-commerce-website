@@ -1,35 +1,43 @@
 "use client";
-import React from 'react';
-import { Shield } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { FaArrowLeft } from 'react-icons/fa';
-import { useGetPrivacyQuery } from '@/redux/features/settings/settingsSlice';
+import { useGetPrivacyQuery } from "@/redux/features/settings/settingsSlice";
+import { useRouter } from "next/navigation";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function PrivacyPolicyPage() {
-    const router = useRouter();
-  const {data: privacyData, isLoading} = useGetPrivacyQuery()
-  
+  const router = useRouter();
+  const { data: privacyData, isLoading } = useGetPrivacyQuery({});
+
   const privacyInfo = privacyData?.data;
 
   return (
     <div className="min-h-screen md:mt-24 mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-4xl mx-auto">
-
         {/* Header */}
-         <div className="container   mx-auto flex items-center gap-4">
-                     <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-                    <FaArrowLeft className='text-black' />
-                  </div>
-                </button>
-                <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Privacy Policy</h1>
-                </div>
-
+        <div className="container   mx-auto flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+              <FaArrowLeft className="text-black" />
+            </div>
+          </button>
+          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+            Privacy Policy
+          </h1>
+        </div>
 
         {/* Last Updated */}
         {privacyInfo?.updatedAt && (
           <div className="my-6">
-            <p className="text-sm text-gray-400">Last Updated: {new Date(privacyInfo.updatedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="text-sm text-gray-400">
+              Last Updated:{" "}
+              {new Date(privacyInfo.updatedAt).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
           </div>
         )}
 
@@ -38,12 +46,15 @@ export default function PrivacyPolicyPage() {
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="ml-3 text-gray-400">Loading privacy policy...</span>
+              <span className="ml-3 text-gray-400">
+                Loading privacy policy...
+              </span>
             </div>
           ) : (
             <div className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
               <p className="text-gray-300 whitespace-pre-wrap">
-                {privacyInfo?.description || "No privacy policy content available."}
+                {privacyInfo?.description ||
+                  "No privacy policy content available."}
               </p>
             </div>
           )}

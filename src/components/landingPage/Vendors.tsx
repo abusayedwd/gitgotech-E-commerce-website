@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import { useTopVendorsQuery } from '@/redux/features/home/homeSlice';
-import { Search } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
-import { AiOutlineShoppingCart } from 'react-icons/ai';
 import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import { useTopVendorsQuery } from "@/redux/features/home/homeSlice";
+import { Search } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { AiOutlineShoppingCart } from "react-icons/ai";
 
 export default function VendorsPage() {
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  console.log(searchQuery)
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  console.log(searchQuery);
 
- const { data: topVendorsRes } = useTopVendorsQuery(searchQuery);
+  const { data: topVendorsRes } = useTopVendorsQuery(searchQuery);
   const vendors = topVendorsRes?.data?.data ?? [];
 
   const handleSearch = () => {
     setSearchQuery(searchInput.trim());
   };
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') handleSearch();
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSearch();
   };
 
-  const getImageUrl = (image) => {
+  const getImageUrl = (image: string) => {
     if (!image) return null;
-    if (image.startsWith('http')) return image;
+    if (image.startsWith("http")) return image;
     return `${IMAGE_BASE_URL}/${image}`;
   };
 
@@ -75,7 +75,7 @@ export default function VendorsPage() {
             <p className="text-gray-400 text-center py-16">No vendors found.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-              {vendors.map((vendor) => {
+              {vendors.map((vendor: any) => {
                 const imageUrl = getImageUrl(vendor.image);
                 return (
                   <div
@@ -90,15 +90,19 @@ export default function VendorsPage() {
                           alt={vendor.name}
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
-                            e.currentTarget.nextSibling.style.display = 'flex';
+                            e.currentTarget.style.display = "none";
+                            if (e.currentTarget.nextSibling) {
+                              (
+                                e.currentTarget.nextSibling as HTMLElement
+                              ).style.display = "flex";
+                            }
                           }}
                         />
                       ) : null}
                       {/* Fallback Avatar — always rendered, hidden if image loads */}
                       <div
                         className="w-full h-full items-center justify-center bg-[#2a2a2e]"
-                        style={{ display: imageUrl ? 'none' : 'flex' }}
+                        style={{ display: imageUrl ? "none" : "flex" }}
                       >
                         <span className="text-6xl font-cormorant text-gray-400">
                           {vendor.name?.charAt(0).toUpperCase()}
@@ -111,7 +115,9 @@ export default function VendorsPage() {
                       <h3 className="text-white font-semibold text-base sm:text-lg mb-1">
                         {vendor.name}
                       </h3>
-                      <p className="text-gray-500 text-xs mb-3">@{vendor.username}</p>
+                      <p className="text-gray-500 text-xs mb-3">
+                        @{vendor.username}
+                      </p>
 
                       {/* View Showroom Button */}
                       <Link href={`/vendors/showrooms?vendorId=${vendor._id}`}>

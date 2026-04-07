@@ -1,29 +1,31 @@
 "use client";
 
-import React from 'react';
-import { Info } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { FaArrowLeft } from 'react-icons/fa';
-import { useGetAboutQuery } from '@/redux/features/settings/settingsSlice';
+import { useGetAboutQuery } from "@/redux/features/settings/settingsSlice";
+import { useRouter } from "next/navigation";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function AboutUsPage() {
-    const router = useRouter();
-  const {data: aboutData, isLoading} = useGetAboutQuery()
-  
+  const router = useRouter();
+  const { data: aboutData, isLoading } = useGetAboutQuery({});
+
   const aboutInfo = aboutData?.data;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-4xl mx-auto">
-
         {/* Header */}
-         <div className="container md:mt-24 mt-12 mx-auto flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-            <FaArrowLeft className='text-black' />
-          </div>
-        </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">About Us</h1>
+        <div className="container md:mt-24 mt-12 mx-auto flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+              <FaArrowLeft className="text-black" />
+            </div>
+          </button>
+          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+            About Us
+          </h1>
         </div>
 
         {/* Content Card */}

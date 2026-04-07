@@ -1,6 +1,3 @@
-
-
-
 "use client";
 
 import { useAddCustomOrderMutation } from "@/redux/features/order/orderSlice";
@@ -14,9 +11,11 @@ import {
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { use, useCallback, useEffect, useRef, useState } from "react";
-import MapComponent from "../CustomerDashboard/Location";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import MapComponent, {
+  SelectedLocation as MapSelectedLocation,
+} from "../CustomerDashboard/Location";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface SelectedLocation {
@@ -24,6 +23,11 @@ interface SelectedLocation {
   lng: number;
   address: string;
   displayName: string;
+  name?: string;
+  coordinates?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 interface DeliveryInfo {
@@ -387,12 +391,11 @@ export default function CustomDesignRequest() {
   const [notes, setNotes] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [selectedMeasurementType, setSelectedMeasurementType] = useState("");
-  
+
   const [confirmedLocation, setConfirmedLocation] =
     useState<SelectedLocation | null>(null);
-    const searchParams = useSearchParams();
-    const productId = searchParams.get("productId") || undefined;
- 
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId") || undefined;
 
   const [measurements, setMeasurements] = useState<Measurements>({
     chest: "",
@@ -534,7 +537,7 @@ export default function CustomDesignRequest() {
     return {};
   };
 
-  const [location, setLocation] = useState<SelectedLocation | null>(null);
+  const [location, setLocation] = useState<MapSelectedLocation | null>(null);
   console.log(location);
 
   const handleSubmit = async () => {
@@ -555,7 +558,7 @@ export default function CustomDesignRequest() {
         measurements: buildMeasurementsPayload(),
         deliveryInfo: {
           name: deliveryInfo.name,
-          address: location.name || location.address || location.displayName, // Use location.name from MapComponent
+          address: location.name, // Use location.name from MapComponent
           country: deliveryInfo.country,
           state: deliveryInfo.state,
           zipcode: parseInt(deliveryInfo.zipcode) || 0,
@@ -570,12 +573,11 @@ export default function CustomDesignRequest() {
       const formData = new FormData();
       formData.append("data", JSON.stringify(data));
       if (selectedFile) formData.append("files", selectedFile);
-    const res =  await customOrderRequest(formData).unwrap();
-    if(res.success === true){
-      toast.success("Custom order request submitted successfully!");
-      router.push("/custom-orders");
-    }
-     
+      const res = await customOrderRequest(formData).unwrap();
+      if (res.success === true) {
+        toast.success("Custom order request submitted successfully!");
+        router.push("/custom-orders");
+      }
     } catch (error) {
       console.error("Submit error:", error);
       alert("Failed to submit. Please try again.");
@@ -584,14 +586,14 @@ export default function CustomDesignRequest() {
     }
   };
 
-  const handleLocationSave = (selectedLocation: SelectedLocation) => {
+  const handleLocationSave = (selectedLocation: MapSelectedLocation) => {
     console.log("Saved location:", selectedLocation);
     setLocation(selectedLocation);
 
     // Extract coordinates from the nested structure
-    const lat = selectedLocation.coordinates?.latitude;
-    const lng = selectedLocation.coordinates?.longitude;
-    const address = selectedLocation.name || selectedLocation.address || selectedLocation.displayName;
+    const lat = selectedLocation.coordinates?.latitude ?? 0;
+    const lng = selectedLocation.coordinates?.longitude ?? 0;
+    const address = selectedLocation.name;
 
     // Update delivery info address and location coordinates
     setDeliveryInfo((prev) => ({
@@ -1192,12 +1194,11 @@ export default function CustomDesignRequest() {
                   <p className="text-xs text-green-400 font-medium mb-0.5">
                     Location Saved ✓
                   </p>
-                  <p className="text-sm text-white">
-                    {location.displayName || location.address}
-                  </p>
+                  <p className="text-sm text-white">{location.name}</p>
                   <p className="text-xs text-gray-500 mt-0.5">
-                    Coordinates: [{location?.lng?.toFixed(5) || "0.00000"},{" "}
-                    {location?.lat?.toFixed(5) || "0.00000"}]
+                    Coordinates: [
+                    {location?.coordinates?.longitude?.toFixed(5) || "0.00000"},{" "}
+                    {location?.coordinates?.latitude?.toFixed(5) || "0.00000"}]
                   </p>
                 </div>
               </div>

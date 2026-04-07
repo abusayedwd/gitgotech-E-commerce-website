@@ -1,25 +1,31 @@
-'use client';
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
-import { useFilterContext } from '@/context/FilterContext';
+"use client";
+import { useFilterContext } from "@/context/FilterContext";
+import { useGetHomeCategoriesQuery } from "@/redux/features/home/homeSlice";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useRef, useState } from "react";
 
 const FashionSearchNav = () => {
   const router = useRouter();
   const { setSelectedCategory, setSearchQuery } = useFilterContext();
-  const [activeTab, setActiveTab] = useState('');
-  const [searchQuery, setSearchQueryLocal] = useState('');
+  const [activeTab, setActiveTab] = useState("");
+  const [searchQuery, setSearchQueryLocal] = useState("");
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const tabContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: categoriesRes } = useGetHomeCategoriesQuery();
+  const { data: categoriesRes } = useGetHomeCategoriesQuery({});
   const categories = categoriesRes?.data ?? [];
 
-  const tabColors = ['bg-blue-500', 'bg-purple-600', 'bg-gray-700', 'bg-pink-500', 'bg-green-600'];
+  const tabColors = [
+    "bg-blue-500",
+    "bg-purple-600",
+    "bg-gray-700",
+    "bg-pink-500",
+    "bg-green-600",
+  ];
 
   const handleTabClick = (category: { _id: string; name: string }) => {
     setActiveTab(category._id);
@@ -46,8 +52,8 @@ const FashionSearchNav = () => {
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
   useEffect(() => {
@@ -62,33 +68,33 @@ const FashionSearchNav = () => {
 
     const container = tabContainerRef.current;
     if (container) {
-      container.addEventListener('scroll', checkScroll);
+      container.addEventListener("scroll", checkScroll);
       checkScroll();
     }
 
     return () => {
       if (container) {
-        container.removeEventListener('scroll', checkScroll);
+        container.removeEventListener("scroll", checkScroll);
       }
     };
   }, []);
 
-  const scrollTabs = (direction: 'left' | 'right') => {
+  const scrollTabs = (direction: "left" | "right") => {
     const container = tabContainerRef.current;
     if (container) {
       const scrollAmount = 200;
       const targetScroll =
-        direction === 'left'
+        direction === "left"
           ? container.scrollLeft - scrollAmount
           : container.scrollLeft + scrollAmount;
-      container.scrollTo({ left: targetScroll, behavior: 'smooth' });
+      container.scrollTo({ left: targetScroll, behavior: "smooth" });
     }
   };
 
   return (
     <div
       className={`fixed top-0 left-0 mt-16 sm:mt-20 md:mt-20 right-0 z-50 w-full bg-gradient-to-r from-black via-[#0f0924] to-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
+        isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       <div className="container mx-auto">
@@ -121,7 +127,7 @@ const FashionSearchNav = () => {
           {/* Left Arrow Button - Mobile Only */}
           {showLeftArrow && (
             <button
-              onClick={() => scrollTabs('left')}
+              onClick={() => scrollTabs("left")}
               className="lg:hidden absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 rounded-full shadow-lg transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -131,7 +137,7 @@ const FashionSearchNav = () => {
           {/* Right Arrow Button - Mobile Only */}
           {showRightArrow && (
             <button
-              onClick={() => scrollTabs('right')}
+              onClick={() => scrollTabs("right")}
               className="lg:hidden absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 rounded-full shadow-lg transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
@@ -146,19 +152,21 @@ const FashionSearchNav = () => {
             ref={tabContainerRef}
             className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 pb-3 sm:pb-4 overflow-x-auto scrollbar-hide"
           >
-            {categories.map((category: { _id: string; name: string }, index: number) => (
-              <button
-                key={category._id}
-                onClick={() => handleTabClick(category)}
-                className={`${
-                  activeTab === category._id
-                    ? tabColors[index % tabColors.length]
-                    : 'border border-gray-700 bg-[#080715]'
-                } px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap hover:opacity-90 transition-all flex-shrink-0`}
-              >
-                {category.name}
-              </button>
-            ))}
+            {categories.map(
+              (category: { _id: string; name: string }, index: number) => (
+                <button
+                  key={category._id}
+                  onClick={() => handleTabClick(category)}
+                  className={`${
+                    activeTab === category._id
+                      ? tabColors[index % tabColors.length]
+                      : "border border-gray-700 bg-[#080715]"
+                  } px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap hover:opacity-90 transition-all flex-shrink-0`}
+                >
+                  {category.name}
+                </button>
+              ),
+            )}
           </div>
         </div>
       </div>

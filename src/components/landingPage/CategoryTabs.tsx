@@ -1,8 +1,8 @@
-'use client';
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
+"use client";
+import { useGetHomeCategoriesQuery } from "@/redux/features/home/homeSlice";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 const CategoryTabs = () => {
   const router = useRouter();
@@ -13,22 +13,22 @@ const CategoryTabs = () => {
   const [showRightArrow, setShowRightArrow] = useState(true);
   const tabContainerRef = useRef<HTMLDivElement>(null);
 
-  const { data: categoriesData } = useGetHomeCategoriesQuery();
+  const { data: categoriesData } = useGetHomeCategoriesQuery({});
 
   // Extract categories array from the response
   const categories = categoriesData?.data || [];
 
   // Hardcoded tabs with colors
   const tabs = [
-    { name: 'Women', color: 'bg-blue-500' },
-    { name: 'Men' },
-    { name: 'Shoes', color: 'bg-gray-700' },
-    { name: 'Kids', color: 'bg-gray-700' },
-    { name: 'Seasonal Wear', color: 'bg-gray-700' },
-    { name: 'Jewelry & Accessories', color: 'bg-gray-700' },
-    { name: 'Home & Living', color: 'bg-gray-700' },
-    { name: 'Beauty & Health', color: 'bg-gray-700' },
-    { name: 'Curve', color: 'bg-gray-700' }
+    { name: "Women", color: "bg-blue-500" },
+    { name: "Men" },
+    { name: "Shoes", color: "bg-gray-700" },
+    { name: "Kids", color: "bg-gray-700" },
+    { name: "Seasonal Wear", color: "bg-gray-700" },
+    { name: "Jewelry & Accessories", color: "bg-gray-700" },
+    { name: "Home & Living", color: "bg-gray-700" },
+    { name: "Beauty & Health", color: "bg-gray-700" },
+    { name: "Curve", color: "bg-gray-700" },
   ];
 
   useEffect(() => {
@@ -46,8 +46,8 @@ const CategoryTabs = () => {
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
   useEffect(() => {
@@ -62,42 +62,43 @@ const CategoryTabs = () => {
 
     const container = tabContainerRef.current;
     if (container) {
-      container.addEventListener('scroll', checkScroll);
+      container.addEventListener("scroll", checkScroll);
       checkScroll();
     }
 
     return () => {
       if (container) {
-        container.removeEventListener('scroll', checkScroll);
+        container.removeEventListener("scroll", checkScroll);
       }
     };
   }, []);
 
-  const scrollTabs = (direction: 'left' | 'right') => {
+  const scrollTabs = (direction: "left" | "right") => {
     const container = tabContainerRef.current;
     if (container) {
       const scrollAmount = 200;
-      const targetScroll = direction === 'left'
-        ? container.scrollLeft - scrollAmount
-        : container.scrollLeft + scrollAmount;
+      const targetScroll =
+        direction === "left"
+          ? container.scrollLeft - scrollAmount
+          : container.scrollLeft + scrollAmount;
 
       container.scrollTo({
         left: targetScroll,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
 
   const handleCategoryClick = (tabName: string) => {
     setActiveTab(tabName);
-    console.log('Selected Tab:', tabName);
-    console.log('API Categories:', categories);
+    console.log("Selected Tab:", tabName);
+    console.log("API Categories:", categories);
   };
 
   return (
     <div
       className={`fixed top-0 left-0 mt-16 sm:mt-20 md:mt-20 right-0 z-50 w-full bg-gradient-to-r from-black via-[#0f0924] to-black bg-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
+        isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       <div className="container mx-auto">
@@ -125,7 +126,7 @@ const CategoryTabs = () => {
         <div className="relative">
           {showLeftArrow && (
             <button
-              onClick={() => scrollTabs('left')}
+              onClick={() => scrollTabs("left")}
               className="lg:hidden absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 rounded-full shadow-lg transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -134,7 +135,7 @@ const CategoryTabs = () => {
 
           {showRightArrow && (
             <button
-              onClick={() => scrollTabs('right')}
+              onClick={() => scrollTabs("right")}
               className="lg:hidden absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-black/80 hover:bg-black text-white p-2 rounded-full shadow-lg transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
@@ -154,8 +155,8 @@ const CategoryTabs = () => {
                 onClick={() => handleCategoryClick(tab.name)}
                 className={`${
                   activeTab === tab.name
-                    ? (tab.color || 'bg-purple-600')
-                    : 'border border-gray-700 bg-[#080715]'
+                    ? tab.color || "bg-purple-600"
+                    : "border border-gray-700 bg-[#080715]"
                 } px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap hover:opacity-90 transition-all flex-shrink-0`}
               >
                 {tab.name}

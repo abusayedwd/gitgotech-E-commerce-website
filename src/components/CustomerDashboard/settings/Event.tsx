@@ -19,6 +19,7 @@ type EventType = {
   purchaseOption: string;
   participant: number;
   createdAt: string;
+  status?: string;
 };
 
 export default function Event() {
@@ -93,6 +94,16 @@ export default function Event() {
       ...prev,
       [name]: value,
     }));
+  };
+
+  const handleDeleteEvent = () => {
+    // TODO: Implement delete functionality
+    console.log("Delete event functionality not yet implemented");
+  };
+
+  const handleUpdateEvent = () => {
+    // TODO: Implement update functionality
+    console.log("Update event functionality not yet implemented");
   };
 
   // Filter events based on active tab
@@ -202,7 +213,7 @@ export default function Event() {
                     </div>
 
                     <div className="flex items-center gap-2 text-[16px] text-[#912DAD]">
-                      <span>Participants: {event.participant.length || 0}</span>
+                      <span>Participants: {event.participant || 0}</span>
                     </div>
                   </div>
                 </div>

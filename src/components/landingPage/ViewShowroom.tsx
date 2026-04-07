@@ -1,16 +1,18 @@
-import React from 'react';
-import TopPoduct from './TopPoduct';
-import { useGetShowroomProductQuery } from '@/redux/features/home/homeSlice';
+import { useGetShowroomProductQuery } from "@/redux/features/home/homeSlice";
 
 const ViewShowroom = () => {
- 
-    const {data: showroomProduct} = useGetShowroomProductQuery(shworoomId)
+  // TODO: Get showroomId from props or context
+  const showroomId = "";
+  const { data: showroomProduct } = useGetShowroomProductQuery({
+    id: showroomId,
+    product_category: "",
+  });
 
-    return (
-        <div>
-            <h1>view showroom product</h1>
-        </div>
-    );
+  return (
+    <div>
+      <h1>view showroom product</h1>
+    </div>
+  );
 };
 
 export default ViewShowroom;

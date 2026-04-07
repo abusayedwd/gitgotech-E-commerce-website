@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 export default function DashboardHome() {
   const router = useRouter();
   const showroomId = useSelector(selectShowroomId);
-  
+
   const { data: dashboardOverviewData } = useDashboardStatusQuery(showroomId);
 
   const dashData = dashboardOverviewData?.data;
@@ -52,7 +52,7 @@ export default function DashboardHome() {
   const recentOrders = dashData?.recentOrders ?? [];
   const recentProducts = dashData?.recentProducts ?? [];
 
-  const formatDate = (dateStr) => {
+  const formatDate = (dateStr: string) => {
     if (!dateStr) return "—";
     const date = new Date(dateStr);
     return date.toLocaleString("en-US", {
@@ -64,7 +64,7 @@ export default function DashboardHome() {
     });
   };
 
-  const getStatusStyle = (status) => {
+  const getStatusStyle = (status: string) => {
     switch (status?.toLowerCase()) {
       case "completed":
         return "bg-green-900/30 text-green-400 border-green-500/30";
@@ -137,7 +137,7 @@ export default function DashboardHome() {
           <>
             {/* Mobile Card View */}
             <div className="block md:hidden space-y-3">
-              {recentOrders.map((order, index) => (
+              {recentOrders.map((order: any, index: number) => (
                 <div
                   key={order._id ?? index}
                   className="bg-purple-900/10 border border-gray-800/30 rounded-lg p-4 hover:bg-purple-900/20 transition-colors"
@@ -201,7 +201,7 @@ export default function DashboardHome() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentOrders.map((order, index) => (
+                  {recentOrders.map((order: any, index: number) => (
                     <tr
                       key={order._id ?? index}
                       className="border-b border-gray-800/30 hover:bg-purple-900/10 transition-colors"
@@ -226,8 +226,13 @@ export default function DashboardHome() {
                       </td>
                       <td className="py-3 px-4">
                         <button
-                          onClick={() => router.push(`/vendor-dashboard/orders/details?id=${order._id}`)}
-                         className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                          onClick={() =>
+                            router.push(
+                              `/vendor-dashboard/orders/details?id=${order._id}`,
+                            )
+                          }
+                          className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+                        >
                           View Details
                         </button>
                       </td>
@@ -262,7 +267,7 @@ export default function DashboardHome() {
           <>
             {/* Mobile Card View */}
             <div className="block md:hidden space-y-3">
-              {recentProducts.map((product, index) => (
+              {recentProducts.map((product: any, index: number) => (
                 <div
                   key={product._id ?? index}
                   className="bg-purple-900/10 border border-gray-800/30 rounded-lg p-4 hover:bg-purple-900/20 transition-colors"
@@ -292,17 +297,21 @@ export default function DashboardHome() {
                     <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 rounded-full text-xs font-medium">
                       {product.isDeleted ? "Deleted" : "In Stock"}
                     </span>
-                    <button 
-                      onClick={() => router.push(`/vendor-dashboard/products/details?id=${product._id}`)}
-                      className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
-                      View Details  
+                    <button
+                      onClick={() =>
+                        router.push(
+                          `/vendor-dashboard/products/details?id=${product._id}`,
+                        )
+                      }
+                      className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+                    >
+                      View Details
                     </button>
                   </div>
                 </div>
               ))}
-            </div> 
-                    
-                   
+            </div>
+
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
@@ -323,7 +332,7 @@ export default function DashboardHome() {
                   </tr>
                 </thead>
                 <tbody>
-                  {recentProducts.map((product, index) => (
+                  {recentProducts.map((product: any, index: number) => (
                     <tr
                       key={product._id ?? index}
                       className="border-b border-gray-800/30 hover:bg-purple-900/10 transition-colors"
@@ -356,8 +365,13 @@ export default function DashboardHome() {
                       </td>
                       <td className="py-3 px-4">
                         <button
-                          onClick={() => router.push(`/vendor-dashboard/products/details?id=${product._id}`)}
-                         className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
+                          onClick={() =>
+                            router.push(
+                              `/vendor-dashboard/products/details?id=${product._id}`,
+                            )
+                          }
+                          className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
+                        >
                           View Details
                         </button>
                       </td>

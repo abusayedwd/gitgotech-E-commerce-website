@@ -7,7 +7,6 @@ import {
 } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
 import { useGetShowroomQuery } from "@/redux/features/vendor/showroomSlice/showroomSlice";
 import {
-  BarChart3,
   ChevronDown,
   Clock,
   FileText,
@@ -27,7 +26,7 @@ function ShowroomSelector() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const { data: showroomData } = useGetShowroomQuery();
+  const { data: showroomData } = useGetShowroomQuery({});
   const showrooms: any[] = showroomData?.data ?? [];
 
   // Auto-select first showroom on load

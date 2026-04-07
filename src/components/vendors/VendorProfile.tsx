@@ -5,7 +5,7 @@ import {
   useUpdateProfileMutation,
 } from "@/redux/features/settings/settingsSlice";
 import { useGetShowroomQuery } from "@/redux/features/vendor/showroomSlice/showroomSlice";
-import { Camera, Edit, MapPin, Upload, X } from "lucide-react";
+import { Camera, Edit, MapPin, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -22,7 +22,7 @@ export default function VendorProfilePage() {
     useGetMyProfileQuery(undefined);
   const [updateProfile] = useUpdateProfileMutation();
 
-  const { data: showroomData } = useGetShowroomQuery();
+  const { data: showroomData } = useGetShowroomQuery({});
   console.log(showroomData);
 
   const profile = profileData?.data;
@@ -120,6 +120,11 @@ export default function VendorProfilePage() {
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+
+    // Notify Navbar to update
+    window.dispatchEvent(new Event("authChanged"));
+
+    // Navigate to home page without reload
     router.push("/");
   };
 

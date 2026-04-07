@@ -28,6 +28,7 @@ interface Card {
   accountNumber: string;
   bankCode: string;
   country: string;
+  cardHolderName?: string;
   moreInfo?: string;
 }
 
@@ -280,7 +281,7 @@ export default function WithdrawRequest() {
                             {card.bankName}
                           </div>
                           <div className="text-xs text-gray-500">
-                            {card.cardHolderName}
+                            {card.cardHolderName || card.accountName}
                           </div>
                         </div>
                         {selectedCardId === card._id && (

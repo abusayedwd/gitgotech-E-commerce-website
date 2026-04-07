@@ -130,7 +130,7 @@ export default function OrderHistory() {
   const allOrders: Order[] = ordersData?.data || [];
   console.log(showroomId);
   console.log(allOrders);
-  const { data: profile } = useGetMyProfileQuery();
+  const { data: profile } = useGetMyProfileQuery({});
   console.log(profile);
 
   const allReturns: Return[] = returnsData?.data || [];
@@ -267,7 +267,7 @@ export default function OrderHistory() {
                 </div>
                 {activeTab === "orders" ? (
                   <select
-                    value={item.orderStatus}
+                    value={"orderStatus" in item ? item.orderStatus : ""}
                     onChange={(e) =>
                       handleStatusUpdate(item._id, e.target.value)
                     }
@@ -282,17 +282,21 @@ export default function OrderHistory() {
                   </select>
                 ) : (
                   <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(item.status)}`}
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}
                   >
-                    {item.status}
+                    {"status" in item ? item.status : "N/A"}
                   </span>
                 )}
               </div>
               <div className="flex justify-between items-center pt-2 border-t border-gray-700/30">
                 <span className="text-sm text-white">
                   {activeTab === "orders"
-                    ? item.customer?.name
-                    : item.showroom?.showroom_name}
+                    ? "customer" in item
+                      ? item.customer?.name
+                      : "N/A"
+                    : "showroom" in item
+                      ? item.showroom?.showroom_name
+                      : "N/A"}
                 </span>
                 <button
                   onClick={() => handleViewDetails(item._id)}
@@ -356,14 +360,18 @@ export default function OrderHistory() {
                   </td>
                   <td className="py-3 px-4 text-sm text-white">
                     {activeTab === "orders"
-                      ? item.customer?.name
-                      : item.showroom?.showroom_name}
+                      ? "customer" in item
+                        ? item.customer?.name
+                        : "N/A"
+                      : "showroom" in item
+                        ? item.showroom?.showroom_name
+                        : "N/A"}
                   </td>
                   <td className="py-3 px-4">
                     {activeTab === "orders" ? (
                       <div className="flex items-center gap-2">
                         <select
-                          value={item.orderStatus}
+                          value={"orderStatus" in item ? item.orderStatus : ""}
                           onChange={(e) =>
                             handleStatusUpdate(item._id, e.target.value)
                           }
@@ -379,9 +387,9 @@ export default function OrderHistory() {
                       </div>
                     ) : (
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(item.status)}`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}
                       >
-                        {item.status}
+                        {"status" in item ? item.status : "N/A"}
                       </span>
                     )}
                   </td>

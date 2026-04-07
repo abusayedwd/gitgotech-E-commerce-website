@@ -1,29 +1,31 @@
 "use client";
 
-import React from 'react';
-import { FileText } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { FaArrowLeft } from 'react-icons/fa';
-import { useGetTermsQuery } from '@/redux/features/settings/settingsSlice';
+import { useGetTermsQuery } from "@/redux/features/settings/settingsSlice";
+import { useRouter } from "next/navigation";
+import { FaArrowLeft } from "react-icons/fa";
 
 export default function TermsConditionsPage() {
-    const router = useRouter();
-  const {data: termsData, isLoading} = useGetTermsQuery()
-  
+  const router = useRouter();
+  const { data: termsData, isLoading } = useGetTermsQuery({});
+
   const termsInfo = termsData?.data;
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-4xl mx-auto">
-
         {/* Header */}
-         <div className="container md:mt-24 mt-12 mx-auto flex items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-            <FaArrowLeft className='text-black' />
-          </div>
-        </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Terms & Condition</h1>
+        <div className="container md:mt-24 mt-12 mx-auto flex items-center gap-4">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+              <FaArrowLeft className="text-black" />
+            </div>
+          </button>
+          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+            Terms & Condition
+          </h1>
         </div>
 
         {/* Content Card */}
@@ -31,12 +33,15 @@ export default function TermsConditionsPage() {
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="ml-3 text-gray-400">Loading terms and conditions...</span>
+              <span className="ml-3 text-gray-400">
+                Loading terms and conditions...
+              </span>
             </div>
           ) : (
             <div className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
               <p className="text-gray-300 whitespace-pre-wrap">
-                {termsInfo?.description || "No terms and conditions content available."}
+                {termsInfo?.description ||
+                  "No terms and conditions content available."}
               </p>
             </div>
           )}

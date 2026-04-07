@@ -1,29 +1,37 @@
 "use client";
-import { useGetAllShowroomQuery, useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
-import { Search, Store, Grid3x3 } from 'lucide-react';
-import Link from 'next/link';
-import { useState } from 'react';
-import { AiOutlineShoppingCart } from 'react-icons/ai';
-import { FaLocationDot } from 'react-icons/fa6';
-import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import {
+  useGetAllShowroomQuery,
+  useGetHomeCategoriesQuery,
+} from "@/redux/features/home/homeSlice";
+import { Search, Store } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { AiOutlineShoppingCart } from "react-icons/ai";
+import { FaLocationDot } from "react-icons/fa6";
 
 export default function ShowroomsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [viewMode, setViewMode] = useState('grid');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  
-  const { data: categoriesRes } = useGetHomeCategoriesQuery();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [viewMode, setViewMode] = useState("grid");
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  const { data: categoriesRes } = useGetHomeCategoriesQuery({});
   const categories = categoriesRes?.data ?? [];
 
-  const {data: showroomData, isLoading, error} = useGetAllShowroomQuery();
-  
+  const { data: showroomData, isLoading, error } = useGetAllShowroomQuery({});
+
   // Extract showrooms from the API response structure
   const showrooms = showroomData?.data || [];
-  
+
   // Filter showrooms based on search query
-  const filteredShowrooms = showrooms.filter((showroom: any) =>
-    showroom.showroom_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    showroom.showroom_address?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredShowrooms = showrooms.filter(
+    (showroom: any) =>
+      showroom.showroom_name
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      showroom.showroom_address
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -35,8 +43,9 @@ export default function ShowroomsPage() {
             Discover Our Showrooms
           </h1>
           <p className="text-gray-400 text-sm md:text-base font-poppins max-w-3xl mx-auto mb-8">
-            Explore our curated showrooms across the city. Each venue showcases the finest designs and craftsmanship, 
-            giving you a world of luxurious choices all within arm's reach.
+            Explore our curated showrooms across the city. Each venue showcases
+            the finest designs and craftsmanship, giving you a world of
+            luxurious choices all within arm's reach.
           </p>
 
           {/* Search Bar */}
@@ -62,7 +71,9 @@ export default function ShowroomsPage() {
         {/* All Showroom Section */}
         <div>
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-            <h2 className="text-white font-cormorant text-xl md:text-2xl font-semibold">All Showroom</h2>
+            <h2 className="text-white font-cormorant text-xl md:text-2xl font-semibold">
+              All Showroom
+            </h2>
             <div className="flex items-center gap-4">
               {/* Category Filter */}
               {/* <select
@@ -77,8 +88,6 @@ export default function ShowroomsPage() {
                   </option>
                 ))}
               </select> */}
-              
-              
             </div>
           </div>
 
@@ -92,7 +101,9 @@ export default function ShowroomsPage() {
           {/* Error State */}
           {error && (
             <div className="text-center py-20">
-              <p className="text-red-400 text-lg">Failed to load showrooms. Please try again later.</p>
+              <p className="text-red-400 text-lg">
+                Failed to load showrooms. Please try again later.
+              </p>
             </div>
           )}
 
@@ -132,11 +143,13 @@ export default function ShowroomsPage() {
                   </p>
 
                   {/* View Showroom Button */}
-                  <Link href={`/showroom/view-showroom?showroomId=${showroom._id}`}>
-                  <button className="w-full bg-[#6100FF] text-[16px] cursor-pointer text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2  mt-auto">
-                   <AiOutlineShoppingCart className="w-3 sm:w-4 h-3 md:h-5 md:w-5 sm:h-4" />
-                    View Showroom
-                  </button>
+                  <Link
+                    href={`/showroom/view-showroom?showroomId=${showroom._id}`}
+                  >
+                    <button className="w-full bg-[#6100FF] text-[16px] cursor-pointer text-white py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2  mt-auto">
+                      <AiOutlineShoppingCart className="w-3 sm:w-4 h-3 md:h-5 md:w-5 sm:h-4" />
+                      View Showroom
+                    </button>
                   </Link>
                 </div>
               </div>
