@@ -1,147 +1,14 @@
 "use client";
+import MapComponent, {
+  SelectedLocation,
+} from "@/components/CustomerDashboard/Location";
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-import { Loader2, MapPin, Search, X } from "lucide-react";
+import { Loader2, MapPin, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
-import {
-  MapContainer,
-  Marker,
-  Popup,
-  TileLayer,
-  useMap,
-  useMapEvents,
-} from "react-leaflet";
-
-// Fix for default marker icon in Next.js
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
-  iconUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png",
-  shadowUrl:
-    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-});
-
-// Map click handler component
-function MapClickHandler({
-  onLocationSelect,
-}: {
-  onLocationSelect: (lat: number, lng: number) => void;
-}) {
-  useMapEvents({
-    click(e) {
-      onLocationSelect(e.latlng.lat, e.latlng.lng);
-    },
-  });
-  return null;
-}
-
-// Map component to update view when location changes
-function MapUpdater({
-  location,
-}: {
-  location: { lat: number; lng: number } | null;
-}) {
-  const map = useMap();
-  useEffect(() => {
-    if (location) {
-      map.setView([location.lat, location.lng], 13);
-    }
-  }, [location, map]);
-  return null;
-}
-
-// Search location component
-function LocationSearch({
-  onLocationSelect,
-}: {
-  onLocationSelect: (lat: number, lng: number, address: string) => void;
-}) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isSearching, setIsSearching] = useState(false);
-
-  const searchLocation = async (query: string) => {
-    if (query.length < 3) {
-      setSearchResults([]);
-      return;
-    }
-
-    setIsSearching(true);
-    try {
-      const response = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`,
-      );
-      const data = await response.json();
-      setSearchResults(data);
-    } catch (error) {
-      console.error("Search error:", error);
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchQuery) {
-        searchLocation(searchQuery);
-      } else {
-        setSearchResults([]);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
-  const handleSelectLocation = (result: any) => {
-    onLocationSelect(
-      parseFloat(result.lat),
-      parseFloat(result.lon),
-      result.display_name,
-    );
-    setSearchQuery("");
-    setSearchResults([]);
-  };
-
-  return (
-    <div className="relative mb-4">
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search for a location..."
-          className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg pl-10 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-        />
-      </div>
-      {isSearching && (
-        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-          <Loader2 className="w-5 h-5 animate-spin text-purple-400" />
-        </div>
-      )}
-      {searchResults.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-gray-900 border border-purple-500/30 rounded-lg max-h-60 overflow-y-auto z-10">
-          {searchResults.map((result, index) => (
-            <button
-              key={index}
-              onClick={() => handleSelectLocation(result)}
-              className="w-full text-left px-4 py-3 hover:bg-purple-900/30 transition-colors border-b border-gray-800 last:border-b-0"
-            >
-              <p className="text-sm text-white">{result.display_name}</p>
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -155,13 +22,11 @@ export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showTipModal, setShowTipModal] = useState(false);
-  const [showMap, setShowMap] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [tipAmount, setTipAmount] = useState(tipFromCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
-    null,
-  );
+  const [selectedLocation, setSelectedLocation] =
+    useState<SelectedLocation | null>(null);
 
   const [orderSubmitted] = useAddVendorOrderMutation();
 
@@ -170,6 +35,8 @@ export default function CheckoutPage() {
     type: "cart",
     page: 1,
   });
+
+  console.log(cartData)
 
   const allCartItems =
     cartData?.data?.filter((item: any) => item.product !== null) || [];
@@ -220,32 +87,11 @@ export default function CheckoutPage() {
   const tip = parseFloat(tipAmount) || 0;
   const total = calculateSubtotal() + deliveryCharge + tax - discount + tip;
 
-  // Get current location
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          });
-          toast.success("Location detected successfully!");
-        },
-        (error) => {
-          toast.error("Unable to get your location. Please enter manually.");
-          console.error("Geolocation error:", error);
-        },
-      );
-    } else {
-      toast.error("Geolocation is not supported by your browser");
-    }
-  };
-
-  // Handle map location selection
-  const handleMapLocationSelect = (lat: number, lng: number) => {
-    setLocation({ lat, lng });
-    setShowMap(false);
-    toast.success("Location selected from map!");
+  // Handle location save from MapComponent
+  const handleLocationSave = (location: SelectedLocation) => {
+    console.log("Saved location:", location);
+    setSelectedLocation(location);
+    toast.success("Location saved successfully!");
   };
 
   const handleInputChange = (
@@ -286,7 +132,7 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (!location) {
+    if (!selectedLocation) {
       toast.error("Please provide your delivery location");
       return;
     }
@@ -315,7 +161,7 @@ export default function CheckoutPage() {
           },
           deliveryInfo: {
             name: formData.fullName,
-            address: formData.address,
+            address: selectedLocation.name,
             country: formData.country,
             state: formData.state,
             zipcode: formData.zipcode,
@@ -323,7 +169,10 @@ export default function CheckoutPage() {
             phone: formData.phone,
             location: {
               type: "Point",
-              coordinates: [location.lng, location.lat],
+              coordinates: [
+                selectedLocation.coordinates.longitude,
+                selectedLocation.coordinates.latitude,
+              ],
             },
           },
         };
@@ -438,43 +287,31 @@ export default function CheckoutPage() {
                 <input
                   type="text"
                   name="address"
-                  value={formData.address}
+                  value={selectedLocation?.name || formData.address}
                   onChange={handleInputChange}
-                  placeholder="123 Main Street, Apartment 4B"
+                  placeholder="Select from map below"
+                  readOnly
                   className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                 />
               </div>
 
-              {/* Location Selection */}
+              {/* Location Selection using MapComponent */}
               <div>
                 <label className="block text-sm mb-2">
+                  <MapPin className="w-4 h-4 inline mr-1" />
                   Delivery Location *
                 </label>
-                <div className="flex gap-3 mb-3">
-                  <button
-                    type="button"
-                    onClick={getCurrentLocation}
-                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-                  >
-                    <MapPin className="w-5 h-5" />
-                    {location ? "✓ Detected" : "Get Current Location"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowMap(true)}
-                    className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-                  >
-                    Select on Map
-                  </button>
-                </div>
-                {location && (
-                  <div className="p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+                <MapComponent onLocationSave={handleLocationSave} />
+                {selectedLocation && (
+                  <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
                     <p className="text-xs text-gray-300">
-                      <span className="font-medium">Selected Location:</span>
+                      <span className="font-medium">Selected Location:</span>{" "}
+                      {selectedLocation.name}
                     </p>
                     <p className="text-xs text-gray-400 mt-1">
-                      Latitude: {location.lat.toFixed(6)}, Longitude:{" "}
-                      {location.lng.toFixed(6)}
+                      Coordinates: [
+                      {selectedLocation.coordinates.longitude.toFixed(6)},{" "}
+                      {selectedLocation.coordinates.latitude.toFixed(6)}]
                     </p>
                   </div>
                 )}
@@ -742,82 +579,6 @@ export default function CheckoutPage() {
             >
               Save Tip
             </button>
-          </div>
-        </div>
-      )}
-
-      {/* Map Modal */}
-      {showMap && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setShowMap(false)}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            <h2 className="text-2xl font-bold text-center mb-6">
-              Select Delivery Location
-            </h2>
-
-            {/* Search Field */}
-            <LocationSearch onLocationSelect={handleMapLocationSelect} />
-
-            {/* Map */}
-            <div
-              className="rounded-lg overflow-hidden border border-purple-500/30"
-              style={{ height: "400px" }}
-            >
-              <MapContainer
-                center={[40.7128, -74.006]}
-                zoom={13}
-                className="w-full h-full"
-                style={{ height: "100%", width: "100%" }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                />
-                {location && (
-                  <Marker position={[location.lat, location.lng]}>
-                    <Popup>Selected Location</Popup>
-                  </Marker>
-                )}
-                <MapClickHandler onLocationSelect={handleMapLocationSelect} />
-                <MapUpdater location={location} />
-              </MapContainer>
-            </div>
-
-            {/* Location Info */}
-            {location && (
-              <div className="mt-4 p-4 bg-purple-900/20 border border-purple-500/30 rounded-lg">
-                <p className="text-sm text-gray-300">
-                  <span className="font-medium">Selected Location:</span>
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  Latitude: {location.lat.toFixed(6)}, Longitude:{" "}
-                  {location.lng.toFixed(6)}
-                </p>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 mt-6">
-              <button
-                onClick={getCurrentLocation}
-                className="flex-1 bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-              >
-                <MapPin className="w-5 h-5" />
-                Use Current Location
-              </button>
-              <button
-                onClick={() => setShowMap(false)}
-                className="flex-1 bg-gray-800 hover:bg-gray-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-              >
-                Done
-              </button>
-            </div>
           </div>
         </div>
       )}

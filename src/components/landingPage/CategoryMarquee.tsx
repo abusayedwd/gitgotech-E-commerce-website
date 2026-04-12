@@ -42,7 +42,7 @@ export default function CategoryMarquee() {
       <div className="animate-marquee">
         {repeated.map((category, index) => {
           const imageUrl = category.image
-            ? `${category.image}`
+            ? `${IMAGE_BASE_URL}/${category.image}`
             : null;
 
           return (

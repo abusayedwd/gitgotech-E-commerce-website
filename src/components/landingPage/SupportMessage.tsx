@@ -250,7 +250,7 @@ export default function SupportMessage() {
   // 1. Get support list to extract chatId
   const { data: supportList, refetch: refetchSupportList } = useGetSupportListQuery({});
   const chatId = supportList?.data?._id;
-  console.log(supportList);
+  // console.log(supportList);
 
   // 2. Get messages by chatId (skip if no chatId yet)
   const { data: chatMessages, refetch: refetchMessages } = useGetSupportMessagesQuery(
