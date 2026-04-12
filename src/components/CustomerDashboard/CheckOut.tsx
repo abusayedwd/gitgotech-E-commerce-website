@@ -19,6 +19,8 @@ export default function CheckoutPage() {
   const cartDataFromUrl = searchParams.get("cartData");
   const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
 
+  console.log(parsedCartData);
+
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showTipModal, setShowTipModal] = useState(false);
@@ -36,33 +38,33 @@ export default function CheckoutPage() {
     page: 1,
   });
 
-  console.log(cartData)
+  console.log(cartData);
 
   const allCartItems =
     cartData?.data?.filter((item: any) => item.product !== null) || [];
 
-  // Merge cart items with quantities and sizes from URL
-  const cartItems = allCartItems.map((item: any) => {
-    const cartItem = parsedCartData.find(
-      (c: any) => c.product === item.product._id,
-    );
-    return {
-      ...item,
-      quantity: cartItem ? cartItem.size[0]?.quantity : 1,
-      selectedSize: cartItem
-        ? cartItem.size[0]?.type
-        : item.product.product_stocks?.[0]?.size || "M",
-      orderData: cartItem
-        ? {
-            product: cartItem.product,
-            size: cartItem.size,
-            orderType: cartItem.orderType,
-            deliveryType: cartItem.deliveryType,
-            price: cartItem.price,
-          }
-        : null,
-    };
-  });
+  // Get only the selected product from cart
+  const selectedCartItem =
+    parsedCartData.length > 0
+      ? allCartItems.find(
+          (item: any) => item.product._id === parsedCartData[0].product,
+        )
+      : null;
+
+  const cartItems = selectedCartItem
+    ? [
+        {
+          ...selectedCartItem,
+          quantity: parsedCartData[0]?.size[0]?.quantity || 1,
+          selectedSize:
+            parsedCartData[0]?.size[0]?.type ||
+            selectedCartItem.product.product_stocks?.[0]?.size ||
+            "M",
+          orderData: parsedCartData[0] || null,
+          priceFromCart: parsedCartData[0]?.price || null,
+        },
+      ]
+    : [];
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -74,18 +76,24 @@ export default function CheckoutPage() {
     phone: "",
   });
 
-  // Calculate totals with quantities from cart
+  // Calculate subtotal - use price from cart data
   const calculateSubtotal = () => {
-    return cartItems.reduce((sum: number, item: any) => {
-      return sum + (item.product.product_price || 0) * (item.quantity || 1);
-    }, 0);
+    if (cartItems.length === 0) return 0;
+    const item = cartItems[0];
+    const price = item.priceFromCart?.amount || item.product.product_price || 0;
+    return price * (item.quantity || 1);
   };
 
-  const deliveryCharge = 20.0;
+  const deliveryChargeFromCart =
+    cartItems[0]?.priceFromCart?.deliveryCharge || 20.0;
+  const tipFromCartData =
+    cartItems[0]?.priceFromCart?.tip || parseFloat(tipAmount) || 0;
+
   const tax = calculateSubtotal() * 0.1;
   const discount = couponCode ? calculateSubtotal() * 0.1 : 0;
-  const tip = parseFloat(tipAmount) || 0;
-  const total = calculateSubtotal() + deliveryCharge + tax - discount + tip;
+  const tip = tipFromCartData;
+  const total =
+    calculateSubtotal() + deliveryChargeFromCart + tax - discount + tip;
 
   // Handle location save from MapComponent
   const handleLocationSave = (location: SelectedLocation) => {
@@ -140,49 +148,48 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Create order for each cart item
-      const orderPromises = cartItems.map((item: any) => {
-        const orderData = {
-          product: item.product._id,
-          size: [
-            {
-              type: item.selectedSize || "M",
-              quantity: item.quantity || 1,
-            },
-          ],
-          orderType: item.orderData?.orderType || "vendor",
-          deliveryType: item.orderData?.deliveryType || deliveryMethod,
-          price: {
-            unit: "usd",
-            amount: item.product.product_price || 0,
-            tip: tip,
-            coupon: couponCode,
-            deliveryCharge: deliveryCharge,
+      // Create order for the selected product only
+      const item = cartItems[0];
+
+      const orderData = {
+        product: item.product._id,
+        size: [
+          {
+            type: item.selectedSize || "M",
+            quantity: item.quantity || 1,
           },
-          deliveryInfo: {
-            name: formData.fullName,
-            address: selectedLocation.name,
-            country: formData.country,
-            state: formData.state,
-            zipcode: formData.zipcode,
-            email: formData.email,
-            phone: formData.phone,
-            location: {
-              type: "Point",
-              coordinates: [
-                selectedLocation.coordinates.longitude,
-                selectedLocation.coordinates.latitude,
-              ],
-            },
+        ],
+        orderType: item.orderData?.orderType || "vendor",
+        deliveryType: item.orderData?.deliveryType || deliveryMethod,
+        price: {
+          unit: item.priceFromCart?.unit || "usd",
+          amount: item.priceFromCart?.amount || item.product.product_price || 0,
+          tip: item.priceFromCart?.tip || tip,
+          coupon: couponCode,
+          deliveryCharge:
+            item.priceFromCart?.deliveryCharge || deliveryChargeFromCart,
+        },
+        deliveryInfo: {
+          name: formData.fullName,
+          address: selectedLocation.name,
+          country: formData.country,
+          state: formData.state,
+          zipcode: formData.zipcode,
+          email: formData.email,
+          phone: formData.phone,
+          location: {
+            type: "Point",
+            coordinates: [
+              selectedLocation.coordinates.longitude,
+              selectedLocation.coordinates.latitude,
+            ],
           },
-        };
+        },
+      };
 
-        console.log("Order Data:", orderData);
+      console.log("Order Data:", orderData);
 
-        return orderSubmitted(orderData).unwrap();
-      });
-
-      await Promise.all(orderPromises);
+      const response = await orderSubmitted(orderData).unwrap();
 
       toast.success("Order placed successfully!");
 
@@ -394,7 +401,7 @@ export default function CheckoutPage() {
             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
 
             {/* Order Items */}
-            <div className="space-y-4 mb-6 max-h-60 overflow-y-auto">
+            <div className="space-y-4 mb-6">
               {cartItems.length > 0 ? (
                 cartItems.map((item: any) => (
                   <div
@@ -413,13 +420,15 @@ export default function CheckoutPage() {
                         {item.product.product_name}
                       </p>
                       <p className="text-xs text-gray-400">
-                        Qty: {item.quantity}
+                        Size: {item.selectedSize} | Qty: {item.quantity}
                       </p>
                     </div>
                     <p className="text-sm font-semibold">
                       $
                       {(
-                        (item.product.product_price || 0) * item.quantity
+                        (item.priceFromCart?.amount ||
+                          item.product.product_price ||
+                          0) * item.quantity
                       ).toFixed(2)}
                     </p>
                   </div>
@@ -440,7 +449,7 @@ export default function CheckoutPage() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Delivery Charge</span>
                 <span className="font-medium">
-                  ${deliveryCharge.toFixed(2)}
+                  ${deliveryChargeFromCart.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">

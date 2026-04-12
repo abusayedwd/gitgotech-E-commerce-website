@@ -76,12 +76,12 @@
 //   const getDiscountedPrice = (product: any) => {
 //   const originalPrice = product?.product_price || 0;
 //   const discount = product?.discount;
-  
+
 //   if (discount?.isValid && discount?.percentage) {
 //     const discountAmount = (originalPrice * discount.percentage) / 100;
 //     return originalPrice - discountAmount;
 //   }
-  
+
 //   return originalPrice;
 // };
 
@@ -415,7 +415,7 @@
 //             <div className="space-y-3 mb-6">
 //               <div className="flex justify-between text-sm">
 //                 <span className="text-gray-400">
-//                   Subtotal  
+//                   Subtotal
 //                 </span>
 //                 <span className="font-medium">
 //                   ${calculateSubtotal().toFixed(2)}
@@ -525,8 +525,6 @@
 //   );
 // }
 
-
-
 "use client";
 
 import { SectionHeader } from "@/customComponent/Header";
@@ -547,9 +545,12 @@ export default function ShoppingCart() {
   const router = useRouter();
   const [page, setPage] = useState(1);
   const [quantities, setQuantities] = useState<Record<string, number>>({});
-  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
+  const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>(
+    {},
+  );
   const [showTipModal, setShowTipModal] = useState(false);
   const [tipAmount, setTipAmount] = useState("5");
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null); // Track selected product
 
   const {
     data: cartData,
@@ -678,19 +679,25 @@ export default function ShoppingCart() {
   };
 
   const calculateSubtotal = () => {
-    return cartItems.reduce((total: number, item: any) => {
-      const quantity = quantities[item._id] || 1;
-      const discountedPrice = getDiscountedPrice(item.product);
-      return total + discountedPrice * quantity;
-    }, 0);
+    if (!selectedProduct) return 0;
+
+    const selectedItem = cartItems.find(
+      (item: any) => item._id === selectedProduct,
+    );
+    if (!selectedItem) return 0;
+
+    const quantity = quantities[selectedItem._id] || 1;
+    const discountedPrice = getDiscountedPrice(selectedItem.product);
+    return discountedPrice * quantity;
   };
+
+  const deliveryCharge = 20.0;
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    const deliveryCharge = 20.0;
-    const tax = subtotal * 0.1;
+    
     const tip = parseFloat(tipAmount) || 0;
-    return subtotal + deliveryCharge + tax + tip;
+    return subtotal + tip;
   };
 
   const handleTipSubmit = () => {
@@ -698,28 +705,38 @@ export default function ShoppingCart() {
     toast.success("Tip amount saved!");
   };
 
+  // Prepare cart data for checkout - ONLY selected product
   const getCartDataForCheckout = () => {
-    return cartItems.map((item: any) => ({
-      product: item.product._id,
-      size: [
-        {
-          type:
-            selectedSizes[item._id] ||
-            item.product.product_stocks?.[0]?.size ||
-            "",
-          quantity: quantities[item._id] || 1,
+    if (!selectedProduct) return [];
+
+    const selectedItem = cartItems.find(
+      (item: any) => item._id === selectedProduct,
+    );
+    if (!selectedItem) return [];
+
+    return [
+      {
+        product: selectedItem.product._id,
+        size: [
+          {
+            type:
+              selectedSizes[selectedItem._id] ||
+              selectedItem.product.product_stocks?.[0]?.size ||
+              "",
+            quantity: quantities[selectedItem._id] || 1,
+          },
+        ],
+        orderType: selectedItem.product.vendor ? "vendor" : "custom",
+        deliveryType: "delivery",
+        price: {
+          unit: "usd",
+          amount: getDiscountedPrice(selectedItem.product),
+          tip: parseFloat(tipAmount) || 0,
+          coupon: "",
+          deliveryCharge: 30,
         },
-      ],
-      orderType: item.product.vendor ? "vendor" : "custom",
-      deliveryType: "delivery",
-      price: {
-        unit: "usd",
-        amount: getDiscountedPrice(item.product), // discounted price
-        tip: parseFloat(tipAmount) || 0,
-        coupon: "",
-        deliveryCharge: 30,
       },
-    }));
+    ];
   };
 
   return (
@@ -779,10 +796,25 @@ export default function ShoppingCart() {
                     return (
                       <div
                         key={item._id}
-                        className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center bg-purple-900/10 p-4 border-[#B8B8B8] border-b rounded-lg"
+                        className={`grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 border-[#B8B8B8] border-b rounded-lg transition-all ${
+                          selectedProduct === item._id
+                            ? "bg-purple-900/30 border-purple-500"
+                            : "bg-purple-900/10 hover:bg-purple-900/20"
+                        }`}
                       >
+                        {/* Radio Button for Selection */}
+                        <div className="md:col-span-1 flex justify-center">
+                          <input
+                            type="radio"
+                            name="selectedProduct"
+                            checked={selectedProduct === item._id}
+                            onChange={() => setSelectedProduct(item._id)}
+                            className="w-5 h-5 text-purple-600 cursor-pointer"
+                          />
+                        </div>
+
                         {/* Product */}
-                        <div className="md:col-span-4 flex items-center gap-4">
+                        <div className="md:col-span-3 flex items-center gap-4">
                           <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
                             <img
                               src={imageUrl}
@@ -982,14 +1014,16 @@ export default function ShoppingCart() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Delivery Charge</span>
-                <span className="font-medium">$20.00</span>
+                <span className="font-medium">
+                  $2 per km 
+                </span>
               </div>
-              <div className="flex justify-between text-sm">
+              {/* <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
                 <span className="font-medium">
                   ${(calculateSubtotal() * 0.1).toFixed(2)}
                 </span>
-              </div>
+              </div> */}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tip</span>
                 <button
