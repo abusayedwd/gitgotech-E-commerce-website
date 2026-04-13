@@ -22,7 +22,6 @@ export default function CheckoutPage() {
 
   console.log(parsedCartData);
 
- 
   const product = searchParams.get("productId");
   const event = searchParams.get("eventId");
 
@@ -33,11 +32,16 @@ export default function CheckoutPage() {
 
   const { data: sizesData, isLoading } =
     useGetProductEventWishesSizeQuery(data);
-    console.log(sizesData)
 
+  // Convert sizesData to order format: [{ type: "L", quantity: 1 }, ...]
+  const size = sizesData?.data
+    ? sizesData.data.map((item: any) => ({
+        type: item.size,
+        quantity: 1,
+      }))
+    : [];
 
-
-
+    console.log("Size data:", size);
 
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
@@ -140,7 +144,7 @@ export default function CheckoutPage() {
   const handleTipSubmit = () => {
     setShowTipModal(false);
   };
-
+ 
   const handleSubmitOrder = async () => {
     // Validation
     if (
@@ -153,7 +157,9 @@ export default function CheckoutPage() {
       return;
     }
 
-    if (cartItems.length === 0) {
+    const isEventOrder = size.length > 0;
+
+    if (!isEventOrder && cartItems.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
@@ -166,44 +172,76 @@ export default function CheckoutPage() {
     setIsSubmitting(true);
 
     try {
-      // Create order for the selected product only
+      // Check if we're ordering from event (sizesData) or from cart
+      const isEventOrder =  size.length > 0;
       const item = cartItems[0];
-
-      const orderData = {
-        product: item.product._id,
-        size: [
-          {
-            type: item.selectedSize || "M",
-            quantity: item.quantity || 1,
-          },
-        ],
-        orderType: item.orderData?.orderType || "vendor",
-        deliveryType: item.orderData?.deliveryType || deliveryMethod,
-        price: {
-          unit: item.priceFromCart?.unit || "usd",
-          amount: item.priceFromCart?.amount || item.product.product_price || 0,
-          tip: item.priceFromCart?.tip || tip,
-          coupon: couponCode,
-          deliveryCharge:
-            item.priceFromCart?.deliveryCharge || deliveryChargeFromCart,
-        },
-        deliveryInfo: {
-          name: formData.fullName,
-          address: selectedLocation.name,
-          country: formData.country,
-          state: formData.state,
-          zipcode: formData.zipcode,
-          email: formData.email,
-          phone: formData.phone,
-          location: {
-            type: "Point",
-            coordinates: [
-              selectedLocation.coordinates.longitude,
-              selectedLocation.coordinates.latitude,
+    console.log(size.length)
+      const orderData = isEventOrder
+        ? {
+            product: product,
+            size: size,
+            orderType: "vendor",
+            deliveryType: deliveryMethod,
+            price: {
+              unit: "usd",
+              amount: 0, // Set event product price
+              tip: parseFloat(tipAmount) || 0,
+              coupon: couponCode,
+              deliveryCharge: 20,
+            },
+            deliveryInfo: {
+              name: formData.fullName,
+              address: selectedLocation.name,
+              country: formData.country,
+              state: formData.state,
+              zipcode: formData.zipcode,
+              email: formData.email,
+              phone: formData.phone,
+              location: {
+                type: "Point",
+                coordinates: [
+                  selectedLocation.coordinates.longitude,
+                  selectedLocation.coordinates.latitude,
+                ],
+              },
+            },
+          }
+        : {
+            product: item.product._id,
+            size: [
+              {
+                type: item.selectedSize || "M",
+                quantity: item.quantity || 1,
+              },
             ],
-          },
-        },
-      };
+            orderType: item.orderData?.orderType || "vendor",
+            deliveryType: item.orderData?.deliveryType || deliveryMethod,
+            price: {
+              unit: item.priceFromCart?.unit || "usd",
+              amount:
+                item.priceFromCart?.amount || item.product.product_price || 0,
+              tip: item.priceFromCart?.tip || tip,
+              coupon: couponCode,
+              deliveryCharge:
+                item.priceFromCart?.deliveryCharge || deliveryChargeFromCart,
+            },
+            deliveryInfo: {
+              name: formData.fullName,
+              address: selectedLocation.name,
+              country: formData.country,
+              state: formData.state,
+              zipcode: formData.zipcode,
+              email: formData.email,
+              phone: formData.phone,
+              location: {
+                type: "Point",
+                coordinates: [
+                  selectedLocation.coordinates.longitude,
+                  selectedLocation.coordinates.latitude,
+                ],
+              },
+            },
+          };
 
       console.log("Order Data:", orderData);
 
@@ -516,8 +554,8 @@ export default function CheckoutPage() {
               onClick={handleSubmitOrder}
               disabled={isSubmitting || cartItems.length === 0}
               className={`w-full py-4 rounded-lg font-semibold transition-all duration-300 ${
-                isSubmitting || cartItems.length === 0
-                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                isSubmitting  
+                  ? "bg-gray-600 text-gray-400 "
                   : "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transform hover:scale-105"
               }`}
             >
