@@ -2,6 +2,7 @@
 import MapComponent, {
   SelectedLocation,
 } from "@/components/CustomerDashboard/Location";
+import { useGetProductEventWishesSizeQuery } from "@/redux/features/event/eventSlice";
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
 import { Loader2, MapPin, X } from "lucide-react";
@@ -20,6 +21,19 @@ export default function CheckoutPage() {
   const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
 
   console.log(parsedCartData);
+
+ 
+    const product = searchParams.get("productId");
+    const event = searchParams.get("eventId");
+  
+    const data = {
+      product: product,
+      event: event,
+    };
+  
+    const { data: sizesData, isLoading } =
+      useGetProductEventWishesSizeQuery(data);
+      console.log(sizesData)
 
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
@@ -480,9 +494,17 @@ export default function CheckoutPage() {
             {/* Coupon Code */}
             <button
               onClick={() => setShowCouponModal(true)}
-              className="w-full mb-4 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
+              className="w-full mb-3 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
             >
               Apply Coupon Code
+            </button>
+
+            {/* Tip Driver Button */}
+            <button
+              onClick={() => setShowTipModal(true)}
+              className="w-full mb-4 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
+            >
+              Tip Your Driver
             </button>
 
             {/* Place Order Button */}

@@ -213,7 +213,7 @@ export default function Event() {
                     </div>
 
                     <div className="flex items-center gap-2 text-[16px] text-[#912DAD]">
-                      <span>Participants: {event.participant || 0}</span>
+                      <span>Participants: {event?.participantCount || 0}</span>
                     </div>
                   </div>
                 </div>

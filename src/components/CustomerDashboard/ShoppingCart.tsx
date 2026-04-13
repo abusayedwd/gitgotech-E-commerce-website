@@ -7,7 +7,7 @@
 //   useDeleteSaveListMutation,
 //   useGetWishlistAndCartQuery,
 // } from "@/redux/features/home/homeSlice";
-// import { Minus, Plus, Trash2, X } from "lucide-react";
+// import { Minus, Plus, Trash2 } from "lucide-react";
 // import Link from "next/link";
 // import { useRouter } from "next/navigation";
 // import { useEffect, useState } from "react";
@@ -534,7 +534,7 @@ import {
   useDeleteSaveListMutation,
   useGetWishlistAndCartQuery,
 } from "@/redux/features/home/homeSlice";
-import { Minus, Plus, Trash2, X } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -548,9 +548,7 @@ export default function ShoppingCart() {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>(
     {},
   );
-  const [showTipModal, setShowTipModal] = useState(false);
-  const [tipAmount, setTipAmount] = useState("5");
-  const [selectedProduct, setSelectedProduct] = useState<string | null>(null); // Track selected product
+  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
 
   const {
     data: cartData,
@@ -695,14 +693,7 @@ export default function ShoppingCart() {
 
   const calculateTotal = () => {
     const subtotal = calculateSubtotal();
-    
-    const tip = parseFloat(tipAmount) || 0;
-    return subtotal + tip;
-  };
-
-  const handleTipSubmit = () => {
-    setShowTipModal(false);
-    toast.success("Tip amount saved!");
+    return subtotal;
   };
 
   // Prepare cart data for checkout - ONLY selected product
@@ -731,7 +722,7 @@ export default function ShoppingCart() {
         price: {
           unit: "usd",
           amount: getDiscountedPrice(selectedItem.product),
-          tip: parseFloat(tipAmount) || 0,
+          tip: 0,
           coupon: "",
           deliveryCharge: 30,
         },
@@ -1014,9 +1005,7 @@ export default function ShoppingCart() {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Delivery Charge</span>
-                <span className="font-medium">
-                  $2 per km 
-                </span>
+                <span className="font-medium">$2 per km</span>
               </div>
               {/* <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
@@ -1024,15 +1013,6 @@ export default function ShoppingCart() {
                   ${(calculateSubtotal() * 0.1).toFixed(2)}
                 </span>
               </div> */}
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Tip</span>
-                <button
-                  onClick={() => setShowTipModal(true)}
-                  className="text-purple-400 hover:text-purple-300 font-medium"
-                >
-                  ${tipAmount}
-                </button>
-              </div>
               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
                 <span>Total</span>
                 <span className="text-purple-400">
@@ -1045,7 +1025,7 @@ export default function ShoppingCart() {
               href={{
                 pathname: "/checkout",
                 query: {
-                  tip: tipAmount,
+                  tip: "0",
                   cartData: JSON.stringify(getCartDataForCheckout()),
                 },
               }}
@@ -1054,66 +1034,9 @@ export default function ShoppingCart() {
                 Proceed to Checkout
               </button>
             </Link>
-
-            <button
-              onClick={() => setShowTipModal(true)}
-              className="w-full mt-3 py-3 border border-purple-500/30 hover:bg-purple-500/10 rounded-full font-semibold transition-all duration-300"
-            >
-              Tip Your Driver
-            </button>
           </div>
         </div>
       </div>
-
-      {/* Tip Modal */}
-      {showTipModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-          <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
-            <button
-              onClick={() => setShowTipModal(false)}
-              className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            <h2 className="text-2xl font-bold text-center mb-6">Add Tip</h2>
-            <p className="text-gray-400 text-sm text-center mb-6">
-              Show appreciation for your delivery person
-            </p>
-
-            <div className="grid grid-cols-4 gap-3 mb-6">
-              {["0", "5", "10", "15"].map((amount) => (
-                <button
-                  key={amount}
-                  onClick={() => setTipAmount(amount)}
-                  className={`py-3 rounded-lg font-medium transition-colors ${
-                    tipAmount === amount
-                      ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
-                  }`}
-                >
-                  ${amount}
-                </button>
-              ))}
-            </div>
-
-            <input
-              type="number"
-              value={tipAmount}
-              onChange={(e) => setTipAmount(e.target.value)}
-              placeholder="Custom amount"
-              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4"
-            />
-
-            <button
-              onClick={handleTipSubmit}
-              className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all"
-            >
-              Save Tip
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

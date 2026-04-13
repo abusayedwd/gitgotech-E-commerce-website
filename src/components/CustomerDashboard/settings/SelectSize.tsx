@@ -206,6 +206,7 @@ export default function SelectSize() {
 
   const { data: sizesData, isLoading } =
     useGetProductEventWishesSizeQuery(data);
+    console.log(sizesData)
 
   const [eventProductSizeAddEdit] = useEventProductSizeAddEditMutation();
 
