@@ -23,17 +23,21 @@ export default function CheckoutPage() {
   console.log(parsedCartData);
 
  
-    const product = searchParams.get("productId");
-    const event = searchParams.get("eventId");
-  
-    const data = {
-      product: product,
-      event: event,
-    };
-  
-    const { data: sizesData, isLoading } =
-      useGetProductEventWishesSizeQuery(data);
-      console.log(sizesData)
+  const product = searchParams.get("productId");
+  const event = searchParams.get("eventId");
+
+  const data = {
+    product: product,
+    event: event,
+  };
+
+  const { data: sizesData, isLoading } =
+    useGetProductEventWishesSizeQuery(data);
+    console.log(sizesData)
+
+
+
+
 
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
