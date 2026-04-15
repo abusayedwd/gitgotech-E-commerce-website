@@ -8,6 +8,7 @@ import { useAddProductReviewMutation } from "@/redux/features/review/reviewSlice
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 
 export default function MyDashboard() {
   const [activeTab, setActiveTab] = useState<"orders" | "returns">("orders");
@@ -24,24 +25,10 @@ export default function MyDashboard() {
   const { data: mainOrderData } = useGetCustomerMainOrdersQuery({});
   const { data: returnOrderData } = useGetCustomerReturnOrdersQuery({});
   console.log(mainOrderData);
+
   const [reviewProduct] = useAddProductReviewMutation();
 
-  // Transform API data for orders
-  //  const orders = mainOrderData?.data?.map((order: any) => ({
 
-  //    id: order.id || order._id,
-  //    productName: order.name,
-  //    brand: order.showroom_name,
-  //    image: order.product_images?.[0] || '/images/jacket.png',
-  //    price: order.price?.amount || 0,
-  //    quantity: 1,
-  //    otp: 'N/A',
-  //    total: (order.price?.amount || 0) + (order.price?.tip || 0) + (order.price?.deliveryCharge || 0) - (order.price?.coupon || 0),
-  //    status: order.status,
-  //    hasReview: false,
-  //    productId: order.productId,
-  //    size: order.size
-  //  })) || [];
 
   const orders =
     mainOrderData?.data?.map((order: any) => ({
@@ -142,7 +129,7 @@ export default function MyDashboard() {
 
   const handleSubmitReviews = async (orderId: string | number) => {
     console.log(orderId);
-    const payload = {
+    const data = {
       driver: {
         rating: driverRating,
         comment: driverReview,
@@ -152,13 +139,17 @@ export default function MyDashboard() {
         comment: productReview,
       },
     };
-    console.log(payload);
+    console.log(data);
 
     try {
-      const res = await reviewProduct({ body: payload, id: orderId }).unwrap();
+      const res = await reviewProduct({ body: data, id: orderId }).unwrap();
       console.log(res);
+      if (res.success) {
+        toast.success("Review submitted successfully!");
+      } 
     } catch (error) {
       console.error("Error submitting review:", error);
+      toast.error(error?.data?.message || "Failed to submit review. Please try again.");
     }
 
     setShowReviewModal(false);
@@ -188,6 +179,7 @@ export default function MyDashboard() {
 
   return (
     <div className="min-h-screen md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+  <Toaster position="top-right" />
       {/* Header */}
       <div className="container mx-auto mb-8 md:mb-12 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3">
@@ -477,7 +469,7 @@ export default function MyDashboard() {
               onClick={() =>
                 selectedOrder?.id && handleSubmitReviews(selectedOrder.id)
               }
-              className="w-full py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
+              className="w-full py-3 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-white font-semibold transition-colors"
             >
               Submit
             </button>

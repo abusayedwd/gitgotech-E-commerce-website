@@ -1,4 +1,4 @@
-import { io, Socket } from 'socket.io-client';
+import { io, Socket } from "socket.io-client";
 
 let socket: Socket | null = null;
 
@@ -7,44 +7,42 @@ export const initializeSocket = (token: string): Socket => {
     return socket;
   }
 
-  const SOCKET_URL = process.env.SOCKET_BASE_URL || 'https://until-williams-peers-bread.trycloudflare.com';
+  const SOCKET_URL = process.env.SOCKET_BASE_URL;
+  console.log(SOCKET_URL);
 
- 
-  console.log('🔌 Connecting to socket:', SOCKET_URL);
-  console.log('🔑 Token:', token ? `${token.substring(0, 20)}...` : 'No token');
+  console.log("🔌 Connecting to socket:", SOCKET_URL);
+  console.log("🔑 Token:", token ? `${token.substring(0, 20)}...` : "No token");
 
   // Remove 'Bearer ' prefix if present - server expects raw JWT token
-  const rawToken = token.startsWith('Bearer ') ? token.substring(7) : token;
-  console.log(rawToken)
+  const rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+  console.log(rawToken);
 
-socket = io(SOCKET_URL, {
-  extraHeaders: {
-    token: rawToken,   // ← This sends it as an actual HTTP header
-  },
-  transports: ['polling', 'websocket'],  // keep polling first
-  reconnection: true,
-  reconnectionDelay: 1000,
-  reconnectionAttempts: 5,
-  forceNew: true,
-});
-
-
-
-  socket.on('connect', () => {
-    console.log('✅ Socket connected:', socket?.id);
+  socket = io(SOCKET_URL, {
+    extraHeaders: {
+      token: rawToken, // ← This sends it as an actual HTTP header
+    },
+    transports: ["polling", "websocket"], // keep polling first
+    reconnection: true,
+    reconnectionDelay: 1000,
+    reconnectionAttempts: 5,
+    forceNew: true,
   });
 
-  socket.on('disconnect', (reason) => {
-    console.log('❌ Socket disconnected:', reason);
+  socket.on("connect", () => {
+    console.log("✅ Socket connected:", socket?.id);
   });
 
-  socket.on('connect_error', (error) => {
-    console.error('❌ Socket connection error:', error.message);
-    console.error('Error details:', error);
+  socket.on("disconnect", (reason) => {
+    console.log("❌ Socket disconnected:", reason);
   });
 
-  socket.on('error', (error) => {
-    console.error('❌ Socket error:', error.message);
+  socket.on("connect_error", (error) => {
+    console.error("❌ Socket connection error:", error.message);
+    console.error("Error details:", error);
+  });
+
+  socket.on("error", (error) => {
+    console.error("❌ Socket error:", error.message);
   });
 
   return socket;
@@ -64,23 +62,29 @@ export const disconnectSocket = (): void => {
 
 export const emitEvent = (eventName: string, data: any): void => {
   if (socket?.connected) {
-    console.log('📤 Emitting event:', eventName, data);
+    console.log("📤 Emitting event:", eventName, data);
     socket.emit(eventName, data);
   } else {
-    console.warn('⚠️ Socket not connected, cannot emit:', eventName);
+    console.warn("⚠️ Socket not connected, cannot emit:", eventName);
   }
 };
 
-export const onEvent = (eventName: string, callback: (data: any) => void): void => {
+export const onEvent = (
+  eventName: string,
+  callback: (data: any) => void,
+): void => {
   if (socket) {
     socket.on(eventName, callback);
-    console.log('📡 Listening for event:', eventName);
+    console.log("📡 Listening for event:", eventName);
   }
 };
 
-export const offEvent = (eventName: string, callback?: (data: any) => void): void => {
+export const offEvent = (
+  eventName: string,
+  callback?: (data: any) => void,
+): void => {
   if (socket) {
     socket.off(eventName, callback);
-    console.log('🔇 Stopped listening for event:', eventName);
+    console.log("🔇 Stopped listening for event:", eventName);
   }
 };

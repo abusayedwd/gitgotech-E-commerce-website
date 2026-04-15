@@ -8,7 +8,7 @@ const reviewSlice = apiSlice.injectEndpoints({
     // ✅ GET Product Reviews
     getProductReviews: builder.query({
       query: ({ id, page = 1, limit = 10 }) => ({
-        url: `/product/customer/reviews/${id}`,
+        url: `/review/product/${id}`,
         method: "GET",
         params: { page, limit },
       }),
@@ -17,10 +17,10 @@ const reviewSlice = apiSlice.injectEndpoints({
 
     // ✅ POST Add Review
     addProductReview: builder.mutation({
-      query: ({ id, body }) => ({
+      query: ({body , id }) => ({
         url: `/review/add/${id}`,
-        method: "POST",
-        body,
+        method: "PATCH",
+        body: body,
         
       }),
       invalidatesTags: ["Review"],
