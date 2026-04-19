@@ -613,10 +613,14 @@ export default function ShoppingCart() {
 
   const handleIncrement = async (item: any) => {
     const currentQty = quantities[item._id] || 1;
-    const totalStock = getTotalStock(item.product?.product_stocks);
+    const selectedSize = selectedSizes[item._id];
+    const stockInfo = item.product?.product_stocks?.find(
+      (stock: any) => stock.size === selectedSize
+    );
+    const sizeStock = stockInfo ? stockInfo.stock : 0;
 
-    if (currentQty >= totalStock) {
-      toast.error("Cannot add more. Out of stock!");
+    if (currentQty >= sizeStock) {
+      toast.error(`Cannot add more. Only ${sizeStock} items available for size ${selectedSize}`);
       return;
     }
 
@@ -631,8 +635,6 @@ export default function ShoppingCart() {
 
   const handleDecrement = async (item: any) => {
     const currentQty = quantities[item._id] || 1;
-    console.log(currentQty);
-
     if (currentQty <= 1) return;
 
     const newQuantity = currentQty - 1;
@@ -640,8 +642,6 @@ export default function ShoppingCart() {
       ...prev,
       [item._id]: newQuantity,
     }));
-
- 
   };
 
   const getProductImage = (product: any) => {
@@ -739,7 +739,7 @@ export default function ShoppingCart() {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="container mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="bg-gradient-to-br from-purple-900/10 to-gray-900/50 border-[#B8B8B8] border rounded-2xl p-4 md:p-6">
@@ -756,8 +756,12 @@ export default function ShoppingCart() {
                 ? cartItems.map((item: any) => {
                     const product = item.product;
                     const imageUrl = getProductImage(product);
-                    const totalStock = getTotalStock(product?.product_stocks);
-                    const isInStock = totalStock > 0;
+                    const currentSize = selectedSizes[item._id];
+                    const stockInfo = product?.product_stocks?.find(
+                      (s: any) => s.size === currentSize,
+                    );
+                    const sizeStock = stockInfo ? stockInfo.stock : 0;
+                    const isInStock = sizeStock > 0;
                     const quantity = quantities[item._id] || 1;
                     const discountedPrice = getDiscountedPrice(product);
                     const subtotal = discountedPrice * quantity;
@@ -828,10 +832,26 @@ export default function ShoppingCart() {
                             <select
                               value={selectedSizes[item._id] || ""}
                               onChange={(e) => {
+                                const newSize = e.target.value;
                                 setSelectedSizes((prev) => ({
                                   ...prev,
-                                  [item._id]: e.target.value,
+                                  [item._id]: newSize,
                                 }));
+
+                                // Check if current quantity exceeds new size stock
+                                const stockInfo = product.product_stocks.find(
+                                  (s: any) => s.size === newSize,
+                                );
+                                const newSizeStock = stockInfo
+                                  ? stockInfo.stock
+                                  : 0;
+                                if (quantities[item._id] > newSizeStock) {
+                                  setQuantities((prev) => ({
+                                    ...prev,
+                                    [item._id]:
+                                      newSizeStock > 0 ? newSizeStock : 1,
+                                  }));
+                                }
                               }}
                               className="bg-[#2E2E34] text-white px-3 py-2 rounded-lg text-sm border border-purple-500/30 focus:outline-none focus:border-purple-500"
                             >
@@ -884,7 +904,7 @@ export default function ShoppingCart() {
                             </span>
                             <button
                               onClick={() => handleIncrement(item)}
-                              disabled={!isInStock || quantity >= totalStock}
+                              disabled={!isInStock || quantity >= sizeStock}
                               className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                             >
                               <Plus className="w-3 h-3" />
