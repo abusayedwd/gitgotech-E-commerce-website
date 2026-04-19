@@ -77,10 +77,12 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
         saveType: "cart"
       };
       const res = await addToCartWishList(data).unwrap();
+      console.log(res)
       if (res?.success) {
         toast.success('Added to cart!');
       }
     } catch (error: any) {
+      console.log(error)
       toast.error(error?.data?.message || 'Failed to add to cart');
     }
   };
@@ -92,6 +94,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
         saveType: "wishlist"
       };
       const res = await addToCartWishList(data).unwrap();
+      console.log(res)
       if (res?.success) {
         toast.success('Added to wishlist!');
       }

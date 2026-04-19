@@ -1,5 +1,7 @@
 "use client";
 
+import page from "@/app/careers/page";
+import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +13,11 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+
+    const {  data: cartData } = useGetWishlistAndCartQuery({type: "cart",
+    page: page,});
+  
+    console.log("Cart Data:", cartData?.data?.length);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -150,7 +157,7 @@ export default function Navbar() {
                         height={30}
                       />
                       <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                        2
+                        {cartData?.data?.length || 0}
                       </span>
                     </button>
                   </Link>
@@ -245,7 +252,7 @@ export default function Navbar() {
                   height={30}
                 />
                 <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-purple-600 text-white text-[10px] rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center">
-                  2
+                  {cartData?.data?.length || 0}
                 </span>
               </button>
             </Link>

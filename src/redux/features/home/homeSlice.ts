@@ -89,7 +89,8 @@ const homeSlice = apiSlice.injectEndpoints({
       query: (id) => ({
         url: `/product/customer/delete-save/${id}`,
         method: "DELETE"
-      })
+      }),
+      invalidatesTags: ["SaveItems"],
     })
 
   }),
