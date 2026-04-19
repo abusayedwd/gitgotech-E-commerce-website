@@ -559,6 +559,8 @@ export default function ShoppingCart() {
     page: page,
   });
 
+  console.log(cartData)
+
   const [addToCartWishList] = useAddToCartWishListMutation();
   const [deleteSaveItem] = useDeleteSaveListMutation();
 
@@ -624,22 +626,12 @@ export default function ShoppingCart() {
       [item._id]: newQuantity,
     }));
 
-    try {
-      await addToCartWishList({
-        product: item.product._id,
-        saveType: "cart",
-        quantity: newQuantity,
-      }).unwrap();
-
-      refetch();
-      toast.success("Quantity updated");
-    } catch (error: any) {
-      console.error("Failed to update quantity:", error);
-    }
+   
   };
 
   const handleDecrement = async (item: any) => {
     const currentQty = quantities[item._id] || 1;
+    console.log(currentQty);
 
     if (currentQty <= 1) return;
 
@@ -649,18 +641,7 @@ export default function ShoppingCart() {
       [item._id]: newQuantity,
     }));
 
-    try {
-      await addToCartWishList({
-        product: item.product._id,
-        saveType: "cart",
-        quantity: newQuantity,
-      }).unwrap();
-
-      refetch();
-      toast.success("Quantity updated");
-    } catch (error: any) {
-      console.error("Failed to update quantity:", error);
-    }
+ 
   };
 
   const getProductImage = (product: any) => {

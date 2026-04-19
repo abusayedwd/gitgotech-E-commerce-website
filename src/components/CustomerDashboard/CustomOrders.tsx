@@ -264,6 +264,7 @@ const OrderNowModal = ({
     quantity: order.quantity || 1,
     deliveryCharge: 30,
     tips: 10,
+    coupon: "",
     // Location fields - manual input like ReturnRequest
     fullName: "",
     location: "",
@@ -278,14 +279,16 @@ const OrderNowModal = ({
 
   const [customOrderPlace] = useCustomOrderPlaceMutation();
 
+  const subtotal = (parseFloat(order.price) || 0) * formData.quantity;
+  const tax = subtotal * 0.1;
+  const total = subtotal + tax + formData.deliveryCharge + formData.tips;
+
   // Handle location save from MapComponent
   const handleLocationSave = (loc: SelectedLocation) => {
     console.log("Saved location:", loc);
     setSelectedLocation(loc);
 
     // Extract coordinates and address
-    const lat = loc.coordinates?.latitude;
-    const lng = loc.coordinates?.longitude;
     const address = loc.name || loc.address || loc.displayName;
 
     // Update location field
@@ -303,7 +306,10 @@ const OrderNowModal = ({
       ...formData,
       price: {
         unit: "usd",
+        amount: subtotal,
+        tax: tax,
         tip: formData.tips,
+        coupon: formData.coupon,
         deliveryCharge: formData.deliveryCharge,
       },
       pickUpInfo: {
@@ -377,61 +383,82 @@ const OrderNowModal = ({
 
         {/* Order Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Quantity */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Quantity
-            </label>
-            <input
-              type="number"
-              value={formData.quantity}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  quantity: parseInt(e.target.value) || 1,
-                })
-              }
-              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-              min="1"
-            />
-          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Quantity */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Quantity
+              </label>
+              <input
+                type="number"
+                value={formData.quantity}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    quantity: parseInt(e.target.value) || 1,
+                  })
+                }
+                className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                min="1"
+              />
+            </div>
 
-          {/* Delivery Charge */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Delivery Charge ($)
-            </label>
-            <input
-              type="number"
-              value={formData.deliveryCharge}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  deliveryCharge: parseInt(e.target.value) || 0,
-                })
-              }
-              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-              min="0"
-            />
-          </div>
+            {/* Delivery Charge */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Delivery Charge ($)
+              </label>
+              <input
+                type="number"
+                value={formData.deliveryCharge}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    deliveryCharge: parseInt(e.target.value) || 0,
+                  })
+                }
+                className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                min="0"
+              />
+            </div>
 
-          {/* Tips */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Tips ($)
-            </label>
-            <input
-              type="number"
-              value={formData.tips}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  tips: parseInt(e.target.value) || 0,
-                })
-              }
-              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-              min="0"
-            />
+            {/* Tips */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Tips ($)
+              </label>
+              <input
+                type="number"
+                value={formData.tips}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    tips: parseInt(e.target.value) || 0,
+                  })
+                }
+                className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                min="0"
+              />
+            </div>
+
+            {/* Coupon */}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Coupon Code
+              </label>
+              <input
+                type="text"
+                value={formData.coupon}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    coupon: e.target.value.toUpperCase(),
+                  })
+                }
+                placeholder="SAVE10"
+                className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors uppercase"
+              />
+            </div>
           </div>
 
           {/* Delivery Address Section */}
@@ -565,17 +592,28 @@ const OrderNowModal = ({
             </div>
           </div>
 
-          {/* Total */}
-          <div className="border-t border-gray-700 pt-4">
-            <div className="flex justify-between items-center">
+          {/* Price Breakdown */}
+          <div className="space-y-2 border-t border-gray-700 pt-4">
+            <div className="flex justify-between text-sm text-gray-400">
+              <span>Subtotal</span>
+              <span>${subtotal.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-400">
+              <span>Tax (10%)</span>
+              <span>${tax.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-400">
+              <span>Delivery Charge</span>
+              <span>${formData.deliveryCharge.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-400">
+              <span>Tips</span>
+              <span>${formData.tips.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between items-center pt-2">
               <span className="text-lg font-semibold text-gray-300">Total</span>
               <span className="text-2xl font-bold text-purple-400">
-                $
-                {(
-                  parseFloat(order.price) +
-                  formData.deliveryCharge +
-                  formData.tips
-                ).toFixed(2)}
+                ${total.toFixed(2)}
               </span>
             </div>
           </div>

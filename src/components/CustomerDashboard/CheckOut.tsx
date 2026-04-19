@@ -1,3 +1,7 @@
+
+
+
+
 // "use client";
 // import MapComponent, {
 //   SelectedLocation,
@@ -7,88 +11,150 @@
 // import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
 // import { Loader2, MapPin, X } from "lucide-react";
 // import { useRouter, useSearchParams } from "next/navigation";
-// import React, { useState } from "react";
+// import React, { useMemo, useState } from "react";
 // import toast from "react-hot-toast";
 // import { FaArrowLeft } from "react-icons/fa";
+
+// // ---------------------------------------------------------------------------
+// // Helpers
+// // ---------------------------------------------------------------------------
+
+// /** Haversine distance in km between two lat/lng points */
+// function haversineKm(
+//   lat1: number,
+//   lon1: number,
+//   lat2: number,
+//   lon2: number,
+// ): number {
+//   const R = 6371;
+//   const dLat = ((lat2 - lat1) * Math.PI) / 180;
+//   const dLon = ((lon2 - lon1) * Math.PI) / 180;
+//   const a =
+//     Math.sin(dLat / 2) ** 2 +
+//     Math.cos((lat1 * Math.PI) / 180) *
+//       Math.cos((lat2 * Math.PI) / 180) *
+//       Math.sin(dLon / 2) ** 2;
+//   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+// }
+
+// const RATE_PER_KM = 2; // $2 per km
+// const MIN_DELIVERY = 5; // minimum $5
+
+// /** Calculate delivery charge from customer → showroom coordinates */
+// function calcDeliveryCharge(
+//   customerLocation: SelectedLocation | null,
+//   showroomCoordinates: [number, number] | null, // [lng, lat]
+// ): number {
+//   if (!customerLocation || !showroomCoordinates) return 20; // fallback
+
+//   const distKm = haversineKm(
+//     customerLocation.coordinates.latitude,
+//     customerLocation.coordinates.longitude,
+//     showroomCoordinates[1], // lat
+//     showroomCoordinates[0], // lng
+//   );
+
+//   return Math.max(MIN_DELIVERY, parseFloat((distKm * RATE_PER_KM).toFixed(2)));
+// }
+
+// // ---------------------------------------------------------------------------
+// // Component
+// // ---------------------------------------------------------------------------
 
 // export default function CheckoutPage() {
 //   const router = useRouter();
 //   const searchParams = useSearchParams();
 
-//   // Get cart data from URL params (passed from shopping cart)
+//   // URL params
 //   const tipFromCart = searchParams.get("tip") || "5";
 //   const cartDataFromUrl = searchParams.get("cartData");
 //   const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
 
-//   console.log(parsedCartData);
-
 //   const product = searchParams.get("productId");
 //   const event = searchParams.get("eventId");
 
-//   const data = {
-//     product: product,
-//     event: event,
-//   };
+//   // ── Event wishlist sizes ──────────────────────────────────────────────────
+//   const { data: sizesData, isLoading: sizesLoading } =
+//     useGetProductEventWishesSizeQuery({ product, event });
 
-//   const { data: sizesData, isLoading } =
-//     useGetProductEventWishesSizeQuery(data);
+//   const isEventOrder = (sizesData?.data?.length ?? 0) > 0;
 
-//     console.log(sizesData)
-
-//   // Convert sizesData to order format: [{ type: "L", quantity: 1 }, ...]
-//   const size = sizesData?.data
-//     ? sizesData.data.map((item: any) => ({
+//   // Build sizes array for the event order payload
+//   const eventSizes = useMemo(
+//     () =>
+//       sizesData?.data?.map((item: any) => ({
 //         type: item.size,
 //         quantity: 1,
-//       }))
-//     : [];
+//       })) ?? [],
+//     [sizesData],
+//   );
 
-//     console.log("Size data:", size);
+//   // Derive display items from sizesData when it is an event order.
+//   // Each wish entry has its own product info.
+//   const eventDisplayItems = useMemo(
+//     () =>
+//       sizesData?.data?.map((item: any) => ({
+//         _id: item._id,
+//         product: item.product, // { _id, product_name, product_images, product_price, showroom }
+//         size: item.size,
+//         quantity: 1,
+//         showroomCoordinates:
+//           item.product?.showroom?.location?.coordinates ?? null,
+//       })) ?? [],
+//     [sizesData],
+//   );
 
-//   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
-//   const [showCouponModal, setShowCouponModal] = useState(false);
-//   const [showTipModal, setShowTipModal] = useState(false);
-//   const [couponCode, setCouponCode] = useState("");
-//   const [tipAmount, setTipAmount] = useState(tipFromCart);
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [selectedLocation, setSelectedLocation] =
-//     useState<SelectedLocation | null>(null);
-
-//   const [orderSubmitted] = useAddVendorOrderMutation();
-
-//   // Get cart items from API (for product details)
+//   // ── Cart data ─────────────────────────────────────────────────────────────
 //   const { data: cartData } = useGetWishlistAndCartQuery({
 //     type: "cart",
 //     page: 1,
 //   });
 
-//   console.log(cartData);
-
 //   const allCartItems =
-//     cartData?.data?.filter((item: any) => item.product !== null) || [];
+//     cartData?.data?.filter((item: any) => item.product !== null) ?? [];
 
-//   // Get only the selected product from cart
-//   const selectedCartItem =
-//     parsedCartData.length > 0
-//       ? allCartItems.find(
-//           (item: any) => item.product._id === parsedCartData[0].product,
-//         )
-//       : null;
-
-//   const cartItems = selectedCartItem
-//     ? [
-//         {
-//           ...selectedCartItem,
-//           quantity: parsedCartData[0]?.size[0]?.quantity || 1,
+//   // Build cart display items from parsedCartData + API cart details
+//   const cartDisplayItems = useMemo(() => {
+//     if (parsedCartData.length === 0) return [];
+//     return parsedCartData
+//       .map((pc: any) => {
+//         const found = allCartItems.find(
+//           (ci: any) => ci.product?._id === pc.product,
+//         );
+//         if (!found) return null;
+//         return {
+//           ...found,
+//           quantity: pc.size?.[0]?.quantity ?? 1,
 //           selectedSize:
-//             parsedCartData[0]?.size[0]?.type ||
-//             selectedCartItem.product.product_stocks?.[0]?.size ||
+//             pc.size?.[0]?.type ??
+//             found.product.product_stocks?.[0]?.size ??
 //             "M",
-//           orderData: parsedCartData[0] || null,
-//           priceFromCart: parsedCartData[0]?.price || null,
-//         },
-//       ]
-//     : [];
+//           orderData: pc,
+//           priceFromCart: pc.price ?? null,
+//           showroomCoordinates:
+//             found.product?.showroom?.location?.coordinates ?? null,
+//         };
+//       })
+//       .filter(Boolean);
+//   }, [parsedCartData, allCartItems]);
+
+//   // The items we actually display in the summary
+//   const displayItems = isEventOrder ? eventDisplayItems : cartDisplayItems;
+
+//   // Showroom coordinates – use the first item's showroom (single vendor assumed)
+//   const showroomCoordinates: [number, number] | null =
+//     displayItems[0]?.showroomCoordinates ?? null;
+
+//   // ── State ─────────────────────────────────────────────────────────────────
+//   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
+//   const [showCouponModal, setShowCouponModal] = useState(false);
+//   const [showTipModal, setShowTipModal] = useState(false);
+//   const [couponCode, setCouponCode] = useState("");
+//   const [appliedCoupon, setAppliedCoupon] = useState("");
+//   const [tipAmount, setTipAmount] = useState(tipFromCart);
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [selectedLocation, setSelectedLocation] =
+//     useState<SelectedLocation | null>(null);
 
 //   const [formData, setFormData] = useState({
 //     fullName: "",
@@ -100,175 +166,159 @@
 //     phone: "",
 //   });
 
-//   // Calculate subtotal - use price from cart data
-//   const calculateSubtotal = () => {
-//     if (cartItems.length === 0) return 0;
-//     const item = cartItems[0];
-//     const price = item.priceFromCart?.amount || item.product.product_price || 0;
-//     return price * (item.quantity || 1);
-//   };
+//   const [orderSubmitted] = useAddVendorOrderMutation();
 
-//   const deliveryChargeFromCart =
-//     cartItems[0]?.priceFromCart?.deliveryCharge || 20.0;
-//   const tipFromCartData =
-//     cartItems[0]?.priceFromCart?.tip || parseFloat(tipAmount) || 0;
+//   // ── Price calculations ────────────────────────────────────────────────────
+//   const subtotal = useMemo(() => {
+//     if (isEventOrder) {
+//       return eventDisplayItems.reduce((sum: number, item: any) => {
+//         return sum + (item.product?.product_price ?? 0) * item.quantity;
+//       }, 0);
+//     }
+//     return cartDisplayItems.reduce((sum: number, item: any) => {
+//       const price =
+//         item.priceFromCart?.amount ?? item.product?.product_price ?? 0;
+//       return sum + price * item.quantity;
+//     }, 0);
+//   }, [isEventOrder, eventDisplayItems, cartDisplayItems]);
 
-//   const tax = calculateSubtotal() * 0.1;
-//   const discount = couponCode ? calculateSubtotal() * 0.1 : 0;
-//   const tip = tipFromCartData;
-//   const total =
-//     calculateSubtotal() + deliveryChargeFromCart + tax - discount + tip;
+//   const deliveryCharge = useMemo(
+//     () => calcDeliveryCharge(selectedLocation, showroomCoordinates),
+//     [selectedLocation, showroomCoordinates],
+//   );
 
-//   // Handle location save from MapComponent
+//   const distanceKm = useMemo(() => {
+//     if (!selectedLocation || !showroomCoordinates) return null;
+//     return haversineKm(
+//       selectedLocation.coordinates.latitude,
+//       selectedLocation.coordinates.longitude,
+//       showroomCoordinates[1],
+//       showroomCoordinates[0],
+//     ).toFixed(1);
+//   }, [selectedLocation, showroomCoordinates]);
+
+//   const tax = subtotal * 0.1;
+   
+//   const discount = appliedCoupon ? subtotal * 0.1 : 0;
+//   const tip = parseFloat(tipAmount) || 0;
+//   const total = subtotal + deliveryCharge + tax - discount + tip;
+
+//   // ── Handlers ──────────────────────────────────────────────────────────────
 //   const handleLocationSave = (location: SelectedLocation) => {
-//     console.log("Saved location:", location);
 //     setSelectedLocation(location);
 //     toast.success("Location saved successfully!");
 //   };
 
 //   const handleInputChange = (
 //     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-//   ): void => {
-//     setFormData({
-//       ...formData,
-//       [e.target.name]: e.target.value,
-//     });
+//   ) => {
+//     setFormData({ ...formData, [e.target.name]: e.target.value });
 //   };
 
 //   const handleCouponSubmit = () => {
 //     if (couponCode.trim()) {
-//       toast.success("Coupon applied successfully!");
+//       setAppliedCoupon(couponCode.trim());
+//       toast.success("Coupon applied! 10% discount added.");
 //     }
 //     setShowCouponModal(false);
 //     setCouponCode("");
 //   };
 
-//   const handleTipSubmit = () => {
-//     setShowTipModal(false);
-//   };
- 
 //   const handleSubmitOrder = async () => {
-//     // Validation
-//     if (
-//       !formData.fullName ||
-//       !formData.address ||
-//       !formData.email ||
-//       !formData.phone
-//     ) {
-//       toast.error("Please fill in all required fields");
-//       return;
-//     }
-
-//     const isEventOrder = size.length > 0;
-
-//     if (!isEventOrder && cartItems.length === 0) {
+//     // if (
+//     //   !formData.fullName ||
+//     //   !formData.address ||
+//     //   !formData.email ||
+//     //   !formData.phone
+//     // ) {
+//     //   toast.error("Please fill in all required fields");
+//     //   return;
+//     // }
+//     if (!isEventOrder && displayItems.length === 0) {
 //       toast.error("Your cart is empty");
 //       return;
 //     }
-
 //     if (!selectedLocation) {
-//       toast.error("Please provide your delivery location");
+//       toast.error("Please provide your delivery location on the map");
 //       return;
 //     }
 
 //     setIsSubmitting(true);
-
 //     try {
-//       // Check if we're ordering from event (sizesData) or from cart
-//       const isEventOrder =  size.length > 0;
-//       const item = cartItems[0];
-//     console.log(size.length)
+//       const deliveryInfo = {
+//         name: formData.fullName,
+//         address: selectedLocation.name,
+//         country: formData.country,
+//         state: formData.state,
+//         zipcode: formData.zipcode,
+//         email: formData.email,
+//         phone: formData.phone,
+//         location: {
+//           type: "Point",
+//           coordinates: [
+//             selectedLocation.coordinates.longitude,
+//             selectedLocation.coordinates.latitude,
+//           ],
+//         },
+//       };
+
+//       const pricePayload = {
+//         unit: "usd",
+//         amount: subtotal,
+//         tax: tax,
+//         tip,
+//         coupon: appliedCoupon,
+//         deliveryCharge,
+//       };
+
+//       console.log("Price Payload being sent:", JSON.stringify(pricePayload, null, 2));
+
 //       const orderData = isEventOrder
 //         ? {
-//             product: product,
-//             size: size,
+//             product,
+//             size: eventSizes,
 //             orderType: "vendor",
 //             deliveryType: deliveryMethod,
-//             price: {
-//               unit: "usd",
-//               amount: 0, // Set event product price
-//               tip: parseFloat(tipAmount) || 0,
-//               coupon: couponCode,
-//               deliveryCharge: 20,
-//             },
-//             deliveryInfo: {
-//               name: formData.fullName,
-//               address: selectedLocation.name,
-//               country: formData.country,
-//               state: formData.state,
-//               zipcode: formData.zipcode,
-//               email: formData.email,
-//               phone: formData.phone,
-//               location: {
-//                 type: "Point",
-//                 coordinates: [
-//                   selectedLocation.coordinates.longitude,
-//                   selectedLocation.coordinates.latitude,
-//                 ],
-//               },
-//             },
+//             price: pricePayload,
+//             deliveryInfo,
 //           }
 //         : {
-//             product: item.product._id,
+//             product: cartDisplayItems[0]?.product?._id,
 //             size: [
 //               {
-//                 type: item.selectedSize || "M",
-//                 quantity: item.quantity || 1,
+//                 type: cartDisplayItems[0]?.selectedSize ?? "M",
+//                 quantity: cartDisplayItems[0]?.quantity ?? 1,
 //               },
 //             ],
-//             orderType: item.orderData?.orderType || "vendor",
-//             deliveryType: item.orderData?.deliveryType || deliveryMethod,
-//             price: {
-//               unit: item.priceFromCart?.unit || "usd",
-//               amount:
-//                 item.priceFromCart?.amount || item.product.product_price || 0,
-//               tip: item.priceFromCart?.tip || tip,
-//               coupon: couponCode,
-//               deliveryCharge:
-//                 item.priceFromCart?.deliveryCharge || deliveryChargeFromCart,
-//             },
-//             deliveryInfo: {
-//               name: formData.fullName,
-//               address: selectedLocation.name,
-//               country: formData.country,
-//               state: formData.state,
-//               zipcode: formData.zipcode,
-//               email: formData.email,
-//               phone: formData.phone,
-//               location: {
-//                 type: "Point",
-//                 coordinates: [
-//                   selectedLocation.coordinates.longitude,
-//                   selectedLocation.coordinates.latitude,
-//                 ],
-//               },
-//             },
+//             orderType: cartDisplayItems[0]?.orderData?.orderType ?? "vendor",
+//             deliveryType:
+//               cartDisplayItems[0]?.orderData?.deliveryType ?? deliveryMethod,
+//             price: pricePayload,
+//             deliveryInfo,
 //           };
 
-//       console.log("Order Data:", orderData);
 
-//       const response = await orderSubmitted(orderData).unwrap();
+//       console.log("Order payload:", orderData);
 
+//     const res =  await orderSubmitted(orderData).unwrap();
+//     console.log(res)
 //       toast.success("Order placed successfully!");
-
-//       // Clear cart and redirect
-//       setTimeout(() => {
-//         router.push("/customer-dashboard");
-//       }, 2000);
+//       setTimeout(() => router.push("/customer-dashboard"), 2000);
 //     } catch (error: any) {
 //       console.error("Order submission error:", error);
 //       toast.error(
-//         error?.data?.message || "Failed to place order. Please try again.",
+//         error?.data?.message ?? "Failed to place order. Please try again.",
 //       );
 //     } finally {
 //       setIsSubmitting(false);
 //     }
 //   };
 
+//   // ── Render ────────────────────────────────────────────────────────────────
 //   return (
 //     <div className="min-h-screen mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
 //       {/* Back Button */}
-//       <div className="container mx-auto flex items-center gap-4">
+//       <div className="container mx-auto flex items-center gap-4 mb-4">
 //         <button
 //           onClick={() => router.back()}
 //           className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
@@ -292,42 +342,31 @@
 //         </p>
 //       </div>
 
-//       {/* Main Content */}
+//       {/* Main Grid */}
 //       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
-//         {/* Left Column - Forms */}
+//         {/* ── Left column ── */}
 //         <div className="lg:col-span-2 space-y-6">
 //           {/* Delivery Method */}
 //           <div className="space-y-3">
-//             <div className="flex items-center gap-3">
-//               <input
-//                 type="radio"
-//                 id="delivery"
-//                 name="deliveryMethod"
-//                 checked={deliveryMethod === "delivery"}
-//                 onChange={() => setDeliveryMethod("delivery")}
-//                 className="w-4 h-4 text-purple-600"
-//               />
-//               <label htmlFor="delivery" className="text-sm font-medium">
-//                 Delivery
-//               </label>
-//             </div>
-//             <div className="flex items-center gap-3">
-//               <input
-//                 type="radio"
-//                 id="pickup"
-//                 name="deliveryMethod"
-//                 checked={deliveryMethod === "pickup"}
-//                 onChange={() => setDeliveryMethod("pickup")}
-//                 className="w-4 h-4 text-purple-600"
-//               />
-//               <label htmlFor="pickup" className="text-sm font-medium">
-//                 Pick up
-//               </label>
-//             </div>
+//             {["delivery", "pickup"].map((method) => (
+//               <div key={method} className="flex items-center gap-3">
+//                 <input
+//                   type="radio"
+//                   id={method}
+//                   name="deliveryMethod"
+//                   checked={deliveryMethod === method}
+//                   onChange={() => setDeliveryMethod(method)}
+//                   className="w-4 h-4 text-purple-600"
+//                 />
+//                 <label htmlFor={method} className="text-sm font-medium capitalize">
+//                   {method === "delivery" ? "Delivery" : "Pick up"}
+//                 </label>
+//               </div>
+//             ))}
 //           </div>
 
 //           {/* Delivery Address */}
-//           <div className="rounded-2xl border border-[#b88ccc] relative overflow-hidden">
+//           <div className="rounded-2xl border border-[#b88ccc] overflow-hidden">
 //             <div className="bg-gradient-to-r from-[#2ACCED] to-[#B630F4] p-4">
 //               <h2 className="text-xl font-bold">Delivery Address</h2>
 //             </div>
@@ -346,7 +385,7 @@
 //                 />
 //               </div>
 
-//               {/* Address */}
+//               {/* Address (auto-filled from map) */}
 //               <div>
 //                 <label className="block text-sm mb-2">Address *</label>
 //                 <input
@@ -355,39 +394,49 @@
 //                   value={selectedLocation?.name || formData.address}
 //                   onChange={handleInputChange}
 //                   placeholder="Select from map below"
-//                   readOnly
+//                   readOnly={!!selectedLocation}
 //                   className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
 //                 />
 //               </div>
 
-//               {/* Location Selection using MapComponent */}
+//               {/* Map */}
 //               <div>
 //                 <label className="block text-sm mb-2">
 //                   <MapPin className="w-4 h-4 inline mr-1" />
 //                   Delivery Location *
 //                 </label>
-//                 <MapComponent onLocationSave={handleLocationSave} />
+//                 <MapComponent
+//                   onLocationSave={handleLocationSave}
+//                   showroomCoordinates={showroomCoordinates}
+//                   showroomName={
+//                     displayItems[0]?.product?.showroom?.showroom_name ?? "Showroom"
+//                   }
+//                 />
+
 //                 {selectedLocation && (
-//                   <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg">
+//                   <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg space-y-1">
 //                     <p className="text-xs text-gray-300">
-//                       <span className="font-medium">Selected Location:</span>{" "}
+//                       <span className="font-medium">Selected:</span>{" "}
 //                       {selectedLocation.name}
 //                     </p>
-//                     <p className="text-xs text-gray-400 mt-1">
-//                       Coordinates: [
-//                       {selectedLocation.coordinates.longitude.toFixed(6)},{" "}
+//                     <p className="text-xs text-gray-400">
+//                       Coordinates: [{selectedLocation.coordinates.longitude.toFixed(6)},{" "}
 //                       {selectedLocation.coordinates.latitude.toFixed(6)}]
 //                     </p>
+//                     {distanceKm !== null && (
+//                       <p className="text-xs text-purple-300 font-medium">
+//                         Distance to store: {distanceKm} km → Delivery charge: $
+//                         {deliveryCharge.toFixed(2)}
+//                       </p>
+//                     )}
 //                   </div>
 //                 )}
 //               </div>
 
-//               {/* Country, State, Zip */}
+//               {/* Country / State / Zip */}
 //               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 //                 <div>
-//                   <label className="block text-sm mb-2">
-//                     Country / Region *
-//                   </label>
+//                   <label className="block text-sm mb-2">Country / Region *</label>
 //                   <select
 //                     name="country"
 //                     value={formData.country}
@@ -453,44 +502,65 @@
 //           </div>
 //         </div>
 
-//         {/* Right Column - Order Summary */}
+//         {/* ── Right column – Order Summary ── */}
 //         <div className="lg:col-span-1">
 //           <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl p-6 sticky top-8">
 //             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
 
 //             {/* Order Items */}
 //             <div className="space-y-4 mb-6">
-//               {cartItems.length > 0 ? (
-//                 cartItems.map((item: any) => (
-//                   <div
-//                     key={item._id}
-//                     className="flex items-center gap-3 pb-3 border-b border-gray-700 last:border-b-0"
-//                   >
-//                     <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
-//                       <img
-//                         src={`${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product.product_images?.[0]}`}
-//                         alt={item.product.product_name}
-//                         className="w-full h-full object-cover"
-//                       />
-//                     </div>
-//                     <div className="flex-1 min-w-0">
-//                       <p className="text-sm font-medium truncate">
-//                         {item.product.product_name}
+//               {sizesLoading ? (
+//                 <div className="flex justify-center py-4">
+//                   <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
+//                 </div>
+//               ) : displayItems.length > 0 ? (
+//                 displayItems.map((item: any) => {
+//                   const price = isEventOrder
+//                     ? item.product?.product_price ?? 0
+//                     : item.priceFromCart?.amount ?? item.product?.product_price ?? 0;
+//                   const imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product?.product_images?.[0]}`;
+
+//                   return (
+//                     <div
+//                       key={item._id}
+//                       className="flex items-center gap-3 pb-3 border-b border-gray-700 last:border-b-0"
+//                     >
+//                       {/* Product Image */}
+//                       <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
+//                         <img
+//                           src={imgSrc}
+//                           alt={item.product?.product_name}
+//                           className="w-full h-full object-cover"
+//                           onError={(e) => {
+//                             (e.target as HTMLImageElement).src =
+//                               "/placeholder-product.png";
+//                           }}
+//                         />
+//                       </div>
+
+//                       {/* Product Info */}
+//                       <div className="flex-1 min-w-0">
+//                         <p className="text-sm font-medium truncate">
+//                           {item.product?.product_name}
+//                         </p>
+//                         <p className="text-xs text-gray-400">
+//                           Size: {isEventOrder ? item.size : item.selectedSize} | Qty:{" "}
+//                           {item.quantity}
+//                         </p>
+//                         {item.product?.showroom?.showroom_name && (
+//                           <p className="text-xs text-purple-300/70">
+//                             {item.product.showroom.showroom_name}
+//                           </p>
+//                         )}
+//                       </div>
+
+//                       {/* Line total */}
+//                       <p className="text-sm font-semibold">
+//                         ${(price * item.quantity).toFixed(2)}
 //                       </p>
-//                       <p className="text-xs text-gray-400">
-//                         Size: {item.selectedSize} | Qty: {item.quantity}
-//                       </p>
 //                     </div>
-//                     <p className="text-sm font-semibold">
-//                       $
-//                       {(
-//                         (item.priceFromCart?.amount ||
-//                           item.product.product_price ||
-//                           0) * item.quantity
-//                       ).toFixed(2)}
-//                     </p>
-//                   </div>
-//                 ))
+//                   );
+//                 })
 //               ) : (
 //                 <p className="text-gray-400 text-sm">No items in cart</p>
 //               )}
@@ -500,26 +570,33 @@
 //             <div className="space-y-3 border-t border-gray-700 pt-4 mb-6">
 //               <div className="flex justify-between text-sm">
 //                 <span className="text-gray-400">Subtotal</span>
-//                 <span className="font-medium">
-//                   ${calculateSubtotal().toFixed(2)}
-//                 </span>
+//                 <span className="font-medium">${subtotal.toFixed(2)}</span>
 //               </div>
+
 //               <div className="flex justify-between text-sm">
-//                 <span className="text-gray-400">Delivery Charge</span>
-//                 <span className="font-medium">
-//                   ${deliveryChargeFromCart.toFixed(2)}
+//                 <span className="text-gray-400">
+//                   Delivery Charge
+//                   {distanceKm !== null && (
+//                     <span className="ml-1 text-xs text-purple-300/70">
+//                       ({distanceKm} km × $2)
+//                     </span>
+//                   )}
 //                 </span>
+//                 <span className="font-medium">${deliveryCharge.toFixed(2)}</span>
 //               </div>
+
 //               <div className="flex justify-between text-sm">
 //                 <span className="text-gray-400">Tax (10%)</span>
 //                 <span className="font-medium">${tax.toFixed(2)}</span>
 //               </div>
+
 //               {discount > 0 && (
 //                 <div className="flex justify-between text-sm text-green-400">
-//                   <span>Discount</span>
+//                   <span>Discount ({appliedCoupon})</span>
 //                   <span className="font-medium">-${discount.toFixed(2)}</span>
 //                 </div>
 //               )}
+
 //               <div className="flex justify-between text-sm">
 //                 <span className="text-gray-400">Tip</span>
 //                 <button
@@ -529,21 +606,22 @@
 //                   ${tip.toFixed(2)}
 //                 </button>
 //               </div>
+
 //               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
 //                 <span>Total</span>
 //                 <span className="text-purple-400">${total.toFixed(2)}</span>
 //               </div>
 //             </div>
 
-//             {/* Coupon Code */}
+//             {/* Coupon */}
 //             <button
 //               onClick={() => setShowCouponModal(true)}
 //               className="w-full mb-3 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
 //             >
-//               Apply Coupon Code
+//               {appliedCoupon ? `Coupon: ${appliedCoupon} ✓` : "Apply Coupon Code"}
 //             </button>
 
-//             {/* Tip Driver Button */}
+//             {/* Tip */}
 //             <button
 //               onClick={() => setShowTipModal(true)}
 //               className="w-full mb-4 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
@@ -551,13 +629,13 @@
 //               Tip Your Driver
 //             </button>
 
-//             {/* Place Order Button */}
+//             {/* Place Order */}
 //             <button
 //               onClick={handleSubmitOrder}
-//               disabled={isSubmitting || cartItems.length === 0}
+//               disabled={isSubmitting || displayItems.length === 0}
 //               className={`w-full py-4 rounded-lg font-semibold transition-all duration-300 ${
-//                 isSubmitting  
-//                   ? "bg-gray-600 text-gray-400 "
+//                 isSubmitting || displayItems.length === 0
+//                   ? "bg-gray-600 text-gray-400 cursor-not-allowed"
 //                   : "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transform hover:scale-105"
 //               }`}
 //             >
@@ -574,21 +652,17 @@
 //         </div>
 //       </div>
 
-//       {/* Coupon Modal */}
+//       {/* ── Coupon Modal ── */}
 //       {showCouponModal && (
 //         <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-//           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
+//           <div className="relative bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
 //             <button
 //               onClick={() => setShowCouponModal(false)}
 //               className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
 //             >
 //               <X className="w-6 h-6" />
 //             </button>
-
-//             <h2 className="text-2xl font-bold text-center mb-6">
-//               Apply Coupon
-//             </h2>
-
+//             <h2 className="text-2xl font-bold text-center mb-6">Apply Coupon</h2>
 //             <input
 //               type="text"
 //               value={couponCode}
@@ -596,7 +670,6 @@
 //               placeholder="Enter coupon code"
 //               className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4 uppercase"
 //             />
-
 //             <button
 //               onClick={handleCouponSubmit}
 //               className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all"
@@ -607,23 +680,20 @@
 //         </div>
 //       )}
 
-//       {/* Tip Modal */}
+//       {/* ── Tip Modal ── */}
 //       {showTipModal && (
 //         <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
-//           <div className="bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
+//           <div className="relative bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
 //             <button
 //               onClick={() => setShowTipModal(false)}
 //               className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors"
 //             >
 //               <X className="w-6 h-6" />
 //             </button>
-
 //             <h2 className="text-2xl font-bold text-center mb-6">Add Tip</h2>
-
 //             <p className="text-gray-400 text-sm text-center mb-6">
 //               Show appreciation for your delivery person
 //             </p>
-
 //             <div className="grid grid-cols-4 gap-3 mb-6">
 //               {["0", "5", "10", "15"].map((amount) => (
 //                 <button
@@ -639,7 +709,6 @@
 //                 </button>
 //               ))}
 //             </div>
-
 //             <input
 //               type="number"
 //               value={tipAmount}
@@ -647,9 +716,8 @@
 //               placeholder="Custom amount"
 //               className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4"
 //             />
-
 //             <button
-//               onClick={handleTipSubmit}
+//               onClick={() => setShowTipModal(false)}
 //               className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all"
 //             >
 //               Save Tip
@@ -660,6 +728,7 @@
 //     </div>
 //   );
 // }
+
 
 
 "use client";
@@ -699,13 +768,14 @@ function haversineKm(
 
 const RATE_PER_KM = 2; // $2 per km
 const MIN_DELIVERY = 5; // minimum $5
+const TAX_RATE = 0.1; // 10%
 
 /** Calculate delivery charge from customer → showroom coordinates */
 function calcDeliveryCharge(
   customerLocation: SelectedLocation | null,
   showroomCoordinates: [number, number] | null, // [lng, lat]
 ): number {
-  if (!customerLocation || !showroomCoordinates) return 0; // fallback
+  if (!customerLocation || !showroomCoordinates) return 20; // fallback
 
   const distKm = haversineKm(
     customerLocation.coordinates.latitude,
@@ -750,12 +820,11 @@ export default function CheckoutPage() {
   );
 
   // Derive display items from sizesData when it is an event order.
-  // Each wish entry has its own product info.
   const eventDisplayItems = useMemo(
     () =>
       sizesData?.data?.map((item: any) => ({
         _id: item._id,
-        product: item.product, // { _id, product_name, product_images, product_price, showroom }
+        product: item.product,
         size: item.size,
         quantity: 1,
         showroomCoordinates:
@@ -857,7 +926,9 @@ export default function CheckoutPage() {
     ).toFixed(1);
   }, [selectedLocation, showroomCoordinates]);
 
-  const tax = subtotal * 0.1;
+  // ✅ TAX: Calculated as 10% of subtotal
+  const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
+
   const discount = appliedCoupon ? subtotal * 0.1 : 0;
   const tip = parseFloat(tipAmount) || 0;
   const total = subtotal + deliveryCharge + tax - discount + tip;
@@ -884,15 +955,6 @@ export default function CheckoutPage() {
   };
 
   const handleSubmitOrder = async () => {
-    if (
-      !formData.fullName ||
-      !formData.address ||
-      !formData.email ||
-      !formData.phone
-    ) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
     if (!isEventOrder && displayItems.length === 0) {
       toast.error("Your cart is empty");
       return;
@@ -921,9 +983,13 @@ export default function CheckoutPage() {
         },
       };
 
+      // ✅ TAX FIX: tax is explicitly sent as a number (e.g. 7.04 not 0)
+      // If backend still saves 0, the issue is server-side — backend must
+      // be told to accept and store req.body.price.tax instead of overriding it.
       const pricePayload = {
         unit: "usd",
         amount: subtotal,
+        tax: tax,           // ✅ e.g. 7.04 for a $70.40 subtotal
         tip,
         coupon: appliedCoupon,
         deliveryCharge,
@@ -954,7 +1020,9 @@ export default function CheckoutPage() {
           };
 
       console.log("Order payload:", orderData);
-      await orderSubmitted(orderData).unwrap();
+
+      const res = await orderSubmitted(orderData).unwrap();
+      console.log(res);
       toast.success("Order placed successfully!");
       setTimeout(() => router.push("/customer-dashboard"), 2000);
     } catch (error: any) {
@@ -1058,7 +1126,13 @@ export default function CheckoutPage() {
                   <MapPin className="w-4 h-4 inline mr-1" />
                   Delivery Location *
                 </label>
-                <MapComponent onLocationSave={handleLocationSave} />
+                <MapComponent
+                  onLocationSave={handleLocationSave}
+                  showroomCoordinates={showroomCoordinates}
+                  showroomName={
+                    displayItems[0]?.product?.showroom?.showroom_name ?? "Showroom"
+                  }
+                />
 
                 {selectedLocation && (
                   <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg space-y-1">
@@ -1232,6 +1306,7 @@ export default function CheckoutPage() {
                 <span className="font-medium">${deliveryCharge.toFixed(2)}</span>
               </div>
 
+              {/* ✅ Tax displayed as calculated 10% of subtotal */}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
                 <span className="font-medium">${tax.toFixed(2)}</span>

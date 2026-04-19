@@ -7,7 +7,7 @@ export const initializeSocket = (token: string): Socket => {
     return socket;
   }
 
-  const SOCKET_URL = process.env.SOCKET_BASE_URL;
+  const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_BASE_URL || "http://localhost:4000";
   console.log(SOCKET_URL);
 
   console.log("🔌 Connecting to socket:", SOCKET_URL);

@@ -31,6 +31,7 @@ const OrderDetails = () => {
 
   const { data: mainOrderDetails, isLoading: isMainOrderDetailsLoading } =
     useGetMainOrderDetailsQuery(id);
+    console.log(mainOrderDetails)
   const { data: returnOrderDetails, isLoading: isReturnOrderDetailsLoading } =
     useGetReturnOrderDetailsQuery(id, {
       skip: !id || id === "undefined",
@@ -275,7 +276,61 @@ const OrderDetails = () => {
             <div className="text-sm text-gray-400">Qty: {product.quantity}</div>
           </div>
 
-          {/* Delivery Info */}
+          {/* Price Info */}
+       {mainOrderDetails?.data?.price && (() => {
+  const p = mainOrderDetails.data.price;
+  const total = (
+    (p?.amount ?? 0) +
+    (p?.deliveryCharge ?? 0) +
+    (p?.tip ?? 0) +
+    (p?.tax ?? 0)
+  ).toFixed(2);
+
+  const rows = [
+    { label: "Product Amount", value: p?.amount, icon: "🛍️" },
+    { label: "Delivery Fee",   value: p?.deliveryCharge, icon: "🚚" },
+    { label: "Driver Tip",     value: p?.tip, icon: "💝" },
+    { label: "Tax (10%)",      value: p?.tax, icon: "🧾" },
+  ];
+
+  return (
+    <div className="relative rounded-2xl overflow-hidden border border-purple-500/40 bg-gradient-to-br from-gray-900 via-purple-950/20 to-gray-900">
+      {/* Header */}
+      <div className="px-5 py-4 border-b border-purple-500/20 bg-purple-900/10 flex items-center gap-2">
+        <div className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+        <h3 className="text-sm font-semibold tracking-widest uppercase text-purple-300">
+          Price Breakdown
+        </h3>
+      </div>
+
+      {/* Rows */}
+      <div className="px-5 py-4 space-y-3">
+        {rows.map(({ label, value, icon }) => (
+          <div key={label} className="flex items-center justify-between group">
+            <span className="flex items-center gap-2 text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
+              <span className="text-base">{icon}</span>
+              {label}
+            </span>
+            <span className="text-sm font-medium text-gray-200 tabular-nums">
+              ${(value ?? 0).toFixed(2)}
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Total */}
+      <div className="mx-5 mb-5 rounded-xl bg-gradient-to-r from-purple-600/20 to-cyan-600/10 border border-purple-500/30 px-5 py-3 flex items-center justify-between">
+        <span className="text-sm font-semibold text-purple-300 tracking-wide uppercase">
+          Total
+        </span>
+        <span className="text-xl font-bold text-white tabular-nums">
+          ${total}
+        </span>
+      </div>
+    </div>
+  );
+})()}
+
           {mainOrderDetails?.data?.deliveryInfo && (
             <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">

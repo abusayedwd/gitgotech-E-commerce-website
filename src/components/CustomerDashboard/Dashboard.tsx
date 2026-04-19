@@ -43,6 +43,7 @@ export default function MyDashboard() {
       total:
         (order.price?.amount || 0) +
         (order.price?.tip || 0) +
+        (order.price?.tax || 0) +
         (order.price?.deliveryCharge || 0) -
         (Number(order.price?.coupon) || 0),
       status: order.status,
@@ -318,7 +319,7 @@ export default function MyDashboard() {
                     OTP: {order.otp}
                   </div>
                   <div className="text-sm md:text-base font-semibold">
-                    Total: ${order.total}
+                    Total: ${order.total?.toFixed(2)}
                   </div>
                 </div>
 
