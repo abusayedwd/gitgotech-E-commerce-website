@@ -196,7 +196,7 @@ export default function EventProductDetails() {
             </div>
 
             {/* Size Selection for Creator - Submit Size API */}
-            {isCreator && productData?.product_stocks && productData.product_stocks.length > 0 && (
+            {/* {isCreator && productData?.product_stocks && productData.product_stocks.length > 0 && (
               <div className="border border-[#6100FF] p-4 rounded-xl">
                 <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
                 <div className="flex flex-wrap gap-3">
@@ -218,10 +218,10 @@ export default function EventProductDetails() {
                   <p className="text-purple-400 mt-3 text-sm">Selected Size: <span className="font-semibold text-white">{selectedSize}</span></p>
                 )}
               </div>
-            )}
+            )} */}
 
             {/* Size Selection for Invited - No API Call, Just Checkout */}
-            {isInvited && productData?.product_stocks && productData.product_stocks.length > 0 && (
+            {/* {isInvited && productData?.product_stocks && productData.product_stocks.length > 0 && (
               <div className="border border-[#6100FF] p-4 rounded-xl">
                 <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
                 <div className="flex flex-wrap gap-3">
@@ -248,7 +248,80 @@ export default function EventProductDetails() {
                   </div>
                 )}
               </div>
+            )} */}
+
+            {/* Size Selection for Creator - Submit Size API */}
+{isCreator && productData?.product_stocks && productData.product_stocks.length > 0 && (
+  <div className="border border-[#6100FF] p-4 rounded-xl">
+    <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
+    <div className="flex flex-wrap gap-3">
+      {productData.product_stocks.map((stock: any, index: number) => {
+        const isOutOfStock = stock.stock === 0;
+        return (
+          <button
+            key={index}
+            onClick={() => !isOutOfStock && setSelectedSize(stock.size)}
+            disabled={isOutOfStock}
+            className={`relative px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+              isOutOfStock
+                ? 'bg-[#1a1a1a] text-gray-600 border-2 border-[#2a2a2a] cursor-not-allowed opacity-50'
+                : selectedSize === stock.size
+                ? 'bg-[#6100FF] text-white border-2 border-[#6100FF]'
+                : 'bg-[#272238] text-gray-300 border-2 border-[#3d3648] hover:border-[#6100FF]'
+            }`}
+          >
+            {stock.size}
+            {isOutOfStock && (
+              <span className="block text-[10px] text-red-400 font-normal leading-tight">Out of Stock</span>
             )}
+          </button>
+        );
+      })}
+    </div>
+    {selectedSize && (
+      <p className="text-purple-400 mt-3 text-sm">
+        Selected Size: <span className="font-semibold text-white">{selectedSize}</span>
+      </p>
+    )}
+  </div>
+)}
+
+{/* Size Selection for Invited - No API Call, Just Checkout */}
+{isInvited && productData?.product_stocks && productData.product_stocks.length > 0 && (
+  <div className="border border-[#6100FF] p-4 rounded-xl">
+    <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
+    <div className="flex flex-wrap gap-3">
+      {productData.product_stocks.map((stock: any, index: number) => {
+        const isOutOfStock = stock.stock === 0;
+        return (
+          <button
+            key={index}
+            onClick={() => !isOutOfStock && setSelectedSize(stock.size)}
+            disabled={isOutOfStock}
+            className={`relative px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
+              isOutOfStock
+                ? 'bg-[#1a1a1a] text-gray-600 border-2 border-[#2a2a2a] cursor-not-allowed opacity-50'
+                : selectedSize === stock.size
+                ? 'bg-[#6100FF] text-white border-2 border-[#6100FF]'
+                : 'bg-[#272238] text-gray-300 border-2 border-[#3d3648] hover:border-[#6100FF]'
+            }`}
+          >
+            {stock.size}
+            {isOutOfStock && (
+              <span className="block text-[10px] text-red-400 font-normal leading-tight">Out of Stock</span>
+            )}
+          </button>
+        );
+      })}
+    </div>
+    {selectedSize && (
+      <div className="mt-3 flex items-center justify-between px-4 py-3 bg-[#242428] border border-purple-500 rounded-lg">
+        <span className="text-gray-300 text-sm">Selected Size:</span>
+        <span className="text-purple-400 font-semibold text-lg">{selectedSize}</span>
+      </div>
+    )}
+  </div>
+)}
 
             {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-4">

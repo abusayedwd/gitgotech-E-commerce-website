@@ -61,8 +61,8 @@ const OrderDetails = () => {
     deliveryCharge: priceInfo?.deliveryCharge || 0,
     originalPrice: priceInfo?.amount ? priceInfo.amount * 1.1 : 0,
     discount: priceInfo?.coupon || "10% OFF",
-    size: sizeInfo?.[0]?.size || "M",
-    quantity: 1,
+    size: sizeInfo?.[0]?.size || sizeInfo?.[0]?.type || "M",
+    quantity: sizeInfo?.reduce((acc: number, s: any) => acc + (s.quantity || 0), 0) || 1,
     rating: 4.5,
     reviews: 20,
     image: productInfo?.product_images?.[0]
@@ -272,8 +272,21 @@ const OrderDetails = () => {
                 ${product.price.toFixed(2)}
               </span>
             </div>
-            <div className="text-sm text-gray-400">Size: {product.size}</div>
-            <div className="text-sm text-gray-400">Qty: {product.quantity}</div>
+            <div className="space-y-1">
+              {sizeInfo && sizeInfo.length > 0 ? (
+                sizeInfo.map((s: any, idx: number) => (
+                  <div key={idx} className="flex items-center gap-4">
+                    <div className="text-sm text-gray-400">Size: {s.size || s.type || "M"}</div>
+                    <div className="text-sm text-gray-400">Qty: {s.quantity || 1}</div>
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="text-sm text-gray-400">Size: {product.size}</div>
+                  <div className="text-sm text-gray-400">Qty: {product.quantity}</div>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Price Info */}
@@ -427,7 +440,7 @@ const OrderDetails = () => {
           {/* Total Price */}
           <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
             <div className="text-center text-lg font-medium">
-              Total Price: ${(product.price * product.quantity).toFixed(2)}
+              Total Price: ${product.price.toFixed(2)}
             </div>
           </div>
 

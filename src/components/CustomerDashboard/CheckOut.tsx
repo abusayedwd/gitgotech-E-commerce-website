@@ -807,6 +807,8 @@ export default function CheckoutPage() {
   const { data: sizesData, isLoading: sizesLoading } =
     useGetProductEventWishesSizeQuery({ product, event });
 
+    console.log(sizesData)
+
   const isEventOrder = (sizesData?.data?.length ?? 0) > 0;
 
   // Build sizes array for the event order payload
