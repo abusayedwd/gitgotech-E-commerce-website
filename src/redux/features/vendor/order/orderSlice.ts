@@ -1,5 +1,41 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 
+const emptyMeta = { total: 0, page: 1, limit: 10, totalPages: 0 };
+
+/** Normalize vendor list APIs: supports top-level `result`, nested `data.result`, or legacy `data.data`. */
+function normalizeVendorPagedListResponse(response: unknown): {
+  data: any[];
+  meta: Record<string, unknown>;
+  showroom?: string;
+} {
+  const r = response as Record<string, any> | null | undefined;
+  if (!r || typeof r !== "object") {
+    return { data: [], meta: { ...emptyMeta } };
+  }
+  if (r.result?.data !== undefined) {
+    return {
+      data: r.result.data,
+      meta: (r.result.meta as Record<string, unknown>) ?? {},
+      showroom: r.showroom,
+    };
+  }
+  const inner = r.data;
+  if (inner?.result?.data !== undefined) {
+    return {
+      data: inner.result.data,
+      meta: (inner.result.meta as Record<string, unknown>) ?? {},
+      showroom: inner.showroom ?? r.showroom,
+    };
+  }
+  if (inner?.data !== undefined) {
+    return {
+      data: inner.data,
+      meta: (inner.meta as Record<string, unknown>) ?? {},
+    };
+  }
+  return { data: [], meta: { ...emptyMeta } };
+}
+
 const orderSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Get Vendor Orders
@@ -27,9 +63,8 @@ const orderSlice = apiSlice.injectEndpoints({
           },
         };
       },
-      transformResponse: (response: { data: { data: any[]; meta: any } }) => {
-        return response.data;
-      },
+      transformResponse: (response: unknown) =>
+        normalizeVendorPagedListResponse(response),
       providesTags: ["Orders"],
     }),
 
@@ -85,8 +120,9 @@ const orderSlice = apiSlice.injectEndpoints({
           },
         };
       },
-      transformResponse: (response: { data: { data: any[]; meta: any } }) => {
-        return response.data;
+      transformResponse: (response: unknown) => {
+        const { data, meta } = normalizeVendorPagedListResponse(response);
+        return { data, meta };
       },
       providesTags: ["Returns"],
     }),
@@ -188,31 +224,19 @@ const orderSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["CustomOrders"],
     }),
 
-    // Change Custom Order Status
+    // Change custom order status after customer accepted vendor price (body: { orderStatus } only)
     changeCustomOrderStatus: builder.mutation({
-      query: ({ id, action, price, priceUnit, reason, showroomId }) => {
-        const body: any = {
-          action, // "accepted" or "declined"
-        };
-
-        if (action === "accepted") {
-          body.price = price;
-          body.priceUnit = priceUnit;
-        } else if (action === "declined") {
-          body.reason = reason;
-        }
-
-        return {
-          url: `/order/vendor/custom/change-status/${id}`,
-          method: "PATCH",
-          headers: {
-            showroom: showroomId,
-          },
-          body,
-        };
-      },
+      query: ({ id, orderStatus, showroomId }) => ({
+        url: `/order/vendor/custom/change-status/${id}`,
+        method: "PATCH",
+        headers: {
+          showroom: showroomId,
+        },
+        body: { orderStatus },
+      }),
       invalidatesTags: ["CustomOrders"],
     }),
+
   }),
 });
 

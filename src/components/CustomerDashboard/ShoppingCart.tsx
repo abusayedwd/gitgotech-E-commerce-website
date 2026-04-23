@@ -677,6 +677,13 @@ export default function ShoppingCart() {
     return subtotal;
   };
 
+  const selectedItem = cartItems.find((item: any) => item._id === selectedProduct);
+  const selectedSize = selectedProduct ? selectedSizes[selectedProduct] : null;
+  const selectedStockInfo = selectedItem?.product?.product_stocks?.find(
+    (s: any) => s.size === selectedSize
+  );
+  const isOutOfStock = selectedProduct ? (selectedStockInfo ? selectedStockInfo.stock <= 0 : true) : false;
+
   // Prepare cart data for checkout - ONLY selected product
   const getCartDataForCheckout = () => {
     if (!selectedProduct) return [];
@@ -1023,16 +1030,28 @@ export default function ShoppingCart() {
             </div>
 
             <Link
-              href={{
-                pathname: "/checkout",
-                query: {
-                  tip: "0",
-                  cartData: JSON.stringify(getCartDataForCheckout()),
-                },
-              }}
+              href={
+                selectedProduct && !isOutOfStock
+                  ? {
+                      pathname: "/checkout",
+                      query: {
+                        tip: "0",
+                        cartData: JSON.stringify(getCartDataForCheckout()),
+                      },
+                    }
+                  : "#"
+              }
+              className={!selectedProduct || isOutOfStock ? "pointer-events-none" : ""}
             >
-              <button className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-full font-semibold transition-all duration-300 transform hover:scale-105">
-                Proceed to Checkout
+              <button
+                disabled={!selectedProduct || isOutOfStock}
+                className={`w-full py-3 rounded-full font-semibold transition-all duration-300 transform ${
+                  selectedProduct && !isOutOfStock
+                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:scale-105"
+                    : "bg-gray-600 cursor-not-allowed opacity-50"
+                }`}
+              >
+                {isOutOfStock ? "Out of Stock" : "Proceed to Checkout"}
               </button>
             </Link>
           </div>

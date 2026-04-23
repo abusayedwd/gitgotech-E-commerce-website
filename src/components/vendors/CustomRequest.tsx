@@ -2,8 +2,14 @@
 
 import {
   useAcceptOrDeclineCustomOrderMutation,
+  useChangeCustomOrderStatusMutation,
   useGetCustomOrdersQuery,
 } from "@/redux/features/vendor/order/orderSlice";
+import {
+  getVendorCustomOrderStatusSelectOptions,
+  isAllowedVendorCustomOrderStatusTransition,
+  vendorCanChangeCustomOrderStatus,
+} from "@/lib/vendorCustomOrderStatusFlow";
 import { selectShowroomId } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
 import Link from "next/link";
 import { useState } from "react";
@@ -32,6 +38,7 @@ const CUSTOM_ORDER_FILTERS = [
   "All Custom Orders",
   "Vendor Accepted",
   "Vendor Rejected",
+  "Pending",
   "Customer Accepted",
   "Customer Rejected",
   "Paid",
@@ -50,10 +57,14 @@ export default function CustomRequest() {
   const [priceUnit, setPriceUnit] = useState("usd");
   const [reason, setReason] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [updatingStatusOrderId, setUpdatingStatusOrderId] = useState<
+    string | null
+  >(null);
 
   const showroomId = useSelector(selectShowroomId);
   const limit = 10;
 
+  const [changeCustomOrderStatus] = useChangeCustomOrderStatusMutation();
   const [acceptOrDeclineCustomOrder] = useAcceptOrDeclineCustomOrderMutation();
 
   const {
@@ -95,12 +106,12 @@ export default function CustomRequest() {
     setReason("");
   };
 
-  const handleSubmitPrice = async () => {
-    if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) return;
+  const handleSubmitAccept = async () => {
     if (!selectedOrder) return;
+    if (!price || isNaN(parseFloat(price)) || parseFloat(price) <= 0) return;
 
     try {
-     const res = await acceptOrDeclineCustomOrder({
+      await acceptOrDeclineCustomOrder({
         id: selectedOrder._id,
         action: "accepted",
         price: parseFloat(price),
@@ -108,10 +119,7 @@ export default function CustomRequest() {
         showroomId,
       }).unwrap();
 
-      console.log(res);
-      
       refetch();
-
       closeModal();
     } catch (err) {
       console.error("Failed to accept order:", err);
@@ -144,6 +152,31 @@ export default function CustomRequest() {
     setReason("");
   };
 
+  const canRespondToOrder = (order: CustomOrder) =>
+    order.orderStatus === "Order Placed";
+
+  const handleListStatusChange = async (
+    order: CustomOrder,
+    newStatus: string,
+  ) => {
+    if (!isAllowedVendorCustomOrderStatusTransition(order.orderStatus, newStatus)) {
+      return;
+    }
+    setUpdatingStatusOrderId(order._id);
+    try {
+      await changeCustomOrderStatus({
+        id: order._id,
+        orderStatus: newStatus,
+        showroomId,
+      }).unwrap();
+      await refetch();
+    } catch (err) {
+      console.error("Failed to update order status:", err);
+    } finally {
+      setUpdatingStatusOrderId(null);
+    }
+  };
+
   const handlePageChange = (page: number) => {
     if (page > 0 && page <= (meta?.totalPages || 1)) {
       setCurrentPage(page);
@@ -166,6 +199,12 @@ export default function CustomRequest() {
         "bg-indigo-900/30 text-indigo-400 border border-indigo-500/30",
       Delivered: "bg-green-900/30 text-green-400 border border-green-500/30",
       Pending: "bg-gray-900/30 text-gray-400 border border-gray-500/30",
+      "Order Placed":
+        "bg-amber-900/30 text-amber-300 border border-amber-500/30",
+      Processing:
+        "bg-purple-900/30 text-purple-300 border border-purple-500/30",
+      "Ready for Pickup":
+        "bg-teal-900/30 text-teal-300 border border-teal-500/30",
     };
     return (
       styles[status] || "bg-gray-900/30 text-gray-400 border border-gray-500/30"
@@ -240,19 +279,39 @@ export default function CustomRequest() {
                     {new Date(order.createdAt).toLocaleString()}
                   </div>
                 </div>
-                <span
-                  className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(
-                    order.orderStatus,
-                  )}`}
-                >
-                  {order.orderStatus}
-                </span>
+                <div className="flex flex-col items-end gap-2">
+                  <span
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                      order.orderStatus,
+                    )}`}
+                  >
+                    {order.orderStatus}
+                  </span>
+                  {vendorCanChangeCustomOrderStatus(order.orderStatus) && (
+                    <select
+                      value={order.orderStatus}
+                      onChange={(e) =>
+                        handleListStatusChange(order, e.target.value)
+                      }
+                      disabled={updatingStatusOrderId === order._id}
+                      className="max-w-[11rem] text-xs bg-gray-800/80 border border-cyan-500/40 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-cyan-500 disabled:opacity-50"
+                    >
+                      {getVendorCustomOrderStatusSelectOptions(
+                        order.orderStatus,
+                      ).map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-gray-700/30">
+              <div className="flex flex-col gap-2 pt-2 border-t border-gray-700/30">
                 <span className="text-sm text-white">
                   {order.customer?.name}
                 </span>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2 justify-end">
                   <Link
                     href={`/vendor-dashboard/custom-orders/details?id=${order._id}`}
                   >
@@ -260,6 +319,22 @@ export default function CustomRequest() {
                       View Details
                     </button>
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => handleAccept(order)}
+                    disabled={!canRespondToOrder(order)}
+                    className="px-3 py-1.5 bg-[#4d4dff] hover:bg-[#5d5dff] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-xs"
+                  >
+                    Accept
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDecline(order)}
+                    disabled={!canRespondToOrder(order)}
+                    className="px-3 py-1.5 bg-[#ff4d6d] hover:bg-[#ff6b8b] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors text-xs"
+                  >
+                    Decline
+                  </button>
                 </div>
               </div>
             </div>
@@ -321,13 +396,33 @@ export default function CustomRequest() {
                     {order.customer?.name}
                   </td>
                   <td className="py-3 px-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
-                        order.orderStatus,
-                      )}`}
-                    >
-                      {order.orderStatus}
-                    </span>
+                    <div className="flex flex-col gap-2 items-start">
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle(
+                          order.orderStatus,
+                        )}`}
+                      >
+                        {order.orderStatus}
+                      </span>
+                      {vendorCanChangeCustomOrderStatus(order.orderStatus) && (
+                        <select
+                          value={order.orderStatus}
+                          onChange={(e) =>
+                            handleListStatusChange(order, e.target.value)
+                          }
+                          disabled={updatingStatusOrderId === order._id}
+                          className="text-xs bg-gray-800/80 border border-cyan-500/40 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-cyan-500 disabled:opacity-50"
+                        >
+                          {getVendorCustomOrderStatusSelectOptions(
+                            order.orderStatus,
+                          ).map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
+                      )}
+                    </div>
                   </td>
                   <td className="py-3 px-4">
                     <Link
@@ -341,21 +436,17 @@ export default function CustomRequest() {
                   <td className="py-3 px-4">
                     <div className="flex space-x-2">
                       <button
+                        type="button"
                         onClick={() => handleAccept(order)}
-                        disabled={
-                          order.orderStatus === "Vendor Accepted" ||
-                          order.orderStatus === "Vendor Rejected"
-                        }
+                        disabled={!canRespondToOrder(order)}
                         className="bg-[#4d4dff] hover:bg-[#5d5dff] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
                       >
                         Accept
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDecline(order)}
-                        disabled={
-                          order.orderStatus === "Vendor Accepted" ||
-                          order.orderStatus === "Vendor Rejected"
-                        }
+                        disabled={!canRespondToOrder(order)}
                         className="bg-[#ff4d6d] hover:bg-[#ff6b8b] disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-1.5 px-3.5 rounded-lg transition-colors text-sm"
                       >
                         Decline
@@ -441,9 +532,12 @@ export default function CustomRequest() {
             {/* Accept Modal */}
             {modalType === "accept" && (
               <div className="p-8 pt-12">
-                <h2 className="text-2xl font-bold text-center mb-6 text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-blue-500">
-                  Provide A Price
+                <h2 className="text-2xl font-bold text-center mb-2 text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-blue-500">
+                  Provide a price
                 </h2>
+                <p className="text-center text-[#a8a8b8] mb-6 text-sm">
+                  Accepted orders require price and currency for the customer.
+                </p>
                 <div className="mb-6">
                   <label className="block text-sm text-[#a8a8b8] mb-2">
                     Price
@@ -454,29 +548,32 @@ export default function CustomRequest() {
                     step="0.01"
                     value={price}
                     onChange={(e) => setPrice(e.target.value)}
-                    placeholder="Enter an offered price"
+                    placeholder="Enter offered price"
                     className="w-full bg-[#1a1a2e] border border-[#4d4dff] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
                   />
                 </div>
                 <div className="mb-6">
                   <label className="block text-sm text-[#a8a8b8] mb-2">
-                    Currency
+                    Currency (priceUnit)
                   </label>
                   <select
                     value={priceUnit}
                     onChange={(e) => setPriceUnit(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#4d4dff] rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 text-white"
                   >
-                    <option value="usd">USD</option>
-                    <option value="eur">EUR</option>
-                    <option value="gbp">GBP</option>
-                    <option value="bdt">BDT</option>
+                    <option value="usd">usd</option>
+                    <option value="eur">eur</option>
+                    <option value="gbp">gbp</option>
+                    <option value="bdt">bdt</option>
                   </select>
                 </div>
                 <button
-                  onClick={handleSubmitPrice}
+                  type="button"
+                  onClick={handleSubmitAccept}
                   disabled={
-                    !price || isNaN(parseFloat(price)) || parseFloat(price) <= 0
+                    !price ||
+                    isNaN(parseFloat(price)) ||
+                    parseFloat(price) <= 0
                   }
                   className="w-full bg-[#4d4dff] hover:bg-[#5d5dff] text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -504,6 +601,7 @@ export default function CustomRequest() {
                   ></textarea>
                 </div>
                 <button
+                  type="button"
                   onClick={handleSendReason}
                   disabled={!reason.trim()}
                   className="w-full bg-[#4d4dff] hover:bg-[#5d5dff] text-white font-medium py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

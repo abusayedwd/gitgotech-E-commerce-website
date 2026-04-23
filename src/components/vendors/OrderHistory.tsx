@@ -1,6 +1,5 @@
 "use client";
 
-import { useGetMyProfileQuery } from "@/redux/features/settings/settingsSlice";
 import {
   useGetVendorOrdersQuery,
   useGetVendorReturnsQuery,
@@ -17,7 +16,7 @@ interface Order {
     _id: string;
     name: string;
   };
-  product: {
+  product?: {
     _id: string;
     product_name: string;
   };
@@ -27,7 +26,7 @@ interface Order {
 
 interface Return {
   _id: string;
-  product: {
+  product?: {
     _id: string;
     product_name: string;
   };
@@ -78,9 +77,9 @@ export default function OrderHistory() {
 
   const router = useRouter();
   const limit = 10;
-  console.log(filterType);
 
   const showroomId = useSelector(selectShowroomId);
+  const skipVendorList = !showroomId;
 
   const [updateOrderStatus] = useUpdateOrderStatusMutation();
 
@@ -103,40 +102,55 @@ export default function OrderHistory() {
   const {
     data: ordersData,
     isLoading: ordersLoading,
+    isError: ordersError,
     refetch: refetchOrders,
-  } = useGetVendorOrdersQuery({
-    page: currentPage,
-    limit,
-    searchQ: searchTerm,
-    filter: filterType,
-    showroomId,
-  });
-
-  console.log(ordersData);
+  } = useGetVendorOrdersQuery(
+    {
+      page: currentPage,
+      limit,
+      searchQ: searchTerm,
+      filter: filterType,
+      showroomId: showroomId ?? "",
+    },
+    { skip: skipVendorList },
+  );
 
   const {
     data: returnsData,
     isLoading: returnsLoading,
+    isError: returnsError,
     refetch: refetchReturns,
-  } = useGetVendorReturnsQuery({
-    page: currentPage,
-    limit,
-    searchQ: searchTerm,
-    filter:
-      filterType !== "All Returns" && filterType !== "Filter" ? filterType : "",
-    showroomId,
-  });
+  } = useGetVendorReturnsQuery(
+    {
+      page: currentPage,
+      limit,
+      searchQ: searchTerm,
+      filter:
+        filterType !== "All Returns" && filterType !== "Filter"
+          ? filterType
+          : "",
+      showroomId: showroomId ?? "",
+    },
+    { skip: skipVendorList },
+  );
 
   const allOrders: Order[] = ordersData?.data || [];
-  console.log(showroomId);
-  console.log(allOrders);
-  const { data: profile } = useGetMyProfileQuery({});
-  console.log(profile);
 
   const allReturns: Return[] = returnsData?.data || [];
 
   const meta = activeTab === "orders" ? ordersData?.meta : returnsData?.meta;
-  const isLoading = activeTab === "orders" ? ordersLoading : returnsLoading;
+  const totalPages =
+    typeof meta?.totalPages === "number" && meta.totalPages >= 1
+      ? meta.totalPages
+      : 1;
+
+  const isLoading = skipVendorList
+    ? false
+    : activeTab === "orders"
+      ? ordersLoading
+      : returnsLoading;
+  const listError =
+    activeTab === "orders" ? ordersError : returnsError;
 
   const getStatusStyle = (status: string) => {
     const styles: { [key: string]: string } = {
@@ -242,9 +256,27 @@ export default function OrderHistory() {
         </div>
       </div>
 
+      {skipVendorList && (
+        <div className="mb-4 rounded-lg border border-amber-500/40 bg-amber-950/25 px-4 py-3 text-sm text-amber-100">
+          Select a showroom from the vendor dashboard header to load orders and
+          returns. Until then, order data is not requested.
+        </div>
+      )}
+
+      {!skipVendorList && listError && (
+        <div className="mb-4 rounded-lg border border-red-500/40 bg-red-950/20 px-4 py-3 text-sm text-red-200">
+          Could not load {activeTab}. Check your connection and showroom access,
+          then try again.
+        </div>
+      )}
+
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-3 mb-4">
-        {isLoading ? (
+        {skipVendorList ? (
+          <div className="text-center text-gray-500 py-8 text-sm">
+            Choose a showroom to see your list here.
+          </div>
+        ) : isLoading ? (
           <div className="text-center text-gray-400 py-8">Loading...</div>
         ) : (activeTab === "orders" ? allOrders : allReturns).length === 0 ? (
           <div className="text-center text-gray-400 py-8">
@@ -288,8 +320,8 @@ export default function OrderHistory() {
                   </span>
                 )}
               </div>
-              <div className="flex justify-between items-center pt-2 border-t border-gray-700/30">
-                <span className="text-sm text-white">
+              <div className="pt-2 border-t border-gray-700/30 space-y-1">
+                <div className="text-sm text-white">
                   {activeTab === "orders"
                     ? "customer" in item
                       ? item.customer?.name
@@ -297,7 +329,14 @@ export default function OrderHistory() {
                     : "showroom" in item
                       ? item.showroom?.showroom_name
                       : "N/A"}
-                </span>
+                </div>
+                {"product" in item && item.product?.product_name && (
+                  <div className="text-xs text-gray-400 truncate max-w-full">
+                    {item.product.product_name}
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-end pt-2">
                 <button
                   onClick={() => handleViewDetails(item._id)}
                   className="px-3 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
@@ -322,7 +361,10 @@ export default function OrderHistory() {
                 Date & Time
               </th>
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Customer
+                {activeTab === "orders" ? "Customer" : "Showroom"}
+              </th>
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                Product
               </th>
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
                 {activeTab === "orders" ? "Order Status" : "Return Status"}
@@ -333,16 +375,22 @@ export default function OrderHistory() {
             </tr>
           </thead>
           <tbody>
-            {isLoading ? (
+            {skipVendorList ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-gray-400">
+                <td colSpan={6} className="py-8 text-center text-gray-500 text-sm">
+                  Choose a showroom to load this table.
+                </td>
+              </tr>
+            ) : isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-gray-400">
                   Loading...
                 </td>
               </tr>
             ) : (activeTab === "orders" ? allOrders : allReturns).length ===
               0 ? (
               <tr>
-                <td colSpan={5} className="py-8 text-center text-gray-400">
+                <td colSpan={6} className="py-8 text-center text-gray-400">
                   No {activeTab} found
                 </td>
               </tr>
@@ -366,6 +414,11 @@ export default function OrderHistory() {
                       : "showroom" in item
                         ? item.showroom?.showroom_name
                         : "N/A"}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-300 max-w-[10rem] truncate">
+                    {"product" in item && item.product?.product_name
+                      ? item.product.product_name
+                      : "—"}
                   </td>
                   <td className="py-3 px-4">
                     {activeTab === "orders" ? (
@@ -409,7 +462,7 @@ export default function OrderHistory() {
       </div>
 
       {/* Pagination */}
-      {meta && meta.totalPages > 1 && (
+      {!skipVendorList && meta && totalPages > 1 && (
         <div className="flex items-center justify-center gap-1.5 md:gap-2 mt-4 md:mt-6 overflow-x-auto pb-2">
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
@@ -419,14 +472,14 @@ export default function OrderHistory() {
             ←
           </button>
 
-          {Array.from({ length: Math.min(5, meta.totalPages) }, (_, i) => {
+          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
             let pageNum;
-            if (meta.totalPages <= 5) {
+            if (totalPages <= 5) {
               pageNum = i + 1;
             } else if (currentPage <= 3) {
               pageNum = i + 1;
-            } else if (currentPage >= meta.totalPages - 2) {
-              pageNum = meta.totalPages - 4 + i;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
             } else {
               pageNum = currentPage - 2 + i;
             }
@@ -447,9 +500,9 @@ export default function OrderHistory() {
 
           <button
             onClick={() =>
-              setCurrentPage(Math.min(meta.totalPages, currentPage + 1))
+              setCurrentPage(Math.min(totalPages, currentPage + 1))
             }
-            disabled={currentPage === meta.totalPages}
+            disabled={currentPage === totalPages}
             className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
           >
             →

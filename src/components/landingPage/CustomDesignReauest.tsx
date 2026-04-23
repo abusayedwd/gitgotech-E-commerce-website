@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import MapComponent, {
   SelectedLocation as MapSelectedLocation,
 } from "../CustomerDashboard/Location";
+import { useGetProductDetailsforCustomerQuery } from "@/redux/features/home/homeSlice";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface SelectedLocation {
@@ -396,6 +397,13 @@ export default function CustomDesignRequest() {
     useState<SelectedLocation | null>(null);
   const searchParams = useSearchParams();
   const productId = searchParams.get("productId") || undefined;
+
+
+    const { data: productData } = useGetProductDetailsforCustomerQuery(productId || '', {
+      skip: !productId
+    });
+
+    console.log(productData)
 
   const [measurements, setMeasurements] = useState<Measurements>({
     chest: "",
