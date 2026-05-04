@@ -20,15 +20,31 @@ export default function MyDashboard() {
   const [productReview, setProductReview] = useState("");
   const [driverReview, setDriverReview] = useState("");
   const [rewardAmount, setRewardAmount] = useState("");
+  const [ordersPage, setOrdersPage] = useState(1);
+  const ORDERS_PAGE_SIZE = 10;
   const router = useRouter();
 
-  const { data: mainOrderData } = useGetCustomerMainOrdersQuery({});
+  const { data: mainOrderData, isFetching: mainOrdersFetching } =
+    useGetCustomerMainOrdersQuery({
+      page: ordersPage,
+      limit: ORDERS_PAGE_SIZE,
+    });
   const { data: returnOrderData } = useGetCustomerReturnOrdersQuery({});
-  console.log(mainOrderData);
 
   const [reviewProduct] = useAddProductReviewMutation();
 
 
+
+  const mainPagination = (mainOrderData as { pagination?: {
+    totalPage?: number;
+    currentPage?: number;
+    prevPage?: number;
+    nextPage?: number;
+    totalData?: number;
+  } })?.pagination;
+
+  const totalOrderPages = Math.max(1, mainPagination?.totalPage ?? 1);
+  const totalOrdersCount = mainPagination?.totalData ?? 0;
 
   const orders =
     mainOrderData?.data?.map((order: any) => ({
@@ -148,9 +164,18 @@ export default function MyDashboard() {
       if (res.success) {
         toast.success("Review submitted successfully!");
       } 
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error submitting review:", error);
-      toast.error(error?.data?.message || "Failed to submit review. Please try again.");
+      const apiMessage =
+        typeof error === "object" &&
+        error !== null &&
+        "data" in error &&
+        (error as { data?: { message?: string } }).data?.message;
+      toast.error(
+        typeof apiMessage === "string" && apiMessage
+          ? apiMessage
+          : "Failed to submit review. Please try again.",
+      );
     }
 
     setShowReviewModal(false);
@@ -203,7 +228,10 @@ export default function MyDashboard() {
       <div className="max-w-6xl mx-auto mb-6">
         <div className="flex justify-center">
           <button
-            onClick={() => setActiveTab("orders")}
+            onClick={() => {
+              setActiveTab("orders");
+              setOrdersPage(1);
+            }}
             className={`px-8 py-2.5 rounded shadow-2xl text-sm font-medium transition-all ${
               activeTab === "orders"
                 ? "bg-purple-600 text-white"
@@ -375,6 +403,47 @@ export default function MyDashboard() {
           </div>
         ))}
       </div>
+
+      {activeTab === "orders" &&
+        (totalOrderPages > 1 || totalOrdersCount > ORDERS_PAGE_SIZE) && (
+        <div className="max-w-6xl mx-auto mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-300">
+          <p>
+            Page{" "}
+            <span className="text-white font-medium">
+              {mainPagination?.currentPage ?? ordersPage}
+            </span>{" "}
+            of <span className="text-white font-medium">{totalOrderPages}</span>
+            {totalOrdersCount > 0 && (
+              <span className="text-gray-500">
+                {" "}
+                ({totalOrdersCount} orders)
+              </span>
+            )}
+          </p>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={ordersPage <= 1 || mainOrdersFetching}
+              onClick={() => setOrdersPage((p) => Math.max(1, p - 1))}
+              className="px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Previous
+            </button>
+            <button
+              type="button"
+              disabled={
+                ordersPage >= totalOrderPages || mainOrdersFetching
+              }
+              onClick={() =>
+                setOrdersPage((p) => Math.min(totalOrderPages, p + 1))
+              }
+              className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Profile Icon - Top Right */}
       <div className="fixed top-4 right-4 md:top-8 md:right-8">

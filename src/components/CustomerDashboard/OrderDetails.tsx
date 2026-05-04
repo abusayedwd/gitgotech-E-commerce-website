@@ -2,7 +2,6 @@
 import BackButton from "@/customComponent/BackButton";
 import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
 import {
-  useGetCustomerMainOrdersQuery,
   useGetMainOrderDetailsQuery,
   useGetReturnOrderDetailsQuery,
 } from "@/redux/features/order/orderSlice";
@@ -26,11 +25,10 @@ const OrderDetails = () => {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
-  // Fetch order details
-  const { data: orderData, isLoading } = useGetCustomerMainOrdersQuery({});
-
   const { data: mainOrderDetails, isLoading: isMainOrderDetailsLoading } =
-    useGetMainOrderDetailsQuery(id);
+    useGetMainOrderDetailsQuery(id, {
+      skip: !id || id === "undefined",
+    });
     console.log(mainOrderDetails)
   const { data: returnOrderDetails, isLoading: isReturnOrderDetailsLoading } =
     useGetReturnOrderDetailsQuery(id, {
@@ -155,7 +153,11 @@ const OrderDetails = () => {
     />
   ));
 
-  if (isLoading) {
+  if (
+    id &&
+    id !== "undefined" &&
+    (isMainOrderDetailsLoading || isReturnOrderDetailsLoading)
+  ) {
     return (
       <div className="min-h-screen mt-20 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6 flex items-center justify-center">
         <div className="text-purple-400 text-xl">Loading order details...</div>
