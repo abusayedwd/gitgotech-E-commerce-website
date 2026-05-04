@@ -11,40 +11,29 @@ import toast from "react-hot-toast";
 import MapComponent, {
   SelectedLocation,
 } from "./Location";
+import {
+  calcDistanceDeliveryUsd,
+  FALLBACK_DISTANCE_DELIVERY_USD,
+  haversineKm,
+  productWeightToKg,
+  RATE_PER_KG,
+  RATE_PER_KM,
+  type ProductWeightLike,
+} from "@/lib/deliveryPricing";
 
-/** Same delivery math as `CheckOut.tsx` */
-function haversineKm(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number,
-): number {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
-const RATE_PER_KM = 2;
-const MIN_DELIVERY = 5;
-
-function calcDeliveryCharge(
+function distanceDeliveryUsd(
   customerLocation: SelectedLocation | null,
   showroomCoordinates: [number, number] | null,
 ): number {
-  if (!customerLocation?.coordinates || !showroomCoordinates) return 20;
-  const distKm = haversineKm(
+  if (!customerLocation?.coordinates || !showroomCoordinates) {
+    return FALLBACK_DISTANCE_DELIVERY_USD;
+  }
+  return calcDistanceDeliveryUsd(
     customerLocation.coordinates.latitude,
     customerLocation.coordinates.longitude,
-    showroomCoordinates[1],
     showroomCoordinates[0],
+    showroomCoordinates[1],
   );
-  return Math.max(MIN_DELIVERY, parseFloat((distKm * RATE_PER_KM).toFixed(2)));
 }
 
 // --- Types ---
@@ -82,6 +71,7 @@ interface DesignItem {
   /** GeoJSON [lng, lat] from showroom `location.coordinates` */
   showroomCoordinates: [number, number] | null;
   showroomName: string;
+  productWeight?: ProductWeightLike;
 }
 
 // --- Components ---
@@ -309,10 +299,19 @@ const OrderNowModal = ({
 
   const subtotal = (parseFloat(order.price) || 0) * formData.quantity;
   const tax = subtotal * 0.1;
-  const deliveryCharge = useMemo(
-    () => calcDeliveryCharge(selectedLocation, order.showroomCoordinates),
+  const distanceDeliveryCharge = useMemo(
+    () => distanceDeliveryUsd(selectedLocation, order.showroomCoordinates),
     [selectedLocation, order.showroomCoordinates],
   );
+  const weightDeliveryCharge = useMemo(() => {
+    const kg = productWeightToKg(order.productWeight ?? null);
+    return parseFloat((kg * formData.quantity * RATE_PER_KG).toFixed(2));
+  }, [order.productWeight, formData.quantity]);
+  const deliveryCharge = distanceDeliveryCharge + weightDeliveryCharge;
+  const totalWeightKg = useMemo(() => {
+    const kg = productWeightToKg(order.productWeight ?? null);
+    return parseFloat((kg * formData.quantity).toFixed(2));
+  }, [order.productWeight, formData.quantity]);
   const distanceKm = useMemo(() => {
     if (!selectedLocation?.coordinates || !order.showroomCoordinates) {
       return null;
@@ -455,21 +454,32 @@ const OrderNowModal = ({
                 </p>
               )}
               <p className="text-xs text-gray-400 mb-2">
-                ${RATE_PER_KM} per km from{" "}
-                <span className="text-purple-300">{order.showroomName}</span>,
-                minimum ${MIN_DELIVERY}. Pick a pin on the map below.
+                ${RATE_PER_KM}/km from{" "}
+                <span className="text-purple-300">{order.showroomName}</span>{" "}
+                (distance) + ${RATE_PER_KG}/kg of product weight × quantity. Pick a
+                pin on the map below.
               </p>
               {distanceKm !== null ? (
-                <p className="text-purple-200">
-                  Distance: {distanceKm} km →{" "}
-                  <span className="font-semibold text-white">
-                    ${deliveryCharge.toFixed(2)}
+                <p className="text-purple-200 text-xs space-y-1">
+                  <span className="block">
+                    Distance: {distanceKm} km → fee $
+                    {distanceDeliveryCharge.toFixed(2)}
+                  </span>
+                  {totalWeightKg > 0 && (
+                    <span className="block">
+                      Weight: {totalWeightKg} kg → fee $
+                      {weightDeliveryCharge.toFixed(2)}
+                    </span>
+                  )}
+                  <span className="block font-semibold text-white">
+                    Total delivery: ${deliveryCharge.toFixed(2)}
                   </span>
                 </p>
               ) : (
                 <p className="text-amber-200/90 text-xs">
-                  Select a delivery location to calculate charge (estimate before
-                  pin: ${deliveryCharge.toFixed(2)}).
+                  Select a delivery location to refine distance (weight fee $
+                  {weightDeliveryCharge.toFixed(2)} + distance estimate $
+                  {distanceDeliveryCharge.toFixed(2)}).
                 </p>
               )}
             </div>
@@ -547,6 +557,7 @@ const OrderNowModal = ({
                 onLocationSave={handleLocationSave}
                 showroomCoordinates={order.showroomCoordinates}
                 showroomName={order.showroomName}
+                weightDeliveryUsd={weightDeliveryCharge}
               />
             </div>
 
@@ -660,13 +671,30 @@ const OrderNowModal = ({
             </div>
             <div className="flex justify-between text-sm text-gray-400">
               <span>
-                Delivery Charge
+                Delivery (distance)
                 {distanceKm !== null && (
                   <span className="ml-1 text-xs text-purple-300/80">
                     ({distanceKm} km × ${RATE_PER_KM})
                   </span>
                 )}
               </span>
+              <span>${distanceDeliveryCharge.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-400">
+              <span>
+                Delivery (weight)
+                {totalWeightKg > 0 ? (
+                  <span className="ml-1 text-xs text-purple-300/80">
+                    ({totalWeightKg} kg × ${RATE_PER_KG})
+                  </span>
+                ) : (
+                  <span className="ml-1 text-xs text-gray-500">(no weight)</span>
+                )}
+              </span>
+              <span>${weightDeliveryCharge.toFixed(2)}</span>
+            </div>
+            <div className="flex justify-between text-sm text-gray-300 font-medium">
+              <span>Delivery total</span>
               <span>${deliveryCharge.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-400">
@@ -705,7 +733,7 @@ export default function CustomDesignManagement() {
     isLoading,
     error,
   } = useGetCustomerCustomOrdersQuery({ page: 1, limit: 10 });
-
+  console.log(customOrdersData);
   const ordersList = Array.isArray(customOrdersData?.data)
     ? customOrdersData.data
     : [];
@@ -741,6 +769,7 @@ export default function CustomDesignManagement() {
         orderStatus: order.orderStatus || "Order Placed",
         showroomCoordinates,
         showroomName: order.showroomId?.showroom_name || "Showroom",
+        productWeight: order.productId?.product_weight ?? null,
       };
     });
 

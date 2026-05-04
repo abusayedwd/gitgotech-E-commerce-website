@@ -530,6 +530,12 @@
 import { SectionHeader } from "@/customComponent/Header";
 import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
 import {
+  FALLBACK_DISTANCE_DELIVERY_USD,
+  productWeightToKg,
+  RATE_PER_KG,
+  RATE_PER_KM,
+} from "@/lib/deliveryPricing";
+import {
   useAddToCartWishListMutation,
   useDeleteSaveListMutation,
   useGetWishlistAndCartQuery,
@@ -537,7 +543,7 @@ import {
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -670,11 +676,20 @@ export default function ShoppingCart() {
     return discountedPrice * quantity;
   };
 
-  const deliveryCharge = 20.0;
+  const estimatedDeliveryCharge = useMemo(() => {
+    if (!selectedProduct) return FALLBACK_DISTANCE_DELIVERY_USD;
+    const item = cartItems.find((i: any) => i._id === selectedProduct);
+    if (!item?.product) return FALLBACK_DISTANCE_DELIVERY_USD;
+    const qty = quantities[item._id] || 1;
+    const weightFee =
+      productWeightToKg(item.product.product_weight) * qty * RATE_PER_KG;
+    return parseFloat(
+      (FALLBACK_DISTANCE_DELIVERY_USD + weightFee).toFixed(2),
+    );
+  }, [selectedProduct, cartItems, quantities]);
 
   const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
-    return subtotal;
+    return calculateSubtotal() + estimatedDeliveryCharge;
   };
 
   const selectedItem = cartItems.find((item: any) => item._id === selectedProduct);
@@ -712,7 +727,7 @@ export default function ShoppingCart() {
           amount: getDiscountedPrice(selectedItem.product),
           tip: 0,
           coupon: "",
-          deliveryCharge: 30,
+          deliveryCharge: estimatedDeliveryCharge,
         },
       },
     ];
@@ -1012,9 +1027,15 @@ export default function ShoppingCart() {
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Delivery Charge</span>
-                <span className="font-medium">$2 per km</span>
+                <span className="text-gray-400">Delivery (est.)</span>
+                <span className="font-medium">
+                  ${estimatedDeliveryCharge.toFixed(2)}
+                </span>
               </div>
+              <p className="text-xs text-gray-500 -mt-1 mb-1">
+                ${RATE_PER_KM}/km (distance) + ${RATE_PER_KG}/kg × product weight;
+                finalized at checkout with your pin.
+              </p>
               {/* <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
                 <span className="font-medium">

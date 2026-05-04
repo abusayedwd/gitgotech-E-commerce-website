@@ -300,7 +300,7 @@ const DeliveryRequest = () => {
       {/* Details Modal */}
       {isModalOpen && selectedDelivery && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-          <div className="bg-gradient-to-r from-black via-[#0f0924] to-black border border-gray-700 rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-gradient-to-r from-black via-[#0f0924] to-black border border-gray-700 rounded-lg max-w-3xl w-full max-h-[82vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="sticky top-0 bg-gradient-to-r from-black via-[#0f0924] to-black border-b border-gray-700 p-6 flex items-center justify-between">
               <h2 className="text-2xl font-bold font-cormorant">
