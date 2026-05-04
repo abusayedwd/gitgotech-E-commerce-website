@@ -27,7 +27,7 @@ export const orderSlice = apiSlice.injectEndpoints({
 
     // ✅ GET - Customer Main Orders (paginated)
     getCustomerMainOrders: builder.query({
-      query: ({ page = 1, limit = 10 } = {}) => ({
+      query: ({ page = 1, limit = 10 }) => ({
         url: "/order/customer/main/get",
         method: "GET",
         params: { page, limit },
