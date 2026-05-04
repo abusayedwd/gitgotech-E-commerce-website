@@ -170,12 +170,12 @@ export default function ReturnDetails() {
             >
               {isActionLoading ? 'Processing...' : 'Decline'}
             </button>
-            <button
+            {/* <button
               onClick={handleReport}
               className="px-6 py-2.5 bg-transparent border border-yellow-500/50 hover:bg-yellow-500/10 rounded-lg text-yellow-400 font-medium transition-all"
             >
               Report
-            </button>
+            </button> */}
           </div>
         </div>
 
@@ -206,14 +206,15 @@ export default function ReturnDetails() {
             </div>
 
             {/* Chat Button */}
-            <button
+            {/* <button
               onClick={() => setShowChat(!showChat)}
               className="absolute -top-3 -right-3 w-14 h-14 rounded-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/30 transition-all"
             >
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-            </button>
+            </button> */}
+
           </div>
         </div>
 

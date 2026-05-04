@@ -6,18 +6,45 @@ import {
   useGetCustomerCustomOrdersQuery,
 } from "@/redux/features/order/orderSlice";
 import { Circle, Eye, ShoppingCart, X } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import MapComponent from "./Location";
+import MapComponent, {
+  SelectedLocation,
+} from "./Location";
 
-interface SelectedLocation {
-  name?: string;
-  address?: string;
-  displayName?: string;
-  coordinates?: {
-    latitude: number;
-    longitude: number;
-  };
+/** Same delivery math as `CheckOut.tsx` */
+function haversineKm(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+): number {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) *
+      Math.cos((lat2 * Math.PI) / 180) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const RATE_PER_KM = 2;
+const MIN_DELIVERY = 5;
+
+function calcDeliveryCharge(
+  customerLocation: SelectedLocation | null,
+  showroomCoordinates: [number, number] | null,
+): number {
+  if (!customerLocation?.coordinates || !showroomCoordinates) return 20;
+  const distKm = haversineKm(
+    customerLocation.coordinates.latitude,
+    customerLocation.coordinates.longitude,
+    showroomCoordinates[1],
+    showroomCoordinates[0],
+  );
+  return Math.max(MIN_DELIVERY, parseFloat((distKm * RATE_PER_KM).toFixed(2)));
 }
 
 // --- Types ---
@@ -52,6 +79,9 @@ interface DesignItem {
   pickUpInfo: any;
   trackingNumber: string;
   orderStatus: OrderStatus;
+  /** GeoJSON [lng, lat] from showroom `location.coordinates` */
+  showroomCoordinates: [number, number] | null;
+  showroomName: string;
 }
 
 // --- Components ---
@@ -262,10 +292,8 @@ const OrderNowModal = ({
   const [formData, setFormData] = useState({
     action: "accepted",
     quantity: order.quantity || 1,
-    deliveryCharge: 30,
     tips: 10,
     coupon: "",
-    // Location fields - manual input like ReturnRequest
     fullName: "",
     location: "",
     country: "United States",
@@ -281,25 +309,39 @@ const OrderNowModal = ({
 
   const subtotal = (parseFloat(order.price) || 0) * formData.quantity;
   const tax = subtotal * 0.1;
-  const total = subtotal + tax + formData.deliveryCharge + formData.tips;
+  const deliveryCharge = useMemo(
+    () => calcDeliveryCharge(selectedLocation, order.showroomCoordinates),
+    [selectedLocation, order.showroomCoordinates],
+  );
+  const distanceKm = useMemo(() => {
+    if (!selectedLocation?.coordinates || !order.showroomCoordinates) {
+      return null;
+    }
+    return haversineKm(
+      selectedLocation.coordinates.latitude,
+      selectedLocation.coordinates.longitude,
+      order.showroomCoordinates[1],
+      order.showroomCoordinates[0],
+    ).toFixed(1);
+  }, [selectedLocation, order.showroomCoordinates]);
 
-  // Handle location save from MapComponent
+  const total = subtotal + tax + deliveryCharge + formData.tips;
+
   const handleLocationSave = (loc: SelectedLocation) => {
-    console.log("Saved location:", loc);
     setSelectedLocation(loc);
-
-    // Extract coordinates and address
-    const address = loc.name || loc.address || loc.displayName;
-
-    // Update location field
     setFormData((prev) => ({
       ...prev,
-      location: address || "",
+      location: loc.name || "",
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!selectedLocation?.coordinates) {
+      toast.error("Please select your delivery location on the map.");
+      return;
+    }
 
     // Prepare data matching ReturnRequest structure
     const submitData = {
@@ -310,7 +352,7 @@ const OrderNowModal = ({
         tax: tax,
         tip: formData.tips,
         coupon: formData.coupon,
-        deliveryCharge: formData.deliveryCharge,
+        deliveryCharge,
       },
       pickUpInfo: {
         name: formData.fullName,
@@ -335,7 +377,6 @@ const OrderNowModal = ({
       },
     };
 
-    console.log("Order Now Data:", submitData, order.id);
     const res = await customOrderPlace({ id: order.id, data: submitData });
     if (res?.data) {
       toast.success("Order confirmed!");
@@ -403,23 +444,34 @@ const OrderNowModal = ({
               />
             </div>
 
-            {/* Delivery Charge */}
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Delivery Charge ($)
-              </label>
-              <input
-                type="number"
-                value={formData.deliveryCharge}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    deliveryCharge: parseInt(e.target.value) || 0,
-                  })
-                }
-                className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-                min="0"
-              />
+            {/* Delivery charge is distance-based (same as checkout) */}
+            <div className="md:col-span-2 rounded-lg border border-purple-500/30 bg-purple-950/20 px-4 py-3 text-sm text-gray-300">
+              <p className="font-medium text-white mb-1">Delivery charge</p>
+              {!order.showroomCoordinates && (
+                <p className="text-xs text-amber-300/90 mb-2">
+                  Showroom map coordinates are missing; using the same default
+                  delivery estimate ($20) as checkout until coordinates exist on
+                  the order.
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mb-2">
+                ${RATE_PER_KM} per km from{" "}
+                <span className="text-purple-300">{order.showroomName}</span>,
+                minimum ${MIN_DELIVERY}. Pick a pin on the map below.
+              </p>
+              {distanceKm !== null ? (
+                <p className="text-purple-200">
+                  Distance: {distanceKm} km →{" "}
+                  <span className="font-semibold text-white">
+                    ${deliveryCharge.toFixed(2)}
+                  </span>
+                </p>
+              ) : (
+                <p className="text-amber-200/90 text-xs">
+                  Select a delivery location to calculate charge (estimate before
+                  pin: ${deliveryCharge.toFixed(2)}).
+                </p>
+              )}
             </div>
 
             {/* Tips */}
@@ -491,7 +543,11 @@ const OrderNowModal = ({
               <label className="block text-sm text-gray-400 mb-2">
                 Set Location on Map
               </label>
-              <MapComponent onLocationSave={handleLocationSave} />
+              <MapComponent
+                onLocationSave={handleLocationSave}
+                showroomCoordinates={order.showroomCoordinates}
+                showroomName={order.showroomName}
+              />
             </div>
 
             {/* Country, State, Zip Code */}
@@ -603,8 +659,15 @@ const OrderNowModal = ({
               <span>${tax.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-400">
-              <span>Delivery Charge</span>
-              <span>${formData.deliveryCharge.toFixed(2)}</span>
+              <span>
+                Delivery Charge
+                {distanceKm !== null && (
+                  <span className="ml-1 text-xs text-purple-300/80">
+                    ({distanceKm} km × ${RATE_PER_KM})
+                  </span>
+                )}
+              </span>
+              <span>${deliveryCharge.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm text-gray-400">
               <span>Tips</span>
@@ -642,29 +705,44 @@ export default function CustomDesignManagement() {
     isLoading,
     error,
   } = useGetCustomerCustomOrdersQuery({ page: 1, limit: 10 });
-  console.log(customOrdersData);
+
+  const ordersList = Array.isArray(customOrdersData?.data)
+    ? customOrdersData.data
+    : [];
 
   // Transform API data
   const designItems: DesignItem[] =
-    customOrdersData?.data?.map((order: any) => ({
-      id: order._id,
-      productName: order.productId?.product_name || "Custom Order",
-      brand: order.showroomId?.showroom_name || "Custom",
-      price: (order.price?.amount || 0).toFixed(2),
-      status:
-        order.orderStatus === "Delivered"
-          ? "Delivered"
-          : order.orderStatus === "Processing"
-            ? "Processing"
-            : "Pending",
-      imageUrl: order.productId?.product_images?.[0] || "/images/jacket.png",
-      quantity: order.quantity || 1,
-      measurements: order.measurements || {},
-      deliveryInfo: order.deliveryInfo || {},
-      pickUpInfo: order.pickUpInfo || {},
-      trackingNumber: order.trackingNumber || "",
-      orderStatus: order.orderStatus || "Order Placed",
-    })) || [];
+    ordersList.map((order: any) => {
+      const coords = order.showroomId?.location?.coordinates;
+      const showroomCoordinates: [number, number] | null =
+        Array.isArray(coords) &&
+        coords.length >= 2 &&
+        typeof coords[0] === "number" &&
+        typeof coords[1] === "number"
+          ? [coords[0], coords[1]]
+          : null;
+      return {
+        id: order._id,
+        productName: order.productId?.product_name || "Custom Order",
+        brand: order.showroomId?.showroom_name || "Custom",
+        price: (order.price?.amount || 0).toFixed(2),
+        status:
+          order.orderStatus === "Delivered"
+            ? "Delivered"
+            : order.orderStatus === "Processing"
+              ? "Processing"
+              : "Pending",
+        imageUrl: order.productId?.product_images?.[0] || "/images/jacket.png",
+        quantity: order.quantity || 1,
+        measurements: order.measurements || {},
+        deliveryInfo: order.deliveryInfo || {},
+        pickUpInfo: order.pickUpInfo || {},
+        trackingNumber: order.trackingNumber || "",
+        orderStatus: order.orderStatus || "Order Placed",
+        showroomCoordinates,
+        showroomName: order.showroomId?.showroom_name || "Showroom",
+      };
+    });
 
   const handleViewDetails = (order: DesignItem) => {
     setSelectedOrder(order);

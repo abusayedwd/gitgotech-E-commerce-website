@@ -72,20 +72,20 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-black flex items-center justify-center p-4 py-8">
       {/* Forgot Password Card */}
       <div className="relative w-full max-w-lg">
-        <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#8645a5] rounded-2xl p-8">
+        <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#8645a5] rounded-2xl p-4">
           {/* Logo */}
           <div className="flex items-start justify-between">
             <Image
-              src="/images/llogo.png"
+              src="/images/logo.png"
               alt="TeeKnit Logo"
               width={100}
               height={100}
-              className="object-contain h-36 w-36"
+              className="object-contain item h-36 w-36"
             />
           </div>
 
           {/* Header */}
-          <div className="mb-6 text-center">
+          <div className="mb-6">
             <h1 className="text-3xl font-cormorant font-bold text-white mb-2">
               Forgot Password?
             </h1>

@@ -3,6 +3,7 @@
 import { Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import FooterPageBack from "@/components/landingPage/FooterPageBack";
 
 const CareerBanner = () => {
   const router = useRouter();
@@ -25,6 +26,9 @@ const CareerBanner = () => {
 
   return (
     <div className="relative mt-24 w-full h-[550px] overflow-hidden rounded-xl">
+      <div className="absolute top-4 left-4 z-20 rounded-lg bg-black/55 px-3 py-2 backdrop-blur-sm">
+        <FooterPageBack />
+      </div>
       {/* Background Image */}
       <div className="absolute inset-0">
         <img

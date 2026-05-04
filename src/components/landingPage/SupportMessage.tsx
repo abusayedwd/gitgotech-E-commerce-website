@@ -241,9 +241,10 @@ import {
   useSendSupportMessageMutation,
   useInitSupportMutation,
 } from '@/redux/features/support/supportMessageSlice';
+import { useSupportModal } from '@/context/SupportModalContext';
 
 export default function SupportMessage() {
-  const [isOpen, setIsOpen] = useState(false);
+  const { isOpen, setIsOpen, closeSupport } = useSupportModal();
   const [newMessage, setNewMessage] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -364,7 +365,7 @@ export default function SupportMessage() {
                 </div>
               </div>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={closeSupport}
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <X className="w-5 h-5 cursor-pointer" />

@@ -1005,7 +1005,7 @@ const MessagesPage = () => {
 
   // ─── JSX ──────────────────────────────────────────────────────
   return (
-    <div className="mt-24 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex p-2 md:p-4">
+    <div className="mt-24 flex h-[calc(100dvh-6rem)] min-h-[calc(100dvh-6rem)] flex-row bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-2 md:p-4">
 
       {/* Socket status badge */}
       <div className="fixed top-24 right-4 z-50">
@@ -1021,11 +1021,11 @@ const MessagesPage = () => {
 
       {/* ── Sidebar ── */}
       <div className={`
-        ${showSidebar ? 'block' : 'hidden'}
-        w-full md:w-80 h-[550px] md:h-[750px]
+        ${showSidebar ? 'flex' : 'hidden'}
+        h-full min-h-0 w-full shrink-0 flex-col md:mr-4 md:w-80
         bg-gray-900/80 backdrop-blur-sm rounded-xl
-        p-3 md:p-4 md:mr-4
-        border border-gray-700/50 flex flex-col
+        p-3 md:p-4
+        border border-gray-700/50
       `}>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white">Messages</h2>
@@ -1086,9 +1086,8 @@ const MessagesPage = () => {
       {/* ── Main Chat ── */}
       <div className={`
         ${!showSidebar || selectedChatId ? 'flex' : 'hidden md:flex'}
-        flex-1 bg-gray-900/80 backdrop-blur-sm rounded-xl
-        h-[550px] md:h-[750px] p-3 md:p-4
-        flex-col border border-gray-700/50 overflow-hidden
+        h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-gray-900/80 backdrop-blur-sm rounded-xl
+        border border-gray-700/50 p-3 md:p-4
       `}>
         {!selectedChatId ? (
           <div className="flex flex-col items-center justify-center h-full text-gray-400">

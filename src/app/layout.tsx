@@ -58,6 +58,7 @@
 import Providers from "@/redux/Providers";
 import ToastProvider from "@/components/ToastProvider";
 import { FilterProvider } from "@/context/FilterContext";
+import { SupportModalProvider } from "@/context/SupportModalContext";
 import { SocketProvider } from "@/components/providers/SocketProvider";
 
 import type { Metadata } from "next";
@@ -100,11 +101,13 @@ export default function RootLayout({
   suppressHydrationWarning
       >
         <Providers>
-          <FilterProvider>
-            <SocketProvider>
-              <ConditionalLayout>{children}</ConditionalLayout>
-            </SocketProvider>
-          </FilterProvider>
+          <SupportModalProvider>
+            <FilterProvider>
+              <SocketProvider>
+                <ConditionalLayout>{children}</ConditionalLayout>
+              </SocketProvider>
+            </FilterProvider>
+          </SupportModalProvider>
         </Providers>
         <ToastProvider />
       </body>

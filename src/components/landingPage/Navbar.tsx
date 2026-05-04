@@ -225,9 +225,9 @@ export default function Navbar() {
             </>
           ) : (
             /* Show Login button when not logged in */
-            <Link href="/auth/login">
+            <Link href="/auth/sign-up">
               <button className="bg-purple-600 cursor-pointer hover:bg-purple-700 text-white px-6 xl:px-8 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base">
-                Login
+                Sign Up
               </button>
             </Link>
           )}

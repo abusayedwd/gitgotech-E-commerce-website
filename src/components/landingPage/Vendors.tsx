@@ -6,6 +6,7 @@ import { Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import FooterPageBack from "@/components/landingPage/FooterPageBack";
 
 export default function VendorsPage() {
   const [searchInput, setSearchInput] = useState("");
@@ -32,6 +33,7 @@ export default function VendorsPage() {
   return (
     <div className="mt-16 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen py-8 sm:py-10 md:py-12 px-2 sm:px-4">
       <div className="container mx-auto">
+        <FooterPageBack className="mb-6 sm:mb-8" />
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
           <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cormorant mb-2 sm:mb-3 md:mb-4">

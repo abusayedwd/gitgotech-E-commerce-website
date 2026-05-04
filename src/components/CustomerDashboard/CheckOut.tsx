@@ -799,7 +799,7 @@ export default function CheckoutPage() {
   const tipFromCart = searchParams.get("tip") || "5";
   const cartDataFromUrl = searchParams.get("cartData");
   const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
-
+ console.log(parsedCartData)
   const product = searchParams.get("productId");
   const event = searchParams.get("eventId");
 
