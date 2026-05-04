@@ -53,6 +53,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const [addToCartWishList] = useAddToCartWishListMutation();
 
   const product = productData?.data || null;
+  
+ 
 
   if (isLoading) {
     return (
@@ -330,7 +332,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                     />
                   ))}
                 </div>
-                <span onClick={() => router.push("/product/review")} className="text-sm cursor-pointer text-purple-400">({product.review_count || product.reviews || 0} Reviews)</span>
+                <span onClick={() => router.push(`/product/review?productId=${product._id}`)} className="text-sm cursor-pointer text-purple-400">({product.review_count || product.reviews || 0} Reviews)</span>
               </div>
             </div>
 

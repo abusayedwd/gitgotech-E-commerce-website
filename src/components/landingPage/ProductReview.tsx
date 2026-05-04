@@ -1,48 +1,39 @@
-"use client"
-import React from 'react';
-import { ChevronLeft } from 'lucide-react';
-import { FaArrowLeft } from 'react-icons/fa';
-import { useRouter } from 'next/navigation';
+"use client";
+
+import React, { useMemo } from "react";
+import { FaArrowLeft } from "react-icons/fa";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useGetProductReviewsQuery } from "@/redux/features/review/reviewSlice";
+
+type ApiReviewRow = {
+  _id: string;
+  createdAt?: string;
+  product?: {
+    rating?: number;
+    comment?: string;
+    id?: string;
+  };
+};
 
 export default function ReviewsPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const productId = searchParams.get("productId");
 
-    const router = useRouter()
+  const { data: reviewsData, isLoading, isFetching } = useGetProductReviewsQuery(
+    { id: productId!, page: 1, limit: 10 },
+    { skip: !productId },
+  );
 
-  const reviews = [
-    {
-      id: 1,
-      name: "Courtney Henry",
-      rating: 5,
-      time: "2 mins ago",
-      text: "Consequat velit qui adipisicing sunt reprehenderit ad laborum tempor ullamco exercitation. Ultrco tempor adipisicing sit vulputate ullamco aliquiplt."
-    },
-    {
-      id: 2,
-      name: "Courtney Henry",
-      rating: 5,
-      time: "2 mins ago",
-      text: "Consequat velit qui adipisicing sunt reprehenderit ad laborum tempor ullamco exercitation. Ultrco tempor adipisicing sit vulputate ullamco aliquiplt."
-    },
-    {
-      id: 3,
-      name: "Courtney Henry",
-      rating: 5,
-      time: "2 mins ago",
-      text: "Consequat velit qui adipisicing sunt reprehenderit ad laborum tempor ullamco exercitation. Ultrco tempor adipisicing sit vulputate ullamco aliquiplt."
-    },
-    {
-      id: 4,
-      name: "Courtney Henry",
-      rating: 5,
-      time: "2 mins ago",
-      text: "Consequat velit qui adipisicing sunt reprehenderit ad laborum tempor ullamco exercitation. Ultrco tempor adipisicing sit vulputate ullamco aliquiplt."
-    }
-  ];
+  const reviews = useMemo(() => {
+    const raw = (reviewsData as { data?: { data?: ApiReviewRow[] } } | undefined)?.data
+      ?.data;
+    return Array.isArray(raw) ? raw : [];
+  }, [reviewsData]);
 
   const StarIcon = ({ filled }: { filled: boolean }) => (
-
     <svg
-      className={`w-4 h-4 ${filled ? 'text-yellow-400' : 'text-gray-600'}`}
+      className={`w-5 h-5 ${filled ? "text-yellow-400" : "text-gray-600"}`}
       fill="currentColor"
       viewBox="0 0 20 20"
     >
@@ -50,52 +41,75 @@ export default function ReviewsPage() {
     </svg>
   );
 
+  const loading = isLoading || isFetching;
+
   return (
     <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
       <div className="max-w-3xl mx-auto">
-        {/* Header */}
-       <div className="container mx-auto flex mb-2 items-center gap-4">
-             <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
-            <FaArrowLeft className='text-black' />
-          </div>
-        </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Review</h1>
-        </div> 
+        <div className="container mx-auto flex mb-6 items-center gap-4">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-[#B630F4] to-[#2ACCED] cursor-pointer flex items-center justify-center">
+              <FaArrowLeft className="text-black" />
+            </div>
+          </button>
+          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+            Product reviews
+          </h1>
+        </div>
 
-        {/* Reviews List */}
-        <div className="space-y-6">
-          {reviews.map((review) => (
-            <div 
-              key={review.id} 
-              className="bg-gray-900 rounded-lg p-6 border border-gray-800"
-            >
-              <div className="flex items-start gap-4">
-                {/* Avatar */}
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex-shrink-0"></div>
-                
-                {/* Content */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h3 className="font-semibold text-white mb-1">{review.name}</h3>
-                      <div className="flex gap-0.5">
-                        {[...Array(5)].map((_, i) => (
-                          <StarIcon key={i} filled={i < review.rating} />
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-sm text-gray-500">{review.time}</span>
+        {!productId && (
+          <p className="text-gray-400 text-sm">
+            No product selected. Open reviews from a product page.
+          </p>
+        )}
+
+        {productId && loading && (
+          <div className="flex justify-center py-12">
+            <div className="h-10 w-10 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
+        {productId && !loading && reviews.length === 0 && (
+          <p className="text-gray-400 text-sm">No product reviews yet.</p>
+        )}
+
+        {productId && !loading && reviews.length > 0 && (
+          <div className="space-y-6">
+            {reviews.map((row) => {
+              const rating = Math.min(
+                5,
+                Math.max(0, Math.round(Number(row.product?.rating ?? 0))),
+              );
+              const message = (row.product?.comment ?? "").trim() || "—";
+
+              return (
+                <div
+                  key={row._id}
+                  className="bg-gray-900 rounded-lg p-6 border border-gray-800"
+                >
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
+                    Product rating
+                  </p>
+                  <div className="flex gap-1 mb-4" aria-label={`${rating} out of 5 stars`}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <StarIcon key={star} filled={star <= rating} />
+                    ))}
                   </div>
-                  
-                  <p className="text-gray-400 text-sm leading-relaxed">
-                    {review.text}
+                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+                    Message
+                  </p>
+                  <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+                    {message}
                   </p>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
