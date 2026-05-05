@@ -102,7 +102,7 @@ const FashionSearchNav = () => {
         <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-2 sm:py-6">
           <div className="flex-1 max-w-4xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
             {/* Search Input */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative md:mt-1 mt-2">
               <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400">
                 <Search size={18} className="sm:w-5 sm:h-5" />
               </div>
