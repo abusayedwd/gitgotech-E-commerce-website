@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useVerifyOtpMutation } from '@/redux/features/auth/authSlice';
+import { useResendOtpMutation, useVerifyOtpMutation } from '@/redux/features/auth/authSlice';
 import toast from 'react-hot-toast';
 
 export default function VerifyEmailPage() {
@@ -14,14 +14,12 @@ export default function VerifyEmailPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const router = useRouter();
-
-  const [path, setPath] = useState('')
+  const [resendOtp, { isLoading: isResending }] = useResendOtpMutation();
+  const [path, setPath] = useState("");
   const [token, setToken] = useState("")
   const [verifyEmail] = useVerifyOtpMutation()
 
-  console.log(path,email, token)
-
-    useEffect(() => {
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setEmail(params.get('email') || '');
     setPath(params.get('path') || '');
@@ -106,6 +104,26 @@ const handleSubmit = async (e: React.FormEvent) => {
   }
 };
 
+  const handleResendOtp = async () => {
+    if (!email?.trim()) {
+      toast.error("Missing email. Open this page from the link in your email.");
+      return;
+    }
+    try {
+      const res = await resendOtp(email.trim()).unwrap();
+      toast.success(
+        (res as { message?: string })?.message ??
+          "A new verification code has been sent to your email."
+      );
+    } catch (err: unknown) {
+      const message =
+        (err as { data?: { message?: string } })?.data?.message ??
+        (err as { message?: string })?.message ??
+        "Could not resend the code. Please try again.";
+      toast.error(message);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-lg mx-auto">
@@ -168,18 +186,22 @@ const handleSubmit = async (e: React.FormEvent) => {
                   'Verify OTP'
                 )}
               </button>
-                  <div className="mt-4 text-center">
-          <button 
-            onClick={() => {
-              // Handle resend logic
-              alert('Resend verification email functionality would go here');
-            }}
-            className=" font-poppins text-gray-400 hover:text-gray-300"
-          >
-            <span className='text-[#EF0000]'>Note</span>
-             : If you do not receive the email in your inbox, please check your spam or junk folder.
-          </button>
-        </div>
+
+              <div className="mt-6 space-y-3 text-center">
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={isResending || success || !email}
+                  className="font-poppins text-sm text-purple-400 hover:text-purple-300 disabled:opacity-50 disabled:cursor-not-allowed underline-offset-2 hover:underline"
+                >
+                  {isResending ? "Sending…" : "Resend verification code"}
+                </button>
+                <p className="font-poppins text-xs text-gray-500 leading-relaxed">
+                  <span className="text-[#EF0000]">Note</span>: If you do not
+                  receive the email in your inbox, check your spam or junk
+                  folder.
+                </p>
+              </div>
             </form>
             
             {error && (
