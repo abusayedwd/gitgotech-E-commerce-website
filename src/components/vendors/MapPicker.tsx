@@ -42,7 +42,7 @@ export default function MapPicker({ lat, lng, onChange }: Props) {
     setSearching(true);
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1`,
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=1&accept-language=en`,
         { headers: { 'Accept-Language': 'en' } }
       );
       const data = await res.json();
@@ -89,7 +89,7 @@ export default function MapPicker({ lat, lng, onChange }: Props) {
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
         <ClickHandler onChange={onChange} />
         {flyTarget && <FlyTo lat={flyTarget.lat} lng={flyTarget.lng} />}

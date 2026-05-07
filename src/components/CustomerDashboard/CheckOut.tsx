@@ -755,6 +755,13 @@ import {
 
 const TAX_RATE = 0.1; // 10%
 
+const CHECKOUT_COUNTRY_OPTIONS = [
+  "United States",
+  "Canada",
+  "UK",
+  "Australia",
+] as const;
+
 function distanceDeliveryUsd(
   customerLocation: SelectedLocation | null,
   showroomCoordinates: [number, number] | null,
@@ -940,6 +947,12 @@ export default function CheckoutPage() {
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleLocationSave = (location: SelectedLocation) => {
     setSelectedLocation(location);
+    setFormData((prev) => ({
+      ...prev,
+      ...(location.country ? { country: location.country } : {}),
+      ...(location.state ? { state: location.state } : {}),
+      ...(location.zipCode ? { zipcode: location.zipCode } : {}),
+    }));
     toast.success("Location saved successfully!");
   };
 
@@ -1181,10 +1194,19 @@ export default function CheckoutPage() {
                     onChange={handleInputChange}
                     className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
                   >
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                    <option value="UK">UK</option>
-                    <option value="Australia">Australia</option>
+                    {[...CHECKOUT_COUNTRY_OPTIONS].map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                    {formData.country &&
+                      !CHECKOUT_COUNTRY_OPTIONS.includes(
+                        formData.country as (typeof CHECKOUT_COUNTRY_OPTIONS)[number],
+                      ) && (
+                        <option value={formData.country}>
+                          {formData.country}
+                        </option>
+                      )}
                   </select>
                 </div>
                 <div>

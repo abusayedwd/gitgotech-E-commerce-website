@@ -61,7 +61,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   try {
     // Validate OTP
     if (otp.some((digit) => digit === "")) {
-      throw new Error("Please enter all 5 digits of the OTP");
+      throw new Error("Please enter all 6 digits of the OTP");
     }
 
     const otpCode = otp.join("");

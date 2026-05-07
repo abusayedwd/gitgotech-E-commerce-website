@@ -110,6 +110,9 @@ const DeliveryRequestFrom = () => {
         ...prev,
         location: address,
         coordinates: [lng, lat] as [number, number],
+        ...(selectedLocation.country ? { country: selectedLocation.country } : {}),
+        ...(selectedLocation.state ? { state: selectedLocation.state } : {}),
+        ...(selectedLocation.zipCode ? { zipCode: selectedLocation.zipCode } : {}),
       }));
     } else {
       setDeliveryMapLocation(selectedLocation);
@@ -117,6 +120,9 @@ const DeliveryRequestFrom = () => {
         ...prev,
         location: address,
         coordinates: [lng, lat] as [number, number],
+        ...(selectedLocation.country ? { country: selectedLocation.country } : {}),
+        ...(selectedLocation.state ? { state: selectedLocation.state } : {}),
+        ...(selectedLocation.zipCode ? { zipCode: selectedLocation.zipCode } : {}),
       }));
     }
   };

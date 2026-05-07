@@ -331,6 +331,9 @@ const OrderNowModal = ({
     setFormData((prev) => ({
       ...prev,
       location: loc.name || "",
+      ...(loc.country ? { country: loc.country } : {}),
+      ...(loc.state ? { state: loc.state } : {}),
+      ...(loc.zipCode ? { zipCode: loc.zipCode } : {}),
     }));
   };
 

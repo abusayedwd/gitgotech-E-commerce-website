@@ -482,14 +482,58 @@ function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+// ─── Parse Nominatim address ────────────────────────────────────────────────────
+
+type NominatimAddressDetail = Record<string, string>;
+
+function pickStateFromAddress(
+  addr: NominatimAddressDetail | undefined
+): string | undefined {
+  if (!addr) return undefined;
+  const v =
+    addr.state ??
+    addr.province ??
+    addr.region ??
+    addr.county ??
+    addr.state_district ??
+    "";
+  const t = v.trim();
+  return t || undefined;
+}
+
+function nominatimAddressExtras(
+  addr: NominatimAddressDetail | undefined
+): { country?: string; state?: string; zipCode?: string } {
+  const countryRaw = addr?.country?.trim();
+  const state = pickStateFromAddress(addr);
+  const zip =
+    addr?.postcode?.trim() ?? addr?.postal_code?.trim() ?? undefined;
+  return {
+    ...(countryRaw ? { country: countryRaw } : {}),
+    ...(state ? { state } : {}),
+    ...(zip ? { zipCode: zip } : {}),
+  };
+}
+
+interface GeocodeAddressResult {
+  displayName: string;
+  country?: string;
+  state?: string;
+  zipCode?: string;
+}
+
 // ─── Reverse geocode (safe) ───────────────────────────────────────────────────
 
-async function reverseGeocode(lat: number, lng: number): Promise<string> {
+async function reverseGeocode(
+  lat: number,
+  lng: number
+): Promise<GeocodeAddressResult> {
+  const fallbackName = `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14`,
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=14&accept-language=en&addressdetails=1`,
       {
         headers: { "Accept-Language": "en", "User-Agent": "DeliveryApp/1.0" },
         signal: controller.signal,
@@ -498,9 +542,19 @@ async function reverseGeocode(lat: number, lng: number): Promise<string> {
     clearTimeout(timer);
     if (!res.ok) throw new Error("bad response");
     const data = await res.json();
-    return data?.display_name ?? `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    const displayName =
+      typeof data?.display_name === "string" ? data.display_name : fallbackName;
+    const extras = nominatimAddressExtras(
+      data?.address as NominatimAddressDetail | undefined
+    );
+    return {
+      displayName,
+      ...(extras.country ? { country: extras.country } : {}),
+      ...(extras.state ? { state: extras.state } : {}),
+      ...(extras.zipCode ? { zipCode: extras.zipCode } : {}),
+    };
   } catch {
-    return `${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+    return { displayName: fallbackName };
   }
 }
 
@@ -508,12 +562,12 @@ async function reverseGeocode(lat: number, lng: number): Promise<string> {
 
 async function forwardGeocode(
   query: string
-): Promise<{ lat: number; lng: number; name: string } | null> {
+): Promise<GeocodeAddressResult & { lat: number; lng: number } | null> {
   try {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`,
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1&accept-language=en&addressdetails=1`,
       {
         headers: { "Accept-Language": "en", "User-Agent": "DeliveryApp/1.0" },
         signal: controller.signal,
@@ -523,10 +577,17 @@ async function forwardGeocode(
     if (!res.ok) throw new Error("bad response");
     const data = await res.json();
     if (!data?.[0]) return null;
+    const hit = data[0];
+    const extras = nominatimAddressExtras(
+      hit.address as NominatimAddressDetail | undefined
+    );
     return {
-      lat: parseFloat(data[0].lat),
-      lng: parseFloat(data[0].lon),
-      name: data[0].display_name,
+      lat: parseFloat(hit.lat),
+      lng: parseFloat(hit.lon),
+      displayName: hit.display_name,
+      ...(extras.country ? { country: extras.country } : {}),
+      ...(extras.state ? { state: extras.state } : {}),
+      ...(extras.zipCode ? { zipCode: extras.zipCode } : {}),
     };
   } catch {
     return null;
@@ -673,9 +734,9 @@ function LeafletMap({
           zoomControl: true,
         });
 
-        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
           attribution:
-            '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+            '&copy; OpenStreetMap contributors &copy; CARTO',
           maxZoom: 19,
         }).addTo(map);
 
@@ -837,6 +898,10 @@ function LeafletMap({
 export interface SelectedLocation {
   name: string;
   coordinates: { latitude: number; longitude: number };
+  /** From Nominatim when available */
+  country?: string;
+  state?: string;
+  zipCode?: string;
 }
 
 interface MapComponentProps {
@@ -866,6 +931,11 @@ export default function MapComponent({
   const [center, setCenter] = useState(defaultCenter);
   const [userLatLng, setUserLatLng] = useState<{ lat: number; lng: number } | null>(null);
   const [formattedAddress, setFormattedAddress] = useState("");
+  const [structuredAddress, setStructuredAddress] = useState<{
+    country?: string;
+    state?: string;
+    zipCode?: string;
+  }>({});
   const [loading, setLoading] = useState(false);
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -905,7 +975,12 @@ export default function MapComponent({
       setIsSaved(false);
       const addr = await reverseGeocode(lat, lng);
       if (!isMountedRef.current) return;
-      setFormattedAddress(addr);
+      setFormattedAddress(addr.displayName);
+      setStructuredAddress({
+        ...(addr.country ? { country: addr.country } : {}),
+        ...(addr.state ? { state: addr.state } : {}),
+        ...(addr.zipCode ? { zipCode: addr.zipCode } : {}),
+      });
       setUserLatLng({ lat, lng });
       setCenter({ lat, lng });
       setLoading(false);
@@ -923,8 +998,16 @@ export default function MapComponent({
     if (result) {
       setUserLatLng({ lat: result.lat, lng: result.lng });
       setCenter({ lat: result.lat, lng: result.lng });
-      setFormattedAddress(result.name);
-      showNotification("success", `Found: ${result.name.split(",")[0]}`);
+      setFormattedAddress(result.displayName);
+      setStructuredAddress({
+        ...(result.country ? { country: result.country } : {}),
+        ...(result.state ? { state: result.state } : {}),
+        ...(result.zipCode ? { zipCode: result.zipCode } : {}),
+      });
+      showNotification(
+        "success",
+        `Found: ${result.displayName.split(",")[0]}`
+      );
     } else {
       showNotification("warning", "Location not found. Try a different search.");
     }
@@ -964,6 +1047,9 @@ export default function MapComponent({
     onLocationSave({
       name: formattedAddress,
       coordinates: { latitude: userLatLng.lat, longitude: userLatLng.lng },
+      ...(structuredAddress.country ? { country: structuredAddress.country } : {}),
+      ...(structuredAddress.state ? { state: structuredAddress.state } : {}),
+      ...(structuredAddress.zipCode ? { zipCode: structuredAddress.zipCode } : {}),
     });
     setIsSaved(true);
     showNotification("success", "Delivery location confirmed!");

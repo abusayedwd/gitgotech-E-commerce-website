@@ -9,13 +9,15 @@ import { useSearchParams,useRouter } from "next/navigation";
 import { useState } from "react";
 import MapComponent from "./Location";
 import toast from "react-hot-toast";
-import { rootCertificates } from "tls";
  
 
 interface SelectedLocation {
   name?: string;
   address?: string;
   displayName?: string;
+  country?: string;
+  state?: string;
+  zipCode?: string;
   coordinates?: {
     latitude: number;
     longitude: number;
@@ -77,6 +79,12 @@ export default function ReturnRequestForm() {
 
     // Update location field
     setLocation(address || "");
+    if (selectedLocation.country)
+      setCountry(selectedLocation.country);
+    if (selectedLocation.state)
+      setState(selectedLocation.state);
+    if (selectedLocation.zipCode)
+      setZipCode(selectedLocation.zipCode);
   };
 
   if (isLoading) {

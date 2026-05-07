@@ -113,7 +113,7 @@ function LocationMapPicker({
       setIsGeocoding(true);
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1&accept-language=en`,
           { headers: { "Accept-Language": "en" } },
         );
         const data: NominatimResult = await res.json();
@@ -166,8 +166,8 @@ function LocationMapPicker({
         zoom: 13,
       });
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+        attribution: "© OpenStreetMap contributors © CARTO",
         maxZoom: 19,
       }).addTo(map);
 
@@ -211,7 +211,7 @@ function LocationMapPicker({
       setIsSearching(true);
       try {
         const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(val)}&limit=5&addressdetails=1`,
+          `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(val)}&limit=5&addressdetails=1&accept-language=en`,
           { headers: { "Accept-Language": "en" } },
         );
         setSearchResults(await res.json());
@@ -611,6 +611,11 @@ export default function CustomDesignRequest() {
         type: "Point",
         coordinates: [lng, lat], // GeoJSON: [longitude, latitude]
       },
+      ...(selectedLocation.country
+        ? { country: selectedLocation.country }
+        : {}),
+      ...(selectedLocation.state ? { state: selectedLocation.state } : {}),
+      ...(selectedLocation.zipCode ? { zipcode: selectedLocation.zipCode } : {}),
     }));
   };
 
