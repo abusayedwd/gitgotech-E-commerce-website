@@ -34,7 +34,7 @@ export default function DashboardHome() {
       title: "Total Revenue",
       value:
         dashData?.totalSalesAmount != null
-          ? `$${dashData.totalSalesAmount?.total || 0}`
+          ? `₵${dashData.totalSalesAmount?.total || 0}`
           : "—",
       icon: "/images/earn.png",
       borderColor: "border-cyan-500/30",
@@ -289,7 +289,7 @@ export default function DashboardHome() {
                         {product.product_name}
                       </div>
                       <div className="text-sm text-gray-400">
-                        ${product.product_price}
+                        ₵{product.product_price}
                       </div>
                     </div>
                   </div>
@@ -356,7 +356,7 @@ export default function DashboardHome() {
                         </div>
                       </td>
                       <td className="py-3 px-4 text-sm">
-                        ${product.product_price}
+                        ₵{product.product_price}
                       </td>
                       <td className="py-3 px-4">
                         <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 rounded-full text-xs font-medium">

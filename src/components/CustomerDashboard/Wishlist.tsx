@@ -298,14 +298,14 @@ export default function WishlistPage() {
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold text-base md:text-lg">{product.product_name}</h3>
-                                                <p className="text-sm text-gray-400 md:hidden mt-1">${product.product_price?.toFixed(2)}</p>
+                                                <p className="text-sm text-gray-400 md:hidden mt-1">₵{product.product_price?.toFixed(2)}</p>
                                                 <p className="text-xs text-gray-500 hidden md:block">{product.product_category}</p>
                                             </div>
                                         </div>
 
                                         {/* Price */}
                                         <div className="md:col-span-2 hidden md:block text-center">
-                                            <span className="text-base font-semibold">${product.product_price?.toFixed(2)}</span>
+                                            <span className="text-base font-semibold">₵{product.product_price?.toFixed(2)}</span>
                                         </div>
 
                                         {/* Stock Status */}

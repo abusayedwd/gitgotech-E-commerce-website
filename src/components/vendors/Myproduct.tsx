@@ -171,7 +171,7 @@ export default function MyProducts() {
             <div className="p-3 md:p-4">
               <div className="flex items-center justify-between gap-2 mb-1">
                 <div className="text-base md:text-lg font-bold text-white">
-                  ${product.product_price?.toFixed(2)}
+                  ₵{product.product_price?.toFixed(2)}
                 </div>
                 {product.isMixable && (
                   <span className="text-xs px-2 py-0.5 bg-purple-600/30 text-purple-300 rounded-full">

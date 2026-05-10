@@ -829,10 +829,10 @@ export default function ShoppingCart() {
                               {hasDiscount ? (
                                 <>
                                   <span className="text-gray-400 line-through text-xs block">
-                                    ${(product?.product_price || 0).toFixed(2)}
+                                    ₵{(product?.product_price || 0).toFixed(2)}
                                   </span>
                                   <span className="text-green-400 text-xs font-semibold">
-                                    ${discountedPrice.toFixed(2)}{" "}
+                                    ₵{discountedPrice.toFixed(2)}{" "}
                                     <span className="text-purple-400">
                                       -{product.discount.percentage}% off
                                     </span>
@@ -840,7 +840,7 @@ export default function ShoppingCart() {
                                 </>
                               ) : (
                                 <p className="text-xs text-gray-400">
-                                  ${(product?.product_price || 0).toFixed(2)}
+                                  ₵{(product?.product_price || 0).toFixed(2)}
                                 </p>
                               )}
                             </div>
@@ -895,10 +895,10 @@ export default function ShoppingCart() {
                           {hasDiscount ? (
                             <>
                               <span className="text-gray-400 line-through text-xs block">
-                                ${(product?.product_price || 0).toFixed(2)}
+                                ₵{(product?.product_price || 0).toFixed(2)}
                               </span>
                               <span className="text-green-400 text-sm font-semibold">
-                                ${discountedPrice.toFixed(2)}
+                                ₵{discountedPrice.toFixed(2)}
                               </span>
                               <span className="text-xs text-purple-400 block">
                                 -{product.discount.percentage}% off
@@ -906,7 +906,7 @@ export default function ShoppingCart() {
                             </>
                           ) : (
                             <span className="text-sm md:text-base">
-                              ${(product?.product_price || 0).toFixed(2)}
+                              ₵{(product?.product_price || 0).toFixed(2)}
                             </span>
                           )}
                         </div>
@@ -938,11 +938,11 @@ export default function ShoppingCart() {
                         <div className="md:col-span-2 flex items-center justify-between md:justify-end gap-4">
                           <div>
                             <span className="font-semibold text-sm md:text-base">
-                              ${subtotal.toFixed(2)}
+                              ₵{subtotal.toFixed(2)}
                             </span>
                             {hasDiscount && (
                               <span className="text-xs text-green-400 block">
-                                Saved $
+                                Saved ₵
                                 {(
                                   (product.product_price - discountedPrice) *
                                   quantity
@@ -1023,29 +1023,29 @@ export default function ShoppingCart() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Subtotal</span>
                 <span className="font-medium">
-                  ${calculateSubtotal().toFixed(2)}
+                  ₵{calculateSubtotal().toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Delivery (est.)</span>
                 <span className="font-medium">
-                  ${estimatedDeliveryCharge.toFixed(2)}
+                  ₵{estimatedDeliveryCharge.toFixed(2)}
                 </span>
               </div>
               <p className="text-xs text-gray-500 -mt-1 mb-1">
-                ${RATE_PER_KM}/km (distance) + ${RATE_PER_KG}/kg × product weight;
+                ₵{RATE_PER_KM}/km (distance) + ₵{RATE_PER_KG}/kg × product weight;
                 finalized at checkout with your pin.
               </p>
               {/* <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
                 <span className="font-medium">
-                  ${(calculateSubtotal() * 0.1).toFixed(2)}
+                  ₵{(calculateSubtotal() * 0.1).toFixed(2)}
                 </span>
               </div> */}
               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
                 <span>Total</span>
                 <span className="text-purple-400">
-                  ${calculateTotal().toFixed(2)}
+                  ₵{calculateTotal().toFixed(2)}
                 </span>
               </div>
             </div>

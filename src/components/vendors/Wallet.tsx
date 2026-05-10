@@ -50,7 +50,7 @@ export default function Wallett() {
   };
 
   const formatCurrency = (amount: number) => {
-    return amount.toLocaleString("en-US", {
+    return "₵" + amount.toLocaleString("en-US", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -138,7 +138,7 @@ export default function Wallett() {
               </div>
 
               <div className="text-white text-3xl md:text-5xl font-bold mb-6">
-                ${formatCurrency(balance)}
+                {formatCurrency(balance)}
               </div>
 
               {/* Coin Icon */}
@@ -222,23 +222,23 @@ export default function Wallett() {
     : tx.status === "pending"
     ? "text-yellow-400"
     : "text-gray-500"
-}`}>
+  }`}>
   Status: <span className="capitalize">{tx.status}</span>
-</p>
+  </p>
                   </div>
-                  
+
                   <div
                     className={`text-sm font-bold ${
                       tx.type === "CREDIT" ? "text-green-400" : "text-red-400"
                     }`}
                   >
-                    {tx.type === "CREDIT" ? "+" : "-"}$
+                    {tx.type === "CREDIT" ? "+" : "-"}
                     {formatCurrency(tx.amount)}
                   </div>
                 </div>
               ))}
             </div>
-          )}
+          ) }
         </div>
       </div>
 

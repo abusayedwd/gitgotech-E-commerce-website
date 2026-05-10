@@ -27,22 +27,22 @@ export default function AnalyticsPage() {
   const COLORS = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
 
   const recentOrders = [
-    { id: '#ORD-001', customer: 'Sarah Johnson', product: 'Custom Denim Jacket', amount: '$245.00', status: 'Completed', date: '2025-12-20' },
-    { id: '#ORD-002', customer: 'Mike Chen', product: 'Tailored Dress Shirt', amount: '$89.50', status: 'Processing', date: '2025-12-19' },
-    { id: '#ORD-003', customer: 'Emma Davis', product: 'Family Matching Outfit', amount: '$420.00', status: 'Completed', date: '2025-12-18' },
-    { id: '#ORD-004', customer: 'Alex Rodriguez', product: 'Custom Suit', amount: '$580.00', status: 'Shipped', date: '2025-12-17' },
-    { id: '#ORD-005', customer: 'Lisa Wang', product: 'Casual T-Shirt Set', amount: '$65.00', status: 'Completed', date: '2025-12-16' }
+    { id: '#ORD-001', customer: 'Sarah Johnson', product: 'Custom Denim Jacket', amount: '₵245.00', status: 'Completed', date: '2025-12-20' },
+    { id: '#ORD-002', customer: 'Mike Chen', product: 'Tailored Dress Shirt', amount: '₵89.50', status: 'Processing', date: '2025-12-19' },
+    { id: '#ORD-003', customer: 'Emma Davis', product: 'Family Matching Outfit', amount: '₵420.00', status: 'Completed', date: '2025-12-18' },
+    { id: '#ORD-004', customer: 'Alex Rodriguez', product: 'Custom Suit', amount: '₵580.00', status: 'Shipped', date: '2025-12-17' },
+    { id: '#ORD-005', customer: 'Lisa Wang', product: 'Casual T-Shirt Set', amount: '₵65.00', status: 'Completed', date: '2025-12-16' }
   ];
 
   const stats = [
-    { title: 'Total Revenue', value: '$124,560', change: '+12.5%', positive: true },
+    { title: 'Total Revenue', value: '₵124,560', change: '+12.5%', positive: true },
     { title: 'Total Orders', value: '1,247', change: '+8.2%', positive: true },
-    { title: 'Avg. Order Value', value: '$99.89', change: '+3.1%', positive: true },
+    { title: 'Avg. Order Value', value: '₵99.89', change: '+3.1%', positive: true },
     { title: 'Conversion Rate', value: '4.2%', change: '-0.8%', positive: false }
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black border border-cyan-500/30">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -122,7 +122,7 @@ export default function AnalyticsPage() {
                         }}
                       />
                       <Legend />
-                      <Bar dataKey="revenue" name="Revenue ($)" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="revenue" name="Revenue (₵)" fill="#8B5CF6" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
@@ -221,7 +221,7 @@ export default function AnalyticsPage() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900">${product.revenue.toLocaleString()}</p>
+                    <p className="font-semibold text-gray-900">₵{product.revenue.toLocaleString()}</p>
                     <p className="text-sm text-gray-600">Revenue</p>
                   </div>
                 </div>

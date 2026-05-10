@@ -1,7 +1,6 @@
 
 
 
-
 // "use client";
 // import MapComponent, {
 //   SelectedLocation,
@@ -37,8 +36,8 @@
 //   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 // }
 
-// const RATE_PER_KM = 2; // $2 per km
-// const MIN_DELIVERY = 5; // minimum $5
+// const RATE_PER_KM = 2; // ₵2 per km
+// const MIN_DELIVERY = 5; // minimum ₵5
 
 // /** Calculate delivery charge from customer → showroom coordinates */
 // function calcDeliveryCharge(
@@ -425,7 +424,7 @@
 //                     </p>
 //                     {distanceKm !== null && (
 //                       <p className="text-xs text-purple-300 font-medium">
-//                         Distance to store: {distanceKm} km → Delivery charge: $
+//                         Distance to store: {distanceKm} km → Delivery charge: ₵
 //                         {deliveryCharge.toFixed(2)}
 //                       </p>
 //                     )}
@@ -556,7 +555,7 @@
 
 //                       {/* Line total */}
 //                       <p className="text-sm font-semibold">
-//                         ${(price * item.quantity).toFixed(2)}
+//                         ₵{(price * item.quantity).toFixed(2)}
 //                       </p>
 //                     </div>
 //                   );
@@ -570,7 +569,7 @@
 //             <div className="space-y-3 border-t border-gray-700 pt-4 mb-6">
 //               <div className="flex justify-between text-sm">
 //                 <span className="text-gray-400">Subtotal</span>
-//                 <span className="font-medium">${subtotal.toFixed(2)}</span>
+//                 <span className="font-medium">₵{subtotal.toFixed(2)}</span>
 //               </div>
 
 //               <div className="flex justify-between text-sm">
@@ -578,22 +577,22 @@
 //                   Delivery Charge
 //                   {distanceKm !== null && (
 //                     <span className="ml-1 text-xs text-purple-300/70">
-//                       ({distanceKm} km × $2)
+//                       ({distanceKm} km × ₵2)
 //                     </span>
 //                   )}
 //                 </span>
-//                 <span className="font-medium">${deliveryCharge.toFixed(2)}</span>
+//                 <span className="font-medium">₵{deliveryCharge.toFixed(2)}</span>
 //               </div>
 
 //               <div className="flex justify-between text-sm">
 //                 <span className="text-gray-400">Tax (10%)</span>
-//                 <span className="font-medium">${tax.toFixed(2)}</span>
+//                 <span className="font-medium">₵{tax.toFixed(2)}</span>
 //               </div>
 
 //               {discount > 0 && (
 //                 <div className="flex justify-between text-sm text-green-400">
 //                   <span>Discount ({appliedCoupon})</span>
-//                   <span className="font-medium">-${discount.toFixed(2)}</span>
+//                   <span className="font-medium">-₵{discount.toFixed(2)}</span>
 //                 </div>
 //               )}
 
@@ -603,13 +602,13 @@
 //                   onClick={() => setShowTipModal(true)}
 //                   className="text-purple-400 hover:text-purple-300 font-medium"
 //                 >
-//                   ${tip.toFixed(2)}
+//                   ₵{tip.toFixed(2)}
 //                 </button>
 //               </div>
 
 //               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
 //                 <span>Total</span>
-//                 <span className="text-purple-400">${total.toFixed(2)}</span>
+//                 <span className="text-purple-400">₵{total.toFixed(2)}</span>
 //               </div>
 //             </div>
 
@@ -705,7 +704,7 @@
 //                       : "bg-gray-800 text-gray-400 hover:bg-gray-700"
 //                   }`}
 //                 >
-//                   ${amount}
+//                   ₵{amount}
 //                 </button>
 //               ))}
 //             </div>
@@ -1006,7 +1005,7 @@ export default function CheckoutPage() {
       const pricePayload = {
         unit: "usd",
         amount: subtotal,
-        tax: tax,           // ✅ e.g. 7.04 for a $70.40 subtotal
+        tax: tax,           // ✅ e.g. 7.04 for a ₵70.40 subtotal
         tip,
         coupon: appliedCoupon,
         deliveryCharge,
@@ -1164,20 +1163,20 @@ export default function CheckoutPage() {
                     </p>
                     {distanceKm !== null && (
                       <p className="text-xs text-purple-300 font-medium">
-                        Distance: {distanceKm} km × ${RATE_PER_KM}/km → distance fee $
+                        Distance: {distanceKm} km × ₵{RATE_PER_KM}/km → distance fee ₵
                         {distanceDeliveryCharge.toFixed(2)}
                       </p>
                     )}
                     {totalWeightKg > 0 && (
                       <p className="text-xs text-purple-300/90">
-                        Weight: {totalWeightKg} kg × ${RATE_PER_KG}/kg → weight fee $
+                        Weight: {totalWeightKg} km × ₵{RATE_PER_KG}/kg → weight fee ₵
                         {weightDeliveryCharge.toFixed(2)}
                       </p>
                     )}
                     <p className="text-xs text-gray-300">
                       Total delivery:{" "}
                       <span className="font-semibold text-white">
-                        ${deliveryCharge.toFixed(2)}
+                        ₵{deliveryCharge.toFixed(2)}
                       </span>
                     </p>
                   </div>
@@ -1316,7 +1315,7 @@ export default function CheckoutPage() {
 
                       {/* Line total */}
                       <p className="text-sm font-semibold">
-                        ${(price * item.quantity).toFixed(2)}
+                        ₵{(price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   );
@@ -1330,7 +1329,7 @@ export default function CheckoutPage() {
             <div className="space-y-3 border-t border-gray-700 pt-4 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Subtotal</span>
-                <span className="font-medium">${subtotal.toFixed(2)}</span>
+                <span className="font-medium">₵{subtotal.toFixed(2)}</span>
               </div>
 
               <div className="flex justify-between text-sm">
@@ -1338,7 +1337,7 @@ export default function CheckoutPage() {
                   Delivery (distance)
                   {distanceKm !== null ? (
                     <span className="ml-1 text-xs text-purple-300/70">
-                      ({distanceKm} km × ${RATE_PER_KM})
+                      ({distanceKm} km × ₵{RATE_PER_KM})
                     </span>
                   ) : (
                     <span className="ml-1 text-xs text-purple-300/70">
@@ -1346,36 +1345,36 @@ export default function CheckoutPage() {
                     </span>
                   )}
                 </span>
-                <span className="font-medium">${distanceDeliveryCharge.toFixed(2)}</span>
+                <span className="font-medium">₵{distanceDeliveryCharge.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">
                   Delivery (weight)
                   {totalWeightKg > 0 ? (
                     <span className="ml-1 text-xs text-purple-300/70">
-                      ({totalWeightKg} kg × ${RATE_PER_KG})
+                      ({totalWeightKg} km × ₵{RATE_PER_KG})
                     </span>
                   ) : (
                     <span className="ml-1 text-xs text-gray-500">(no weight on product)</span>
                   )}
                 </span>
-                <span className="font-medium">${weightDeliveryCharge.toFixed(2)}</span>
+                <span className="font-medium">₵{weightDeliveryCharge.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm border-b border-gray-700/60 pb-2">
                 <span className="text-gray-300 font-medium">Delivery total</span>
-                <span className="font-semibold text-white">${deliveryCharge.toFixed(2)}</span>
+                <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
               </div>
 
               {/* ✅ Tax displayed as calculated 10% of subtotal */}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
-                <span className="font-medium">${tax.toFixed(2)}</span>
+                <span className="font-medium">₵{tax.toFixed(2)}</span>
               </div>
 
               {discount > 0 && (
                 <div className="flex justify-between text-sm text-green-400">
                   <span>Discount ({appliedCoupon})</span>
-                  <span className="font-medium">-${discount.toFixed(2)}</span>
+                  <span className="font-medium">-₵{discount.toFixed(2)}</span>
                 </div>
               )}
 
@@ -1385,13 +1384,13 @@ export default function CheckoutPage() {
                   onClick={() => setShowTipModal(true)}
                   className="text-purple-400 hover:text-purple-300 font-medium"
                 >
-                  ${tip.toFixed(2)}
+                  ₵{tip.toFixed(2)}
                 </button>
               </div>
 
               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
                 <span>Total</span>
-                <span className="text-purple-400">${total.toFixed(2)}</span>
+                <span className="text-purple-400">₵{total.toFixed(2)}</span>
               </div>
             </div>
 
@@ -1487,7 +1486,7 @@ export default function CheckoutPage() {
                       : "bg-gray-800 text-gray-400 hover:bg-gray-700"
                   }`}
                 >
-                  ${amount}
+                  ₵{amount}
                 </button>
               ))}
             </div>

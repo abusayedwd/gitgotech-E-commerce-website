@@ -189,7 +189,7 @@ export default function WithdrawRequest() {
           <div className="flex justify-between items-center">
             <span className="text-sm text-gray-400">Available Balance</span>
             <span className="text-xl font-bold text-white">
-              $
+              ₵
               {balance.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2,
@@ -355,7 +355,7 @@ export default function WithdrawRequest() {
                         </span>
                       </div>
                       <div className="text-lg font-bold text-white">
-                        $
+                        ₵
                         {request.amount.toLocaleString("en-US", {
                           minimumFractionDigits: 2,
                         })}
@@ -382,9 +382,7 @@ export default function WithdrawRequest() {
                       </div>
                       <div>
                         <span className="text-gray-500">Platform Fee:</span>
-                        <p className="text-yellow-400">
-                          ${request.platformFee}
-                        </p>
+                        <p className="text-yellow-400">₵{request.platformFee}</p>
                       </div>
                       <div>
                         <span className="text-gray-500">Country:</span>

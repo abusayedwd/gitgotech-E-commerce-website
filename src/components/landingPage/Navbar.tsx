@@ -1,6 +1,5 @@
 "use client";
 
-import page from "@/app/careers/page";
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
@@ -15,7 +14,7 @@ export default function Navbar() {
   const [isHydrated, setIsHydrated] = useState(false);
 
     const {  data: cartData } = useGetWishlistAndCartQuery({type: "cart",
-    page: page,});
+    page: 1,});
   
     console.log("Cart Data:", cartData?.data?.length);
 

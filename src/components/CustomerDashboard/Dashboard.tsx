@@ -285,7 +285,7 @@ export default function MyDashboard() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm md:text-base">
-                  <span className="text-white">${order.price}</span>
+                  <span className="text-white">₵{order.price}</span>
                   <span className="text-gray-400">Qty: {order.quantity}</span>
                 </div>
               </div>
@@ -347,7 +347,7 @@ export default function MyDashboard() {
                     OTP: {order.otp}
                   </div>
                   <div className="text-sm md:text-base font-semibold">
-                    Total: ${order.total?.toFixed(2)}
+                    Total: ₵{order.total?.toFixed(2)}
                   </div>
                 </div>
 

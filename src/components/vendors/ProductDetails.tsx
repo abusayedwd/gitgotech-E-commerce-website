@@ -151,7 +151,7 @@ export default function ProductDetails() {
           {/* Price */}
           <div className="flex items-center gap-4 mt-2 mb-5">
             <span className="text-2xl font-bold text-purple-400">
-              ${product.product_price?.toFixed(2)}
+              ₵{product.product_price?.toFixed(2)}
             </span>
             {product.discount?.isValid && (
               <span className="text-sm bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">

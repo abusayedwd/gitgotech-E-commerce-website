@@ -10,6 +10,13 @@ import { FaArrowLeft } from "react-icons/fa";
 import { IoIosShareAlt } from "react-icons/io";
 
 // Define the event type
+type Participant = {
+  _id: string;
+  name: string;
+  email: string;
+  image?: string;
+};
+
 type EventType = {
   _id: string;
   title: string;
@@ -17,7 +24,7 @@ type EventType = {
   eventDate: string;
   address: string;
   purchaseOption: string;
-  participant: number;
+  participant: Participant[] | Participant | number;
   createdAt: string;
   status?: string;
 };
@@ -213,7 +220,14 @@ export default function Event() {
                     </div>
 
                     <div className="flex items-center gap-2 text-[16px] text-[#912DAD]">
-                      <span>Participants: {event?.participant ?? 0}</span>
+                      <span>
+                        Participants:{" "}
+                        {Array.isArray(event?.participant)
+                          ? event.participant.length
+                          : typeof event?.participant === "number"
+                            ? event.participant
+                            : 0}
+                      </span>
                     </div>
                   </div>
                 </div>

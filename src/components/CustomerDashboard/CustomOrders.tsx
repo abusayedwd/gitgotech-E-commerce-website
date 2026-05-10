@@ -452,7 +452,7 @@ const OrderNowModal = ({
               {!order.showroomCoordinates && (
                 <p className="text-xs text-amber-300/90 mb-2">
                   Showroom map coordinates are missing; using the same default
-                  delivery estimate ($20) as checkout until coordinates exist on
+                  delivery estimate (₵20) as checkout until coordinates exist on
                   the order.
                 </p>
               )}
@@ -465,12 +465,12 @@ const OrderNowModal = ({
               {distanceKm !== null ? (
                 <p className="text-purple-200 text-xs space-y-1">
                   <span className="block">
-                    Distance: {distanceKm} km → fee $
+                    Distance: {distanceKm} km → fee ₵
                     {distanceDeliveryCharge.toFixed(2)}
                   </span>
                   {totalWeightKg > 0 && (
                     <span className="block">
-                      Weight: {totalWeightKg} kg → fee $
+                      Weight: {totalWeightKg} kg → fee ₵
                       {weightDeliveryCharge.toFixed(2)}
                     </span>
                   )}
@@ -480,8 +480,8 @@ const OrderNowModal = ({
                 </p>
               ) : (
                 <p className="text-amber-200/90 text-xs">
-                  Select a delivery location to refine distance (weight fee $
-                  {weightDeliveryCharge.toFixed(2)} + distance estimate $
+                  Select a delivery location to refine distance (weight fee ₵
+                  {weightDeliveryCharge.toFixed(2)} + distance estimate ₵
                   {distanceDeliveryCharge.toFixed(2)}).
                 </p>
               )}
@@ -490,7 +490,7 @@ const OrderNowModal = ({
             {/* Tips */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Tips ($)
+                Tips (₵)
               </label>
               <input
                 type="number"

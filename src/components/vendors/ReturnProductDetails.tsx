@@ -243,9 +243,9 @@ export default function ReturnDetails() {
                 <p className="text-gray-400 text-sm mt-1">Product ID: #{returnData.product._id.slice(-8)}</p>
               </div>
               <div className="text-right">
-                <p className="text-gray-400 text-sm">Tip: ${returnData.price.tip}</p>
-                <p className="text-gray-400 text-sm">Delivery: ${returnData.price.deliveryCharge}</p>
-                <p className="text-white font-semibold text-lg">Total: ${returnData.price.tip + returnData.price.deliveryCharge}</p>
+                <p className="text-gray-400 text-sm">Tip: ₵{returnData.price.tip}</p>
+                <p className="text-gray-400 text-sm">Delivery: ₵{returnData.price.deliveryCharge}</p>
+                <p className="text-white font-semibold text-lg">Total: ₵{returnData.price.tip + returnData.price.deliveryCharge}</p>
               </div>
             </div>
           </div>
