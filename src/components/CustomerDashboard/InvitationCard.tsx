@@ -5,7 +5,7 @@ import {
   useGetEventByIdQuery,
 } from "@/redux/features/event/eventSlice";
 import jsPDF from "jspdf";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import Image from "next/image";
@@ -47,38 +47,11 @@ const CARD_CATEGORIES: CardCategory[] = [
   { id: "celebration", name: "Celebration", image: "/images/celebration.png" },
   { id: "relationship", name: "Relationship", image: "/images/relationship.png" },
   { id: "corporate", name: "Corporate", image: "/images/corporat.png" },
-  { id: "religious", name: "Religious", image: "/images/religious.png" },
+  { id: "religious", name: "Religious", image: "/images/religiouss.png" },
   { id: "social", name: "Social", image: "/images/social.png" },
 ];
 
-// Helper function to wrap text
-function wrapText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxWidth: number,
-  lineHeight: number
-) {
-  const words = text.split(" ");
-  let line = "";
-  let currentY = y;
 
-  words.forEach((word, index) => {
-    const testLine = line + word + " ";
-    const metrics = ctx.measureText(testLine);
-    const testWidth = metrics.width;
-
-    if (testWidth > maxWidth && index > 0) {
-      ctx.fillText(line, x, currentY);
-      line = word + " ";
-      currentY += lineHeight;
-    } else {
-      line = testLine;
-    }
-  });
-  ctx.fillText(line, x, currentY);
-}
 
 // ─── Generate image with text overlay (IMPROVED TEXT CLARITY) ────────────────
 async function generateCardWithOverlay(
@@ -364,6 +337,7 @@ async function generateCardWithOverlay(
 // ─── Component ───────────────────────────────────────────────────────────────
 export default function InvitationCard() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const eventId = searchParams.get("id") || "";
 
   const [passedEvent, setPassedEvent] = useState<PassedEvent | null>(null);
@@ -548,6 +522,28 @@ export default function InvitationCard() {
   return (
     <div className="min-h-screen py-8 px-4 bg-gradient-to-r from-black via-[#0f0924] to-black">
       <div className="max-w-7xl md:mt-24 mx-auto">
+        {/* Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="mb-6 flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors group"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 transform group-hover:-translate-x-1 transition-transform"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          <span className="font-medium">Back</span>
+        </button>
+
         <h1 className="text-3xl md:text-4xl font-bold text-center text-white mb-8 font-cormorant">
           Send Event Invitation
         </h1>
@@ -562,22 +558,43 @@ export default function InvitationCard() {
               <div
                 key={category.id}
                 onClick={() => setSelectedCard(category)}
-                className={`cursor-pointer rounded-lg overflow-hidden border-4 transition-all duration-300 ${
+                className={`cursor-pointer rounded-xl overflow-hidden border-4 transition-all duration-300 transform hover:scale-105 ${
                   selectedCard?.id === category.id
-                    ? "border-purple-500 shadow-lg shadow-purple-500/50 scale-105"
-                    : "border-gray-700 hover:border-purple-400"
+                    ? "border-purple-500 shadow-xl shadow-purple-500/50 scale-105 ring-2 ring-purple-400"
+                    : "border-gray-700 hover:border-purple-400 hover:shadow-lg"
                 }`}
               >
-                <div className="relative aspect-[3/4]">
+                <div className="relative aspect-[3/4] bg-gray-900">
                   <Image
                     src={category.image}
                     alt={category.name}
                     fill
                     className="object-cover"
+                    priority
                   />
+                  {selectedCard?.id === category.id && (
+                    <div className="absolute top-2 right-2 bg-purple-500 rounded-full p-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-white"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </div>
+                  )}
                 </div>
-                <div className="bg-gray-800 p-2 text-center">
-                  <p className="text-white font-medium text-sm">
+                <div className={`p-3 text-center transition-colors ${
+                  selectedCard?.id === category.id
+                    ? "bg-purple-600"
+                    : "bg-gray-800"
+                }`}>
+                  <p className="text-white font-semibold text-sm">
                     {category.name}
                   </p>
                 </div>
@@ -590,16 +607,37 @@ export default function InvitationCard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left: Preview */}
           <div className="flex flex-col items-center">
-            <h3 className="text-lg font-semibold text-purple-400 mb-4">
+            <h3 className="text-xl font-semibold text-purple-400 mb-4 flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
               Card Preview
             </h3>
             {selectedCard ? (
-              <div className="relative w-full max-w-md aspect-[3/4] rounded-lg overflow-hidden shadow-2xl">
+              <div className="relative w-full max-w-md aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border-4 border-purple-500/30">
                 <Image
                   src={selectedCard.image}
                   alt={selectedCard.name}
                   fill
                   className="object-cover"
+                  priority
                 />
                 {/* Dark overlay for better text visibility */}
                 <div className="absolute inset-0 bg-black/30"></div>
@@ -670,8 +708,22 @@ export default function InvitationCard() {
                 </div>
               </div>
             ) : (
-              <div className="w-full max-w-md aspect-[3/4] rounded-lg bg-gray-800 flex items-center justify-center border-2 border-dashed border-gray-600">
-                <p className="text-gray-400 text-center px-4">
+              <div className="w-full max-w-md aspect-[3/4] rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center border-2 border-dashed border-gray-600">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-16 w-16 text-gray-500 mb-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <p className="text-gray-400 text-center px-4 font-medium">
                   Select a card category above to see preview
                 </p>
               </div>
@@ -679,35 +731,77 @@ export default function InvitationCard() {
           </div>
 
           {/* Right: Form */}
-          <div className="bg-[#2C233E] border border-[#67676D] rounded-lg p-6">
-            <h3 className="text-xl font-semibold text-purple-400 mb-6 font-cormorant">
+          <div className="bg-gradient-to-br from-[#2C233E] to-[#1a1525] border-2 border-purple-500/30 rounded-xl p-6 shadow-2xl">
+            <h3 className="text-2xl font-semibold text-purple-400 mb-6 font-cormorant flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
               Invitation Details
             </h3>
 
             {/* Member Details */}
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-1">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-purple-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
+                  </svg>
                   Member Name *
                 </label>
                 <input
                   type="text"
                   value={memberDetails.name}
                   onChange={(e) => handleMemberChange("name", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 bg-gray-800/80 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   placeholder="Enter member name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-1">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-purple-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
                   Member Email *
                 </label>
                 <input
                   type="email"
                   value={memberDetails.email}
                   onChange={(e) => handleMemberChange("email", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-4 py-3 bg-gray-800/80 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   placeholder="Enter member email"
                 />
               </div>
@@ -715,22 +809,36 @@ export default function InvitationCard() {
 
             {/* Event Info */}
             {sourceEvent && (
-              <div className="mb-6 p-4 bg-gray-800 rounded-lg">
-                <h4 className="text-sm font-semibold text-purple-400 mb-2">
+              <div className="mb-6 p-4 bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-lg border border-purple-500/20">
+                <h4 className="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
                   Event Information
                 </h4>
-                <div className="text-sm text-gray-300 space-y-1">
-                  <p>
-                    <span className="font-medium">Title:</span>{" "}
-                    {sourceEvent.title}
+                <div className="text-sm text-gray-300 space-y-2">
+                  <p className="flex items-start gap-2">
+                    <span className="font-semibold text-purple-300 min-w-[70px]">Title:</span>
+                    <span className="flex-1">{sourceEvent.title}</span>
                   </p>
-                  <p>
-                    <span className="font-medium">Date:</span> {eventData.date}{" "}
-                    at {eventData.time}
+                  <p className="flex items-start gap-2">
+                    <span className="font-semibold text-purple-300 min-w-[70px]">Date:</span>
+                    <span className="flex-1">{eventData.date} at {eventData.time}</span>
                   </p>
-                  <p>
-                    <span className="font-medium">Location:</span>{" "}
-                    {eventData.location}
+                  <p className="flex items-start gap-2">
+                    <span className="font-semibold text-purple-300 min-w-[70px]">Location:</span>
+                    <span className="flex-1">{eventData.location}</span>
                   </p>
                 </div>
               </div>
@@ -741,7 +849,7 @@ export default function InvitationCard() {
               <button
                 onClick={handleDownload}
                 disabled={isGenerating || !selectedCard || !sourceEvent}
-                className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:from-blue-700 hover:to-cyan-700 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:from-blue-700 hover:to-cyan-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {isGenerating ? (
                   <>
@@ -749,7 +857,23 @@ export default function InvitationCard() {
                     Processing...
                   </>
                 ) : (
-                  "⬇ Download"
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                      />
+                    </svg>
+                    Download
+                  </>
                 )}
               </button>
 
@@ -758,7 +882,7 @@ export default function InvitationCard() {
                 disabled={
                   isGenerating || isSending || !selectedCard || !sourceEvent
                 }
-                className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium disabled:opacity-40 disabled:cursor-not-allowed hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {isGenerating || isSending ? (
                   <>
@@ -766,15 +890,47 @@ export default function InvitationCard() {
                     Processing...
                   </>
                 ) : (
-                  "✉ Send Invitation"
+                  <>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                    Send Invitation
+                  </>
                 )}
               </button>
             </div>
 
             {!sourceEvent && !eventLoading && (
-              <p className="mt-4 text-sm text-red-400 text-center">
-                ⚠️ No event found. Please go back and select an event.
-              </p>
+              <div className="mt-4 p-3 bg-red-900/30 border border-red-500/50 rounded-lg flex items-start gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                <p className="text-sm text-red-300">
+                  No event found. Please go back and select an event.
+                </p>
+              </div>
             )}
           </div>
         </div>
