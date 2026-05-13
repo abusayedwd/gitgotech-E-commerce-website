@@ -5,6 +5,7 @@ import { useGetVendorShowroomsQuery } from "@/redux/features/vendor/showroomSlic
 import {
   ArrowLeft,
   CheckCircle,
+  CloudCog,
   Mail,
   MapPin,
   Store,
@@ -33,6 +34,7 @@ export default function VendorShowroomsClient() {
 
   const showrooms = vendorShowroomData?.data?.showrooms || [];
   const vendorProfile = vendorShowroomData?.data?.vendorProfile;
+  console.log(vendorProfile)
 
   const getImageUrl = (image: string) => {
     if (!image) return undefined;
@@ -152,14 +154,16 @@ export default function VendorShowroomsClient() {
                   </p>
                   <p className="text-gray-500">Showrooms</p>
                 </div>
-                <div className="text-center">
+
+                {/* <div className="text-center">
                   <p className="text-2xl font-bold text-purple-400">
                     {vendorProfile?.balance
                       ? `$${(vendorProfile.balance / 1000000).toFixed(1)}M`
                       : "$0"}
                   </p>
                   <p className="text-gray-500">Balance</p>
-                </div>
+                </div> */}
+                
                 <div className="text-center">
                   <p className="text-2xl font-bold text-purple-400">
                     {new Date(
