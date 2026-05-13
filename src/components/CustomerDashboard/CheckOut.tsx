@@ -7,6 +7,7 @@ import MapComponent, {
 import { useGetProductEventWishesSizeQuery } from "@/redux/features/event/eventSlice";
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
+import { useGetMyCouponsQuery, useValidateCouponMutation } from "@/redux/features/coupon/couponSlice";
 import { Loader2, MapPin, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useMemo, useState } from "react";
@@ -139,12 +140,23 @@ export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showTipModal, setShowTipModal] = useState(false);
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState("");
+  const [selectedCouponName, setSelectedCouponName] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{name: string; percentage: number} | null>(null);
   const [tipAmount, setTipAmount] = useState(tipFromCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<SelectedLocation | null>(null);
+
+  // ── Coupon queries ────────────────────────────────────────────────────────
+  const { data: myCouponsData } = useGetMyCouponsQuery({ isUsed: false });
+  const [validateCoupon, { isLoading: isValidating }] = useValidateCouponMutation();
+
+  const myCoupons = myCouponsData?.data?.data ?? [];
+  const availableCoupons = myCoupons.filter((mc: any) => 
+    !mc.isUsed && 
+    new Date(mc.coupon.expiresAt) > new Date() &&
+    mc.coupon.isActive
+  );
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -209,9 +221,17 @@ export default function CheckoutPage() {
   // ✅ TAX: Calculated as 10% of subtotal
   const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
 
-  const discount = appliedCoupon ? subtotal * 0.1 : 0;
+  // ✅ DISCOUNT: Apply coupon percentage ONLY to (product price + tax)
+  // NOT to delivery charges or tips
+  const amountBeforeDiscount = subtotal + tax; // Only product + tax
+  const discount = appliedCoupon 
+    ? parseFloat((amountBeforeDiscount * (appliedCoupon.percentage / 100)).toFixed(2)) 
+    : 0;
+  
   const tip = parseFloat(tipAmount) || 0;
-  const total = subtotal + deliveryCharge + tax - discount + tip;
+  
+  // Total = (Product + Tax - Discount) + Delivery + Tip
+  const total = subtotal + tax - discount + deliveryCharge + tip;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   const handleLocationSave = (location: SelectedLocation) => {
@@ -231,13 +251,34 @@ export default function CheckoutPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleCouponSubmit = () => {
-    if (couponCode.trim()) {
-      setAppliedCoupon(couponCode.trim());
-      toast.success("Coupon applied! 10% discount added.");
+  const handleApplyCoupon = async () => {
+    if (!selectedCouponName) {
+      toast.error("Please select a coupon");
+      return;
     }
-    setShowCouponModal(false);
-    setCouponCode("");
+
+    try {
+      const res = await validateCoupon({ couponName: selectedCouponName }).unwrap();
+      if (res?.success) {
+        const selectedCoupon = availableCoupons.find((c: any) => c.coupon.couponName === selectedCouponName);
+        if (selectedCoupon) {
+          setAppliedCoupon({
+            name: selectedCoupon.coupon.couponName,
+            percentage: selectedCoupon.coupon.percentage
+          });
+          toast.success(`Coupon applied! ${selectedCoupon.coupon.percentage}% discount added.`);
+          setShowCouponModal(false);
+        }
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to apply coupon");
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setSelectedCouponName("");
+    toast.success("Coupon removed");
   };
 
   const handleSubmitOrder = async () => {
@@ -269,16 +310,17 @@ export default function CheckoutPage() {
         },
       };
 
-      // ✅ TAX FIX: tax is explicitly sent as a number (e.g. 7.04 not 0)
-      // If backend still saves 0, the issue is server-side — backend must
-      // be told to accept and store req.body.price.tax instead of overriding it.
+      // ✅ Price payload structure
+      // amount = product subtotal only (before tax, delivery, tip, discount)
+      // Backend will use this with coupon to calculate final total
       const pricePayload = {
         unit: "usd",
-        amount: subtotal,
-        tax: tax,           // ✅ e.g. 7.04 for a ₵70.40 subtotal
+        amount: subtotal, // Product price only (subtotal)
+        tax: tax,
         tip,
-        coupon: appliedCoupon,
+        ...(appliedCoupon?.name && { coupon: appliedCoupon.name }), // Only include if coupon exists
         deliveryCharge,
+        weightCharge: weightDeliveryCharge,
       };
 
       const orderData = isEventOrder
@@ -643,7 +685,7 @@ export default function CheckoutPage() {
 
               {discount > 0 && (
                 <div className="flex justify-between text-sm text-green-400">
-                  <span>Discount ({appliedCoupon})</span>
+                  <span>Discount ({appliedCoupon?.name} - {appliedCoupon?.percentage}%)</span>
                   <span className="font-medium">-₵{discount.toFixed(2)}</span>
                 </div>
               )}
@@ -665,12 +707,34 @@ export default function CheckoutPage() {
             </div>
 
             {/* Coupon */}
-            <button
-              onClick={() => setShowCouponModal(true)}
-              className="w-full mb-3 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
-            >
-              {appliedCoupon ? `Coupon: ${appliedCoupon} ✓` : "Apply Coupon Code"}
-            </button>
+            {appliedCoupon ? (
+              <div className="mb-3 border border-green-500/30 bg-green-900/20 rounded-lg p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-green-400 font-medium">
+                    {appliedCoupon.name} - {appliedCoupon.percentage}% OFF
+                  </span>
+                </div>
+                <button
+                  onClick={handleRemoveCoupon}
+                  className="text-red-400 hover:text-red-300 text-sm"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setShowCouponModal(true)}
+                className="w-full mb-3 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
+                </svg>
+                Apply Coupon Code
+              </button>
+            )}
 
             {/* Tip */}
             <button
@@ -713,20 +777,55 @@ export default function CheckoutPage() {
             >
               <X className="w-6 h-6" />
             </button>
-            <h2 className="text-2xl font-bold text-center mb-6">Apply Coupon</h2>
-            <input
-              type="text"
-              value={couponCode}
-              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-              placeholder="Enter coupon code"
-              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4 uppercase"
-            />
-            <button
-              onClick={handleCouponSubmit}
-              className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all"
-            >
-              Apply Coupon
-            </button>
+            <h2 className="text-2xl font-bold text-center mb-6 text-white">Apply Coupon</h2>
+            
+            {availableCoupons.length === 0 ? (
+              <div className="text-center py-8">
+                <p className="text-gray-400 mb-4">No coupons available</p>
+                <button
+                  onClick={() => {
+                    setShowCouponModal(false);
+                    router.push('/coupon');
+                  }}
+                  className="text-purple-400 hover:text-purple-300 text-sm"
+                >
+                  Get coupons →
+                </button>
+              </div>
+            ) : (
+              <>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Select Coupon
+                </label>
+                <select
+                  value={selectedCouponName}
+                  onChange={(e) => setSelectedCouponName(e.target.value)}
+                  className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors mb-4"
+                >
+                  <option value="">Choose a coupon...</option>
+                  {availableCoupons.map((mc: any) => (
+                    <option key={mc._id} value={mc.coupon.couponName}>
+                      {mc.coupon.couponName} - {mc.coupon.percentage}% OFF
+                    </option>
+                  ))}
+                </select>
+                
+                <button
+                  onClick={handleApplyCoupon}
+                  disabled={!selectedCouponName || isValidating}
+                  className="w-full py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-white"
+                >
+                  {isValidating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Validating...
+                    </>
+                  ) : (
+                    "Apply Coupon"
+                  )}
+                </button>
+              </>
+            )}
           </div>
         </div>
       )}
