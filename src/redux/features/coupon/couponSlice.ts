@@ -37,7 +37,7 @@ const couponRecordSlice = apiSlice.injectEndpoints({
       query: (body) => ({
         url: `/admin/coupons/record/take`,
         method: "POST",
-        body,
+        body: body,
       }),
       invalidatesTags: ["Coupons"],
     }),
@@ -67,7 +67,7 @@ const couponRecordSlice = apiSlice.injectEndpoints({
       query: (body) => ({
         url: `/admin/coupons/record/validate`,
         method: "POST",
-        body,
+        body: body,
       }),
     }),
 

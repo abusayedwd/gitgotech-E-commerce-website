@@ -105,6 +105,16 @@ export default function Navbar() {
               >
                 Showrooms
               </Link>
+              <Link
+                href="/coupon"
+                className={`${
+                  isActive("/coupon")
+                    ? "text-purple-500 font-medium text-[20px]"
+                    : "text-[20px] text-white hover:text-white text-2xl "
+                } transition-colors   font-cormorant  `}
+              >
+                Coupon
+              </Link>
             </div>
           )}
 
@@ -114,6 +124,30 @@ export default function Navbar() {
               {/* Desktop Icon Buttons - Customer only icons */}
               {userRole === "customer" && (
                 <>
+                  <Link href="/coupon">
+                    <button
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                        isActive("/coupon") ? "bg-purple-600/40" : ""
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40"
+                        height="30"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-purple-400"
+                      >
+                        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+                      </svg>
+                    </button>
+                  </Link>
                   <Link href="/custom-orders">
                     <button
                       className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
@@ -302,6 +336,17 @@ export default function Navbar() {
               >
                 showroom
               </Link>
+              <Link
+                href="/coupon"
+                onClick={() => setIsMenuOpen(false)}
+                className={`block ${
+                  isActive("/coupon")
+                    ? "text-purple-500 font-medium"
+                    : "text-gray-400 hover:text-white"
+                } transition-colors py-2 text-sm sm:text-base`}
+              >
+                coupon
+              </Link>
             </>
           )}
 
@@ -310,7 +355,35 @@ export default function Navbar() {
             <>
               {/* Mobile Icon Buttons */}
               <div className="flex items-center space-x-2 sm:space-x-3 pt-2 sm:pt-3 pb-2">
-                {/* Heart icon - Only for customers */}
+                {/* Coupon icon - Only for customers */}
+                {userRole === "customer" && (
+                  <Link href="/coupon">
+                    <button
+                      className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                        isActive("/coupon")
+                          ? "bg-purple-600/20 ring-2 ring-purple-500"
+                          : ""
+                      }`}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="40"
+                        height="30"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-purple-400"
+                      >
+                        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
+                      </svg>
+                    </button>
+                  </Link>
+                )}
 
                 {userRole === "customer" && (
                   <Link href="/custom-orders">
