@@ -363,9 +363,9 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             <div className="bg-gray-800/50 rounded-lg p-4">
               <div className="flex items-center space-x-3 mb-2">
                 {product.discount?.percentage && (
-                  <span className="text-l line-through text-gray-500">${(product.product_price * (1 + product.discount.percentage / 100)).toFixed(2)}</span>
+                  <span className="text-l line-through text-gray-500">₵{(product.product_price * (1 + product.discount.percentage / 100)).toFixed(2)}</span>
                 )}
-                <span className="text-4xl font-semibold text-[#6100FF]">${product.product_price?.toFixed(2) || product.price?.toFixed(2)}</span>
+                <span className="text-4xl font-semibold text-[#6100FF]">₵{product.product_price?.toFixed(2) || product.price?.toFixed(2)}</span>
               </div>
               <div className="">
                 <span className="text-sm text-gray-400">Valid till December 30,2025</span>
@@ -452,7 +452,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             >
               <div className="flex items-center justify-center space-x-2">
                 <ShoppingCart className="w-5 h-5" />
-                <span>Add to Cart - ${((product.product_price || product.price || 0) * quantity).toFixed(2)}</span>
+                <span>Add to Cart - ₵{((product.product_price || product.price || 0) * quantity).toFixed(2)}</span>
               </div>
             </button>
 

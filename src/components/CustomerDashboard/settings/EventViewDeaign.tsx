@@ -85,7 +85,7 @@ const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOp
       {/* Product Info */}
       <div className="p-5 text-white">
         <div className="flex items-center justify-between mb-2">
-          <span className="text-2xl font-bold">${productData.product_price.toFixed(2)}</span>
+          <span className="text-2xl font-bold">₵{productData.product_price.toFixed(2)}</span>
           <div className="flex items-center gap-1">
             {[...Array(5)].map((_, i) => (
               <svg key={i} className={`w-4 h-4 ${i < (productData.review_rating || 0) ? 'fill-yellow-400' : 'fill-gray-600'}`} viewBox="0 0 20 20">

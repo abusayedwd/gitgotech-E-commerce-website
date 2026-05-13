@@ -403,20 +403,20 @@ export default function ReturnRequestForm() {
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Subtotal</span>
                 <span className="text-white">
-                  ${price?.amount?.toFixed(2) || "0.00"}
+                  ₵{price?.amount?.toFixed(2) || "0.00"}
                 </span>
               </div>
               {price?.tip && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Tip</span>
-                  <span className="text-white">${price.tip.toFixed(2)}</span>
+                  <span className="text-white">₵{price.tip.toFixed(2)}</span>
                 </div>
               )}
               {price?.deliveryCharge && (
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400">Delivery Charge</span>
                   <span className="text-white">
-                    ${price.deliveryCharge.toFixed(2)}
+                    ₵{price.deliveryCharge.toFixed(2)}
                   </span>
                 </div>
               )}

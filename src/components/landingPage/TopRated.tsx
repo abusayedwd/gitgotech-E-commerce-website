@@ -78,7 +78,7 @@ export default function TopRated() {
                   <div className="p-3 sm:p-4">
                     <div className="flex items-center justify-between">
                       <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
-                        ${product.product_price?.toFixed(2)}
+                        ₵{product.product_price?.toFixed(2)}
                       </div>
                       {/* Rating */}
                       <div className="flex items-center mb-1 sm:mb-2">

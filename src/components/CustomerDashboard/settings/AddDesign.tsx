@@ -186,7 +186,7 @@ export default function AddDesign() {
               <div className="p-3 sm:p-4">
                 {/* Price */}
                 <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
-                  ${product.price.toFixed(2)}
+                  ₵{product.price.toFixed(2)}
                 </div>
 
                 {/* Rating */}

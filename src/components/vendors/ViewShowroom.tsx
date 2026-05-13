@@ -305,7 +305,7 @@ export default function ViewShowroomPage() {
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-2">
                         <div className="text-white text-lg font-bold">
-                          ${product.product_price?.toFixed(2)}
+                          ₵{product.product_price?.toFixed(2)}
                         </div>
                         {/* Rating */}
                         {product.review_rating && (

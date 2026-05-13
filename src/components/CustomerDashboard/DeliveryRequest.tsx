@@ -272,7 +272,7 @@ const DeliveryRequest = () => {
                   <div className="flex items-center justify-between mt-3">
                     <div className="flex items-center space-x-4">
                       <span className="text-sm">
-                        ${getTotalPrice(delivery.price).toFixed(2)}
+                        ₵{getTotalPrice(delivery.price).toFixed(2)}
                       </span>
                       <span className="text-sm text-gray-400">
                         Items: {delivery.numberOfItems}
@@ -465,19 +465,19 @@ const DeliveryRequest = () => {
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Delivery Fee</span>
                     <span className="text-white font-semibold">
-                      ${selectedDelivery.price.deliveryFee.toFixed(2)}
+                      ₵{selectedDelivery.price.deliveryFee.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400">Tip</span>
                     <span className="text-white font-semibold">
-                      ${selectedDelivery.price.tip.toFixed(2)}
+                      ₵{selectedDelivery.price.tip.toFixed(2)}
                     </span>
                   </div>
                   <div className="border-t border-gray-700 pt-3 flex justify-between items-center">
                     <span className="text-gray-300 font-semibold">Total</span>
                     <span className="text-purple-400 font-bold text-xl">
-                      ${getTotalPrice(selectedDelivery.price).toFixed(2)}
+                      ₵{getTotalPrice(selectedDelivery.price).toFixed(2)}
                     </span>
                   </div>
                   <div className="text-xs text-gray-500">

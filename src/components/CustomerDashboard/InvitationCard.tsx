@@ -101,7 +101,7 @@ async function generateCardWithOverlay(
       // Helper function to draw text with strong outline and shadow
       const drawTextWithOutline = (
         text: string,
-        x: number,
+        x: number, 
         y: number,
         fontSize: number,
         fillColor: string,

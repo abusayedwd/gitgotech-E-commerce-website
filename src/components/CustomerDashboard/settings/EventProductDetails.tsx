@@ -176,7 +176,7 @@ export default function EventProductDetails() {
             {/* Pricing */}
             <div className="rounded-xl p-6">
               <div className="text-4xl font-bold text-[#6100FF] mb-2">
-                ${productData?.product_price?.toFixed(2) || '0.00'}
+                ₵{productData?.product_price?.toFixed(2) || '0.00'}
               </div>
 
               <div className="flex items-center gap-2 text-[#767676] text-sm">

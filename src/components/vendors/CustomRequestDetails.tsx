@@ -815,18 +815,18 @@ export default function CustomRequestDetails() {
                   label="Price:"
                   value={
                     order.price
-                      ? `$${order.price.amount} (${order.price.unit?.toUpperCase()})`
+                      ? `₵${order.price.amount} (${order.price.unit?.toUpperCase()})`
                       : "N/A"
                   }
                 />
                 {order.price?.deliveryCharge && (
                   <DetailRow
                     label="Delivery Charge:"
-                    value={`$${order.price.deliveryCharge}`}
+                    value={`₵${order.price.deliveryCharge}`}
                   />
                 )}
                 {order.price?.tip && (
-                  <DetailRow label="Tip:" value={`$${order.price.tip}`} />
+                  <DetailRow label="Tip:" value={`₵${order.price.tip}`} />
                 )}
                 <DetailRow
                   label="Custom Detail:"

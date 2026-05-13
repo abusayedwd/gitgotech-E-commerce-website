@@ -268,10 +268,10 @@ const OrderDetails = () => {
             </div>
             <div className="flex items-center space-x-3">
               <span className="text-xl line-through text-gray-400">
-                ${product.originalPrice.toFixed(2)}
+                ₵{product.originalPrice.toFixed(2)}
               </span>
               <span className="text-2xl font-bold text-purple-400">
-                ${product.price.toFixed(2)}
+                ₵{product.price.toFixed(2)}
               </span>
             </div>
             <div className="space-y-1">
@@ -442,7 +442,7 @@ const OrderDetails = () => {
           {/* Total Price */}
           <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
             <div className="text-center text-lg font-medium">
-              Total Price: ${product.price.toFixed(2)}
+              Total Price: ₵{product.price.toFixed(2)}
             </div>
           </div>
 
