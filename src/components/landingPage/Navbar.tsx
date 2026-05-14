@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { RiCoupon4Line } from "react-icons/ri";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -104,17 +105,7 @@ export default function Navbar() {
                 } transition-colors   font-cormorant  `}
               >
                 Showrooms
-              </Link>
-              <Link
-                href="/coupon"
-                className={`${
-                  isActive("/coupon")
-                    ? "text-purple-500 font-medium text-[20px]"
-                    : "text-[20px] text-white hover:text-white text-2xl "
-                } transition-colors   font-cormorant  `}
-              >
-                Coupon
-              </Link>
+              </Link> 
             </div>
           )}
 
@@ -124,30 +115,23 @@ export default function Navbar() {
               {/* Desktop Icon Buttons - Customer only icons */}
               {userRole === "customer" && (
                 <>
-                  <Link href="/coupon">
+
+                 <Link href="/coupon">
                     <button
                       className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
                         isActive("/coupon") ? "bg-purple-600/40" : ""
                       }`}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="40"
-                        height="30"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        className="text-purple-400"
-                      >
-                        <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-                        <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-                        <path d="M18 12a2 2 0 0 0 0 4h4v-4Z" />
-                      </svg>
+                      {/* <Image
+                        src="/images/love.png"
+                        alt="coupon"
+                        width={40}
+                        height={30}
+                      /> */}
+                      <RiCoupon4Line />
                     </button>
                   </Link>
+
                   <Link href="/custom-orders">
                     <button
                       className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
