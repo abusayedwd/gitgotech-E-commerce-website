@@ -10,6 +10,8 @@ import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } fr
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 import toast from 'react-hot-toast';
 import { useEventProductAddMutation, useGetEventsForProductAddQuery } from '@/redux/features/event/eventSlice';
+import { useAuth } from '@/hooks/useAuth';
+import { addToGuestCart } from '@/lib/guestCart';
 
 interface ProductDetailsProps {
   productId?: string | null;
@@ -51,6 +53,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   };
 
   const [addToCartWishList] = useAddToCartWishListMutation();
+  const { isLoggedIn, requireLogin } = useAuth();
 
   const product = productData?.data || null;
   
@@ -73,36 +76,50 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   }
 
   const handleAddToCart = async () => {
+    if (!isLoggedIn) {
+      addToGuestCart(product, { quantity, size: selectedSize });
+      toast.success('Added to cart!');
+      return;
+    }
     try {
       const data = {
         product: product._id,
         saveType: "cart"
       };
       const res = await addToCartWishList(data).unwrap();
-      console.log(res)
       if (res?.success) {
         toast.success('Added to cart!');
       }
     } catch (error: any) {
-      console.log(error)
       toast.error(error?.data?.message || 'Failed to add to cart');
     }
   };
 
   const handleAddToWishlist = async () => {
+    if (!requireLogin('Please sign in to save items to your wishlist')) return;
     try {
       const data = {
         product: product._id,
         saveType: "wishlist"
       };
       const res = await addToCartWishList(data).unwrap();
-      console.log(res)
       if (res?.success) {
         toast.success('Added to wishlist!');
       }
     } catch (error: any) {
       toast.error(error?.data?.message || 'Failed to add to wishlist');
     }
+  };
+
+  const handleOpenEventModal = () => {
+    if (!requireLogin('Please sign in to add items to an event')) return;
+    setShowEventModal(true);
+  };
+
+  const handleCustomDesign = (e: React.MouseEvent) => {
+    if (isLoggedIn) return;
+    e.preventDefault();
+    requireLogin('Please sign in to start a custom design');
   };
 
   // Shoe Size Guide Component
@@ -311,7 +328,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 Add to Cart
               </button>
               <button
-                onClick={() => setShowEventModal(true)}
+                onClick={handleOpenEventModal}
                 className="w-full border border-[#6100FF] hover:bg-purple-900/30 text-[#6100FF] cursor-pointer py-3 px-4 rounded-lg font-medium transition-colors">
                 Add to Event
               </button>
@@ -388,7 +405,13 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                     ? 'This product supports custom mix-mixing! You can combine elements from different products to create your unique style.'
                     : 'This product can be customized according to your preferences.'}
                 </p>
-                <button className="w-full bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
+                <button
+                  onClick={() => {
+                    if (!requireLogin('Please sign in to start a custom design')) return;
+                    router.push(`/design-request?productId=${product._id}`);
+                  }}
+                  className="w-full bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors"
+                >
                   Start {product.isMixable ? 'Mix Design' : 'Custom Design'}
                 </button>
               </div>
@@ -481,7 +504,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               <div className="bg-purple-900/20 border border-purple-600 rounded-lg p-4">
                 <h3 className="font-medium mb-2 text-purple-300">Custom Design Feature</h3>
                 <p className="text-sm text-gray-300 mb-4">This design supports custom mix-mixing! You can combine elements from different products to create your unique style.</p>
-                <Link href={`/design-request?productId=${product._id}`}>
+                <Link href={`/design-request?productId=${product._id}`} onClick={handleCustomDesign}>
                 <button className="w-full cursor-pointer bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
                   Custom Design
                 </button>

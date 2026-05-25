@@ -536,12 +536,17 @@ import {
   RATE_PER_KM,
 } from "@/lib/deliveryPricing";
 import {
-  useAddToCartWishListMutation,
   useDeleteSaveListMutation,
   useGetWishlistAndCartQuery,
 } from "@/redux/features/home/homeSlice";
+import {
+  GUEST_CART_EVENT,
+  GuestCartItem,
+  getGuestCart,
+  removeFromGuestCart,
+} from "@/lib/guestCart";
+import { useAuth } from "@/hooks/useAuth";
 import { Minus, Plus, Trash2 } from "lucide-react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -549,29 +554,40 @@ import { FaArrowLeft } from "react-icons/fa";
 
 export default function ShoppingCart() {
   const router = useRouter();
-  const [page, setPage] = useState(1);
+  const { isLoggedIn, isHydrated, requireLogin } = useAuth();
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>(
     {},
   );
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [guestItems, setGuestItems] = useState<GuestCartItem[]>([]);
 
   const {
     data: cartData,
     isLoading,
     refetch,
-  } = useGetWishlistAndCartQuery({
-    type: "cart",
-    page: page,
-  });
+  } = useGetWishlistAndCartQuery(
+    { type: "cart", page: 1 },
+    { skip: !isLoggedIn },
+  );
 
-  console.log(cartData)
-
-  const [addToCartWishList] = useAddToCartWishListMutation();
   const [deleteSaveItem] = useDeleteSaveListMutation();
 
-  const cartItems =
-    cartData?.data?.filter((item: any) => item.product !== null) || [];
+  useEffect(() => {
+    if (isLoggedIn) return;
+    const sync = () => setGuestItems(getGuestCart());
+    sync();
+    window.addEventListener(GUEST_CART_EVENT, sync);
+    window.addEventListener("storage", sync);
+    return () => {
+      window.removeEventListener(GUEST_CART_EVENT, sync);
+      window.removeEventListener("storage", sync);
+    };
+  }, [isLoggedIn]);
+
+  const cartItems = isLoggedIn
+    ? cartData?.data?.filter((item: any) => item.product !== null) || []
+    : guestItems.filter((item) => item.product !== null);
 
   // Initialize quantities and sizes when cart data loads
   useEffect(() => {
@@ -579,8 +595,10 @@ export default function ShoppingCart() {
       const initialQuantities: Record<string, number> = {};
       const initialSizes: Record<string, string> = {};
       cartItems.forEach((item: any) => {
-        initialQuantities[item._id] = 1;
-        if (
+        initialQuantities[item._id] = item.quantity || 1;
+        if (item.size) {
+          initialSizes[item._id] = item.size;
+        } else if (
           item.product?.product_stocks &&
           item.product.product_stocks.length > 0
         ) {
@@ -606,6 +624,11 @@ export default function ShoppingCart() {
   };
 
   const handleRemoveFromCart = async (id: string) => {
+    if (!isLoggedIn) {
+      removeFromGuestCart(id);
+      toast.success("Removed from cart");
+      return;
+    }
     try {
       const res = await deleteSaveItem(id).unwrap();
       if (res?.success) {
@@ -1050,31 +1073,29 @@ export default function ShoppingCart() {
               </div>
             </div>
 
-            <Link
-              href={
+            <button
+              disabled={!selectedProduct || isOutOfStock}
+              onClick={() => {
+                if (!selectedProduct || isOutOfStock) return;
+                if (!requireLogin("Please sign in to proceed to checkout")) return;
+                router.push(
+                  `/checkout?tip=0&cartData=${encodeURIComponent(
+                    JSON.stringify(getCartDataForCheckout()),
+                  )}`,
+                );
+              }}
+              className={`w-full py-3 rounded-full font-semibold transition-all duration-300 transform ${
                 selectedProduct && !isOutOfStock
-                  ? {
-                      pathname: "/checkout",
-                      query: {
-                        tip: "0",
-                        cartData: JSON.stringify(getCartDataForCheckout()),
-                      },
-                    }
-                  : "#"
-              }
-              className={!selectedProduct || isOutOfStock ? "pointer-events-none" : ""}
+                  ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:scale-105 cursor-pointer"
+                  : "bg-gray-600 cursor-not-allowed opacity-50"
+              }`}
             >
-              <button
-                disabled={!selectedProduct || isOutOfStock}
-                className={`w-full py-3 rounded-full font-semibold transition-all duration-300 transform ${
-                  selectedProduct && !isOutOfStock
-                    ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:scale-105"
-                    : "bg-gray-600 cursor-not-allowed opacity-50"
-                }`}
-              >
-                {isOutOfStock ? "Out of Stock" : "Proceed to Checkout"}
-              </button>
-            </Link>
+              {isOutOfStock
+                ? "Out of Stock"
+                : isLoggedIn
+                  ? "Proceed to Checkout"
+                  : "Sign in to Checkout"}
+            </button>
           </div>
         </div>
       </div>

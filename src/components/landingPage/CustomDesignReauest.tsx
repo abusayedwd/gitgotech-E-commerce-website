@@ -17,6 +17,7 @@ import MapComponent, {
   SelectedLocation as MapSelectedLocation,
 } from "../CustomerDashboard/Location";
 import { useGetProductDetailsforCustomerQuery } from "@/redux/features/home/homeSlice";
+import { useAuth } from "@/hooks/useAuth";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface SelectedLocation {
@@ -387,6 +388,14 @@ const inputClass =
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function CustomDesignRequest() {
   const router = useRouter();
+  const { isHydrated, isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (isHydrated && !isLoggedIn) {
+      toast.error("Please sign in to start a custom design");
+      router.replace("/auth/login");
+    }
+  }, [isHydrated, isLoggedIn, router]);
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [notes, setNotes] = useState("");
@@ -618,6 +627,22 @@ export default function CustomDesignRequest() {
       ...(selectedLocation.zipCode ? { zipcode: selectedLocation.zipCode } : {}),
     }));
   };
+
+  if (isHydrated && !isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#140c2e] to-black flex items-center justify-center">
+        <div className="text-center text-white">
+          <p className="mb-4">Please sign in to start a custom design.</p>
+          <button
+            onClick={() => router.replace("/auth/login")}
+            className="px-6 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-medium"
+          >
+            Sign in
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="md:min-h-[600px] mt-12 md:mt-24 bg-gradient-to-r from-black via-[#140c2e] to-black p-6">

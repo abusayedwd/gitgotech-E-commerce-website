@@ -8,9 +8,10 @@ import { useGetProductEventWishesSizeQuery } from "@/redux/features/event/eventS
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
 import { useGetMyCouponsQuery, useValidateCouponMutation } from "@/redux/features/coupon/couponSlice";
+import { useAuth } from "@/hooks/useAuth";
 import { Loader2, MapPin, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import {
@@ -54,6 +55,14 @@ function distanceDeliveryUsd(
 export default function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { isHydrated, isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (isHydrated && !isLoggedIn) {
+      toast.error("Please sign in to proceed to checkout");
+      router.replace("/auth/login");
+    }
+  }, [isHydrated, isLoggedIn, router]);
 
   // URL params
   const tipFromCart = searchParams.get("tip") || "5";
@@ -364,6 +373,22 @@ export default function CheckoutPage() {
   };
 
   // ── Render ────────────────────────────────────────────────────────────────
+  if (isHydrated && !isLoggedIn) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white">
+        <div className="text-center">
+          <p className="mb-4">Please sign in to proceed to checkout.</p>
+          <button
+            onClick={() => router.replace("/auth/login")}
+            className="px-6 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white font-medium"
+          >
+            Sign in
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
       {/* Back Button */}

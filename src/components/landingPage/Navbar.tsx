@@ -1,10 +1,11 @@
 "use client";
 
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
+import { GUEST_CART_EVENT, getGuestCartCount } from "@/lib/guestCart";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCoupon4Line } from "react-icons/ri";
 
@@ -13,14 +14,17 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [guestCartCount, setGuestCartCount] = useState(0);
 
-    const {  data: cartData } = useGetWishlistAndCartQuery({type: "cart",
-    page: 1,});
-  
-    console.log("Cart Data:", cartData?.data?.length);
+  const { data: cartData } = useGetWishlistAndCartQuery(
+    { type: "cart", page: 1 },
+    { skip: !isLoggedIn },
+  );
 
   const pathname = usePathname();
-  const router = useRouter();
+
+  const cartCount = isLoggedIn ? cartData?.data?.length || 0 : guestCartCount;
+  const showCustomerLinks = !isLoggedIn || userRole === "customer";
 
   // Function to determine if link is active
   const isActive = (path: string) => {
@@ -45,17 +49,21 @@ export default function Navbar() {
       setIsHydrated(true);
     };
 
+    const updateGuestCart = () => setGuestCartCount(getGuestCartCount());
+
     updateAuthState();
+    updateGuestCart();
 
-    // Listen for storage changes (for logout/login across components)
     window.addEventListener("storage", updateAuthState);
-
-    // Also listen for custom auth change events
     window.addEventListener("authChanged", updateAuthState);
+    window.addEventListener("storage", updateGuestCart);
+    window.addEventListener(GUEST_CART_EVENT, updateGuestCart);
 
     return () => {
       window.removeEventListener("storage", updateAuthState);
       window.removeEventListener("authChanged", updateAuthState);
+      window.removeEventListener("storage", updateGuestCart);
+      window.removeEventListener(GUEST_CART_EVENT, updateGuestCart);
     };
   }, []);
 
@@ -83,8 +91,8 @@ export default function Navbar() {
 
         {/* Desktop Navigation & Icons - Hidden on mobile */}
         <div className="hidden lg:flex items-center space-x-2 xl:space-x-1">
-          {/* Desktop Navigation Links - Only show for logged in customers */}
-          {isLoggedIn && userRole === "customer" && (
+          {/* Desktop Navigation Links - Visible to customers and guests */}
+          {showCustomerLinks && (
             <div className="flex items-center space-x-4 mr-4">
               <Link
                 href="/vendors"
@@ -105,8 +113,29 @@ export default function Navbar() {
                 } transition-colors   font-cormorant  `}
               >
                 Showrooms
-              </Link> 
+              </Link>
             </div>
+          )}
+
+          {/* Guest cart icon - visible when not logged in */}
+          {isHydrated && !isLoggedIn && (
+            <Link href="/shopping-cart">
+              <button
+                className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative ${
+                  isActive("/shopping-cart") ? "bg-purple-600/40" : ""
+                }`}
+              >
+                <Image
+                  src="/images/cart.png"
+                  alt="Cart"
+                  width={40}
+                  height={30}
+                />
+                <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              </button>
+            </Link>
           )}
 
           {/* Show icons only when logged in */}
@@ -174,7 +203,7 @@ export default function Navbar() {
                         height={30}
                       />
                       <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                        {cartData?.data?.length || 0}
+                        {cartCount}
                       </span>
                     </button>
                   </Link>
@@ -242,9 +271,9 @@ export default function Navbar() {
             </>
           ) : (
             /* Show Login button when not logged in */
-            <Link href="/auth/sign-up">
+            <Link href="/auth/login">
               <button className="bg-purple-600 cursor-pointer hover:bg-purple-700 text-white px-6 xl:px-8 py-2 rounded-3xl font-medium transition-colors text-sm xl:text-base">
-                Sign Up
+                Sign in
               </button>
             </Link>
           )}
@@ -252,8 +281,8 @@ export default function Navbar() {
 
         {/* Mobile Icons - Visible on mobile/tablet */}
         <div className="flex lg:hidden items-center space-x-1 sm:space-x-2">
-          {/* Cart Icon - Only show for logged in customers */}
-          {isLoggedIn && userRole === "customer" && (
+          {/* Cart Icon - Visible to customers and guests */}
+          {showCustomerLinks && (
             <Link href="/shopping-cart">
               <button
                 className={`p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors relative ${
@@ -295,8 +324,8 @@ export default function Navbar() {
         }`}
       >
         <div className="container mx-auto pt-3 sm:pt-4 pb-2 space-y-2 sm:space-y-3 border-t border-gray-800 mt-3 sm:mt-4 px-3 sm:px-4">
-          {/* Mobile Navigation Links - Only show for logged in customers */}
-          {isLoggedIn && userRole === "customer" && (
+          {/* Mobile Navigation Links - Visible to customers and guests */}
+          {showCustomerLinks && (
             <>
               <Link
                 href="/vendors"
@@ -320,17 +349,19 @@ export default function Navbar() {
               >
                 showroom
               </Link>
-              <Link
-                href="/coupon"
-                onClick={() => setIsMenuOpen(false)}
-                className={`block ${
-                  isActive("/coupon")
-                    ? "text-purple-500 font-medium"
-                    : "text-gray-400 hover:text-white"
-                } transition-colors py-2 text-sm sm:text-base`}
-              >
-                coupon
-              </Link>
+              {isLoggedIn && (
+                <Link
+                  href="/coupon"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`block ${
+                    isActive("/coupon")
+                      ? "text-purple-500 font-medium"
+                      : "text-gray-400 hover:text-white"
+                  } transition-colors py-2 text-sm sm:text-base`}
+                >
+                  coupon
+                </Link>
+              )}
             </>
           )}
 
