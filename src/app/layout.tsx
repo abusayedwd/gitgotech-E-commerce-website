@@ -60,6 +60,7 @@ import ToastProvider from "@/components/ToastProvider";
 import { FilterProvider } from "@/context/FilterContext";
 import { SupportModalProvider } from "@/context/SupportModalContext";
 import { SocketProvider } from "@/components/providers/SocketProvider";
+import FcmTokenSync from "@/components/providers/FcmTokenSync";
 
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
@@ -101,6 +102,7 @@ export default function RootLayout({
   suppressHydrationWarning
       >
         <Providers>
+          <FcmTokenSync />
           <SupportModalProvider>
             <FilterProvider>
               <SocketProvider>

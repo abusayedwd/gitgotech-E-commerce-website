@@ -1,6 +1,7 @@
 "use client";
 
 import { useUserLoginMutation } from "@/redux/features/auth/authSlice";
+import { getOrCreateDeviceId } from "@/lib/firebase";
 import { Eye, EyeOff, Lock, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,8 +22,16 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await login({ email, password }).unwrap();
-      console.log(res);
+      // Send the persistent device id with login. The FCM token is registered
+      // separately by <FcmTokenSync /> once auth state flips to logged-in
+      // (it also re-registers later if the token rotates).
+      const deviceId = getOrCreateDeviceId();
+
+      const res = await login({
+        email,
+        password,
+        deviceId,
+      }).unwrap();
 
       if (res?.success || res?.status === 200) {
         toast.success(res?.message || "Login successful!");
@@ -37,7 +46,6 @@ export default function LoginPage() {
         const user = res?.data?.user || res?.user;
         const role = user?.role || "customer";
 
-        // Store user with isLoggedIn flag for Navbar
         const userToStore = {
           ...user,
           isLoggedIn: true,
@@ -45,10 +53,8 @@ export default function LoginPage() {
         };
         localStorage.setItem("user", JSON.stringify(userToStore));
 
-        // Notify Navbar to update
         window.dispatchEvent(new Event("authChanged"));
 
-        // Navigate without reload
         if (role === "vendor") {
           router.push("/vendor-dashboard");
         } else {
@@ -56,7 +62,6 @@ export default function LoginPage() {
         }
       }
     } catch (err: any) {
-      console.log(err);
       const errorMessage =
         err?.data?.message || err?.message || "Login failed. Please try again.";
       setError(errorMessage);

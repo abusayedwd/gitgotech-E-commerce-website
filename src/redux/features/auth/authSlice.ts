@@ -64,11 +64,25 @@ const authSlice = apiSlice.injectEndpoints({
         url: `/auth/change-password`,
         method: "POST",
         body: data,
-       
+
       }),
     }),
 
+    logoutUser: builder.mutation({
+      query: (data: { deviceId: string }) => ({
+        url: `/auth/logout`,
+        method: "POST",
+        body: data,
+      }),
+    }),
 
+    registerFcmToken: builder.mutation({
+      query: (data: { fcmToken: string; deviceId: string }) => ({
+        url: `/auth/fcm-token`,
+        method: "POST",
+        body: data,
+      }),
+    }),
 
   }),
 });
@@ -80,5 +94,7 @@ export const {
     useResendOtpMutation,
     useResetPasswordMutation,
     useVerifyOtpMutation,
-    useChangePasswordMutation
+    useChangePasswordMutation,
+    useLogoutUserMutation,
+    useRegisterFcmTokenMutation
 } = authSlice;

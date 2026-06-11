@@ -162,8 +162,11 @@
 // }
 
 "use client";
+ 
 import url from "@/redux/api/baseUrl";
 import { useGetMyProfileQuery } from "@/redux/features/settings/settingsSlice";
+import { useLogoutUserMutation } from "@/redux/features/auth/authSlice";
+import { getOrCreateDeviceId } from "@/lib/firebase";
 import { Calendar, Edit2, LogOut, Settings, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -183,11 +186,25 @@ export default function ProfilePage() {
 
   const profile = profileData?.data;
 
-  const handleLogout = () => {
-    console.log("User logged out");
+  const [logoutUser] = useLogoutUserMutation();
+
+  const handleLogout = async () => {
     setIsLogoutModalOpen(false);
+
+    // Notify the backend to unregister this device. The auth token is still in
+    // localStorage here, so the Authorization header is sent. Best-effort — we
+    // log out locally even if the request fails.
+    try {
+      await logoutUser({ deviceId: getOrCreateDeviceId() }).unwrap();
+    } catch (err) {
+      console.error("Logout request failed:", err);
+    }
+
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("deviceId");
+    localStorage.removeItem("fcmToken");
+    localStorage.removeItem("fcmTokenSynced");
 
     // Notify Navbar to update
     window.dispatchEvent(new Event("authChanged"));

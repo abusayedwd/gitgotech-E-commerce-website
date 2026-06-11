@@ -16,6 +16,17 @@ const SUPPORT_SIDE_ROLES = ['customer', 'vendor'];
 export default function SupportMessage() {
   const { isOpen, setIsOpen, closeSupport } = useSupportModal();
 
+  // Support is only for logged-in customers/vendors. Read the token after mount
+  // (localStorage is client-only) to avoid an SSR/hydration mismatch, and keep
+  // it in sync across tabs via the `storage` event.
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    const sync = () => setIsLoggedIn(!!localStorage.getItem('token'));
+    sync();
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
+
   // Compose-message state
   const [newMessage, setNewMessage] = useState('');
   const [messageFiles, setMessageFiles] = useState<File[]>([]);
@@ -30,7 +41,10 @@ export default function SupportMessage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 1. Get active ticket (single)
-  const { data: supportList, refetch: refetchSupportList } = useGetSupportListQuery({});
+  const { data: supportList, refetch: refetchSupportList } = useGetSupportListQuery(
+    {},
+    { skip: !isLoggedIn },
+  );
   const activeTicket: any = supportList?.data?.ticket || null;
   const hasTicket: boolean = !!supportList?.data?.isTicket && !!activeTicket;
   const ticketId: string | undefined = activeTicket?._id;
@@ -127,6 +141,10 @@ export default function SupportMessage() {
   };
 
   const unreadCount = activeTicket?.customerUnreadCount ?? 0;
+
+  // Hide the widget entirely for guests — this also prevents the
+  // GET /tickets/my "No token provided" 401 call.
+  if (!isLoggedIn) return null;
 
   return (
     <>

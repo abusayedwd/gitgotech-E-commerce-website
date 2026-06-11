@@ -5,6 +5,8 @@ import {
   useUpdateProfileMutation,
 } from "@/redux/features/settings/settingsSlice";
 import { useGetShowroomQuery } from "@/redux/features/vendor/showroomSlice/showroomSlice";
+import { useLogoutUserMutation } from "@/redux/features/auth/authSlice";
+import { getOrCreateDeviceId } from "@/lib/firebase";
 import { Camera, Edit, MapPin, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,6 +26,8 @@ export default function VendorProfilePage() {
 
   const { data: showroomData } = useGetShowroomQuery({});
   console.log(showroomData);
+
+  const [logoutUser] = useLogoutUserMutation();
 
   const profile = profileData?.data;
 
@@ -117,9 +121,23 @@ export default function VendorProfilePage() {
     setIsEditModalOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    setIsLogoutModalOpen(false);
+
+    // Notify the backend to unregister this device. The auth token is still in
+    // localStorage here, so the Authorization header is sent. Best-effort — we
+    // log out locally even if the request fails.
+    try {
+      await logoutUser({ deviceId: getOrCreateDeviceId() }).unwrap();
+    } catch (err) {
+      console.error("Logout request failed:", err);
+    }
+
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    localStorage.removeItem("deviceId");
+    localStorage.removeItem("fcmToken");
+    localStorage.removeItem("fcmTokenSynced");
 
     // Notify Navbar to update
     window.dispatchEvent(new Event("authChanged"));
