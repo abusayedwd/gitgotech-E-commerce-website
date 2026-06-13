@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Paperclip, Send, User, X } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -10,8 +10,21 @@ import {
   useSendSupportMessageMutation,
 } from '@/redux/features/support/supportMessageSlice';
 import { useSupportModal } from '@/context/SupportModalContext';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 
 const SUPPORT_SIDE_ROLES = ['customer', 'vendor'];
+const IMAGE_EXT_RE = /\.(png|jpe?g|gif|webp|bmp|svg|avif)(\?|$)/i;
+
+const isImageAttachment = (path: string) => IMAGE_EXT_RE.test(path || '');
+
+const attachmentUrl = (path: string) => {
+  if (!path) return '';
+  if (/^https?:\/\//i.test(path)) return path;
+  return `${IMAGE_BASE_URL}/${path.replace(/^\/+/, '')}`;
+};
+
+const fileNameFromPath = (path: string) =>
+  (path || '').split(/[\\/]/).pop() || path;
 
 export default function SupportMessage() {
   const { isOpen, setIsOpen, closeSupport } = useSupportModal();
@@ -39,6 +52,7 @@ export default function SupportMessage() {
   const ticketFileInputRef = useRef<HTMLInputElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   // 1. Get active ticket (single)
   const { data: supportList, refetch: refetchSupportList } = useGetSupportListQuery(
@@ -49,32 +63,158 @@ export default function SupportMessage() {
   const hasTicket: boolean = !!supportList?.data?.isTicket && !!activeTicket;
   const ticketId: string | undefined = activeTicket?._id;
 
-  // 2. Get messages
-  const { data: chatMessages, refetch: refetchMessages } = useGetSupportMessagesQuery(
-    { ticketId: ticketId || '', page: 1, limit: 20 },
+  // 2. Messages pagination — page 1 is oldest, last page is newest.
+  // We bootstrap with page 1 (just to learn totalPage), immediately jump to the
+  // last page so the latest messages render, then load older pages on scroll-up.
+  const PAGE_SIZE = 20;
+  const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState<number | null>(null);
+  const [didJumpToLast, setDidJumpToLast] = useState(false);
+  const [messageMap, setMessageMap] = useState<Record<string, any>>({});
+
+  // Reset when ticket changes
+  useEffect(() => {
+    setPage(1);
+    setTotalPage(null);
+    setDidJumpToLast(false);
+    setMessageMap({});
+  }, [ticketId]);
+
+  const onLatestPage = totalPage !== null && page === totalPage;
+
+  const {
+    data: chatMessages,
+    refetch: refetchMessages,
+    isFetching: isFetchingMessages,
+  } = useGetSupportMessagesQuery(
+    { ticketId: ticketId || '', page, limit: PAGE_SIZE },
     {
       skip: !ticketId,
-      pollingInterval: 5000,
+      // Only poll on the latest page — older pages are immutable history.
+      pollingInterval: onLatestPage ? 5000 : 0,
     },
   );
 
-  const rawMessages: any[] = Array.isArray(chatMessages?.data)
-    ? chatMessages?.data
-    : chatMessages?.data?.data || [];
-  const messages = [...rawMessages].sort((a, b) => {
-    const ta = new Date(a?.createdAt || 0).getTime();
-    const tb = new Date(b?.createdAt || 0).getTime();
-    return ta - tb;
-  });
+  useEffect(() => {
+    if (!chatMessages) return;
+    const respTotalPage: number | null =
+      chatMessages?.pagination?.totalPage ?? null;
+    const respMessages: any[] = Array.isArray(chatMessages?.data)
+      ? chatMessages.data
+      : chatMessages?.data?.data || [];
+
+    if (respTotalPage !== null && respTotalPage !== totalPage) {
+      setTotalPage(respTotalPage);
+    }
+
+    // First response: if there are more pages, jump to last to show newest first
+    if (!didJumpToLast && respTotalPage && respTotalPage > page) {
+      setDidJumpToLast(true);
+      setPage(respTotalPage);
+      return;
+    }
+    if (!didJumpToLast) setDidJumpToLast(true);
+
+    // Accumulate (dedup by _id)
+    setMessageMap((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const m of respMessages) {
+        if (m?._id && next[m._id] !== m) {
+          next[m._id] = m;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [chatMessages, page, totalPage, didJumpToLast]);
+
+  // Follow latest: if we were on the latest page and the server advanced totalPage,
+  // jump forward so polling keeps showing new messages.
+  useEffect(() => {
+    if (totalPage === null) return;
+    if (onLatestPage) return; // already there
+    if (didJumpToLast && page < totalPage && !isFetchingMessages) {
+      // Only auto-follow when user is at/near the bottom of the chat
+      const el = messagesContainerRef.current;
+      const nearBottom =
+        !el || el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+      if (nearBottom) setPage(totalPage);
+    }
+  }, [totalPage, page, didJumpToLast, isFetchingMessages, onLatestPage]);
+
+  const messages = useMemo(() => {
+    return Object.values(messageMap).sort((a: any, b: any) => {
+      const ta = new Date(a?.createdAt || 0).getTime();
+      const tb = new Date(b?.createdAt || 0).getTime();
+      return ta - tb;
+    });
+  }, [messageMap]);
 
   // 3. Mutations
   const [sendSupportMessage, { isLoading: isSending }] = useSendSupportMessageMutation();
   const [initSupport, { isLoading: isIniting }] = useInitSupportMutation();
 
-  // Auto scroll to bottom
+  // Load older: capture scrollHeight before prepending so we can restore position
+  const preLoadScrollHeightRef = useRef<number | null>(null);
+  const loadOlder = () => {
+    if (page <= 1 || isFetchingMessages) return;
+    const el = messagesContainerRef.current;
+    if (el) preLoadScrollHeightRef.current = el.scrollHeight;
+    setPage((p) => p - 1);
+  };
+
+  // Auto-trigger load-older when user scrolls near the top
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      if (el.scrollTop < 60 && !isFetchingMessages && page > 1) {
+        loadOlder();
+      }
+    };
+    el.addEventListener('scroll', onScroll);
+    return () => el.removeEventListener('scroll', onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, isFetchingMessages]);
+
+  // Preserve scroll position after older messages prepend
+  useEffect(() => {
+    if (preLoadScrollHeightRef.current === null) return;
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    const delta = el.scrollHeight - preLoadScrollHeightRef.current;
+    if (delta > 0) el.scrollTop = el.scrollTop + delta;
+    preLoadScrollHeightRef.current = null;
   }, [messages.length]);
+
+  // Scroll to bottom — only on modal open or when a new LAST message arrives
+  // (not when older messages are prepended).
+  const justOpenedRef = useRef(false);
+  const lastMessageIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (!isOpen) {
+      justOpenedRef.current = true;
+      lastMessageIdRef.current = null;
+      return;
+    }
+    const wasJustOpened = justOpenedRef.current;
+    justOpenedRef.current = false;
+
+    const lastId = messages[messages.length - 1]?._id ?? null;
+    const lastChanged = lastId !== lastMessageIdRef.current;
+    lastMessageIdRef.current = lastId;
+
+    if (!wasJustOpened && !lastChanged) return;
+
+    const id = requestAnimationFrame(() => {
+      messagesEndRef.current?.scrollIntoView({
+        behavior: wasJustOpened ? 'auto' : 'smooth',
+        block: 'end',
+      });
+    });
+    return () => cancelAnimationFrame(id);
+  }, [isOpen, messages]);
 
   // Customer + vendor are always the support-seeker side → right
   const isMyMessage = (senderRole: string) => SUPPORT_SIDE_ROLES.includes(senderRole);
@@ -218,7 +358,27 @@ export default function SupportMessage() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                <div
+                  ref={messagesContainerRef}
+                  className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
+                >
+                  {/* Older-history loader */}
+                  {page > 1 && (
+                    <div className="flex justify-center py-1">
+                      {isFetchingMessages ? (
+                        <div className="w-4 h-4 border-2 border-gray-500 border-t-purple-400 rounded-full animate-spin" />
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={loadOlder}
+                          className="text-[11px] text-purple-300 hover:text-purple-200 underline"
+                        >
+                          Load older messages
+                        </button>
+                      )}
+                    </div>
+                  )}
+
                   {messages.length === 0 && (
                     <div className="flex flex-col items-center justify-center h-full gap-2">
                       <div className="w-12 h-12 bg-purple-600/20 rounded-full flex items-center justify-center">
@@ -250,12 +410,39 @@ export default function SupportMessage() {
                           </span>
 
                           {message.attachments?.length > 0 && (
-                            <div className={`flex flex-wrap gap-1 ${mine ? 'justify-end' : 'justify-start'}`}>
-                              {message.attachments.map((att: string, i: number) => (
-                                <div key={i} className="bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1">
-                                  📎 {att}
-                                </div>
-                              ))}
+                            <div className={`flex flex-wrap gap-2 ${mine ? 'justify-end' : 'justify-start'}`}>
+                              {message.attachments.map((att: string, i: number) => {
+                                const url = attachmentUrl(att);
+                                if (isImageAttachment(att)) {
+                                  return (
+                                    <a
+                                      key={i}
+                                      href={url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="block rounded-lg overflow-hidden border border-gray-700 hover:border-purple-500 transition-colors"
+                                    >
+                                      <img
+                                        src={url}
+                                        alt={fileNameFromPath(att)}
+                                        className="max-w-[180px] max-h-[180px] object-cover"
+                                      />
+                                    </a>
+                                  );
+                                }
+                                return (
+                                  <a
+                                    key={i}
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-2 py-1 rounded-lg flex items-center gap-1 max-w-[180px] truncate"
+                                    title={fileNameFromPath(att)}
+                                  >
+                                    📎 {fileNameFromPath(att)}
+                                  </a>
+                                );
+                              })}
                             </div>
                           )}
 
