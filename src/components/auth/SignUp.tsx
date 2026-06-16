@@ -373,11 +373,9 @@ export default function SignUpPage() {
       }
     } catch (error: any) {
       console.log(error);
-      const errorMessage = typeof error?.data?.data === 'string'
-        ? error?.data?.data
-        : typeof error?.data === 'string'
-          ? error?.data
-          : 'An error occurred';
+      const errorMessage = typeof error?.data?.message === 'string'
+        ? error?.data?.message
+        : 'An error occurreddddd';
       setError(errorMessage);
       toast.error(errorMessage);
     };
