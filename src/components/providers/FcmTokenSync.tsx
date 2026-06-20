@@ -41,13 +41,13 @@ export default function FcmTokenSync() {
         // (possibly refreshed) token, or null if unsupported/denied.
         const fcmToken = await requestFcmToken();
         if (cancelled || !fcmToken) return;
-        console.log(fcmToken,"token get>>>>>>>>>:")
+        // console.log(fcmToken,"token get>>>>>>>>>:")
 
         // Already registered this exact token → nothing to do.
         if (localStorage.getItem(SYNCED_KEY) === fcmToken) return;
 
         const deviceId = getOrCreateDeviceId();
-        console.log(deviceId,"deviceId get>>>>>>>>>:")
+        // console.log(deviceId,"deviceId get>>>>>>>>>:")
         await registerFcmToken({ fcmToken, deviceId }).unwrap();
 
         localStorage.setItem("fcmToken", fcmToken);

@@ -408,7 +408,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 <button
                   onClick={() => {
                     if (!requireLogin('Please sign in to start a custom design')) return;
-                    router.push(`/design-request?productId=${product._id}`);
+                    router.push(`/top-products`);
                   }}
                   className="w-full bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors"
                 >

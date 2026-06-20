@@ -11,6 +11,8 @@ import {
 } from '@/redux/features/support/supportMessageSlice';
 import { useSupportModal } from '@/context/SupportModalContext';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 const SUPPORT_SIDE_ROLES = ['customer', 'vendor'];
 const IMAGE_EXT_RE = /\.(png|jpe?g|gif|webp|bmp|svg|avif)(\?|$)/i;
@@ -28,6 +30,7 @@ const fileNameFromPath = (path: string) =>
 
 export default function SupportMessage() {
   const { isOpen, setIsOpen, closeSupport } = useSupportModal();
+  const router = useRouter();
 
   // Support is only for logged-in customers/vendors. Read the token after mount
   // (localStorage is client-only) to avoid an SSR/hydration mismatch, and keep
@@ -282,17 +285,22 @@ export default function SupportMessage() {
 
   const unreadCount = activeTicket?.customerUnreadCount ?? 0;
 
-  // Hide the widget entirely for guests — this also prevents the
-  // GET /tickets/my "No token provided" 401 call.
-  if (!isLoggedIn) return null;
+  const handleFloatingClick = () => {
+    if (!isLoggedIn) {
+      // toast.error('Please sign in to use support chat');
+      router.push('/auth/login');
+      return;
+    }
+    setIsOpen(!isOpen);
+  };
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Button — always visible; guests get redirected to login on click */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleFloatingClick}
         className="fixed bottom-20 right-6 text-white p-0 rounded-full shadow-2xl z-50 cursor-pointer transition-all duration-300 transform hover:scale-110"
-        aria-label="Open support chat"
+        aria-label={isLoggedIn ? 'Open support chat' : 'Sign in to use support chat'}
       >
         <div className="relative">
           <Image
@@ -302,7 +310,7 @@ export default function SupportMessage() {
             height={50}
             className="transition-transform duration-300"
           />
-          {unreadCount > 0 && (
+          {isLoggedIn && unreadCount > 0 && (
             <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold animate-pulse">
               {unreadCount}
             </span>
@@ -310,8 +318,8 @@ export default function SupportMessage() {
         </div>
       </button>
 
-      {/* Chat Modal */}
-      {isOpen && (
+      {/* Chat Modal — only for logged-in users */}
+      {isLoggedIn && isOpen && (
         <div className="fixed bottom-20 inset-x-4 z-50 sm:inset-x-auto sm:right-6 sm:left-auto">
           <div className="bg-gray-900 rounded-2xl w-full max-w-[calc(100vw-2rem)] sm:w-96 sm:max-w-none h-[min(560px,calc(100vh-8rem))] flex flex-col shadow-2xl border border-gray-700 overflow-hidden">
 
