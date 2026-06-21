@@ -5,7 +5,7 @@ import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
-import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+import url from '@/redux/api/baseUrl';
 import toast from 'react-hot-toast';
 import { useEventProductAddMutation, useGetEventsForProductAddQuery } from '@/redux/features/event/eventSlice';
 import { useAuth } from '@/hooks/useAuth';
@@ -487,7 +487,7 @@ const sizeData = [
           <div className="space-y-4">
             <div className="relative bg-white rounded-lg p-8">
               <img
-                src={product?.product_images?.[0] ? `${IMAGE_BASE_URL}/${product.product_images[0]}` : product?.image || '/images/jacket.png'}
+                src={product?.product_images?.[0] ? `${url}/${product.product_images[0]}` : product?.image || '/images/jacket.png'}
                 alt={product?.product_name || 'Product'}
                 className="w-full rounded-lg"
               />
