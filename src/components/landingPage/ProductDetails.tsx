@@ -1,17 +1,33 @@
- 
+"use client";
 
-'use client';
-
-import { useState } from 'react';
-import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
-import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
-import toast from 'react-hot-toast';
-import { useEventProductAddMutation, useGetEventsForProductAddQuery } from '@/redux/features/event/eventSlice';
-import { useAuth } from '@/hooks/useAuth';
-import { addToGuestCart } from '@/lib/guestCart';
+import { useAuth } from "@/hooks/useAuth";
+import { addToGuestCart } from "@/lib/guestCart";
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import {
+  useEventProductAddMutation,
+  useGetEventsForProductAddQuery,
+} from "@/redux/features/event/eventSlice";
+import {
+  useAddToCartWishListMutation,
+  useGetProductDetailsforCustomerQuery,
+} from "@/redux/features/home/homeSlice";
+import {
+  Calendar,
+  Heart,
+  Info,
+  MapPin,
+  MessageCircle,
+  Minus,
+  Plus,
+  Ruler,
+  ShoppingCart,
+  Star,
+  X,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface ProductDetailsProps {
   productId?: string | null;
@@ -20,35 +36,40 @@ interface ProductDetailsProps {
 export default function ProductDetails({ productId }: ProductDetailsProps) {
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedSize, setSelectedSize] = useState("M");
   const [showEventModal, setShowEventModal] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
-  const { data: productData, isLoading } = useGetProductDetailsforCustomerQuery(productId || '', {
-    skip: !productId
-  });
-  console.log(productData)
+  const { data: productData, isLoading } = useGetProductDetailsforCustomerQuery(
+    productId || "",
+    {
+      skip: !productId,
+    },
+  );
+  console.log(productData);
 
-  const {data: eventdata} = useGetEventsForProductAddQuery(undefined);
+  const { data: eventdata } = useGetEventsForProductAddQuery(undefined);
   const [addproductToEvent] = useEventProductAddMutation();
 
-  const events = Array.isArray(eventdata?.data?.data) ? eventdata?.data?.data : [];
-  console.log(eventdata)
+  const events = Array.isArray(eventdata?.data?.data)
+    ? eventdata?.data?.data
+    : [];
+  console.log(eventdata);
 
   const handleAddToEvent = async (eventId: string) => {
     try {
       const data = {
         event: eventId,
-        product: product._id
+        product: product._id,
       };
       const res = await addproductToEvent(data).unwrap();
       if (res?.success) {
-        toast.success('Product added to event!');
+        toast.success("Product added to event!");
         setShowEventModal(false);
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to add to event');
+      toast.error(error?.data?.message || "Failed to add to event");
     }
   };
 
@@ -56,13 +77,13 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const { isLoggedIn, requireLogin } = useAuth();
 
   const product = productData?.data || null;
-  
- 
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white flex items-center justify-center">
-        <div className="text-purple-400 text-xl">Loading product details...</div>
+        <div className="text-purple-400 text-xl">
+          Loading product details...
+        </div>
       </div>
     );
   }
@@ -78,60 +99,91 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const handleAddToCart = async () => {
     if (!isLoggedIn) {
       addToGuestCart(product, { quantity, size: selectedSize });
-      toast.success('Added to cart!');
+      toast.success("Added to cart!");
       return;
     }
     try {
       const data = {
         product: product._id,
-        saveType: "cart"
+        saveType: "cart",
       };
       const res = await addToCartWishList(data).unwrap();
       if (res?.success) {
-        toast.success('Added to cart!');
+        toast.success("Added to cart!");
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to add to cart');
+      toast.error(error?.data?.message || "Failed to add to cart");
     }
   };
 
   const handleAddToWishlist = async () => {
-    if (!requireLogin('Please sign in to save items to your wishlist')) return;
+    if (!requireLogin("Please sign in to save items to your wishlist")) return;
     try {
       const data = {
         product: product._id,
-        saveType: "wishlist"
+        saveType: "wishlist",
       };
       const res = await addToCartWishList(data).unwrap();
       if (res?.success) {
-        toast.success('Added to wishlist!');
+        toast.success("Added to wishlist!");
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to add to wishlist');
+      toast.error(error?.data?.message || "Failed to add to wishlist");
     }
   };
 
   const handleOpenEventModal = () => {
-    if (!requireLogin('Please sign in to add items to an event')) return;
+    if (!requireLogin("Please sign in to add items to an event")) return;
     setShowEventModal(true);
   };
 
   const handleCustomDesign = (e: React.MouseEvent) => {
     if (isLoggedIn) return;
     e.preventDefault();
-    requireLogin('Please sign in to start a custom design');
+    requireLogin("Please sign in to start a custom design");
   };
 
   // Shoe Size Guide Component
   const ShoeSizeGuide = () => {
-    const usaSizes = ['5', '5.5', '6', '6.5', '7', '7.5', '8', '8.5', '9', '9.5', '10', '10.5', '11', '11.5', '12', '12.5', '13'];
-    const europeSizes = ['35', '36', '37', '38', '39', '40', '41', '42', '43', '44', '45', '46', '47'];
+    const usaSizes = [
+      "5",
+      "5.5",
+      "6",
+      "6.5",
+      "7",
+      "7.5",
+      "8",
+      "8.5",
+      "9",
+      "9.5",
+      "10",
+      "10.5",
+      "11",
+      "11.5",
+      "12",
+      "12.5",
+      "13",
+    ];
+    const europeSizes = [
+      "35",
+      "36",
+      "37",
+      "38",
+      "39",
+      "40",
+      "41",
+      "42",
+      "43",
+      "44",
+      "45",
+      "46",
+      "47",
+    ];
 
     return (
       <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
         <div className="bg-gradient-to-r from-gray-950 via-purple-900/15 to-black border-1 border-blue-500/50 rounded-3xl max-w-2xl w-full relative animate-fadeIn">
-          
-          <button 
+          <button
             onClick={() => setShowSizeGuide(false)}
             className="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-800/50 hover:bg-gray-700 flex items-center justify-center transition-colors z-10"
           >
@@ -141,7 +193,9 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
           <div className="p-6 border-b border-gray-700">
             <div className="flex items-center gap-2">
               <Ruler className="w-5 h-5 text-purple-400" />
-              <h2 className="text-2xl font-cormorant font-semibold">USA Shoe Sizes</h2>
+              <h2 className="text-2xl font-cormorant font-semibold">
+                USA Shoe Sizes
+              </h2>
             </div>
           </div>
 
@@ -187,21 +241,129 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
   // Clothing Size Guide Component
   const ClothingSizeGuide = () => {
-    const sizeData = [
-      { size: 'XS', chest: '30-32', waist: '24-26', hips: '32-34', inseam: '28-30', sleeve: '30-32' },
-      { size: 'S', chest: '32-34', waist: '26-28', hips: '34-36', inseam: '30-31', sleeve: '31-32' },
-      { size: 'M', chest: '36-38', waist: '28-30', hips: '36-38', inseam: '31-32', sleeve: '32-33' },
-      { size: 'L', chest: '40-42', waist: '32-34', hips: '40-42', inseam: '32-33', sleeve: '33-34' },
-      { size: 'XL', chest: '44-46', waist: '36-38', hips: '44-46', inseam: '33-34', sleeve: '34-35' },
-      { size: '2XL', chest: '48-50', waist: '40-42', hips: '48-50', inseam: '34-35', sleeve: '35-36' },
-      { size: '3XL', chest: '52-54', waist: '44-46', hips: '52-54', inseam: '35-36', sleeve: '36-37' }
-    ];
+    // const sizeData = [
+    //   {
+    //     size: "XS",
+    //     chest: "30-32",
+    //     waist: "24-26",
+    //     hips: "32-34",
+    //     inseam: "28-30",
+    //     sleeve: "30-32",
+    //   },
+    //   {
+    //     size: "S",
+    //     chest: "32-34",
+    //     waist: "26-28",
+    //     hips: "34-36",
+    //     inseam: "30-31",
+    //     sleeve: "31-32",
+    //   },
+    //   {
+    //     size: "M",
+    //     chest: "36-38",
+    //     waist: "28-30",
+    //     hips: "36-38",
+    //     inseam: "31-32",
+    //     sleeve: "32-33",
+    //   },
+    //   {
+    //     size: "L",
+    //     chest: "40-42",
+    //     waist: "32-34",
+    //     hips: "40-42",
+    //     inseam: "32-33",
+    //     sleeve: "33-34",
+    //   },
+    //   {
+    //     size: "XL",
+    //     chest: "44-46",
+    //     waist: "36-38",
+    //     hips: "44-46",
+    //     inseam: "33-34",
+    //     sleeve: "34-35",
+    //   },
+    //   {
+    //     size: "2XL",
+    //     chest: "48-50",
+    //     waist: "40-42",
+    //     hips: "48-50",
+    //     inseam: "34-35",
+    //     sleeve: "35-36",
+    //   },
+    //   {
+    //     size: "3XL",
+    //     chest: "52-54",
+    //     waist: "44-46",
+    //     hips: "52-54",
+    //     inseam: "35-36",
+    //     sleeve: "36-37",
+    //   },
+    // ];
+
+const sizeData = [
+  {
+    size: "XS",
+    chest: "76.2-81.3",
+    waist: "61.0-66.0",
+    hips: "81.3-86.4",
+    inseam: "71.1-76.2",
+    sleeve: "76.2-81.3",
+  },
+  {
+    size: "S",
+    chest: "81.3-86.4",
+    waist: "66.0-71.1",
+    hips: "86.4-91.4",
+    inseam: "76.2-78.7",
+    sleeve: "78.7-81.3",
+  },
+  {
+    size: "M",
+    chest: "91.4-96.5",
+    waist: "71.1-76.2",
+    hips: "91.4-96.5",
+    inseam: "78.7-81.3",
+    sleeve: "81.3-83.8",
+  },
+  {
+    size: "L",
+    chest: "101.6-106.7",
+    waist: "81.3-86.4",
+    hips: "101.6-106.7",
+    inseam: "81.3-83.8",
+    sleeve: "83.8-86.4",
+  },
+  {
+    size: "XL",
+    chest: "111.8-116.8",
+    waist: "91.4-96.5",
+    hips: "111.8-116.8",
+    inseam: "83.8-86.4",
+    sleeve: "86.4-88.9",
+  },
+  {
+    size: "2XL",
+    chest: "121.9-127.0",
+    waist: "101.6-106.7",
+    hips: "121.9-127.0",
+    inseam: "86.4-88.9",
+    sleeve: "88.9-91.4",
+  },
+  {
+    size: "3XL",
+    chest: "132.1-137.2",
+    waist: "111.8-116.8",
+    hips: "132.1-137.2",
+    inseam: "88.9-91.4",
+    sleeve: "91.4-94.0",
+  },
+];
+
 
     return (
       <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
         <div className="bg-gradient-to-r from-gray-950 via-purple-900/15 to-black rounded-3xl max-w-3xl w-full relative animate-fadeIn">
-          
-          <button 
+          <button
             onClick={() => setShowSizeGuide(false)}
             className="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-800/50 hover:bg-gray-700 flex items-center justify-center transition-colors z-10"
           >
@@ -218,7 +380,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
           <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
             <div>
               <button className="px-8 py-2 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg font-medium">
-                USA (Measurement)
+                Measurement
               </button>
             </div>
 
@@ -227,16 +389,29 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 <thead>
                   <tr className="border-b border-purple-500/30">
                     <th className="text-left py-3 px-4 font-semibold">Size</th>
-                    <th className="text-left py-3 px-4 font-semibold">Chest(Inches)</th>
-                    <th className="text-left py-3 px-4 font-semibold">Waist(Inches)</th>
-                    <th className="text-left py-3 px-4 font-semibold">Hips(Inches)</th>
-                    <th className="text-left py-3 px-4 font-semibold">Inseam(Inches)</th>
-                    <th className="text-left py-3 px-4 font-semibold">Sleeve(Inches)</th>
+                    <th className="text-left py-3 px-4 font-semibold">
+                      Chest(cm)
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold">
+                      Waist(cm)
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold">
+                      Hips(cm)
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold">
+                      Inseam(cm)
+                    </th>
+                    <th className="text-left py-3 px-4 font-semibold">
+                      Sleeve(cm)
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {sizeData.map((row, index) => (
-                    <tr key={index} className="border-b border-purple-500/20 hover:bg-purple-900/20">
+                    <tr
+                      key={index}
+                      className="border-b border-purple-500/20 hover:bg-purple-900/20"
+                    >
                       <td className="py-3 px-4">{row.size}</td>
                       <td className="py-3 px-4">{row.chest}</td>
                       <td className="py-3 px-4">{row.waist}</td>
@@ -254,23 +429,38 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               <div className="space-y-4 text-sm">
                 <div>
                   <h4 className="font-semibold mb-1">Chest/Bust:</h4>
-                  <p className="text-gray-400">Measure around the fullest part of your chest, keeping the tape horizontal.</p>
+                  <p className="text-gray-400">
+                    Measure around the fullest part of your chest, keeping the
+                    tape horizontal.
+                  </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Waist:</h4>
-                  <p className="text-gray-400">Measure around the narrowest part of your waist, usually just above the button.</p>
+                  <p className="text-gray-400">
+                    Measure around the narrowest part of your waist, usually
+                    just above the button.
+                  </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Hips:</h4>
-                  <p className="text-gray-400">Measure around the fullest part of your hips, usually just above the button.</p>
+                  <p className="text-gray-400">
+                    Measure around the fullest part of your hips, usually just
+                    above the button.
+                  </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Sleeve:</h4>
-                  <p className="text-gray-400">Measure from center back of neck, across shoulder down to bottomhole.</p>
+                  <p className="text-gray-400">
+                    Measure from center back of neck, across shoulder down to
+                    bottomhole.
+                  </p>
                 </div>
                 <div>
                   <h4 className="font-semibold mb-1">Inseam:</h4>
-                  <p className="text-gray-400">Measure from center back of waist, across shoulder down to bottomhole.</p>
+                  <p className="text-gray-400">
+                    Measure from center back of waist, across shoulder down to
+                    bottomhole.
+                  </p>
                 </div>
               </div>
             </div>
@@ -285,14 +475,29 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="container mx-auto mb-4 flex items-center gap-4">
-          <button onClick={() => router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"
+          >
             <div className="w-8 h-8 rounded-full bg-purple-600/40 cursor-pointer flex items-center justify-center">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </div>
           </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Product Details</h1>
+          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+            Product Details
+          </h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -300,8 +505,12 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
           <div className="space-y-4">
             <div className="relative bg-white rounded-lg p-8">
               <img
-                src={product?.product_images?.[0] ? `${IMAGE_BASE_URL}/${product.product_images[0]}` : product?.image || '/images/jacket.png'}
-                alt={product?.product_name || 'Product'}
+                src={
+                  product?.product_images?.[0]
+                    ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
+                    : product?.image || "/images/jacket.png"
+                }
+                alt={product?.product_name || "Product"}
                 className="w-full rounded-lg"
               />
               {product?.isMixable && (
@@ -310,10 +519,10 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 </button>
               )}
             </div>
-            
+
             {/* Action Buttons */}
             <div className="space-y-3">
-              <button 
+              <button
                 onClick={handleAddToWishlist}
                 className="w-full bg-[#6100FF] hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
               >
@@ -329,7 +538,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               </button>
               <button
                 onClick={handleOpenEventModal}
-                className="w-full border border-[#6100FF] hover:bg-purple-900/30 text-[#6100FF] cursor-pointer py-3 px-4 rounded-lg font-medium transition-colors">
+                className="w-full border border-[#6100FF] hover:bg-purple-900/30 text-[#6100FF] cursor-pointer py-3 px-4 rounded-lg font-medium transition-colors"
+              >
                 Add to Event
               </button>
             </div>
@@ -339,17 +549,26 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
           <div className="space-y-4">
             {/* Product Title & Rating */}
             <div>
-              <h1 className="text-3xl font-bold font-cormorant mb-2">{product.product_name || product.name}</h1>
+              <h1 className="text-3xl font-bold font-cormorant mb-2">
+                {product.product_name || product.name}
+              </h1>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.floor(product.review_rating || product.rating || 0) ? 'fill-yellow-400 text-yellow-400' : 'fill-gray-600 text-gray-600'}`}
+                      className={`w-4 h-4 ${i < Math.floor(product.review_rating || product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "fill-gray-600 text-gray-600"}`}
                     />
                   ))}
                 </div>
-                <span onClick={() => router.push(`/product/review?productId=${product._id}`)} className="text-sm cursor-pointer text-purple-400">({product.review_count || product.reviews || 0} Reviews)</span>
+                <span
+                  onClick={() =>
+                    router.push(`/product/review?productId=${product._id}`)
+                  }
+                  className="text-sm cursor-pointer text-purple-400"
+                >
+                  ({product.review_count || product.reviews || 0} Reviews)
+                </span>
               </div>
             </div>
 
@@ -358,16 +577,26 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
-                    <span className="text-sm font-medium">{product.vendor?.name?.charAt(0) || product.vendor?.charAt(0) || 'V'}</span>
+                    <span className="text-sm font-medium">
+                      {product.vendor?.name?.charAt(0) ||
+                        product.vendor?.charAt(0) ||
+                        "V"}
+                    </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium">{product.vendor?.name || product.vendor || 'Vendor'}</p>
-                    <p className="text-xs text-gray-400">Trusted seller with quality products</p>
+                    <p className="font-medium">
+                      {product.vendor?.name || product.vendor || "Vendor"}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Trusted seller with quality products
+                    </p>
                   </div>
                 </div>
                 <button
                   // onClick={() => handleSendMessageAuto(product.vendor?._id)}
-                  onClick={() => router.push(`/messaging?vendorId=${product.vendor?._id}`)}
+                  onClick={() =>
+                    router.push(`/messaging?vendorId=${product.vendor?._id}`)
+                  }
                   className="bg-[#6100FF] hover:bg-purple-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                 >
                   <MessageCircle className="w-4 h-4" />
@@ -380,14 +609,29 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             <div className="bg-gray-800/50 rounded-lg p-4">
               <div className="flex items-center space-x-3 mb-2">
                 {product.discount?.percentage && (
-                  <span className="text-l line-through text-gray-500">₵{(product.product_price * (1 + product.discount.percentage / 100)).toFixed(2)}</span>
+                  <span className="text-l line-through text-gray-500">
+                    ₵
+                    {(
+                      product.product_price *
+                      (1 + product.discount.percentage / 100)
+                    ).toFixed(2)}
+                  </span>
                 )}
-                <span className="text-4xl font-semibold text-[#6100FF]">₵{product.product_price?.toFixed(2) || product.price?.toFixed(2)}</span>
+                <span className="text-4xl font-semibold text-[#6100FF]">
+                  ₵
+                  {product.product_price?.toFixed(2) ||
+                    product.price?.toFixed(2)}
+                </span>
               </div>
               <div className="">
-                <span className="text-sm text-gray-400">Valid till December 30,2025</span>
+                <span className="text-sm text-gray-400">
+                  Valid till December 30,2025
+                </span>
                 <br />
-                <span className="text-sm text-gray-400">Weight: {product.product_weight?.amount || 100} {product.product_weight?.unit || 'gram'}</span>
+                <span className="text-sm text-gray-400">
+                  Weight: {product.product_weight?.amount || 100}{" "}
+                  {product.product_weight?.unit || "gram"}
+                </span>
               </div>
             </div>
 
@@ -397,69 +641,90 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 <div className="flex items-center space-x-2 mb-2">
                   <Info className="w-5 h-5 text-purple-400" />
                   <h3 className="font-medium font-cormorant text-2xl text-purple-300">
-                    {product.isMixable ? 'Mix Design Available' : 'Custom Design Available'}
+                    {product.isMixable
+                      ? "Mix Design Available"
+                      : "Custom Design Available"}
                   </h3>
                 </div>
                 <p className="text-sm text-gray-300 mb-4">
-                  {product.isMixable 
-                    ? 'This product supports custom mix-mixing! You can combine elements from different products to create your unique style.'
-                    : 'This product can be customized according to your preferences.'}
+                  {product.isMixable
+                    ? "This product supports custom mix-mixing! You can combine elements from different products to create your unique style."
+                    : "This product can be customized according to your preferences."}
                 </p>
                 <button
                   onClick={() => {
-                    if (!requireLogin('Please sign in to start a custom design')) return;
+                    if (
+                      !requireLogin("Please sign in to start a custom design")
+                    )
+                      return;
                     router.push(`/top-products`);
                   }}
                   className="w-full bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors"
                 >
-                  Start {product.isMixable ? 'Mix Design' : 'Custom Design'}
+                  Start {product.isMixable ? "Mix Design" : "Custom Design"}
                 </button>
               </div>
             )}
 
             {/* Description */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
-              <h3 className="font-medium font-cormorant text-2xl mb-2">Description</h3>
-              <p className="text-sm text-gray-400">{product.product_description || product.description}</p>
+              <h3 className="font-medium font-cormorant text-2xl mb-2">
+                Description
+              </h3>
+              <p className="text-sm text-gray-400">
+                {product.product_description || product.description}
+              </p>
             </div>
 
             {/* Size Selection */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
-              <h3 className="font-medium mb-3 font-cormorant text-2xl">Select Size</h3>
+              <h3 className="font-medium mb-3 font-cormorant text-2xl">
+                Select Size
+              </h3>
               <div className="flex flex-wrap gap-2">
-                {(product.product_stocks || [{ size: 'M', stock: 10 }]).map((stockItem: { _id?: string; size: string; stock: number }) => (
-                  <button
-                    key={stockItem._id || stockItem.size}
-                    onClick={() => setSelectedSize(stockItem.size)}
-                    disabled={stockItem.stock === 0}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-colors border ${
-                      selectedSize === stockItem.size
-                        ? 'bg-purple-600 border-purple-600 text-white'
-                        : stockItem.stock === 0
-                        ? 'bg-gray-900 border-gray-700 text-gray-500 cursor-not-allowed'
-                        : 'bg-gray-800 border-[#6100FF] hover:bg-gray-700 text-gray-300'
-                    }`}
-                  >
-                    {stockItem.size}
-                    {stockItem.stock === 0 && ' (Out)'}
-                    {stockItem.stock > 0 && ` (${stockItem.stock})`}
-                  </button>
-                ))}
+                {(product.product_stocks || [{ size: "M", stock: 10 }]).map(
+                  (stockItem: {
+                    _id?: string;
+                    size: string;
+                    stock: number;
+                  }) => (
+                    <button
+                      key={stockItem._id || stockItem.size}
+                      onClick={() => setSelectedSize(stockItem.size)}
+                      disabled={stockItem.stock === 0}
+                      className={`px-4 py-2 rounded-md text-sm font-medium transition-colors border ${
+                        selectedSize === stockItem.size
+                          ? "bg-purple-600 border-purple-600 text-white"
+                          : stockItem.stock === 0
+                            ? "bg-gray-900 border-gray-700 text-gray-500 cursor-not-allowed"
+                            : "bg-gray-800 border-[#6100FF] hover:bg-gray-700 text-gray-300"
+                      }`}
+                    >
+                      {stockItem.size}
+                      {stockItem.stock === 0 && " (Out)"}
+                      {stockItem.stock > 0 && ` (${stockItem.stock})`}
+                    </button>
+                  ),
+                )}
               </div>
             </div>
 
             {/* Quantity Selection */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
-              <h3 className="font-medium mb-3 font-cormorant text-2xl">Quantity</h3>
+              <h3 className="font-medium mb-3 font-cormorant text-2xl">
+                Quantity
+              </h3>
               <div className="flex items-center space-x-4">
-                <button 
+                <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
-                <span className="text-lg font-medium w-8 text-center">{quantity}</span>
-                <button 
+                <span className="text-lg font-medium w-8 text-center">
+                  {quantity}
+                </span>
+                <button
                   onClick={() => setQuantity(quantity + 1)}
                   className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors"
                 >
@@ -475,22 +740,27 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             >
               <div className="flex items-center justify-center space-x-2">
                 <ShoppingCart className="w-5 h-5" />
-                <span>Add to Cart - ₵{((product.product_price || product.price || 0) * quantity).toFixed(2)}</span>
+                <span>
+                  Add to Cart - ₵
+                  {(
+                    (product.product_price || product.price || 0) * quantity
+                  ).toFixed(2)}
+                </span>
               </div>
             </button>
 
             {/* Additional Actions */}
             <div className="grid grid-cols-2 gap-3">
+              <Link
+                href={`/messaging?vendorId=${product.vendor?._id || product.vendor}`}
+              >
+                <button className="bg-gray-800/50 cursor-pointer border w-full border-[#6100FF] hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Chat</span>
+                </button>
+              </Link>
 
-            <Link href={`/messaging?vendorId=${product.vendor?._id || product.vendor}`}>
-                  <button className="bg-gray-800/50 cursor-pointer border w-full border-[#6100FF] hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
-                <MessageCircle className="w-4 h-4" />
-                <span>Chat</span>
-              </button>
-            </Link>
-            
-                
-              <button 
+              <button
                 onClick={() => setShowSizeGuide(true)}
                 className="bg-gray-800/50 border border-[#6100FF] hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
               >
@@ -502,12 +772,20 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             {/* Custom Design Feature - Show only if product.isCustom is true */}
             {product.isCustom && (
               <div className="bg-purple-900/20 border border-purple-600 rounded-lg p-4">
-                <h3 className="font-medium mb-2 text-purple-300">Custom Design Feature</h3>
-                <p className="text-sm text-gray-300 mb-4">This design supports custom mix-mixing! You can combine elements from different products to create your unique style.</p>
-                <Link href={`/design-request?productId=${product._id}`} onClick={handleCustomDesign}>
-                <button className="w-full cursor-pointer bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
-                  Custom Design
-                </button>
+                <h3 className="font-medium mb-2 text-purple-300">
+                  Custom Design Feature
+                </h3>
+                <p className="text-sm text-gray-300 mb-4">
+                  This design supports custom mix-mixing! You can combine
+                  elements from different products to create your unique style.
+                </p>
+                <Link
+                  href={`/design-request?productId=${product._id}`}
+                  onClick={handleCustomDesign}
+                >
+                  <button className="w-full cursor-pointer bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors">
+                    Custom Design
+                  </button>
                 </Link>
               </div>
             )}
@@ -519,7 +797,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       {showEventModal && (
         <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
           <div className="bg-black border border-gray-800 rounded-3xl max-w-lg w-full relative animate-fadeIn">
-
             <button
               onClick={() => setShowEventModal(false)}
               className="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-800/50 hover:bg-gray-700 flex items-center justify-center transition-colors z-10"
@@ -529,7 +806,9 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
             <div className="text-center pt-8 pb-6 border-b border-gray-800">
               <h2 className="text-2xl font-semibold">Choose an Event</h2>
-              <p className="text-gray-400 text-sm mt-2">Select an event to add this product</p>
+              <p className="text-gray-400 text-sm mt-2">
+                Select an event to add this product
+              </p>
             </div>
 
             <div className="p-6 space-y-4 max-h-[50vh] overflow-y-auto custom-scrollbar">
@@ -540,7 +819,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                   <button
                     onClick={() => {
                       setShowEventModal(false);
-                      router.push('/settings/events');
+                      router.push("/settings/events");
                     }}
                     className="mt-4 text-purple-400 hover:text-purple-300 text-sm"
                   >
@@ -553,8 +832,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                     key={event._id}
                     className={`relative flex items-start p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300 ${
                       selectedEventId === event._id
-                        ? 'border-purple-500 bg-purple-900/20'
-                        : 'border-gray-700 bg-gray-900/30 hover:border-purple-500/50 hover:bg-purple-900/10'
+                        ? "border-purple-500 bg-purple-900/20"
+                        : "border-gray-700 bg-gray-900/30 hover:border-purple-500/50 hover:bg-purple-900/10"
                     }`}
                   >
                     <input
@@ -566,13 +845,22 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                       className="w-5 h-5 text-purple-600 bg-gray-800 border-gray-600 focus:ring-purple-500 focus:ring-2 mt-1"
                     />
                     <div className="ml-3 flex-1">
-                      <h3 className="text-lg font-semibold mb-3">{event.title}</h3>
+                      <h3 className="text-lg font-semibold mb-3">
+                        {event.title}
+                      </h3>
 
                       <div className="flex items-center gap-2 text-sm text-gray-400 mb-2">
                         <Calendar className="w-4 h-4" />
-                        <span>{event.eventDate ? new Date(event.eventDate).toLocaleDateString('en-US', {
-                          dateStyle: 'medium'
-                        }) : 'Date not set'}</span>
+                        <span>
+                          {event.eventDate
+                            ? new Date(event.eventDate).toLocaleDateString(
+                                "en-US",
+                                {
+                                  dateStyle: "medium",
+                                },
+                              )
+                            : "Date not set"}
+                        </span>
                       </div>
 
                       <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -581,12 +869,16 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                       </div>
 
                       <div className="mt-3 flex items-center gap-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          event.purchaseOption === 'creator'
-                            ? 'bg-purple-600/20 text-purple-400'
-                            : 'bg-blue-600/20 text-blue-400'
-                        }`}>
-                          {event.purchaseOption === 'creator' ? 'Buy Creator' : 'By Participants'}
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            event.purchaseOption === "creator"
+                              ? "bg-purple-600/20 text-purple-400"
+                              : "bg-blue-600/20 text-blue-400"
+                          }`}
+                        >
+                          {event.purchaseOption === "creator"
+                            ? "Buy Creator"
+                            : "By Participants"}
                         </span>
                         <span className="text-xs text-gray-500">
                           {event?.participant.leanght || 0} participants
@@ -606,12 +898,14 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
                 Cancel
               </button>
               <button
-                onClick={() => selectedEventId && handleAddToEvent(selectedEventId)}
+                onClick={() =>
+                  selectedEventId && handleAddToEvent(selectedEventId)
+                }
                 disabled={!selectedEventId}
                 className={`flex-1 px-6 py-3 rounded-xl font-medium transition-colors ${
                   selectedEventId
-                    ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white'
-                    : 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                    ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white"
+                    : "bg-gray-800 text-gray-500 cursor-not-allowed"
                 }`}
               >
                 Add Product to Event
@@ -622,9 +916,12 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       )}
 
       {/* Size Guide Modals */}
-      {showSizeGuide && (
-        product.category === 'shoe' ? <ShoeSizeGuide /> : <ClothingSizeGuide />
-      )}
+      {showSizeGuide &&
+        (product.category === "shoe" ? (
+          <ShoeSizeGuide />
+        ) : (
+          <ClothingSizeGuide />
+        ))}
 
       <style jsx>{`
         @keyframes fadeIn {
@@ -637,7 +934,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
             transform: scale(1);
           }
         }
-        
+
         .animate-fadeIn {
           animation: fadeIn 0.2s ease-out;
         }
