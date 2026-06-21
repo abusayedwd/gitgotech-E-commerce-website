@@ -6,7 +6,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useGetProductByEventQuery, useGetEventByIdQuery } from '@/redux/features/event/eventSlice';
-import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+import url from '@/redux/api/baseUrl';
 
 type Product = {
   _id: string;
@@ -39,7 +39,7 @@ const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOp
 
   const productData = product.product;
   const imageSrc = productData.product_images?.[0]
-    ? `${IMAGE_BASE_URL}/${productData.product_images[0]}`
+    ? `${url}/${productData.product_images[0]}`
     : '/images/jacket.png';
 
   const vendorName = typeof productData.vendor === 'object'

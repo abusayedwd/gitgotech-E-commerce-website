@@ -7,6 +7,7 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { useUpdateProfileMutation, useGetMyProfileQuery } from '@/redux/features/settings/settingsSlice';
 import toast from 'react-hot-toast';
 import url from '@/redux/api/baseUrl';
+
  
 
 export default function EditProfilePage() {
