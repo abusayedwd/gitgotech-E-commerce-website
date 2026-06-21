@@ -1,35 +1,15 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
-import { addToGuestCart } from "@/lib/guestCart";
-import url from "@/redux/api/baseUrl";
-// import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
- 
-import {
-  useEventProductAddMutation,
-  useGetEventsForProductAddQuery,
-} from "@/redux/features/event/eventSlice";
-import {
-  useAddToCartWishListMutation,
-  useGetProductDetailsforCustomerQuery,
-} from "@/redux/features/home/homeSlice";
-import {
-  Calendar,
-  Heart,
-  Info,
-  MapPin,
-  MessageCircle,
-  Minus,
-  Plus,
-  Ruler,
-  ShoppingCart,
-  Star,
-  X,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { useState } from 'react';
+import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
+import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+import toast from 'react-hot-toast';
+import { useEventProductAddMutation, useGetEventsForProductAddQuery } from '@/redux/features/event/eventSlice';
+import { useAuth } from '@/hooks/useAuth';
+import { addToGuestCart } from '@/lib/guestCart';
 
 interface ProductDetailsProps {
   productId?: string | null;
@@ -507,12 +487,8 @@ const sizeData = [
           <div className="space-y-4">
             <div className="relative bg-white rounded-lg p-8">
               <img
-                src={
-                  product?.product_images?.[0]
-                    ? `${url}/${product.product_images[0]}`
-                    : product?.image || "/images/jacket.png"
-                }
-                alt={product?.product_name || "Product"}
+                src={product?.product_images?.[0] ? `${IMAGE_BASE_URL}/${product.product_images[0]}` : product?.image || '/images/jacket.png'}
+                alt={product?.product_name || 'Product'}
                 className="w-full rounded-lg"
               />
               {product?.isMixable && (
