@@ -1,5 +1,7 @@
 "use client";
 
+import { useAuth } from "@/hooks/useAuth";
+import { useGetProductDetailsforCustomerQuery } from "@/redux/features/home/homeSlice";
 import { useAddCustomOrderMutation } from "@/redux/features/order/orderSlice";
 import {
   CheckCircle2,
@@ -16,8 +18,6 @@ import toast from "react-hot-toast";
 import MapComponent, {
   SelectedLocation as MapSelectedLocation,
 } from "../CustomerDashboard/Location";
-import { useGetProductDetailsforCustomerQuery } from "@/redux/features/home/homeSlice";
-import { useAuth } from "@/hooks/useAuth";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface SelectedLocation {
@@ -167,10 +167,13 @@ function LocationMapPicker({
         zoom: 13,
       });
 
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-        attribution: "© OpenStreetMap contributors © CARTO",
-        maxZoom: 19,
-      }).addTo(map);
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+        {
+          attribution: "© OpenStreetMap contributors © CARTO",
+          maxZoom: 19,
+        },
+      ).addTo(map);
 
       const marker = L.marker([initialLat, initialLng], {
         icon: customIcon,
@@ -407,12 +410,14 @@ export default function CustomDesignRequest() {
   const searchParams = useSearchParams();
   const productId = searchParams.get("productId") || undefined;
 
+  const { data: productData } = useGetProductDetailsforCustomerQuery(
+    productId || "",
+    {
+      skip: !productId,
+    },
+  );
 
-    const { data: productData } = useGetProductDetailsforCustomerQuery(productId || '', {
-      skip: !productId
-    });
-
-    console.log(productData)
+  console.log(productData);
 
   const [measurements, setMeasurements] = useState<Measurements>({
     chest: "",
@@ -624,7 +629,9 @@ export default function CustomDesignRequest() {
         ? { country: selectedLocation.country }
         : {}),
       ...(selectedLocation.state ? { state: selectedLocation.state } : {}),
-      ...(selectedLocation.zipCode ? { zipcode: selectedLocation.zipCode } : {}),
+      ...(selectedLocation.zipCode
+        ? { zipcode: selectedLocation.zipCode }
+        : {}),
     }));
   };
 
@@ -1073,7 +1080,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Waist (Inches)
+                    Waist (Centimeter)
                   </label>
                   <input
                     type="text"
@@ -1087,7 +1094,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Hips (Inches)
+                    Hips (Centimeter)
                   </label>
                   <input
                     type="text"
@@ -1103,7 +1110,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Inseam (Inches)
+                    Inseam (Centimeter)
                   </label>
                   <input
                     type="text"
@@ -1117,7 +1124,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Outseam (Inches)
+                    Outseam (Centimeter)
                   </label>
                   <input
                     type="text"
@@ -1132,7 +1139,7 @@ export default function CustomDesignRequest() {
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-2">
-                  Thigh (Inches)
+                  Thigh (Centimeter)
                 </label>
                 <input
                   type="text"
