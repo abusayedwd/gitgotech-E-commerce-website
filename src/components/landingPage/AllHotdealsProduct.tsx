@@ -128,7 +128,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from 'react-icons/fa';
 import styles from "./../../customComponent/Discount.module.css"
-import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import url from "@/redux/api/baseUrl";
 
 export default function AllHotdealsProduct({ 
   searchQuery, 
@@ -202,7 +202,7 @@ export default function AllHotdealsProduct({
             {products.map((product) => {
               const discount = product.discount?.percentage || 0;
               const imageUrl = product.product_images?.[0]
-                ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
+                ? `${url}/${product.product_images[0]}`
                 : '/images/jacket.png';
 
               return (

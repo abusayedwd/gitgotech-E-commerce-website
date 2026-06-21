@@ -188,7 +188,7 @@ export default function ProfilePage() {
 
   const [logoutUser] = useLogoutUserMutation();
 
-  console.log(getOrCreateDeviceId(), "profile data get>>>>>>>>:");
+  // console.log(getOrCreateDeviceId(), "profile data get>>>>>>>>:");
 
   const handleLogout = async () => {
     setIsLogoutModalOpen(false);

@@ -736,7 +736,7 @@ export default function CustomDesignManagement() {
     isLoading,
     error,
   } = useGetCustomerCustomOrdersQuery({ page: 1, limit: 10 });
-  console.log(customOrdersData);
+  // console.log(customOrdersData);
   const ordersList = Array.isArray(customOrdersData?.data)
     ? customOrdersData.data
     : [];

@@ -1,6 +1,6 @@
 "use client";
 
-import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import url from '@/redux/api/baseUrl';
 import { useGetShowroomProductQuery } from "@/redux/features/home/homeSlice";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -94,7 +94,7 @@ export default function TopPoduct({
             {displayProducts.map((product: any) => {
               const discount = product.discount?.percentage || 0;
               const imageUrl = product.product_images?.[0]
-                ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
+                ? `${url}/${product.product_images[0]}`
                 : "/images/jacket.png";
 
               return (

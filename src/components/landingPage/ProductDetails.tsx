@@ -2,7 +2,9 @@
 
 import { useAuth } from "@/hooks/useAuth";
 import { addToGuestCart } from "@/lib/guestCart";
-import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import url from "@/redux/api/baseUrl";
+// import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+ 
 import {
   useEventProductAddMutation,
   useGetEventsForProductAddQuery,
@@ -507,7 +509,7 @@ const sizeData = [
               <img
                 src={
                   product?.product_images?.[0]
-                    ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
+                    ? `${url}/${product.product_images[0]}`
                     : product?.image || "/images/jacket.png"
                 }
                 alt={product?.product_name || "Product"}

@@ -2,7 +2,8 @@
 
 import { useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 import { useRouter } from 'next/navigation';
-import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
+ 
+import url from '@/redux/api/baseUrl';
 
 const gradients = [
   'from-purple-600 to-blue-500',
@@ -26,7 +27,7 @@ export default function CategoryMarquee() {
 
   const { data: categoriesRes, isLoading } = useGetHomeCategoriesQuery({});
   const categories: Category[] = categoriesRes?.data ?? [];
-  console.log(categories)
+  // console.log(categories)
 
   if (isLoading || categories.length === 0) return null;
 
@@ -42,7 +43,7 @@ export default function CategoryMarquee() {
       <div className="animate-marquee">
         {repeated.map((category, index) => {
           const imageUrl = category.image
-            ? `${IMAGE_BASE_URL}/${category.image}`
+            ? `${url}/${category.image}`
             : null;
 
           return (

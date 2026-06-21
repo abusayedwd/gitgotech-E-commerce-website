@@ -7,10 +7,14 @@ import { FaArrowLeft } from 'react-icons/fa';
 import { useUpdateProfileMutation, useGetMyProfileQuery } from '@/redux/features/settings/settingsSlice';
 import toast from 'react-hot-toast';
 import url from '@/redux/api/baseUrl';
+ 
 
 export default function EditProfilePage() {
     const router = useRouter();
     const { data: profileData } = useGetMyProfileQuery(undefined);
+
+    // console.log('Profile Data:',url, profileData?.data?.image);
+
     const [updateProfile] = useUpdateProfileMutation();
     
     const [formData, setFormData] = useState({
@@ -98,7 +102,7 @@ export default function EditProfilePage() {
           <div className="relative mb-3">
             <div className="w-24 h-24 rounded-full bg-gray-700 overflow-hidden">
               <img
-                src={profileData?.data?.image ? `${url}${profileData.data.image}` : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop"}
+                src={profileData?.data ? `${url}/${profileData.data.image}` : "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop"}
                 alt="Profile"
                 className="w-full h-full object-cover"
                 onError={(e) => {

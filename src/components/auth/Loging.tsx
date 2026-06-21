@@ -33,33 +33,45 @@ export default function LoginPage() {
         deviceId,
       }).unwrap();
 
-      if (res?.success || res?.status === 200) {
+      const token = res?.token || res?.data?.token || res?.data?.accessToken;
+      const user = res?.data?.user || res?.user || res?.data;
+
+      // Treat the presence of a token as success — some backends don't return
+      // a `success` flag. Fall back to res.success / res.status for backends
+      // that don't include the token at the top level.
+      const loggedIn = !!token || res?.success === true || res?.status === 200;
+
+      if (loggedIn) {
         toast.success(res?.message || "Login successful!");
 
-        // Store token
-        const token = res?.token || res?.data?.token;
-        if (token) {
-          localStorage.setItem("token", token);
-        }
+        if (token) localStorage.setItem("token", token);
 
-        // Get user data and store with isLoggedIn flag
-        const user = res?.data?.user || res?.user;
         const role = user?.role || "customer";
-
         const userToStore = {
-          ...user,
+          ...(user || {}),
           isLoggedIn: true,
-          role: role,
+          role,
         };
         localStorage.setItem("user", JSON.stringify(userToStore));
 
+        // Clear stale FCM dedup so the new session re-registers cleanly.
+        localStorage.removeItem("fcmTokenSynced");
+
+        // Tell <FcmTokenSync /> + useAuth listeners that auth state changed.
         window.dispatchEvent(new Event("authChanged"));
+        console.log("[Login] dispatched authChanged. user:", userToStore);
 
         if (role === "vendor") {
           router.push("/vendor-dashboard");
         } else {
           router.push("/");
         }
+      } else {
+        console.warn(
+          "[Login] response did not look successful (no token / no success flag):",
+          res,
+        );
+        toast.error(res?.message || "Login failed");
       }
     } catch (err: any) {
       const errorMessage =

@@ -370,7 +370,7 @@ export default function CouponsPage() {
 
   const { data: couponData, isLoading, isError, refetch } = useGetAllCouponsQuery({});
   const { data: myCouponData, isLoading: myLoading, refetch: refetchMy } = useGetMyCouponsQuery({});
-  console.log(myCouponData)
+  // console.log(myCouponData)
   const [takeCoupon, { isLoading: isTaking }] = useTakeCouponMutation();
 
   const coupons: Coupon[] = couponData?.data?.data ?? [];

@@ -7,6 +7,8 @@ import { useGetProductsByCategoryQuery } from '@/redux/features/home/homeSlice';
 import styles from '@/customComponent/Discount.module.css';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 
+
+
 export default function CategoryPage() {
   const router = useRouter();
   const params = useParams();

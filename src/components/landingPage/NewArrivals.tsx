@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import styles from "./../../customComponent/Discount.module.css"
 import BackButton from "@/customComponent/BackButton";
-import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import url from "@/redux/api/baseUrl";
 
 export default function NewArrivals({ 
   searchQuery, 
@@ -34,7 +34,7 @@ export default function NewArrivals({
             {products.map((product) => {
               const discount = product.discount?.percentage || 0;
               const imageUrl = product.product_images?.[0]
-                ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
+                ? `${url}/${product.product_images[0]}`
                 : '/images/jacket.png';
 
               return (

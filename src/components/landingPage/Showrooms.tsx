@@ -1,5 +1,5 @@
 "use client";
-import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import url from '@/redux/api/baseUrl';
 import {
   useGetAllShowroomQuery,
   useGetHomeCategoriesQuery,
@@ -125,7 +125,7 @@ export default function ShowroomsPage() {
                 {/* Showroom Image with Logo Overlay */}
                 <div className="relative h-[210px] overflow-hidden">
                   <img
-                    src={`${IMAGE_BASE_URL}/${showroom.logo}`}
+                    src={`${url}/${showroom.logo}`}
                     alt={showroom.showroom_name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />

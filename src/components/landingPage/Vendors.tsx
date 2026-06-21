@@ -1,6 +1,6 @@
 "use client";
 
-import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import url from '@/redux/api/baseUrl';
 import { useTopVendorsQuery } from "@/redux/features/home/homeSlice";
 import { Search } from "lucide-react";
 import Link from "next/link";
@@ -27,7 +27,7 @@ export default function VendorsPage() {
   const getImageUrl = (image: string) => {
     if (!image) return null;
     if (image.startsWith("http")) return image;
-    return `${IMAGE_BASE_URL}/${image}`;
+    return `${url}/${image}`;
   };
 
   return (
