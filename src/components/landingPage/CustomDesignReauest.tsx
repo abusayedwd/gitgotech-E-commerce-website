@@ -417,7 +417,7 @@ export default function CustomDesignRequest() {
     },
   );
 
-  console.log(productData);
+  // console.log(productData);
 
   const [measurements, setMeasurements] = useState<Measurements>({
     chest: "",
@@ -802,13 +802,13 @@ export default function CustomDesignRequest() {
               </h2>
             </div>
             <p className="text-gray-400 text-sm mb-6">
-              Provide measurements in centimeters. Fill in only what you know.
+              Provide measurements in Cm. Fill in only what you know.
             </p>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Chest (centimeters)
+                    Chest (Cm)
                   </label>
                   <input
                     type="text"
@@ -822,7 +822,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Shoulder Width (centimeters)
+                    Shoulder Width (Cm)
                   </label>
                   <input
                     type="text"
@@ -838,7 +838,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Arm Length (centimeters)
+                    Arm Length (Cm)
                   </label>
                   <input
                     type="text"
@@ -852,7 +852,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Inseam (centimeters)
+                    Inseam (Cm)
                   </label>
                   <input
                     type="text"
@@ -868,7 +868,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Neck (centimeters)
+                    Neck (Cm)
                   </label>
                   <input
                     type="text"
@@ -882,7 +882,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Length (centimeters)
+                    Length (Cm)
                   </label>
                   <input
                     type="text"
@@ -937,7 +937,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Waist (centimeters)
+                    Waist (Cm)
                   </label>
                   <input
                     type="text"
@@ -951,7 +951,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Hips (centimeters)
+                    Hips (Cm)
                   </label>
                   <input
                     type="text"
@@ -967,7 +967,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Inseam (centimeters)
+                    Inseam (Cm)
                   </label>
                   <input
                     type="text"
@@ -981,7 +981,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Outseam (centimeters)
+                    Outseam (Cm)
                   </label>
                   <input
                     type="text"
@@ -997,7 +997,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Thigh (centimeters)
+                    Thigh (Cm)
                   </label>
                   <input
                     type="text"
@@ -1011,7 +1011,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Knee (centimeters)
+                    Knee (Cm)
                   </label>
                   <input
                     type="text"
@@ -1026,7 +1026,7 @@ export default function CustomDesignRequest() {
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-2">
-                  Ankle (centimeters)
+                  Ankle (Cm)
                 </label>
                 <input
                   type="text"
@@ -1080,7 +1080,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Waist (Centimeter)
+                    Waist (Cm)
                   </label>
                   <input
                     type="text"
@@ -1094,7 +1094,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Hips (Centimeter)
+                    Hips (Cm)
                   </label>
                   <input
                     type="text"
@@ -1110,7 +1110,7 @@ export default function CustomDesignRequest() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Inseam (Centimeter)
+                    Inseam (Cm)
                   </label>
                   <input
                     type="text"
@@ -1124,7 +1124,7 @@ export default function CustomDesignRequest() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-300 mb-2">
-                    Outseam (Centimeter)
+                    Outseam (Cm)
                   </label>
                   <input
                     type="text"
@@ -1139,7 +1139,7 @@ export default function CustomDesignRequest() {
               </div>
               <div>
                 <label className="block text-sm text-gray-300 mb-2">
-                  Thigh (Centimeter)
+                  Thigh (Cm)
                 </label>
                 <input
                   type="text"

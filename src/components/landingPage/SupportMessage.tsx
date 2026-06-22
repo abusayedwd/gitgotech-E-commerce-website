@@ -15,6 +15,36 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const SUPPORT_SIDE_ROLES = ['customer', 'vendor'];
+
+// Pretty label for the "Support Side" of the chat (admin / manager / support).
+const ROLE_LABELS: Record<string, string> = {
+  support: 'Support',
+  manager: 'Manager',
+  admin: 'Admin',
+  superadmin: 'Super Admin',
+};
+
+const roleColor = (role: string) => {
+  switch ((role || '').toLowerCase()) {
+    case 'admin':
+    case 'superadmin':
+      return 'bg-red-500/20 text-red-300';
+    case 'manager':
+      return 'bg-amber-500/20 text-amber-300';
+    case 'support':
+      return 'bg-emerald-500/20 text-emerald-300';
+    default:
+      return 'bg-gray-700 text-gray-300';
+  }
+};
+
+const formatRole = (role?: string) => {
+  if (!role) return '';
+  const lower = role.toLowerCase();
+  return (
+    ROLE_LABELS[lower] || lower.charAt(0).toUpperCase() + lower.slice(1)
+  );
+};
 const IMAGE_EXT_RE = /\.(png|jpe?g|gif|webp|bmp|svg|avif)(\?|$)/i;
 
 const isImageAttachment = (path: string) => IMAGE_EXT_RE.test(path || '');
@@ -413,9 +443,24 @@ export default function SupportMessage() {
                         )}
 
                         <div className={`flex flex-col gap-1 max-w-[75%] ${mine ? 'items-end' : 'items-start'}`}>
-                          <span className="text-xs text-gray-500 px-1">
-                            {mine ? 'You' : message.senderId?.name || 'Support'}
-                          </span>
+                          {mine ? (
+                            <span className="text-xs text-gray-500 px-1">You</span>
+                          ) : (
+                            <div className="flex items-center gap-1.5 px-1">
+                              <span className="text-xs text-gray-300 font-medium">
+                                {message.senderId?.name || 'Support'}
+                              </span>
+                              {message.senderRole && (
+                                <span
+                                  className={`text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded ${roleColor(
+                                    message.senderRole,
+                                  )}`}
+                                >
+                                  {formatRole(message.senderRole)}
+                                </span>
+                              )}
+                            </div>
+                          )}
 
                           {message.attachments?.length > 0 && (
                             <div className={`flex flex-wrap gap-2 ${mine ? 'justify-end' : 'justify-start'}`}>

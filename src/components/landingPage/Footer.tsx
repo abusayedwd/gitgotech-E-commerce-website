@@ -5,7 +5,7 @@ import { Mail, Phone } from 'lucide-react';
 import { FaTiktok } from 'react-icons/fa';
 import { useSupportModal } from '@/context/SupportModalContext';
 
-const SUPPORT_EMAIL = 'support@techpit.com';
+const SUPPORT_EMAIL = 'support@sleeknit.com';
 const GMAIL_COMPOSE = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(SUPPORT_EMAIL)}`;
 /** Replace with your brand TikTok profile when ready */
 const TIKTOK_URL = 'https://www.tiktok.com/@sleeknit';
