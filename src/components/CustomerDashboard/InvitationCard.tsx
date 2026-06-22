@@ -656,7 +656,7 @@ export default function InvitationCard() {
                     </p>
                   )}
                   <p 
-                    className="text-yellow-400 text-2xl md:text-3xl font-bold drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]"
+                    className="text-[#4f6950] text-2xl md:text-3xl font-bold drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]"
                     style={{
                       textShadow: '4px 4px 8px rgba(0,0,0,0.9), -1px -1px 3px rgba(0,0,0,0.8)',
                       WebkitTextStroke: '1.5px black'
