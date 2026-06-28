@@ -39,7 +39,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Built for creators and businesses, SleekNlit lets every vendor run their own store while helping customers plan events, manage guests, send invitations, and place orders seamlessly.
+              Built for creators and businesses, SleekNit lets every vendor run their own store while helping customers plan events, manage guests, send invitations, and place orders seamlessly.
             </p>
           </div>
 
@@ -104,7 +104,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center">
                 <Phone className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
-                <span className="text-gray-400 font-poppins text-sm">(02) 0454658562</span>
+                <span className="text-gray-400 font-poppins text-sm">+233 554004232</span>
               </li>
             </ul>
             <div className="flex space-x-3 mt-4">

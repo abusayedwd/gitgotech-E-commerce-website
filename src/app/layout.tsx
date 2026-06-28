@@ -85,7 +85,7 @@ const cormorantGaramond = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "GitGoTech - Digital Solutions for Your Business",
+  title: "Sleeknit - Digital Solutions for Your Business",
   description:
     "Transform your digital presence with cutting-edge web and app development",
 };
