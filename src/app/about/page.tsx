@@ -1,11 +1,12 @@
 'use client';
 
-import { useGetAboutQuery } from '@/redux/features/settings/settingsSlice';
+import { useGetAboutUsQuery } from '@/redux/features/settings/settingsSlice';
 import FooterPageBack from '@/components/landingPage/FooterPageBack';
 
 export default function AboutPage() {
-  const { data: aboutData, isLoading } = useGetAboutQuery({});
+  const { data: aboutData, isLoading } = useGetAboutUsQuery({});
   const aboutInfo = aboutData?.data;
+  console.log(aboutInfo);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
@@ -22,9 +23,16 @@ export default function AboutPage() {
               <span className="ml-3 text-gray-400">Loading about us...</span>
             </div>
           ) : (
-            <div className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
-              <p className="text-gray-300 whitespace-pre-wrap">
-                {aboutInfo?.description || 'No about us content available.'}
+            <div 
+            className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
+              <p className="text-gray-300 whitespace-pre-wrap"
+              
+              >
+                {/* {aboutInfo?.value || 'No about us content available.'} */}
+                <div
+                className="prose prose-invert max-w-none text-gray-300"
+                dangerouslySetInnerHTML={{ __html: aboutInfo?.value || 'No about us content available.' }}
+              />
               </p>
             </div>
           )}

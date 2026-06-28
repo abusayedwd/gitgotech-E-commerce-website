@@ -40,8 +40,12 @@ export default function TermsConditionsPage() {
           ) : (
             <div className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
               <p className="text-gray-300 whitespace-pre-wrap">
-                {termsInfo?.description ||
-                  "No terms and conditions content available."}
+                {/* {termsInfo?.value ||
+                  "No terms and conditions content available."} */}
+                <div
+                className="prose prose-invert max-w-none text-gray-300"
+                dangerouslySetInnerHTML={{ __html: termsInfo?.value || 'No terms and conditions content available.' }}
+              />
               </p>
             </div>
           )}

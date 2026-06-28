@@ -5,21 +5,39 @@ const settingsSlice = apiSlice.injectEndpoints({
 
     // Get Terms
     getTerms: builder.query({
-      query: () => "/terms",
-     
+      query: () => ({
+        url: `/setting/terms-conditions`,
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
     }),
 
     // Get About
-    getAbout: builder.query({
-      query: () => "/about",
-  
+    getAboutUs: builder.query({
+      query: () => ({
+        url: `/setting/about-us`,
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
     }),
 
     // Get Privacy Policy
     getPrivacy: builder.query({
-      query: () => "/privacy",
- 
+      query: () => ({
+        url: `/setting/privacy-policy`,
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
     }),
+
+
+    platformFree: builder.query({
+      query: () => ({
+        url: "/platform-setting",
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
+     }),
 
     // Change Password
     changePassword: builder.mutation({
@@ -51,9 +69,11 @@ const settingsSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetTermsQuery,
-  useGetAboutQuery,
+  useGetAboutUsQuery,
   useGetPrivacyQuery,
   useChangePasswordMutation,
   useGetMyProfileQuery,
   useUpdateProfileMutation,
+
+  usePlatformFreeQuery,
 } = settingsSlice;

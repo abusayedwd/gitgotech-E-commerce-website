@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from 'react';
-import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
@@ -22,6 +22,16 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const [showEventModal, setShowEventModal] = useState(false);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [showLightbox, setShowLightbox] = useState(false);
+  const [zoomActive, setZoomActive] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [previewTop, setPreviewTop] = useState(0);
+  const mainImageRef = useRef<HTMLImageElement>(null);
+  const mainImageAreaRef = useRef<HTMLDivElement>(null);
+
+  const ZOOM_SCALE = 3.2;
+  const PREVIEW_SIZE = 380;
 
   const { data: productData, isLoading } = useGetProductDetailsforCustomerQuery(
     productId || "",
@@ -29,7 +39,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       skip: !productId,
     },
   );
-  console.log(productData);
 
   const { data: eventdata } = useGetEventsForProductAddQuery(undefined);
   const [addproductToEvent] = useEventProductAddMutation();
@@ -37,7 +46,6 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const events = Array.isArray(eventdata?.data?.data)
     ? eventdata?.data?.data
     : [];
-  console.log(eventdata);
 
   const handleAddToEvent = async (eventId: string) => {
     try {
@@ -59,6 +67,54 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const { isLoggedIn, requireLogin } = useAuth();
 
   const product = productData?.data || null;
+
+  useEffect(() => {
+    setSelectedImageIndex(0);
+    setShowLightbox(false);
+    setZoomActive(false);
+  }, [productId, product?._id]);
+
+  useEffect(() => {
+    setZoomActive(false);
+  }, [selectedImageIndex]);
+
+  const handleImageZoomMove = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      const img = mainImageRef.current;
+      const area = mainImageAreaRef.current;
+      if (!img || !area) return;
+
+      const areaRect = area.getBoundingClientRect();
+      const imgRect = img.getBoundingClientRect();
+      const x = ((e.clientX - imgRect.left) / imgRect.width) * 100;
+      const y = ((e.clientY - imgRect.top) / imgRect.height) * 100;
+
+      if (x < 0 || x > 100 || y < 0 || y > 100) {
+        setZoomActive(false);
+        return;
+      }
+
+      const cursorY = e.clientY - areaRect.top;
+      let clampedTop: number;
+      if (PREVIEW_SIZE >= areaRect.height - 16) {
+        clampedTop = (areaRect.height - PREVIEW_SIZE) / 2;
+      } else {
+        clampedTop = Math.min(
+          Math.max(cursorY - PREVIEW_SIZE / 2, 8),
+          areaRect.height - PREVIEW_SIZE - 8,
+        );
+      }
+
+      setZoomActive(true);
+      setZoomPos({ x, y });
+      setPreviewTop(clampedTop);
+    },
+    [PREVIEW_SIZE],
+  );
+
+  const handleImageZoomLeave = useCallback(() => {
+    setZoomActive(false);
+  }, []);
 
   if (isLoading) {
     return (
@@ -452,6 +508,37 @@ const sizeData = [
     );
   };
 
+  const rawImages =
+    product.product_images?.filter((img: string) => Boolean(img)) || [];
+  const productImages =
+    rawImages.length > 0
+      ? [...new Set(rawImages as string[])]
+      : product.image
+        ? [product.image]
+        : [];
+
+  const getImageUrl = (img: string) =>
+    img.startsWith("http") ? img : `${url}/${img}`;
+
+  const currentImageUrl =
+    productImages.length > 0
+      ? getImageUrl(
+          productImages[selectedImageIndex] ?? productImages[0],
+        )
+      : "/images/jacket.png";
+
+  const goToPrevImage = () => {
+    if (productImages.length <= 1) return;
+    setSelectedImageIndex(
+      (prev) => (prev - 1 + productImages.length) % productImages.length,
+    );
+  };
+
+  const goToNextImage = () => {
+    if (productImages.length <= 1) return;
+    setSelectedImageIndex((prev) => (prev + 1) % productImages.length);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white mt-20">
       <div className="container mx-auto px-4 py-8">
@@ -483,19 +570,130 @@ const sizeData = [
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Product Image Section */}
-          <div className="space-y-4">
-            <div className="relative bg-white rounded-lg p-8">
-              <img
-                src={product?.product_images?.[0] ? `${url}/${product.product_images[0]}` : product?.image || '/images/jacket.png'}
-                alt={product?.product_name || 'Product'}
-                className="w-full rounded-lg"
-              />
-              {product?.isMixable && (
-                <button className="absolute top-4 right-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                  Mix Design
-                </button>
+          {/* Product Image Gallery */}
+          <div className="space-y-4 overflow-visible">
+            <div className="flex flex-col-reverse md:flex-row gap-3 overflow-visible">
+              {/* Thumbnail strip */}
+              {productImages.length > 1 && (
+                <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-y-auto md:max-h-[min(520px,70vw)] pb-1 md:pb-0 custom-scrollbar md:w-[76px] flex-shrink-0">
+                  {productImages.map((src: string, i: number) => (
+                    <button
+                      key={`${src}-${i}`}
+                      type="button"
+                      onClick={() => setSelectedImageIndex(i)}
+                      aria-label={`View image ${i + 1}`}
+                      aria-current={selectedImageIndex === i}
+                      className={`flex-shrink-0 w-[68px] h-[68px] md:w-[72px] md:h-[72px] rounded-lg overflow-hidden border-2 bg-white transition-all duration-200 ${
+                        selectedImageIndex === i
+                          ? "border-[#6100FF] ring-2 ring-[#6100FF]/40 shadow-md shadow-purple-500/25 scale-[1.02]"
+                          : "border-gray-200 hover:border-purple-400 opacity-75 hover:opacity-100"
+                      }`}
+                    >
+                      <img
+                        src={getImageUrl(src)}
+                        alt={`${product.product_name} thumbnail ${i + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
               )}
+
+              {/* Main image */}
+              <div className="relative flex-1 min-w-0 overflow-visible">
+                <div
+                  ref={mainImageAreaRef}
+                  className="relative bg-white rounded-xl overflow-hidden group shadow-lg shadow-black/20"
+                >
+                  <div
+                    className="relative aspect-square flex items-center justify-center p-4 sm:p-6 cursor-zoom-in md:cursor-crosshair"
+                    onClick={() => setShowLightbox(true)}
+                    onMouseMove={handleImageZoomMove}
+                    onMouseLeave={handleImageZoomLeave}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        setShowLightbox(true);
+                      }
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    aria-label="Open image in full screen"
+                  >
+                    <img
+                      ref={mainImageRef}
+                      key={currentImageUrl}
+                      src={currentImageUrl}
+                      alt={product.product_name || "Product"}
+                      className="max-w-full max-h-full w-full h-full object-contain transition-opacity duration-300 select-none"
+                      draggable={false}
+                    />
+
+                    {productImages.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          goToPrevImage();
+                        }}
+                        aria-label="Previous image"
+                        className="absolute left-2 sm:left-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          goToNextImage();
+                        }}
+                        aria-label="Next image"
+                        className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/50 hover:bg-black/70 text-white flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                      <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                        {selectedImageIndex + 1} / {productImages.length}
+                      </span>
+                    </>
+                  )}
+
+                  <div className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/40 text-white hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                    <ZoomIn className="w-4 h-4" />
+                  </div>
+
+                  {product?.isMixable && (
+                    <span className="absolute top-3 left-3 bg-blue-500 text-white px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium z-10">
+                      Mix Design
+                    </span>
+                  )}
+                  </div>
+                </div>
+
+                {/* Round zoom preview — beside image, follows hover vertically */}
+                {zoomActive && (
+                  <div
+                    className="hidden md:block absolute z-40 pointer-events-none"
+                    style={{
+                      width: PREVIEW_SIZE,
+                      height: PREVIEW_SIZE,
+                      left: "calc(100% + 20px)",
+                      top: previewTop,
+                    }}
+                  >
+                    <div
+                      className="w-full h-full rounded-full border-4 border-[#6100FF] shadow-2xl shadow-purple-500/40 overflow-hidden bg-white ring-4 ring-purple-500/10"
+                      style={{
+                        backgroundImage: `url(${currentImageUrl})`,
+                        backgroundSize: `${ZOOM_SCALE * 100}%`,
+                        backgroundPosition: `${zoomPos.x}% ${zoomPos.y}%`,
+                        backgroundRepeat: "no-repeat",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -770,6 +968,83 @@ const sizeData = [
           </div>
         </div>
       </div>
+
+      {/* Image Lightbox */}
+      {showLightbox && (
+        <div
+          className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          onClick={() => setShowLightbox(false)}
+        >
+          <button
+            type="button"
+            onClick={() => setShowLightbox(false)}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+            aria-label="Close gallery"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          {productImages.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToPrevImage();
+                }}
+                className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToNextImage();
+                }}
+                className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors z-10"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+
+          <div
+            className="relative max-w-5xl w-full max-h-[85vh] flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={currentImageUrl}
+              alt={product.product_name || "Product"}
+              className="max-w-full max-h-[85vh] object-contain rounded-lg"
+            />
+            {productImages.length > 1 && (
+              <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 flex gap-2 overflow-x-auto max-w-full px-2 custom-scrollbar">
+                {productImages.map((src: string, i: number) => (
+                  <button
+                    key={`lightbox-${src}-${i}`}
+                    type="button"
+                    onClick={() => setSelectedImageIndex(i)}
+                    className={`flex-shrink-0 w-14 h-14 rounded-md overflow-hidden border-2 transition-all ${
+                      selectedImageIndex === i
+                        ? "border-[#6100FF] ring-2 ring-[#6100FF]/50"
+                        : "border-white/20 hover:border-white/50 opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={getImageUrl(src)}
+                      alt=""
+                      className="w-full h-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Event Selection Modal */}
       {showEventModal && (

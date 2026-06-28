@@ -8,6 +8,7 @@ export default function PrivacyPolicyPage() {
   const { data: privacyData, isLoading } = useGetPrivacyQuery({});
 
   const privacyInfo = privacyData?.data;
+  console.log(privacyInfo);
 
   return (
     <div className="min-h-screen md:mt-24 mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
@@ -53,8 +54,12 @@ export default function PrivacyPolicyPage() {
           ) : (
             <div className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
               <p className="text-gray-300 whitespace-pre-wrap">
-                {privacyInfo?.description ||
-                  "No privacy policy content available."}
+                {/* {privacyInfo?.value ||
+                  "No privacy policy content available."} */}
+                <div
+                className="prose prose-invert max-w-none text-gray-300"
+                dangerouslySetInnerHTML={{ __html: privacyInfo?.value || 'No privacy policy content available.' }}
+              />
               </p>
             </div>
           )}
