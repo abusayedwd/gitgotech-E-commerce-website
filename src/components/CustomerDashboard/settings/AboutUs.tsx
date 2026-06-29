@@ -1,12 +1,12 @@
 "use client";
 
-import { useGetAboutQuery } from "@/redux/features/settings/settingsSlice";
+import { useGetAboutUsQuery } from "@/redux/features/settings/settingsSlice";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";
 
 export default function AboutUsPage() {
   const router = useRouter();
-  const { data: aboutData, isLoading } = useGetAboutQuery({});
+  const { data: aboutData, isLoading } = useGetAboutUsQuery({});
 
   const aboutInfo = aboutData?.data;
 
