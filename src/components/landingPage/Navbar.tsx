@@ -336,7 +336,7 @@ export default function Navbar() {
                     : "text-gray-400 hover:text-white"
                 } transition-colors py-2 text-sm sm:text-base`}
               >
-                vendors
+                Vendors
               </Link>
               <Link
                 href="/showroom"
@@ -347,7 +347,7 @@ export default function Navbar() {
                     : "text-gray-400 hover:text-white"
                 } transition-colors py-2 text-sm sm:text-base`}
               >
-                showroom
+                Showroom
               </Link>
               {isLoggedIn && (
                 <Link

@@ -2,19 +2,24 @@
 import { useFilterContext } from "@/context/FilterContext";
 import { useGetHomeCategoriesQuery } from "@/redux/features/home/homeSlice";
 import { ChevronLeft, ChevronRight, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 const FashionSearchNav = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlQuery = searchParams.get("q") || "";
+  // Hide the category tab row whenever a search query is active in the URL.
+  const isSearching = !!urlQuery.trim();
   const { setSelectedCategory, setSearchQuery } = useFilterContext();
   const [activeTab, setActiveTab] = useState("");
-  const [searchQuery, setSearchQueryLocal] = useState("");
+  const [searchQuery, setSearchQueryLocal] = useState(urlQuery);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
   const tabContainerRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: categoriesRes } = useGetHomeCategoriesQuery({});
   const categories = categoriesRes?.data ?? [];
@@ -33,11 +38,47 @@ const FashionSearchNav = () => {
     router.push(`/category/${encodeURIComponent(category.name.toLowerCase())}`);
   };
 
+  // Push the new query into the URL. Use `replace` (not `push`) so live-typing
+  // doesn't pollute history with every keystroke — back button still works.
+  const applySearch = (value: string) => {
+    const q = value.trim();
+    router.replace(q ? `/?q=${encodeURIComponent(q)}` : "/");
+  };
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQueryLocal(value);
     setSearchQuery(value);
+
+    // Debounce so we don't fire on every keystroke
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => applySearch(value), 300);
   };
+
+  const submitSearch = () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    applySearch(searchQuery);
+  };
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      submitSearch();
+    }
+  };
+
+  // Keep the input in sync if the URL `q` is changed by something else
+  // (back/forward navigation, clearing the search via "Cancel", etc.).
+  useEffect(() => {
+    setSearchQueryLocal(urlQuery);
+  }, [urlQuery]);
+
+  // Cleanup pending debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -110,20 +151,25 @@ const FashionSearchNav = () => {
                 type="text"
                 value={searchQuery}
                 onChange={handleSearchChange}
+                onKeyDown={handleSearchKeyDown}
                 placeholder="Find your perfect tailor, design, or outfit."
                 className="w-full border border-gray-700 rounded-lg py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
               />
             </div>
 
             {/* Search Button */}
-            <button className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-colors text-sm">
+            <button
+              type="button"
+              onClick={submitSearch}
+              className="bg-purple-600 hover:bg-purple-700 text-white font-medium px-6 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-colors text-sm"
+            >
               Search
             </button>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="relative">
+        {/* Tab Navigation — hidden while a search query is active */}
+        <div className={`relative ${isSearching ? "hidden" : ""}`}>
           {/* Left Arrow Button - Mobile Only */}
           {showLeftArrow && (
             <button

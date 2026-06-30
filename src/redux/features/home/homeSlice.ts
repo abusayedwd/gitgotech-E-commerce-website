@@ -46,6 +46,12 @@ const homeSlice = apiSlice.injectEndpoints({
       query: () => `/home/category`,
     }),
 
+    // Global search — returns mixed results [{type: 'vendor'|'showroom'|'product', data}]
+    globalSearch: builder.query({
+      query: ({ q = "", page = 1, limit = 10 }: { q?: string; page?: number; limit?: number }) =>
+        `/home/search?q=${encodeURIComponent(q)}&page=${page}&limit=${limit}`,
+    }),
+
     // Showroom APIs
     getAllShowroom: builder.query({
       query: () => `/showroom/get-all`,
@@ -105,6 +111,7 @@ export const {
   useGetTopProductsQuery,
   useGetHotDealsQuery,
   useGetHomeCategoriesQuery,
+  useGlobalSearchQuery,
   useGetAllShowroomQuery,
   useGetShowroomProductQuery,
   useGetVendorshowroomQuery,

@@ -39,7 +39,7 @@ const Footer = () => {
               </div>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Built for creators and businesses, SleekNit lets every vendor run their own store while helping customers plan events, manage guests, send invitations, and place orders seamlessly.
+              Built for creators and businesses, SleeKnit lets every vendor run their own store while helping customers plan events, manage guests, send invitations, and place orders seamlessly.
             </p>
           </div>
 
