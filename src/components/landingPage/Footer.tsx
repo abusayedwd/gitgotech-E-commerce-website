@@ -8,7 +8,7 @@ import { useSupportModal } from '@/context/SupportModalContext';
 const SUPPORT_EMAIL = 'support@sleeknit.com';
 const GMAIL_COMPOSE = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(SUPPORT_EMAIL)}`;
 /** Replace with your brand TikTok profile when ready */
-const TIKTOK_URL = 'https://www.tiktok.com/@sleeknit';
+const TIKTOK_URL = 'https://www.tiktok.com/@_sleeknit?is_from_webapp=1&sender_device=pc';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();

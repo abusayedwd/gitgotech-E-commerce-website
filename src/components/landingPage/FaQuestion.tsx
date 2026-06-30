@@ -49,7 +49,7 @@ export default function SimpleFAQ() {
           <h1 className='flex items-center justify-center'> 
           <SectionHeader title='Frequently Asked Questions'></SectionHeader>
           </h1>
-          <p className="text-xl text-gray-600">Get Qualibond Word 404 Answers</p>
+          <p className="text-xl text-gray-600">Get Answers to Your Qualibond Questions</p>
         </div>
 
         {/* FAQ Accordion */}

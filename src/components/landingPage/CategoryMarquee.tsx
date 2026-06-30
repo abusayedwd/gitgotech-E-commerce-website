@@ -2,7 +2,8 @@
 
 import { useGetHomeCategoriesQuery } from '@/redux/features/home/homeSlice';
 import { useRouter } from 'next/navigation';
- 
+import { useEffect, useState } from 'react';
+
 import url from '@/redux/api/baseUrl';
 
 const gradients = [
@@ -29,13 +30,41 @@ export default function CategoryMarquee() {
   const categories: Category[] = categoriesRes?.data ?? [];
   // console.log(categories)
 
+  // For a seamless `translateX(-50%)` loop the track must be split into two
+  // IDENTICAL halves, and each half must be at least as wide as the viewport
+  // — otherwise a blank gap appears at the end while the second half hasn't
+  // slid in yet. We measure the viewport on mount + resize, then compute how
+  // many copies of `categories` each half needs to fully cover it.
+  // ITEMS_PER_HALF_MIN is a floor for SSR / very small viewports.
+  const ITEMS_PER_HALF_MIN = 10;
+  // ~144px per item at lg sizing (w-32 + mx-4) — slightly under-estimate so
+  // we err on the side of "too many copies" rather than too few.
+  const ITEM_PX_ESTIMATE = 144;
+
+  const [viewportItemsNeeded, setViewportItemsNeeded] = useState(0);
+  useEffect(() => {
+    const compute = () => {
+      const vw = window.innerWidth || 0;
+      // +2 buffer so a partial item at the edge doesn't reveal a gap.
+      setViewportItemsNeeded(Math.ceil(vw / ITEM_PX_ESTIMATE) + 2);
+    };
+    compute();
+    window.addEventListener('resize', compute);
+    return () => window.removeEventListener('resize', compute);
+  }, []);
+
   if (isLoading || categories.length === 0) return null;
 
-  // Duplicate enough times so short lists still loop smoothly
-  const repeated = Array.from(
-    { length: Math.max(2, Math.ceil(16 / categories.length)) },
-    () => categories
+  const itemsPerHalf = Math.max(ITEMS_PER_HALF_MIN, viewportItemsNeeded);
+  const copiesPerHalf = Math.max(
+    1,
+    Math.ceil(itemsPerHalf / categories.length),
+  );
+  const half: Category[] = Array.from(
+    { length: copiesPerHalf },
+    () => categories,
   ).flat();
+  const repeated: Category[] = [...half, ...half];
 
   return (
     <div className="py-8 sm:py-10 md:py-12 mt-4 sm:mt-6 md:mt-8 overflow-hidden">
