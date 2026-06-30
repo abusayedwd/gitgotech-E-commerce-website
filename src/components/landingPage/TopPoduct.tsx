@@ -1,11 +1,11 @@
 "use client";
 
-import url from '@/redux/api/baseUrl';
 import { useGetShowroomProductQuery } from "@/redux/features/home/homeSlice";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FaArrowLeft } from "react-icons/fa";
 import styles from "./../../customComponent/Discount.module.css";
+import ProductImageSlider from "@/components/shared/ProductImageSlider";
 
 export default function TopPoduct({
   searchQuery,
@@ -93,9 +93,6 @@ export default function TopPoduct({
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {displayProducts.map((product: any) => {
               const discount = product.discount?.percentage || 0;
-              const imageUrl = product.product_images?.[0]
-                ? `${url}/${product.product_images[0]}`
-                : "/images/jacket.png";
 
               return (
                 <div
@@ -105,16 +102,12 @@ export default function TopPoduct({
                   }
                   className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
                 >
-                  {/* Product Image */}
-                  <div className="relative aspect-square overflow-hidden">
-                    <img
-                      src={imageUrl}
-                      alt={product.product_name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    {/* Discount Badge */}
+                  <ProductImageSlider
+                    images={product.product_images}
+                    alt={product.product_name}
+                  >
                     {discount > 0 && (
-                      <div className="absolute top-2 left-0 inline-flex items-center">
+                      <div className="absolute top-2 left-0 inline-flex items-center z-10">
                         <div className={styles.card}>
                           <div className={styles.discountBadge}>
                             {discount}% off
@@ -122,11 +115,10 @@ export default function TopPoduct({
                         </div>
                       </div>
                     )}
-                    {/* Best Seller Badge */}
-                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#2388FF] text-white px-2 sm:px-3 py-1 md:py-2 rounded text-[10px] sm:text-xs font-semibold">
+                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#2388FF] text-white px-2 sm:px-3 py-1 md:py-2 rounded text-[10px] sm:text-xs font-semibold z-10">
                       BEST SELLER
                     </div>
-                  </div>
+                  </ProductImageSlider>
 
                   {/* Product Info */}
                   <div className="p-3 sm:p-4">

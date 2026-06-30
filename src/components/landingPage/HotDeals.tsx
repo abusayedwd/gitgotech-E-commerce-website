@@ -4,9 +4,8 @@ import { useGetHotDealsQuery } from '@/redux/features/home/homeSlice';
 import { Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import ProductImageSlider from '@/components/shared/ProductImageSlider';
 import styles from './../../customComponent/Discount.module.css';
- 
-import url from '@/redux/api/baseUrl';
 
 export default function HotDealsSection() {
   const router = useRouter();
@@ -44,9 +43,6 @@ export default function HotDealsSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {products.map((product: any) => {
               const discount = product.discount?.percentage || 0;
-              const imageUrl = product.product_images?.[0]
-                ? `${url}/${product.product_images[0]}`
-                : '/images/jacket.png';
 
               return (
                 <div
@@ -54,26 +50,21 @@ export default function HotDealsSection() {
                   onClick={() => router.push(`/product/details?id=${product._id}`)}
                   className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
                 >
-                  {/* Product Image */}
-                  <div className="relative aspect-square overflow-hidden">
-                    <img
-                      src={imageUrl}
-                      alt={product.product_name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                    />
-                    {/* Discount Badge */}
+                  <ProductImageSlider
+                    images={product.product_images}
+                    alt={product.product_name}
+                  >
                     {discount > 0 && (
-                      <div className="absolute top-2 left-0 inline-flex items-center">
+                      <div className="absolute top-2 left-0 inline-flex items-center z-10">
                         <div className={styles.card}>
                           <div className={styles.discountBadge}>{discount}% off</div>
                         </div>
                       </div>
                     )}
-                    {/* Hot Deal Badge */}
-                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#2388FF] text-white px-2 sm:px-3 py-1 md:py-2 rounded text-[10px] sm:text-xs font-semibold">
+                    <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-[#2388FF] text-white px-2 sm:px-3 py-1 md:py-2 rounded text-[10px] sm:text-xs font-semibold z-10">
                       HOT DEAL
                     </div>
-                  </div>
+                  </ProductImageSlider>
 
                   {/* Product Info */}
                   <div className="p-3 sm:p-4">
@@ -81,7 +72,6 @@ export default function HotDealsSection() {
                       <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
                         ₵{product.product_price?.toFixed(2)}
                       </div>
-                      {/* Rating */}
                       <div className="flex items-center mb-1 sm:mb-2">
                         {[...Array(5)].map((_, index) => (
                           <Star

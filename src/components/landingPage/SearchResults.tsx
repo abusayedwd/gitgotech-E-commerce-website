@@ -2,6 +2,7 @@
 
 import { useGlobalSearchQuery } from "@/redux/features/home/homeSlice";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
+import ProductImageSlider from "@/components/shared/ProductImageSlider";
 import { Package, Search, Store, User } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -185,19 +186,15 @@ function Section({
 }
 
 function ProductCard({ product }: { product: Product }) {
-  const img = buildImageUrl(product.product_images?.[0], "/images/jacket.png");
   return (
     <Link
       href={`/product/details?id=${product._id}`}
       className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow"
     >
-      <div className="relative aspect-square overflow-hidden bg-gray-900">
-        <img
-          src={img}
-          alt={product.product_name}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-        />
-      </div>
+      <ProductImageSlider
+        images={product.product_images}
+        alt={product.product_name}
+      />
       <div className="p-3">
         <h3 className="text-white font-medium text-sm truncate">
           {product.product_name}

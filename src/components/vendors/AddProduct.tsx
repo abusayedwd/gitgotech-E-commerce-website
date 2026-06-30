@@ -3,7 +3,8 @@
 import { useGetHomeCategoriesQuery } from "@/redux/features/home/homeSlice";
 import { useAddProductMutation } from "@/redux/features/vendor/product/productSlice";
 import { selectShowroomId } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
-import { Loader2, Upload, X } from "lucide-react";
+import SizeGuideModal from "@/components/shared/SizeGuideModal";
+import { Loader2, Ruler, Upload, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
@@ -18,6 +19,7 @@ export default function AddProductPage() {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [category, setCategory] = useState("");
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [weightAmount, setWeightAmount] = useState("");
   const [weightUnit, setWeightUnit] = useState("kg");
   const [hasDiscount, setHasDiscount] = useState(false);
@@ -324,9 +326,19 @@ export default function AddProductPage() {
 
         {/* Available Sizes with Stock */}
         <div className="mb-6">
-          <label className="block text-sm text-gray-400 mb-2">
-            Available Sizes
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm text-gray-400">
+              Available Sizes
+            </label>
+            <button
+              type="button"
+              onClick={() => setShowSizeGuide(true)}
+              className="flex items-center gap-1.5 text-xs text-purple-300 hover:text-purple-200 bg-purple-600/15 hover:bg-purple-600/25 border border-purple-500/30 px-3 py-1.5 rounded-full transition-colors"
+            >
+              <Ruler className="w-3.5 h-3.5" />
+              Size Guide
+            </button>
+          </div>
           <div className="flex flex-wrap gap-3 mb-4">
             {availableSizes.map((size) => (
               <button
@@ -461,6 +473,12 @@ export default function AddProductPage() {
           </div>
         </div>
       </div>
+
+      <SizeGuideModal
+        open={showSizeGuide}
+        onClose={() => setShowSizeGuide(false)}
+        category={category}
+      />
     </div>
   );
 }
