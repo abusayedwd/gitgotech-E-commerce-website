@@ -30,6 +30,15 @@ const settingsSlice = apiSlice.injectEndpoints({
       providesTags: ["Settings"],
     }),
 
+    // Get Support contact (email / phone / details)
+    getSupport: builder.query({
+      query: () => ({
+        url: `/setting/support`,
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
+    }),
+
 
     platformFree: builder.query({
       query: () => ({
@@ -71,6 +80,7 @@ export const {
   useGetTermsQuery,
   useGetAboutUsQuery,
   useGetPrivacyQuery,
+  useGetSupportQuery,
   useChangePasswordMutation,
   useGetMyProfileQuery,
   useUpdateProfileMutation,

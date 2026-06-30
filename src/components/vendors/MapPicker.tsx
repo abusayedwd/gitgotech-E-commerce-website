@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -32,10 +32,41 @@ function FlyTo({ lat, lng }: { lat: number; lng: number }) {
   return null;
 }
 
+/**
+ * Recenters the map whenever the parent-supplied lat/lng change (e.g. after
+ * geolocation resolves, or after a coordinate is typed into the inputs).
+ * Skipped when the values come from the user's own click on the map to avoid
+ * a pointless re-fly.
+ */
+function ExternalRecenter({
+  lat,
+  lng,
+  userClickedAtRef,
+}: {
+  lat: number;
+  lng: number;
+  userClickedAtRef: React.MutableRefObject<{ lat: number; lng: number } | null>;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!lat || !lng) return;
+    const last = userClickedAtRef.current;
+    if (last && last.lat === lat && last.lng === lng) return;
+    map.flyTo([lat, lng], Math.max(map.getZoom(), 14));
+  }, [lat, lng, map, userClickedAtRef]);
+  return null;
+}
+
 export default function MapPicker({ lat, lng, onChange }: Props) {
   const [query, setQuery] = useState('');
   const [flyTarget, setFlyTarget] = useState<{ lat: number; lng: number } | null>(null);
   const [searching, setSearching] = useState(false);
+  const userClickedAtRef = useRef<{ lat: number; lng: number } | null>(null);
+
+  const handleMapClick = (clickLat: number, clickLng: number) => {
+    userClickedAtRef.current = { lat: clickLat, lng: clickLng };
+    onChange(clickLat, clickLng);
+  };
 
   const handleSearch = async () => {
     if (!query.trim()) return;
@@ -91,7 +122,12 @@ export default function MapPicker({ lat, lng, onChange }: Props) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
         />
-        <ClickHandler onChange={onChange} />
+        <ClickHandler onChange={handleMapClick} />
+        <ExternalRecenter
+          lat={lat}
+          lng={lng}
+          userClickedAtRef={userClickedAtRef}
+        />
         {flyTarget && <FlyTo lat={flyTarget.lat} lng={flyTarget.lng} />}
         {lat !== 0 && lng !== 0 && <Marker position={[lat, lng]} />}
       </MapContainer>

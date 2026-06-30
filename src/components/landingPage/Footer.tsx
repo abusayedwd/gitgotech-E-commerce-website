@@ -2,17 +2,28 @@
 
 import Link from 'next/link';
 import { Mail, Phone } from 'lucide-react';
-import { FaTiktok } from 'react-icons/fa';
+import { FaFacebookF, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { useSupportModal } from '@/context/SupportModalContext';
+import { useGetSupportQuery } from '@/redux/features/settings/settingsSlice';
 
-const SUPPORT_EMAIL = 'support@sleeknit.com';
-const GMAIL_COMPOSE = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(SUPPORT_EMAIL)}`;
-/** Replace with your brand TikTok profile when ready */
+const FALLBACK_SUPPORT_EMAIL = 'support@sleeknit.com';
+const FALLBACK_SUPPORT_PHONE = '+233 554004232';
+/** Brand social profiles */
 const TIKTOK_URL = 'https://www.tiktok.com/@_sleeknit?is_from_webapp=1&sender_device=pc';
+const INSTAGRAM_URL = 'https://www.instagram.com/sleek.nit?igsh=MTZ1NmVwZjlkZDNrbg';
+const FACEBOOK_URL = 'https://www.facebook.com/share/1CgSqqRaiw/?mibextid=wwXIfr';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { openSupport } = useSupportModal();
+
+  const { data: supportRes } = useGetSupportQuery({});
+  const supportEmail = supportRes?.data?.value?.email || FALLBACK_SUPPORT_EMAIL;
+  const supportPhone = supportRes?.data?.value?.phone || FALLBACK_SUPPORT_PHONE;
+  const gmailCompose = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+    supportEmail,
+  )}`;
+  const phoneHref = `tel:${supportPhone.replace(/\s+/g, '')}`;
 
   const quickLinks: { name: string; href: string; action?: 'support' }[] = [
     { name: 'Home', href: '/' },
@@ -94,17 +105,22 @@ const Footer = () => {
               <li className="flex items-center">
                 <Mail className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
                 <a
-                  href={GMAIL_COMPOSE}
+                  href={gmailCompose}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 font-poppins text-sm hover:text-white transition-colors"
                 >
-                  {SUPPORT_EMAIL}
+                  {supportEmail}
                 </a>
               </li>
               <li className="flex items-center">
                 <Phone className="h-4 w-4 mr-2 text-gray-400 flex-shrink-0" />
-                <span className="text-gray-400 font-poppins text-sm">+233 554004232</span>
+                <a
+                  href={phoneHref}
+                  className="text-gray-400 font-poppins text-sm hover:text-white transition-colors"
+                >
+                  {supportPhone}
+                </a>
               </li>
             </ul>
             <div className="flex space-x-3 mt-4">
@@ -116,6 +132,24 @@ const Footer = () => {
                 aria-label="TikTok"
               >
                 <FaTiktok size={14} className="text-gray-400" />
+              </a>
+              <a
+                href={INSTAGRAM_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-full bg-gray-800 hover:bg-pink-600 flex items-center justify-center transition-colors group"
+                aria-label="Instagram"
+              >
+                <FaInstagram size={14} className="text-gray-400 group-hover:text-white" />
+              </a>
+              <a
+                href={FACEBOOK_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 rounded-full bg-gray-800 hover:bg-blue-600 flex items-center justify-center transition-colors group"
+                aria-label="Facebook"
+              >
+                <FaFacebookF size={14} className="text-gray-400 group-hover:text-white" />
               </a>
             </div>
           </div>

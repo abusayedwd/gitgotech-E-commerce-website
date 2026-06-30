@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Upload, X, Plus, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
@@ -36,6 +36,25 @@ export default function AddShowroom() {
   const [categories, setCategories] = useState<string[]>(['']);
   const [location, setLocation] = useState({ lat: 0, lng: 0 });
   const [schedule, setSchedule] = useState(defaultSchedule);
+
+  // Auto-detect the vendor's current location on mount so the map opens
+  // centered on where they actually are (not on the Dhaka fallback).
+  useEffect(() => {
+    if (typeof window === 'undefined' || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+        });
+      },
+      (err) => {
+        // Permission denied / unavailable — user can still type coords manually.
+        console.warn('Geolocation unavailable:', err.message);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60_000 },
+    );
+  }, []);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
