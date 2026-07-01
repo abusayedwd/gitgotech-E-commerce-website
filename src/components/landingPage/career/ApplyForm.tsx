@@ -436,11 +436,11 @@ export default function JobApplicationForm() {
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-2 bg-[#242428] border border-gray-600 rounded-l-lg px-3">
                       <img
-                        src="https://flagcdn.com/w20/us.png"
-                        alt="US Flag"
+                        src="https://flagcdn.com/w20/gh.png"
+                        alt="Ghana Flag"
                         className="w-5 h-5"
                       />
-                      <span className="text-gray-300">+1</span>
+                      <span className="text-gray-300">+233</span>
                     </div>
                     <input
                       type="tel"
@@ -448,7 +448,7 @@ export default function JobApplicationForm() {
                       value={personalInfo.phoneNumber}
                       onChange={handlePersonalInfoChange}
                       className="flex-1 px-4 py-3 bg-[#242428] border border-gray-600 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder="555-0123"
+                      placeholder="24 123 4567"
                     />
                   </div>
                 </div>
@@ -463,7 +463,7 @@ export default function JobApplicationForm() {
                     value={personalInfo.currentLocation}
                     onChange={handlePersonalInfoChange}
                     className="w-full px-4 py-3 bg-[#242428] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="San Francisco, CA, USA"
+                    placeholder="Accra, Greater Accra, Ghana"
                   />
                 </div>
 
@@ -594,11 +594,11 @@ export default function JobApplicationForm() {
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-2 bg-gray-600 border border-gray-500 rounded-l-lg px-3">
                             <img
-                              src="https://flagcdn.com/w20/us.png"
-                              alt="US Flag"
+                              src="https://flagcdn.com/w20/gh.png"
+                              alt="Ghana Flag"
                               className="w-5 h-5"
                             />
-                            <span className="text-gray-300">+1</span>
+                            <span className="text-gray-300">+233</span>
                           </div>
                           <input
                             type="tel"
@@ -611,7 +611,7 @@ export default function JobApplicationForm() {
                               )
                             }
                             className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="555-0123"
+                            placeholder="24 123 4567"
                           />
                         </div>
                       </div>
@@ -653,7 +653,7 @@ export default function JobApplicationForm() {
                             )
                           }
                           className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                          placeholder="San Francisco, CA"
+                          placeholder="Kumasi, Ghana"
                         />
                       </div>
 
@@ -847,7 +847,7 @@ export default function JobApplicationForm() {
                               updateEducation(edu.id, "phone", e.target.value)
                             }
                             className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="+1-555-0123"
+                            placeholder="+233 24 123 4567"
                           />
                         </div>
                         <div>
@@ -1221,11 +1221,11 @@ export default function JobApplicationForm() {
                         <div className="flex items-center gap-2">
                           <div className="flex items-center gap-2 bg-[#242428] border border-gray-500 rounded-l-lg px-3">
                             <img
-                              src="https://flagcdn.com/w20/us.png"
-                              alt="US Flag"
+                              src="https://flagcdn.com/w20/gh.png"
+                              alt="Ghana Flag"
                               className="w-5 h-5"
                             />
-                            <span className="text-gray-300">+1</span>
+                            <span className="text-gray-300">+233</span>
                           </div>
                           <input
                             type="tel"
@@ -1238,7 +1238,7 @@ export default function JobApplicationForm() {
                               )
                             }
                             className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            placeholder="555-0198"
+                            placeholder="20 987 6543"
                           />
                         </div>
                       </div>

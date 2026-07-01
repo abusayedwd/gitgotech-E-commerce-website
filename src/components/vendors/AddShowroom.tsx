@@ -221,7 +221,7 @@ export default function AddShowroom() {
                 type="text"
                 value={formData.showroom_address}
                 onChange={(e) => setFormData((p) => ({ ...p, showroom_address: e.target.value }))}
-                placeholder="e.g., House 45, Road 12, Gulshan-1, Dhaka"
+                placeholder="e.g., House No. 12, Nii Nortei Nyanchi St, East Legon, Accra, Ghana"
                 required
                 className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />

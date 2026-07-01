@@ -1,5 +1,6 @@
 "use client";
 
+import PrivateRoute from "@/components/shared/PrivateRoute";
 import url from "@/redux/api/baseUrl.js";
 import {
   selectShowroom,
@@ -168,6 +169,7 @@ export default function VendorDashboardLayout({
   };
 
   return (
+    <PrivateRoute>
     <div className="bg-gray-950 text-white min-h-screen pt-24">
       <div className="container mx-auto px-4">
         <div className="flex gap-6">
@@ -236,5 +238,6 @@ export default function VendorDashboardLayout({
         </div>
       </div>
     </div>
+    </PrivateRoute>
   );
 }

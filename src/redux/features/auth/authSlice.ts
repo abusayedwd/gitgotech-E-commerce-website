@@ -84,6 +84,14 @@ const authSlice = apiSlice.injectEndpoints({
       }),
     }),
 
+    deleteAccount: builder.mutation({
+      query: (id: string) => ({
+        url: `/auth/account-delete`,
+        method: "DELETE",
+        params: { id },
+      }),
+    }),
+
   }),
 });
 
@@ -96,5 +104,6 @@ export const {
     useVerifyOtpMutation,
     useChangePasswordMutation,
     useLogoutUserMutation,
-    useRegisterFcmTokenMutation
+    useRegisterFcmTokenMutation,
+    useDeleteAccountMutation,
 } = authSlice;

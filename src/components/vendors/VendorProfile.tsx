@@ -4,10 +4,26 @@ import {
   useGetMyProfileQuery,
   useUpdateProfileMutation,
 } from "@/redux/features/settings/settingsSlice";
-import { useGetShowroomQuery } from "@/redux/features/vendor/showroomSlice/showroomSlice";
+import {
+  useDeleteShowroomMutation,
+  useGetShowroomQuery,
+} from "@/redux/features/vendor/showroomSlice/showroomSlice";
 import { useLogoutUserMutation } from "@/redux/features/auth/authSlice";
 import { getOrCreateDeviceId } from "@/lib/firebase";
-import { Camera, Edit, MapPin, X } from "lucide-react";
+import {
+  BadgeCheck,
+  Camera,
+  Crown,
+  Edit,
+  FileCheck2,
+  MapPin,
+  Phone as PhoneIcon,
+  ShieldCheck,
+  Trash2,
+  Upload,
+  Wallet,
+  X,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -24,10 +40,38 @@ export default function VendorProfilePage() {
     useGetMyProfileQuery(undefined);
   const [updateProfile] = useUpdateProfileMutation();
 
-  const { data: showroomData } = useGetShowroomQuery({});
+   console.log(profileData);
+
+  const { data: showroomData, refetch: refetchShowrooms } =
+    useGetShowroomQuery({});
   console.log(showroomData);
 
   const [logoutUser] = useLogoutUserMutation();
+  const [deleteShowroom, { isLoading: isDeletingShowroom }] =
+    useDeleteShowroomMutation();
+
+  // Confirmation modal for showroom deletion — kept separate from the object
+  // itself so the modal can animate closed after the mutation resolves.
+  const [showroomToDelete, setShowroomToDelete] = useState<{
+    _id: string;
+    showroom_name: string;
+  } | null>(null);
+
+  const confirmDeleteShowroom = async () => {
+    if (!showroomToDelete) return;
+    try {
+      const res = await deleteShowroom(showroomToDelete._id).unwrap();
+      if (res?.success !== false) {
+        toast.success(
+          `“${showroomToDelete.showroom_name}” deleted successfully`,
+        );
+        setShowroomToDelete(null);
+        refetchShowrooms();
+      }
+    } catch (err: any) {
+      toast.error(err?.data?.message || "Failed to delete showroom");
+    }
+  };
 
   const profile = profileData?.data;
 
@@ -41,7 +85,11 @@ export default function VendorProfilePage() {
     gender: "",
     address: "",
     bio: "",
+    nidNo: "",
+    preference: "phone",
     image: null as File | null,
+    nidFront: null as File | null,
+    nidBack: null as File | null,
   });
 
   const showrooms = showroomData?.data ?? [];
@@ -56,7 +104,11 @@ export default function VendorProfilePage() {
         gender: profile.gender || "",
         address: profile.address || "",
         bio: profile.bio || "",
+        nidNo: profile.nidNo || "",
+        preference: profile.preference || "phone",
         image: null,
+        nidFront: null,
+        nidBack: null,
       });
     }
   }, [profile]);
@@ -88,9 +140,12 @@ export default function VendorProfilePage() {
       if (formData.gender) submitData.append("gender", formData.gender);
       if (formData.address) submitData.append("address", formData.address);
       if (formData.bio) submitData.append("bio", formData.bio);
-      if (formData.image) {
-        submitData.append("image", formData.image);
-      }
+      if (formData.nidNo) submitData.append("nidNo", formData.nidNo);
+      if (formData.preference)
+        submitData.append("preference", formData.preference);
+      if (formData.image) submitData.append("image", formData.image);
+      if (formData.nidFront) submitData.append("nidFront", formData.nidFront);
+      if (formData.nidBack) submitData.append("nidBack", formData.nidBack);
 
       const res = await updateProfile(submitData).unwrap();
 
@@ -115,7 +170,11 @@ export default function VendorProfilePage() {
         gender: profile.gender || "",
         address: profile.address || "",
         bio: profile.bio || "",
+        nidNo: profile.nidNo || "",
+        preference: profile.preference || "phone",
         image: null,
+        nidFront: null,
+        nidBack: null,
       });
     }
     setIsEditModalOpen(false);
@@ -227,6 +286,64 @@ export default function VendorProfilePage() {
         </button> */}
       </div>
 
+      {/* Verification badges */}
+      <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center gap-2">
+        {profile?.isVerified && (
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+            <BadgeCheck size={14} /> Verified
+          </span>
+        )}
+        {profile?.topVendor && (
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+            <Crown size={14} /> Top Vendor
+          </span>
+        )}
+        {profile?.isDocumentUploaded && (
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">
+            <FileCheck2 size={14} /> Documents Uploaded
+          </span>
+        )}
+        {profile?.isPhoneVerified && (
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/30">
+            <PhoneIcon size={14} /> Phone Verified
+          </span>
+        )}
+        {profile?.isRequest && (
+          <span
+            className={`inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border capitalize ${
+              profile.isRequest === "approve"
+                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                : profile.isRequest === "pending"
+                  ? "bg-yellow-500/15 text-yellow-300 border-yellow-500/30"
+                  : "bg-red-500/15 text-red-300 border-red-500/30"
+            }`}
+          >
+            <ShieldCheck size={14} /> {profile.isRequest}
+          </span>
+        )}
+      </div>
+
+      {/* Balance card */}
+      <div className="max-w-6xl mx-auto px-4">
+        <div className="bg-gradient-to-r from-[#6100FF]/25 via-[#241F30] to-[#0f0924] border border-purple-500/40 rounded-2xl p-6 flex items-center justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-purple-300/80 mb-1">
+              Wallet Balance
+            </p>
+            <p className="text-3xl md:text-4xl font-bold text-white font-cormorant">
+              ₵
+              {Number(profile?.balance || 0).toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
+            </p>
+          </div>
+          <div className="w-14 h-14 rounded-full bg-purple-600/25 flex items-center justify-center">
+            <Wallet className="text-purple-300" size={26} />
+          </div>
+        </div>
+      </div>
+
       {/* Personal Information */}
       <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">
         <div className="flex justify-between items-center mb-6">
@@ -293,6 +410,84 @@ export default function VendorProfilePage() {
               {profile?.isVerified ? "✓ Verified" : "Not Verified"}
             </span>
           </div>
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
+            <span className="text-sm text-gray-400">
+              Preferred Contact Method
+            </span>
+            <span className="text-white capitalize">
+              {profile?.preference || "Not set"}
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
+            <span className="text-sm text-gray-400">Referral Code</span>
+            <span className="text-white">
+              {profile?.referralCode || "Not set"}
+            </span>
+          </div>
+          <div className="flex justify-between items-center py-3">
+            <span className="text-sm text-gray-400">Joined</span>
+            <span className="text-white">
+              {profile?.createdAt
+                ? new Date(profile.createdAt).toLocaleDateString(undefined, {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })
+                : "—"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* KYC / Documents */}
+      <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold font-cormorant text-white">
+            KYC / Documents
+          </h2>
+          <button
+            onClick={handleEditProfile}
+            className="px-4 py-2 bg-[#6100FF] cursor-pointer text-white hover:bg-[#5000dd] rounded-lg transition-all shadow-lg shadow-purple-500/20 flex items-center gap-2"
+          >
+            <Edit size={16} />
+            Edit
+          </button>
+        </div>
+
+        <div className="flex justify-between items-center py-3 border-b border-gray-700/30 mb-4">
+          <span className="text-sm text-gray-400">NID Number</span>
+          <span className="text-white">{profile?.nidNo || "Not provided"}</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <p className="text-sm text-gray-400 mb-2">NID Front</p>
+            {profile?.nidFront ? (
+              <img
+                src={`${url}/${profile.nidFront}`}
+                alt="NID Front"
+                className="w-full h-40 object-cover rounded-lg border border-gray-700"
+              />
+            ) : (
+              <div className="w-full h-40 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-500 text-sm">
+                Not uploaded
+              </div>
+            )}
+          </div>
+          <div>
+            <p className="text-sm text-gray-400 mb-2">NID Back</p>
+            {profile?.nidBack ? (
+              <img
+                src={`${url}/${profile.nidBack}`}
+                alt="NID Back"
+                className="w-full h-40 object-cover rounded-lg border border-gray-700"
+              />
+            ) : (
+              <div className="w-full h-40 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-500 text-sm">
+                Not uploaded
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -341,11 +536,30 @@ export default function VendorProfilePage() {
                   <MapPin size={14} />
                   <span className="truncate">{showroom.showroom_address}</span>
                 </div>
-                <Link href={`/v-profile/view-showroom?id=${showroom._id}`}>
-                  <button className="w-full py-2 bg-[#6100FF] text-white cursor-pointer hover:bg-[#5000dd] rounded-lg transition-all text-sm font-medium">
-                    View Info
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/v-profile/view-showroom?id=${showroom._id}`}
+                    className="flex-1"
+                  >
+                    <button className="w-full py-2 bg-[#6100FF] text-white cursor-pointer hover:bg-[#5000dd] rounded-lg transition-all text-sm font-medium">
+                      View Info
+                    </button>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setShowroomToDelete({
+                        _id: showroom._id,
+                        showroom_name: showroom.showroom_name,
+                      })
+                    }
+                    aria-label={`Delete ${showroom.showroom_name}`}
+                    title="Delete showroom"
+                    className="p-2 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/30 hover:text-red-300 border border-red-500/30 transition-colors cursor-pointer"
+                  >
+                    <Trash2 size={16} />
                   </button>
-                </Link>
+                </div>
               </div>
             </div>
           ))}
@@ -510,6 +724,119 @@ export default function VendorProfilePage() {
                   className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white resize-none"
                 />
               </div>
+
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">
+                  Preferred Contact Method
+                </label>
+                <select
+                  value={formData.preference}
+                  onChange={(e) =>
+                    setFormData({ ...formData, preference: e.target.value })
+                  }
+                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+                >
+                  <option value="phone">Phone</option>
+                  <option value="email">Email</option>
+                </select>
+              </div>
+
+              <div className="pt-4 border-t border-gray-700/50">
+                <h3 className="text-white font-semibold mb-3">
+                  KYC / Documents
+                </h3>
+
+                <div className="mb-4">
+                  <label className="block text-sm text-gray-400 mb-2">
+                    NID Number
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.nidNo}
+                    onChange={(e) =>
+                      setFormData({ ...formData, nidNo: e.target.value })
+                    }
+                    placeholder="Enter your NID number"
+                    className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">
+                      NID Front
+                    </label>
+                    {formData.nidFront ? (
+                      <img
+                        src={URL.createObjectURL(formData.nidFront)}
+                        alt="NID Front preview"
+                        className="w-full h-32 object-cover rounded-lg border border-purple-500/30 mb-2"
+                      />
+                    ) : profile?.nidFront ? (
+                      <img
+                        src={`${url}/${profile.nidFront}`}
+                        alt="NID Front"
+                        className="w-full h-32 object-cover rounded-lg border border-gray-700 mb-2"
+                      />
+                    ) : null}
+                    <label className="flex items-center gap-2 cursor-pointer bg-gray-900/50 border border-gray-700 hover:border-purple-500 rounded-lg px-3 py-2 transition-colors">
+                      <Upload className="w-4 h-4 text-purple-400" />
+                      <span className="text-sm text-gray-400 truncate">
+                        {formData.nidFront?.name || "Choose file..."}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          e.target.files?.[0] &&
+                          setFormData({
+                            ...formData,
+                            nidFront: e.target.files[0],
+                          })
+                        }
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-400 mb-2">
+                      NID Back
+                    </label>
+                    {formData.nidBack ? (
+                      <img
+                        src={URL.createObjectURL(formData.nidBack)}
+                        alt="NID Back preview"
+                        className="w-full h-32 object-cover rounded-lg border border-purple-500/30 mb-2"
+                      />
+                    ) : profile?.nidBack ? (
+                      <img
+                        src={`${url}/${profile.nidBack}`}
+                        alt="NID Back"
+                        className="w-full h-32 object-cover rounded-lg border border-gray-700 mb-2"
+                      />
+                    ) : null}
+                    <label className="flex items-center gap-2 cursor-pointer bg-gray-900/50 border border-gray-700 hover:border-purple-500 rounded-lg px-3 py-2 transition-colors">
+                      <Upload className="w-4 h-4 text-purple-400" />
+                      <span className="text-sm text-gray-400 truncate">
+                        {formData.nidBack?.name || "Choose file..."}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) =>
+                          e.target.files?.[0] &&
+                          setFormData({
+                            ...formData,
+                            nidBack: e.target.files[0],
+                          })
+                        }
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="flex gap-4 mt-6">
@@ -525,6 +852,53 @@ export default function VendorProfilePage() {
               >
                 Save Changes
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Showroom Confirmation Modal */}
+      {showroomToDelete && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] border border-red-500/30 rounded-2xl p-8 max-w-md w-full">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Trash2 className="w-8 h-8 text-red-500" />
+              </div>
+              <h2 className="text-2xl font-semibold text-white mb-2 font-cormorant">
+                Delete Showroom?
+              </h2>
+              <p className="text-gray-400 mb-6">
+                “
+                <span className="text-white font-medium">
+                  {showroomToDelete.showroom_name}
+                </span>
+                ” will be permanently deleted. This action cannot be undone.
+              </p>
+
+              <div className="flex gap-4">
+                <button
+                  onClick={() => setShowroomToDelete(null)}
+                  disabled={isDeletingShowroom}
+                  className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors disabled:opacity-60"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmDeleteShowroom}
+                  disabled={isDeletingShowroom}
+                  className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {isDeletingShowroom ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete"
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>

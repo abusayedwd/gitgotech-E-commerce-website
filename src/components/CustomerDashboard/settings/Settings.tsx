@@ -1,20 +1,48 @@
 "use client";
-import { ArrowLeft, Lock, CreditCard, FileText, RotateCcw, Shield, Trash2, X } from "lucide-react";
+import { Lock, FileText, RotateCcw, Shield, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, ReactNode } from "react";
+import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
-import { FaArrowsLeftRight } from "react-icons/fa6";
+import { useDeleteAccountMutation } from "@/redux/features/auth/authSlice";
 
 export default function SettingsPage() {
     const router = useRouter();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteAccount, { isLoading: isDeleting }] = useDeleteAccountMutation();
 
-    const handleDeleteAccount = () => {
-      // Add your delete account logic here
-      console.log("Account deleted");
-      setShowDeleteModal(false);
-      // Optionally redirect to login or home page
-      // router.push("/auth/login");
+    const handleDeleteAccount = async () => {
+      // Resolve the current user's id from the stored user object.
+      let userId: string | undefined;
+      try {
+        const raw = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+        userId = raw ? JSON.parse(raw)?._id : undefined;
+      } catch {
+        userId = undefined;
+      }
+
+      if (!userId) {
+        toast.error("Could not determine your account. Please sign in again.");
+        return;
+      }
+
+      try {
+        await deleteAccount(userId).unwrap();
+        toast.success("Account deleted");
+
+        // Clean up the session exactly like a logout would.
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+        localStorage.removeItem("deviceId");
+        localStorage.removeItem("fcmToken");
+        localStorage.removeItem("fcmTokenSynced");
+        window.dispatchEvent(new Event("authChanged"));
+
+        setShowDeleteModal(false);
+        router.push("/auth/login");
+      } catch (err: any) {
+        toast.error(err?.data?.message || "Failed to delete account");
+      }
     };
 
     return (
@@ -98,15 +126,24 @@ export default function SettingsPage() {
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 py-3 bg-white/10 border border-gray-700 text-gray-200 hover:bg-white/20 rounded-xl font-medium transition-all"
+                  disabled={isDeleting}
+                  className="flex-1 py-3 bg-white/10 border border-gray-700 text-gray-200 hover:bg-white/20 rounded-xl font-medium transition-all disabled:opacity-60"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleDeleteAccount}
-                  className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-all"
+                  disabled={isDeleting}
+                  className="flex-1 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-medium transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
-                  Delete Account
+                  {isDeleting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    "Delete Account"
+                  )}
                 </button>
               </div>
             </div>
