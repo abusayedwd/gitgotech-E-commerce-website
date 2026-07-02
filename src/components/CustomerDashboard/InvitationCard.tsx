@@ -36,20 +36,8 @@ interface PassedEvent {
   eventName?: string;
 }
 
-interface CardCategory {
-  id: string;
-  name: string;
-  image: string;
-}
-
-// Card categories with images
-const CARD_CATEGORIES: CardCategory[] = [
-  { id: "celebration", name: "Celebration", image: "/images/celebration.png" },
-  { id: "relationship", name: "Relationship", image: "/images/relationship.png" },
-  { id: "corporate", name: "Corporate", image: "/images/corporat.png" },
-  { id: "religious", name: "Religious", image: "/images/religiouss.png" },
-  { id: "social", name: "Social", image: "/images/social.png" },
-];
+// Single invitation card template — no categories.
+const INVITATION_CARD_IMAGE = "/images/invitecard.png";
 
 
 
@@ -341,7 +329,6 @@ export default function InvitationCard() {
   const eventId = searchParams.get("id") || "";
 
   const [passedEvent, setPassedEvent] = useState<PassedEvent | null>(null);
-  const [selectedCard, setSelectedCard] = useState<CardCategory | null>(null);
   const [memberDetails, setMemberDetails] = useState<MemberDetails>({
     name: "",
     email: "",
@@ -413,10 +400,6 @@ export default function InvitationCard() {
       toast.error("Please enter member email");
       return;
     }
-    if (!selectedCard) {
-      toast.error("Please select an invitation card");
-      return;
-    }
     if (!eventId) {
       toast.error("Event ID not found");
       return;
@@ -427,9 +410,9 @@ export default function InvitationCard() {
     try {
       // Step 1: Generate files
       toast.loading("Generating invitation card...", { id: "generating" });
-      
+
       const { imageFile, pdfFile } = await generateCardWithOverlay(
-        selectedCard.image,
+        INVITATION_CARD_IMAGE,
         eventData,
         memberDetails.name
       );
@@ -446,11 +429,10 @@ export default function InvitationCard() {
       }).unwrap();
 
       toast.success("Invitation sent successfully!", { id: "sending" });
-      
+
       // Reset form
       setMemberDetails({ name: "", email: "" });
-      setSelectedCard(null);
-      
+
     } catch (error: any) {
       console.error("Failed to send invitation:", error);
       toast.dismiss("generating");
@@ -464,17 +446,12 @@ export default function InvitationCard() {
   };
 
   const handleDownload = async () => {
-    if (!selectedCard) {
-      toast.error("Please select an invitation card");
-      return;
-    }
-
     setIsGenerating(true);
     const toastId = toast.loading("Generating files...");
 
     try {
       const { imageFile, pdfFile } = await generateCardWithOverlay(
-        selectedCard.image,
+        INVITATION_CARD_IMAGE,
         eventData,
         memberDetails.name
       );
@@ -548,61 +525,6 @@ export default function InvitationCard() {
           Send Event Invitation
         </h1>
 
-        {/* Card Category Selection */}
-        <div className="mb-8">
-          <h2 className="text-xl font-semibold text-purple-400 mb-4 text-center">
-            Select Invitation Card Category
-          </h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {CARD_CATEGORIES.map((category) => (
-              <div
-                key={category.id}
-                onClick={() => setSelectedCard(category)}
-                className={`cursor-pointer rounded-xl overflow-hidden border-4 transition-all duration-300 transform hover:scale-105 ${
-                  selectedCard?.id === category.id
-                    ? "border-purple-500 shadow-xl shadow-purple-500/50 scale-105 ring-2 ring-purple-400"
-                    : "border-gray-700 hover:border-purple-400 hover:shadow-lg"
-                }`}
-              >
-                <div className="relative aspect-[3/4] bg-gray-900">
-                  <Image
-                    src={category.image}
-                    alt={category.name}
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  {selectedCard?.id === category.id && (
-                    <div className="absolute top-2 right-2 bg-purple-500 rounded-full p-1">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-white"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className={`p-3 text-center transition-colors ${
-                  selectedCard?.id === category.id
-                    ? "bg-purple-600"
-                    : "bg-gray-800"
-                }`}>
-                  <p className="text-white font-semibold text-sm">
-                    {category.name}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Preview and Form Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left: Preview */}
@@ -630,11 +552,10 @@ export default function InvitationCard() {
               </svg>
               Card Preview
             </h3>
-            {selectedCard ? (
-              <div className="relative w-full max-w-md aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border-4 border-purple-500/30">
+            <div className="relative w-full max-w-md aspect-[3/4] rounded-xl overflow-hidden shadow-2xl border-4 border-purple-500/30">
                 <Image
-                  src={selectedCard.image}
-                  alt={selectedCard.name}
+                  src={INVITATION_CARD_IMAGE}
+                  alt="Invitation card"
                   fill
                   className="object-cover"
                   priority
@@ -696,7 +617,7 @@ export default function InvitationCard() {
                     {eventData.time}
                   </p>
                   {/* LOCATION - Extra Clear and Bold */}
-                  <p 
+                  <p
                     className="text-white text-base md:text-lg font-bold drop-shadow-[0_3px_8px_rgba(0,0,0,1)]"
                     style={{
                       textShadow: '3px 3px 8px rgba(0,0,0,1), -1px -1px 3px rgba(0,0,0,0.9)',
@@ -707,27 +628,6 @@ export default function InvitationCard() {
                   </p>
                 </div>
               </div>
-            ) : (
-              <div className="w-full max-w-md aspect-[3/4] rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 flex flex-col items-center justify-center border-2 border-dashed border-gray-600">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-16 w-16 text-gray-500 mb-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                <p className="text-gray-400 text-center px-4 font-medium">
-                  Select a card category above to see preview
-                </p>
-              </div>
-            )}
           </div>
 
           {/* Right: Form */}
@@ -848,7 +748,7 @@ export default function InvitationCard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button
                 onClick={handleDownload}
-                disabled={isGenerating || !selectedCard || !sourceEvent}
+                disabled={isGenerating || !sourceEvent}
                 className="w-full py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:from-blue-700 hover:to-cyan-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
                 {isGenerating ? (
@@ -880,7 +780,7 @@ export default function InvitationCard() {
               <button
                 onClick={handleSendInvitation}
                 disabled={
-                  isGenerating || isSending || !selectedCard || !sourceEvent
+                  isGenerating || isSending || !sourceEvent
                 }
                 className="w-full py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:from-purple-700 hover:to-indigo-700 transition-all flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
               >
