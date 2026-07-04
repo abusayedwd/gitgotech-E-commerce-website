@@ -24,20 +24,18 @@ export function haversineKm(
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
-/**
- * Distance-only delivery (USD): max(min, km × rate).
- * Caller adds weight charge separately.
- */
+/** Distance-only delivery: max(min, km × rate). Caller adds weight charge separately. */
 export function calcDistanceDeliveryUsd(
   customerLat: number,
   customerLon: number,
   showroomLng: number,
   showroomLat: number,
+  ratePerKm: number = RATE_PER_KM,
 ): number {
   const distKm = haversineKm(customerLat, customerLon, showroomLat, showroomLng);
   return Math.max(
     MIN_DISTANCE_DELIVERY,
-    parseFloat((distKm * RATE_PER_KM).toFixed(2)),
+    parseFloat((distKm * ratePerKm).toFixed(2)),
   );
 }
 
@@ -64,11 +62,12 @@ export function calcWeightDeliveryUsdForItems(
     product?: { product_weight?: ProductWeightLike };
     quantity?: number;
   }>,
+  ratePerKg: number = RATE_PER_KG,
 ): number {
   const raw = items.reduce((sum, item) => {
     const kg = productWeightToKg(item.product?.product_weight ?? null);
     const qty = item.quantity ?? 1;
-    return sum + kg * qty * RATE_PER_KG;
+    return sum + kg * qty * ratePerKg;
   }, 0);
   return parseFloat(raw.toFixed(2));
 }

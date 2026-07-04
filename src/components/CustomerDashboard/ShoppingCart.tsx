@@ -546,6 +546,7 @@ import {
   removeFromGuestCart,
 } from "@/lib/guestCart";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -572,6 +573,13 @@ export default function ShoppingCart() {
   );
 
   const [deleteSaveItem] = useDeleteSaveListMutation();
+  const { data: platformData } = usePlatformFreeQuery(undefined);
+  const platformSettings = platformData?.data;
+
+  const ratePerKm = platformSettings?.perKmDistancePrice ?? RATE_PER_KM;
+  const ratePerKg = platformSettings?.perKgWeightPrice ?? RATE_PER_KG;
+  const customerWithdrawPct = platformSettings?.customerWithdrawPercentage;
+  const vendorWithdrawPct = platformSettings?.vendorWithdrawPercentage;
 
   useEffect(() => {
     if (isLoggedIn) return;
@@ -705,11 +713,11 @@ export default function ShoppingCart() {
     if (!item?.product) return FALLBACK_DISTANCE_DELIVERY_USD;
     const qty = quantities[item._id] || 1;
     const weightFee =
-      productWeightToKg(item.product.product_weight) * qty * RATE_PER_KG;
+      productWeightToKg(item.product.product_weight) * qty * ratePerKg;
     return parseFloat(
       (FALLBACK_DISTANCE_DELIVERY_USD + weightFee).toFixed(2),
     );
-  }, [selectedProduct, cartItems, quantities]);
+  }, [selectedProduct, cartItems, quantities, ratePerKg]);
 
   const calculateTotal = () => {
     return calculateSubtotal() + estimatedDeliveryCharge;
@@ -1056,9 +1064,24 @@ export default function ShoppingCart() {
                 </span>
               </div>
               <p className="text-xs text-gray-500 -mt-1 mb-1">
-                ₵{RATE_PER_KM}/km (distance) + ₵{RATE_PER_KG}/kg × product weight;
+                ₵{ratePerKm}/km (distance) + ₵{ratePerKg}/kg × product weight;
                 finalized at checkout with your pin.
               </p>
+              {(customerWithdrawPct != null || vendorWithdrawPct != null) && (
+                <div className="rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 space-y-1">
+                  <p className="text-xs font-medium text-purple-300">Withdraw percentage</p>
+                  {customerWithdrawPct != null && (
+                    <p className="text-xs text-gray-400">
+                      Customer: <span className="text-white">{customerWithdrawPct}%</span>
+                    </p>
+                  )}
+                  {vendorWithdrawPct != null && (
+                    <p className="text-xs text-gray-400">
+                      Vendor: <span className="text-white">{vendorWithdrawPct}%</span>
+                    </p>
+                  )}
+                </div>
+              )}
               {/* <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
                 <span className="font-medium">

@@ -38,19 +38,68 @@ interface PassedEvent {
 
 // Single invitation card template — no categories.
 const INVITATION_CARD_IMAGE = "/images/invitecard.png";
+const CARD_EXPORT_WIDTH = 1200;
 
+const INVITE_FONTS_URL =
+  "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap";
 
+async function ensureInviteFonts(): Promise<void> {
+  if (typeof document === "undefined") return;
 
-// ─── Generate image with text overlay (IMPROVED TEXT CLARITY) ────────────────
+  if (!document.getElementById("invite-card-fonts")) {
+    const link = document.createElement("link");
+    link.id = "invite-card-fonts";
+    link.rel = "stylesheet";
+    link.href = INVITE_FONTS_URL;
+    document.head.appendChild(link);
+  }
+
+  await document.fonts.ready;
+  await Promise.all([
+    document.fonts.load('600 32px "Cinzel"'),
+    document.fonts.load('700 48px "Cinzel"'),
+    document.fonts.load('400 28px "Cormorant Garamond"'),
+    document.fonts.load('italic 400 28px "Cormorant Garamond"'),
+  ]);
+}
+
+function wrapCanvasLines(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  maxWidth: number,
+): string[] {
+  const words = text.split(/\s+/).filter(Boolean);
+  if (words.length === 0) return [];
+
+  const lines: string[] = [];
+  let line = words[0];
+
+  for (let i = 1; i < words.length; i += 1) {
+    const testLine = `${line} ${words[i]}`;
+    if (ctx.measureText(testLine).width > maxWidth) {
+      lines.push(line);
+      line = words[i];
+    } else {
+      line = testLine;
+    }
+  }
+
+  lines.push(line);
+  return lines;
+}
+
+// ─── Generate high-quality invitation card image for email ───────────────────
 async function generateCardWithOverlay(
   cardImage: string,
   eventData: EventData,
   memberName: string,
 ): Promise<{ imageFile: File; pdfFile: File }> {
+  await ensureInviteFonts();
+
   return new Promise((resolve, reject) => {
     const img = document.createElement("img");
     img.crossOrigin = "anonymous";
-    
+
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
@@ -59,259 +108,178 @@ async function generateCardWithOverlay(
         return;
       }
 
-      // Optimize canvas size - limit to reasonable dimensions
-      const maxWidth = 1200;
-      const maxHeight = 1600;
-      let width = img.width;
-      let height = img.height;
-
-      // Scale down if too large
-      if (width > maxWidth || height > maxHeight) {
-        const ratio = Math.min(maxWidth / width, maxHeight / height);
-        width = width * ratio;
-        height = height * ratio;
-      }
+      const scale = CARD_EXPORT_WIDTH / img.naturalWidth;
+      const width = CARD_EXPORT_WIDTH;
+      const height = Math.round(img.naturalHeight * scale);
 
       canvas.width = width;
       canvas.height = height;
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = "high";
 
-      // Draw the background image
       ctx.drawImage(img, 0, 0, width, height);
 
-      // Add semi-transparent overlay for better text visibility
-      ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
-      ctx.fillRect(0, 0, width, height);
+      // Subtle gradient on lower half only — keeps template header clean
+      const textGradient = ctx.createLinearGradient(0, height * 0.42, 0, height);
+      textGradient.addColorStop(0, "rgba(8, 12, 28, 0)");
+      textGradient.addColorStop(0.35, "rgba(8, 12, 28, 0.18)");
+      textGradient.addColorStop(1, "rgba(8, 12, 28, 0.42)");
+      ctx.fillStyle = textGradient;
+      ctx.fillRect(0, height * 0.42, width, height * 0.58);
 
-      // Add text overlay
-      const W = canvas.width;
-      const H = canvas.height;
+      const centerX = width / 2;
+      const maxTextWidth = width * 0.78;
 
-      // Helper function to draw text with strong outline and shadow
-      const drawTextWithOutline = (
-        text: string,
-        x: number, 
-        y: number,
-        fontSize: number,
-        fillColor: string,
-        outlineColor: string = "#000000",
-        outlineWidth: number = 4
-      ) => {
-        ctx.font = `bold ${fontSize}px Arial, sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        
-        // Strong shadow for depth
-        ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
-        ctx.shadowBlur = 15;
-        ctx.shadowOffsetX = 3;
-        ctx.shadowOffsetY = 3;
-        
-        // Draw outline
-        ctx.strokeStyle = outlineColor;
-        ctx.lineWidth = outlineWidth;
-        ctx.lineJoin = "round";
-        ctx.strokeText(text, x, y);
-        
-        // Draw fill
-        ctx.fillStyle = fillColor;
-        ctx.fillText(text, x, y);
-        
-        // Reset shadow
-        ctx.shadowColor = "transparent";
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-      };
-
-      // Helper function for wrapped text with outline
-      const drawWrappedTextWithOutline = (
+      const drawText = (
         text: string,
         x: number,
         y: number,
-        maxWidth: number,
-        fontSize: number,
-        lineHeight: number,
-        fillColor: string
+        font: string,
+        color: string,
+        withShadow = true,
       ) => {
-        ctx.font = `italic ${fontSize}px Arial, sans-serif`;
+        ctx.save();
+        ctx.font = font;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        
-        const words = text.split(" ");
-        let line = "";
-        let currentY = y;
-
-        words.forEach((word, index) => {
-          const testLine = line + word + " ";
-          const metrics = ctx.measureText(testLine);
-
-          if (metrics.width > maxWidth && index > 0) {
-            // Draw the line with outline
-            ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
-            ctx.shadowBlur = 12;
-            ctx.shadowOffsetX = 2;
-            ctx.shadowOffsetY = 2;
-            
-            ctx.strokeStyle = "#000000";
-            ctx.lineWidth = 3;
-            ctx.strokeText(line, x, currentY);
-            
-            ctx.fillStyle = fillColor;
-            ctx.fillText(line, x, currentY);
-            
-            line = word + " ";
-            currentY += lineHeight;
-          } else {
-            line = testLine;
-          }
-        });
-        
-        // Draw last line
-        if (line) {
-          ctx.shadowColor = "rgba(0, 0, 0, 0.9)";
-          ctx.shadowBlur = 12;
-          ctx.shadowOffsetX = 2;
+        if (withShadow) {
+          ctx.shadowColor = "rgba(0, 0, 0, 0.35)";
+          ctx.shadowBlur = 6;
           ctx.shadowOffsetY = 2;
-          
-          ctx.strokeStyle = "#000000";
-          ctx.lineWidth = 3;
-          ctx.strokeText(line, x, currentY);
-          
-          ctx.fillStyle = fillColor;
-          ctx.fillText(line, x, currentY);
         }
-        
-        ctx.shadowColor = "transparent";
-        ctx.shadowBlur = 0;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
+        ctx.fillStyle = color;
+        ctx.fillText(text, x, y);
+        ctx.restore();
       };
 
-      let currentY = H * 0.25;
+      const drawWrapped = (
+        text: string,
+        startY: number,
+        font: string,
+        color: string,
+        fontSize: number,
+        lineGap: number,
+      ) => {
+        ctx.font = font;
+        const lines = wrapCanvasLines(ctx, text, maxTextWidth);
+        let y = startY;
+        lines.forEach((line) => {
+          drawText(line, centerX, y, font, color);
+          y += fontSize * lineGap;
+        });
+        return y;
+      };
 
-      // Member name - Large and clear
+      const fs = (ratio: number) => Math.round(width * ratio);
+      let y = height * 0.44;
+
       if (memberName.trim()) {
-        drawTextWithOutline(
-          `Dear ${memberName},`,
-          W / 2,
-          currentY,
-          Math.floor(W * 0.055),
-          "#FFFFFF",
-          "#000000",
-          5
+        drawText(
+          `Dear ${memberName.trim()},`,
+          centerX,
+          y,
+          `italic 400 ${fs(0.028)}px "Cormorant Garamond", serif`,
+          "rgba(232, 223, 192, 0.95)",
         );
-        currentY += H * 0.08;
-      }
-
-      // Event name - Bold and prominent
-      drawTextWithOutline(
-        eventData.eventName || eventData.title,
-        W / 2,
-        currentY,
-        Math.floor(W * 0.07),
-        "#FFD700",
-        "#000000",
-        6
-      );
-      currentY += H * 0.1;
-
-      // Description - Readable with good contrast
-      if (eventData.description) {
-        const maxWidth = W * 0.85;
-        drawWrappedTextWithOutline(
-          eventData.description,
-          W / 2,
-          currentY,
-          maxWidth,
-          Math.floor(W * 0.035),
-          W * 0.045,
-          "#FFFFFF"
-        );
-        currentY += H * 0.18;
+        y += height * 0.08;
       } else {
-        currentY += H * 0.05;
+        y += height * 0.04;
       }
 
-      // Date - EXTRA CLEAR with bright color and strong outline
-      drawTextWithOutline(
+      // Event name sits below template's "PLEASE JOIN US FOR" text
+      drawText(
+        eventData.eventName || eventData.title,
+        centerX,
+        y + height * 0.04,
+        `700 ${fs(0.038)}px "Cinzel", serif`,
+        "#e8dfc0",
+      );
+      y += height * 0.11;
+
+      if (eventData.description?.trim()) {
+        y = drawWrapped(
+          eventData.description.trim(),
+          y,
+          `italic 400 ${fs(0.026)}px "Cormorant Garamond", serif`,
+          "rgba(220, 200, 160, 0.92)",
+          fs(0.026),
+          1.35,
+        );
+        y += height * 0.03;
+      }
+
+      drawText(
         eventData.date,
-        W / 2,
-        currentY,
-        Math.floor(W * 0.045),
-        "#FFD700", // Bright gold
-        "#000000",
-        6 // Thicker outline
+        centerX,
+        y,
+        `600 ${fs(0.028)}px "Cinzel", serif`,
+        "#d4b96a",
       );
-      currentY += H * 0.07;
+      y += height * 0.05;
 
-      // Time - EXTRA CLEAR with bright color and strong outline
-      drawTextWithOutline(
+      drawText(
         eventData.time,
-        W / 2,
-        currentY,
-        Math.floor(W * 0.042),
-        "#FFFFFF", // Pure white
-        "#000000",
-        6 // Thicker outline
+        centerX,
+        y,
+        `600 ${fs(0.026)}px "Cinzel", serif`,
+        "#e8dfc0",
       );
-      currentY += H * 0.08;
+      y += height * 0.05;
 
-      // Location - EXTRA CLEAR with bright color and strong outline
-      drawTextWithOutline(
+      drawText(
         eventData.location,
-        W / 2,
-        currentY,
-        Math.floor(W * 0.04),
-        "#FFFFFF", // Pure white
-        "#000000",
-        6 // Thicker outline
+        centerX,
+        y,
+        `italic 400 ${fs(0.028)}px "Cormorant Garamond", serif`,
+        "rgba(220, 200, 160, 0.9)",
       );
 
-      // Generate image file with compression
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          reject(new Error("Failed to generate image"));
-          return;
-        }
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error("Failed to generate image"));
+            return;
+          }
 
-        const imageFile = new File([blob], `invitation-${Date.now()}.png`, {
-          type: "image/png",
-        });
+          const imageFile = new File([blob], `invitation-${Date.now()}.png`, {
+            type: "image/png",
+          });
 
-        // Generate PDF with optimized size
-        const imgData = canvas.toDataURL("image/jpeg", 0.9);
-        const pdf = new jsPDF({
-          orientation: canvas.width > canvas.height ? "landscape" : "portrait",
-          unit: "mm",
-          format: "a4",
-        });
+          const imgData = canvas.toDataURL("image/png");
+          const pdf = new jsPDF({
+            orientation: width > height ? "landscape" : "portrait",
+            unit: "mm",
+            format: "a4",
+          });
 
-        // Calculate dimensions to fit A4
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        const imgRatio = canvas.width / canvas.height;
-        const pdfRatio = pdfWidth / pdfHeight;
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = pdf.internal.pageSize.getHeight();
+          const imgRatio = width / height;
+          const pdfRatio = pdfWidth / pdfHeight;
 
-        let finalWidth = pdfWidth;
-        let finalHeight = pdfHeight;
+          let finalWidth = pdfWidth;
+          let finalHeight = pdfHeight;
 
-        if (imgRatio > pdfRatio) {
-          finalHeight = pdfWidth / imgRatio;
-        } else {
-          finalWidth = pdfHeight * imgRatio;
-        }
+          if (imgRatio > pdfRatio) {
+            finalHeight = pdfWidth / imgRatio;
+          } else {
+            finalWidth = pdfHeight * imgRatio;
+          }
 
-        const x = (pdfWidth - finalWidth) / 2;
-        const y = (pdfHeight - finalHeight) / 2;
+          const x = (pdfWidth - finalWidth) / 2;
+          const pdfY = (pdfHeight - finalHeight) / 2;
 
-        pdf.addImage(imgData, "JPEG", x, y, finalWidth, finalHeight);
-        const pdfBlob = pdf.output("blob");
-        const pdfFile = new File([pdfBlob], `invitation-${Date.now()}.pdf`, {
-          type: "application/pdf",
-        });
+          pdf.addImage(imgData, "PNG", x, pdfY, finalWidth, finalHeight);
+          const pdfBlob = pdf.output("blob");
+          const pdfFile = new File([pdfBlob], `invitation-${Date.now()}.pdf`, {
+            type: "application/pdf",
+          });
 
-        resolve({ imageFile, pdfFile });
-      }, "image/png"); // Use PNG for better text quality
+          resolve({ imageFile, pdfFile });
+        },
+        "image/png",
+        1,
+      );
     };
 
     img.onerror = () => {
@@ -320,6 +288,27 @@ async function generateCardWithOverlay(
 
     img.src = cardImage;
   });
+}
+
+function getInviteErrorMessage(error: unknown): string {
+  if (!error || typeof error !== "object") {
+    return "Failed to send invitation";
+  }
+
+  const err = error as {
+    message?: string;
+    data?: {
+      message?: string;
+      data?: { message?: string };
+    };
+  };
+
+  return (
+    err.data?.message ||
+    err.data?.data?.message ||
+    err.message ||
+    "Failed to send invitation"
+  );
 }
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -334,6 +323,7 @@ export default function InvitationCard() {
     email: "",
   });
   const [isGenerating, setIsGenerating] = useState(false);
+  const [inviteError, setInviteError] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("selectedEvent");
@@ -387,8 +377,10 @@ export default function InvitationCard() {
         description: "",
       };
 
-  const handleMemberChange = (field: keyof MemberDetails, value: string) =>
+  const handleMemberChange = (field: keyof MemberDetails, value: string) => {
+    setInviteError(null);
     setMemberDetails((prev) => ({ ...prev, [field]: value }));
+  };
 
   const handleSendInvitation = async () => {
     // Validation
@@ -406,12 +398,13 @@ export default function InvitationCard() {
     }
 
     setIsGenerating(true);
+    setInviteError(null);
 
     try {
       // Step 1: Generate files
       toast.loading("Generating invitation card...", { id: "generating" });
 
-      const { imageFile, pdfFile } = await generateCardWithOverlay(
+      const { imageFile } = await generateCardWithOverlay(
         INVITATION_CARD_IMAGE,
         eventData,
         memberDetails.name
@@ -419,26 +412,28 @@ export default function InvitationCard() {
 
       toast.success("Card generated successfully!", { id: "generating" });
 
-      // Step 2: Send invitation
+      // Step 2: Send invitation with generated card image
       toast.loading("Sending invitation...", { id: "sending" });
 
       await addEventMember({
         eventId,
         memberDetails,
-        file: pdfFile,
+        file: imageFile,
       }).unwrap();
 
       toast.success("Invitation sent successfully!", { id: "sending" });
 
       // Reset form
       setMemberDetails({ name: "", email: "" });
+      setInviteError(null);
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Failed to send invitation:", error);
       toast.dismiss("generating");
       toast.dismiss("sending");
-      
-      const errorMessage = error?.data?.message || error?.message || "Failed to send invitation";
+
+      const errorMessage = getInviteErrorMessage(error);
+      setInviteError(errorMessage);
       toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
@@ -560,70 +555,30 @@ export default function InvitationCard() {
                   className="object-cover"
                   priority
                 />
-                {/* Dark overlay for better text visibility */}
-                <div className="absolute inset-0 bg-black/30"></div>
-                
-                {/* Text Overlay Preview */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8 space-y-3">
+                <div className="absolute inset-x-0 bottom-0 top-[42%] bg-gradient-to-b from-transparent via-[#080c1c]/20 to-[#080c1c]/45 pointer-events-none" />
+
+                {/* Text overlay — lower section only, matches exported card */}
+                <div className="absolute inset-x-0 bottom-0 top-[44%] flex flex-col items-center justify-start text-center px-6 pt-2 pb-8 gap-1.5">
                   {memberDetails.name && (
-                    <p 
-                      className="text-white text-xl md:text-2xl font-bold drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]"
-                      style={{
-                        textShadow: '3px 3px 6px rgba(0,0,0,0.9), -1px -1px 2px rgba(0,0,0,0.8)',
-                        WebkitTextStroke: '1px black'
-                      }}
-                    >
+                    <p className="italic text-[#e8dfc0]/95 text-sm md:text-base font-cormorant">
                       Dear {memberDetails.name},
                     </p>
                   )}
-                  <p 
-                    className="text-[#4f6950] text-2xl md:text-3xl font-bold drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]"
-                    style={{
-                      textShadow: '4px 4px 8px rgba(0,0,0,0.9), -1px -1px 3px rgba(0,0,0,0.8)',
-                      WebkitTextStroke: '1.5px black'
-                    }}
-                  >
+                  <p className="text-[#e8dfc0] text-lg md:text-xl font-semibold tracking-wide font-cormorant">
                     {eventData.eventName || eventData.title}
                   </p>
                   {eventData.description && (
-                    <p 
-                      className="text-white text-sm md:text-base italic drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)] max-w-xs"
-                      style={{
-                        textShadow: '2px 2px 6px rgba(0,0,0,0.9), -1px -1px 2px rgba(0,0,0,0.8)',
-                        WebkitTextStroke: '0.5px black'
-                      }}
-                    >
+                    <p className="text-[rgba(220,200,160,0.92)] text-xs md:text-sm italic max-w-[85%] font-cormorant leading-snug">
                       {eventData.description}
                     </p>
                   )}
-                  {/* DATE - Extra Clear and Bold */}
-                  <p 
-                    className="text-yellow-400 text-lg md:text-xl font-bold drop-shadow-[0_3px_8px_rgba(0,0,0,1)]"
-                    style={{
-                      textShadow: '3px 3px 8px rgba(0,0,0,1), -1px -1px 3px rgba(0,0,0,0.9)',
-                      WebkitTextStroke: '1.2px black'
-                    }}
-                  >
+                  <p className="text-[#d4b96a] text-sm md:text-base font-medium tracking-wide font-cormorant mt-1">
                     {eventData.date}
                   </p>
-                  {/* TIME - Extra Clear and Bold */}
-                  <p 
-                    className="text-white text-base md:text-lg font-bold drop-shadow-[0_3px_8px_rgba(0,0,0,1)]"
-                    style={{
-                      textShadow: '3px 3px 8px rgba(0,0,0,1), -1px -1px 3px rgba(0,0,0,0.9)',
-                      WebkitTextStroke: '1.2px black'
-                    }}
-                  >
+                  <p className="text-[#e8dfc0] text-sm md:text-base font-cormorant">
                     {eventData.time}
                   </p>
-                  {/* LOCATION - Extra Clear and Bold */}
-                  <p
-                    className="text-white text-base md:text-lg font-bold drop-shadow-[0_3px_8px_rgba(0,0,0,1)]"
-                    style={{
-                      textShadow: '3px 3px 8px rgba(0,0,0,1), -1px -1px 3px rgba(0,0,0,0.9)',
-                      WebkitTextStroke: '1.2px black'
-                    }}
-                  >
+                  <p className="text-[rgba(220,200,160,0.9)] text-sm md:text-base italic font-cormorant">
                     {eventData.location}
                   </p>
                 </div>
@@ -741,6 +696,52 @@ export default function InvitationCard() {
                     <span className="flex-1">{eventData.location}</span>
                   </p>
                 </div>
+              </div>
+            )}
+
+            {inviteError && (
+              <div className="mb-4 p-4 bg-red-900/30 border border-red-500/50 rounded-lg flex items-start gap-3">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-red-300">
+                    Could not send invitation
+                  </p>
+                  <p className="text-sm text-red-200 mt-1">{inviteError}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setInviteError(null)}
+                  className="text-red-300 hover:text-red-100 transition-colors"
+                  aria-label="Dismiss error"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
               </div>
             )}
 

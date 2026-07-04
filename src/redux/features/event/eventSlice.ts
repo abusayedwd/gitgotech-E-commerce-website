@@ -80,7 +80,7 @@ const eventSlice = apiSlice.injectEndpoints({
             memberDetails: memberDetails,
           }),
         );
-        // Add card file (PDF or image)
+        // Add invitation card image (PNG)
         if (file) {
           formData.append("file", file);
         }

@@ -9,6 +9,7 @@ import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
 import { useGetMyCouponsQuery, useValidateCouponMutation } from "@/redux/features/coupon/couponSlice";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
 import { Loader2, MapPin, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
@@ -36,6 +37,7 @@ const CHECKOUT_COUNTRY_OPTIONS = [
 function distanceDeliveryUsd(
   customerLocation: SelectedLocation | null,
   showroomCoordinates: [number, number] | null,
+  ratePerKm: number,
 ): number {
   if (!customerLocation || !showroomCoordinates) {
     return FALLBACK_DISTANCE_DELIVERY_USD;
@@ -45,6 +47,7 @@ function distanceDeliveryUsd(
     customerLocation.coordinates.longitude,
     showroomCoordinates[0],
     showroomCoordinates[1],
+    ratePerKm,
   );
 }
 
@@ -178,6 +181,13 @@ export default function CheckoutPage() {
   });
 
   const [orderSubmitted] = useAddVendorOrderMutation();
+  const { data: platformData } = usePlatformFreeQuery(undefined);
+  const platformSettings = platformData?.data;
+
+  const ratePerKm = platformSettings?.perKmDistancePrice ?? RATE_PER_KM;
+  const ratePerKg = platformSettings?.perKgWeightPrice ?? RATE_PER_KG;
+  const customerWithdrawPct = platformSettings?.customerWithdrawPercentage;
+  const vendorWithdrawPct = platformSettings?.vendorWithdrawPercentage;
 
   // ── Price calculations ────────────────────────────────────────────────────
   const subtotal = useMemo(() => {
@@ -194,13 +204,13 @@ export default function CheckoutPage() {
   }, [isEventOrder, eventDisplayItems, cartDisplayItems]);
 
   const distanceDeliveryCharge = useMemo(
-    () => distanceDeliveryUsd(selectedLocation, showroomCoordinates),
-    [selectedLocation, showroomCoordinates],
+    () => distanceDeliveryUsd(selectedLocation, showroomCoordinates, ratePerKm),
+    [selectedLocation, showroomCoordinates, ratePerKm],
   );
 
   const weightDeliveryCharge = useMemo(
-    () => calcWeightDeliveryUsdForItems(displayItems),
-    [displayItems],
+    () => calcWeightDeliveryUsdForItems(displayItems, ratePerKg),
+    [displayItems, ratePerKg],
   );
 
   const deliveryCharge = distanceDeliveryCharge + weightDeliveryCharge;
@@ -500,13 +510,13 @@ export default function CheckoutPage() {
                     </p>
                     {distanceKm !== null && (
                       <p className="text-xs text-purple-300 font-medium">
-                        Distance: {distanceKm} km × ₵{RATE_PER_KM}/km → distance fee ₵
+                        Distance: {distanceKm} km × ₵{ratePerKm}/km → distance fee ₵
                         {distanceDeliveryCharge.toFixed(2)}
                       </p>
                     )}
                     {totalWeightKg > 0 && (
                       <p className="text-xs text-purple-300/90">
-                        Weight: {totalWeightKg} km × ₵{RATE_PER_KG}/kg → weight fee ₵
+                        Weight: {totalWeightKg} kg × ₵{ratePerKg}/kg → weight fee ₵
                         {weightDeliveryCharge.toFixed(2)}
                       </p>
                     )}
@@ -674,7 +684,7 @@ export default function CheckoutPage() {
                   Delivery (distance)
                   {distanceKm !== null ? (
                     <span className="ml-1 text-xs text-purple-300/70">
-                      ({distanceKm} km × ₵{RATE_PER_KM})
+                      ({distanceKm} km × ₵{ratePerKm})
                     </span>
                   ) : (
                     <span className="ml-1 text-xs text-purple-300/70">
@@ -689,7 +699,7 @@ export default function CheckoutPage() {
                   Delivery (weight)
                   {totalWeightKg > 0 ? (
                     <span className="ml-1 text-xs text-purple-300/70">
-                      ({totalWeightKg} km × ₵{RATE_PER_KG})
+                      ({totalWeightKg} kg × ₵{ratePerKg})
                     </span>
                   ) : (
                     <span className="ml-1 text-xs text-gray-500">(no weight on product)</span>
@@ -701,6 +711,24 @@ export default function CheckoutPage() {
                 <span className="text-gray-300 font-medium">Delivery total</span>
                 <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
               </div>
+
+              {(customerWithdrawPct != null || vendorWithdrawPct != null) && (
+                <div className="rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 space-y-1">
+                  <p className="text-xs font-medium text-purple-300">Withdraw percentage</p>
+                  {customerWithdrawPct != null && (
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>Customer</span>
+                      <span className="text-white">{customerWithdrawPct}%</span>
+                    </div>
+                  )}
+                  {vendorWithdrawPct != null && (
+                    <div className="flex justify-between text-xs text-gray-400">
+                      <span>Vendor</span>
+                      <span className="text-white">{vendorWithdrawPct}%</span>
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* ✅ Tax displayed as calculated 10% of subtotal */}
               <div className="flex justify-between text-sm">
