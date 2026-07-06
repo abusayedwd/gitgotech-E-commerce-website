@@ -533,7 +533,6 @@ import {
   FALLBACK_DISTANCE_DELIVERY_USD,
   productWeightToKg,
   RATE_PER_KG,
-  RATE_PER_KM,
 } from "@/lib/deliveryPricing";
 import {
   useDeleteSaveListMutation,
@@ -576,10 +575,7 @@ export default function ShoppingCart() {
   const { data: platformData } = usePlatformFreeQuery(undefined);
   const platformSettings = platformData?.data;
 
-  const ratePerKm = platformSettings?.perKmDistancePrice ?? RATE_PER_KM;
   const ratePerKg = platformSettings?.perKgWeightPrice ?? RATE_PER_KG;
-  const customerWithdrawPct = platformSettings?.customerWithdrawPercentage;
-  const vendorWithdrawPct = platformSettings?.vendorWithdrawPercentage;
 
   useEffect(() => {
     if (isLoggedIn) return;
@@ -1063,25 +1059,6 @@ export default function ShoppingCart() {
                   ₵{estimatedDeliveryCharge.toFixed(2)}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 -mt-1 mb-1">
-                ₵{ratePerKm}/km (distance) + ₵{ratePerKg}/kg × product weight;
-                finalized at checkout with your pin.
-              </p>
-              {(customerWithdrawPct != null || vendorWithdrawPct != null) && (
-                <div className="rounded-lg border border-purple-500/20 bg-purple-900/10 px-3 py-2 space-y-1">
-                  <p className="text-xs font-medium text-purple-300">Withdraw percentage</p>
-                  {customerWithdrawPct != null && (
-                    <p className="text-xs text-gray-400">
-                      Customer: <span className="text-white">{customerWithdrawPct}%</span>
-                    </p>
-                  )}
-                  {vendorWithdrawPct != null && (
-                    <p className="text-xs text-gray-400">
-                      Vendor: <span className="text-white">{vendorWithdrawPct}%</span>
-                    </p>
-                  )}
-                </div>
-              )}
               {/* <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tax (10%)</span>
                 <span className="font-medium">

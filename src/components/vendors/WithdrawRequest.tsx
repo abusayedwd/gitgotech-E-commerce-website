@@ -6,6 +6,8 @@ import {
   useGetWithdrawListQuery,
   useWithdrawRequestMutation,
 } from "@/redux/features/paymentTransaction/paymentTransactionSlice";
+import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
+import { useAuth } from "@/hooks/useAuth";
 import {
   AlertCircle,
   ArrowDownRight,
@@ -15,7 +17,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 
@@ -50,6 +52,7 @@ interface WithdrawRequest {
 
 export default function WithdrawRequest() {
   const router = useRouter();
+  const { role } = useAuth();
   const [amount, setAmount] = useState("");
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"request" | "history">("request");
@@ -63,6 +66,46 @@ export default function WithdrawRequest() {
       page: currentPage,
       limit: 10,
     });
+  const { data: platformData } = usePlatformFreeQuery(undefined);
+  const platformSettings = platformData?.data;
+
+  const withdrawFeeInfo = useMemo(() => {
+    if (!platformSettings) return null;
+
+    const userRole = (role || "").toLowerCase();
+
+    if (
+      userRole === "vendor" &&
+      platformSettings.vendorWithdrawPercentage != null
+    ) {
+      return {
+        label: "Vendor withdraw fee",
+        percentage: platformSettings.vendorWithdrawPercentage,
+      };
+    }
+
+    if (
+      userRole === "customer" &&
+      platformSettings.customerWithdrawPercentage != null
+    ) {
+      return {
+        label: "Customer withdraw fee",
+        percentage: platformSettings.customerWithdrawPercentage,
+      };
+    }
+
+    if (
+      userRole === "driver" &&
+      platformSettings.driverWithdrawPercentage != null
+    ) {
+      return {
+        label: "Driver withdraw fee",
+        percentage: platformSettings.driverWithdrawPercentage,
+      };
+    }
+
+    return null;
+  }, [platformSettings, role]);
 
   const balance = walletData?.data?.balance || 0;
   const cards: Card[] = cardsData?.data || [];
@@ -197,6 +240,24 @@ export default function WithdrawRequest() {
             </span>
           </div>
         </div>
+
+        {/* Platform withdraw fee — role-based */}
+        {withdrawFeeInfo && (
+          <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-4">
+            <h3 className="text-sm font-semibold text-purple-300 mb-1">
+              Platform Withdraw Fee
+            </h3>
+            <p className="text-xs text-gray-400 mb-3">
+              Review your platform fee before submitting a withdrawal request.
+            </p>
+            <div className="rounded-lg bg-black/30 border border-purple-500/20 px-4 py-3 inline-flex flex-col">
+              <p className="text-xs text-gray-400">{withdrawFeeInfo.label}</p>
+              <p className="text-2xl font-bold text-white">
+                {withdrawFeeInfo.percentage}%
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Tabs */}
         <div className="flex gap-2">
