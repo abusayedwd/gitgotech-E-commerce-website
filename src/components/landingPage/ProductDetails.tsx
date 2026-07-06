@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
+import { Heart, ShoppingCart, MessageCircle, Ruler, Star, Info, Minus, Plus, X, Calendar, MapPin, ChevronLeft, ChevronRight, ZoomIn, Flag } from 'lucide-react';
+import ReportModal from '@/components/shared/ReportModal';
+import { ReportTargetType } from '@/redux/features/report/reportSlice';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
@@ -27,6 +29,12 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   const [zoomActive, setZoomActive] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
   const [previewTop, setPreviewTop] = useState(0);
+  const [reportModal, setReportModal] = useState<{
+    open: boolean;
+    targetType: ReportTargetType;
+    targetId: string;
+    targetLabel: string;
+  } | null>(null);
   const mainImageRef = useRef<HTMLImageElement>(null);
   const mainImageAreaRef = useRef<HTMLDivElement>(null);
 
@@ -939,9 +947,26 @@ const sizeData = [
           <div className="space-y-4">
             {/* Product Title & Rating */}
             <div>
-              <h1 className="text-3xl font-bold font-cormorant mb-2">
-                {product.product_name || product.name}
-              </h1>
+              <div className="flex items-start justify-between gap-3 mb-2">
+                <h1 className="text-3xl font-bold font-cormorant">
+                  {product.product_name || product.name}
+                </h1>
+                <button
+                  type="button"
+                  onClick={() =>
+                    setReportModal({
+                      open: true,
+                      targetType: "PRODUCT",
+                      targetId: product._id,
+                      targetLabel: product.product_name || product.name,
+                    })
+                  }
+                  className="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-300 border border-red-500/30 px-3 py-1.5 rounded-lg flex-shrink-0"
+                >
+                  <Flag className="w-4 h-4" />
+                  Report
+                </button>
+              </div>
               <div className="flex items-center space-x-2 mb-4">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
@@ -982,8 +1007,8 @@ const sizeData = [
                     </p>
                   </div>
                 </div>
+                <div className="flex items-center gap-2">
                 <button
-                  // onClick={() => handleSendMessageAuto(product.vendor?._id)}
                   onClick={() =>
                     router.push(`/messaging?vendorId=${product.vendor?._id}`)
                   }
@@ -992,6 +1017,24 @@ const sizeData = [
                   <MessageCircle className="w-4 h-4" />
                   Chat
                 </button>
+                {product.vendor?._id && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setReportModal({
+                        open: true,
+                        targetType: "VENDOR",
+                        targetId: product.vendor._id,
+                        targetLabel: product.vendor?.name || "Vendor",
+                      })
+                    }
+                    className="text-red-400 hover:text-red-300 border border-red-500/30 p-2 rounded-lg"
+                    title="Report vendor"
+                  >
+                    <Flag className="w-4 h-4" />
+                  </button>
+                )}
+                </div>
               </div>
             </div>
 
@@ -1384,6 +1427,16 @@ const sizeData = [
 
       {/* Size Guide Modal — tabs per category, view-only */}
       {showSizeGuide && <SizeGuideModal />}
+
+      {reportModal?.open && (
+        <ReportModal
+          isOpen={reportModal.open}
+          onClose={() => setReportModal(null)}
+          targetType={reportModal.targetType}
+          targetId={reportModal.targetId}
+          targetLabel={reportModal.targetLabel}
+        />
+      )}
 
       <style jsx>{`
         @keyframes fadeIn {

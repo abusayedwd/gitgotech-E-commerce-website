@@ -23,6 +23,35 @@ const messageSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Messages"],
     }),
 
+    getBlockedList: builder.query({
+      query: ({ page = 1, limit = 20, searchTerm = "" } = {}) => ({
+        url: "/block/my-list",
+        params: {
+          page,
+          limit,
+          ...(searchTerm ? { searchTerm } : {}),
+        },
+      }),
+      providesTags: ["BlockedUsers"],
+    }),
+
+    blockUser: builder.mutation({
+      query: ({ userId, reason }) => ({
+        url: `/block/${userId}`,
+        method: "POST",
+        body: { reason },
+      }),
+      invalidatesTags: ["BlockedUsers", "Messages"],
+    }),
+
+    unblockUser: builder.mutation({
+      query: (userId) => ({
+        url: `/block/${userId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["BlockedUsers", "Messages"],
+    }),
+
   }),
 });
 
@@ -30,4 +59,7 @@ export const {
   useGetChatListQuery,
   useGetChatMessagesQuery,
   useSendMessageMutation,
+  useGetBlockedListQuery,
+  useBlockUserMutation,
+  useUnblockUserMutation,
 } = messageSlice;

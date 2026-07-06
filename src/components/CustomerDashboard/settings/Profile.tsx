@@ -167,7 +167,7 @@ import url from "@/redux/api/baseUrl";
 import { useGetMyProfileQuery } from "@/redux/features/settings/settingsSlice";
 import { useLogoutUserMutation } from "@/redux/features/auth/authSlice";
 import { getOrCreateDeviceId } from "@/lib/firebase";
-import { Calendar, Edit2, LogOut, Settings, Wallet } from "lucide-react";
+import { Calendar, Edit2, Flag, LogOut, Settings, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -254,13 +254,21 @@ export default function ProfilePage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           <button
             onClick={() => router.push("/profile/event")}
             className="bg-[#29223A] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2"
           >
             <Calendar className="w-6 h-6" />
             <span className="text-sm">Event</span>
+          </button>
+
+          <button
+            onClick={() => router.push("/profile/my-reports")}
+            className="bg-[#29223A] bg-opacity-50 border cursor-pointer border-gray-700 rounded-xl p-4 hover:bg-opacity-70 transition-all flex flex-col items-center gap-2"
+          >
+            <Flag className="w-6 h-6" />
+            <span className="text-sm">My Reports</span>
           </button>
 
           <button

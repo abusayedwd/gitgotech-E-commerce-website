@@ -6,16 +6,18 @@ import {
   useGetHomeCategoriesQuery,
   useGetShowroomProductQuery,
 } from "@/redux/features/home/homeSlice";
-import { ArrowLeft, CheckCircle, MapPin, Store } from "lucide-react";
+import { ArrowLeft, CheckCircle, Flag, MapPin, Store } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
+import ReportModal from "@/components/shared/ReportModal";
 
 export default function ViewShowroomClient() {
   const searchParams = useSearchParams();
   const showroomId = searchParams.get("showroomId");
   const vendorId = searchParams.get("vendorId");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [showReportModal, setShowReportModal] = useState(false);
   console.log(selectedCategory);
 
   const { data: categoriesRes } = useGetHomeCategoriesQuery({});
@@ -72,19 +74,33 @@ export default function ViewShowroomClient() {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-6">
-              <h1 className="text-white text-3xl md:text-4xl font-cormorant font-semibold mb-2">
-                {showroom.showroom_name}
-              </h1>
-              <div className="flex items-center text-gray-300">
-                <MapPin className="w-5 h-5 mr-2 text-purple-400" />
-                <span>{showroom.showroom_address}</span>
-              </div>
-              {showroom.isApprove && (
-                <div className="flex items-center mt-2 text-green-400">
-                  <CheckCircle className="w-4 h-4 mr-2" />
-                  <span className="text-sm">Verified Showroom</span>
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h1 className="text-white text-3xl md:text-4xl font-cormorant font-semibold mb-2">
+                    {showroom.showroom_name}
+                  </h1>
+                  <div className="flex items-center text-gray-300">
+                    <MapPin className="w-5 h-5 mr-2 text-purple-400" />
+                    <span>{showroom.showroom_address}</span>
+                  </div>
+                  {showroom.isApprove && (
+                    <div className="flex items-center mt-2 text-green-400">
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      <span className="text-sm">Verified Showroom</span>
+                    </div>
+                  )}
                 </div>
-              )}
+                {showroomId && (
+                  <button
+                    type="button"
+                    onClick={() => setShowReportModal(true)}
+                    className="flex items-center gap-1.5 text-sm text-red-400 hover:text-red-300 border border-red-500/30 px-3 py-1.5 rounded-lg bg-black/40"
+                  >
+                    <Flag className="w-4 h-4" />
+                    Report
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -118,6 +134,16 @@ export default function ViewShowroomClient() {
           />
         </div>
       </div>
+
+      {showroomId && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          targetType="SHOWROOM"
+          targetId={showroomId}
+          targetLabel={showroom.showroom_name}
+        />
+      )}
     </div>
   );
 }

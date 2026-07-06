@@ -8,9 +8,14 @@ import {
   useGetChatListQuery,
   useGetChatMessagesQuery,
   useSendMessageMutation,
+  useGetBlockedListQuery,
+  useBlockUserMutation,
+  useUnblockUserMutation,
 } from '@/redux/features/messages/messageSlice';
 import { getSocket, initializeSocket, disconnectSocket } from '@/lib/socket';
 import url from '@/redux/api/baseUrl';
+import toast from 'react-hot-toast';
+import ReportModal from '@/components/shared/ReportModal';
 
 const getMyUserId = () => {
   if (typeof window === 'undefined') return '';
@@ -52,6 +57,25 @@ interface ChatUser {
   updatedAt: string;
 }
 
+interface BlockedUserEntry {
+  _id: string;
+  reason: string;
+  createdAt: string;
+  blockedUser: {
+    _id: string;
+    name: string;
+    email?: string;
+    image?: string;
+    role?: string;
+  };
+}
+
+const getUserImage = (image?: string) => {
+  if (!image) return 'https://i.pravatar.cc/150?img=2';
+  if (image.startsWith('http')) return image;
+  return `${url}/${image}`;
+};
+
 const MessagesPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -74,6 +98,11 @@ const MessagesPage = () => {
   const [isSocketConnected, setIsSocketConnected] = useState(false);
   const [vendorInitDone, setVendorInitDone] = useState(false);
   const vendorInitInProgress = useRef(false);
+  const [sidebarTab, setSidebarTab] = useState<'chats' | 'blocked'>('chats');
+  const [showBlockModal, setShowBlockModal] = useState(false);
+  const [blockReason, setBlockReason] = useState('');
+  const [blockSearch, setBlockSearch] = useState('');
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -97,6 +126,17 @@ const MessagesPage = () => {
   });
 
   const [sendMessage, { isLoading: isSending }] = useSendMessageMutation();
+  const [blockUser, { isLoading: isBlocking }] = useBlockUserMutation();
+  const [unblockUser, { isLoading: isUnblocking }] = useUnblockUserMutation();
+
+  const {
+    data: blockedListData,
+    isLoading: blockedListLoading,
+    refetch: refetchBlockedList,
+  } = useGetBlockedListQuery(
+    { page: 1, limit: 50, searchTerm: blockSearch },
+    { skip: !isMounted },
+  );
 
   // Safely extract array — API might return data, data.data, or data.chats
   const rawChatData = chatListData?.data;
@@ -111,6 +151,13 @@ const MessagesPage = () => {
 
   const messages: Message[] = messagesData?.data?.messages || [];
 
+  const blockedUsers: BlockedUserEntry[] =
+    blockedListData?.data?.data || [];
+
+  const blockedUserIds = new Set(
+    blockedUsers.map((entry) => entry.blockedUser?._id).filter(Boolean),
+  );
+
   // ─── Helpers ──────────────────────────────────────────────────
   const getOtherParticipant = useCallback(
     (chat: ChatUser): Participant => {
@@ -124,6 +171,10 @@ const MessagesPage = () => {
 
   const currentChat = chatUsers.find((c) => c._id === selectedChatId);
   const currentOtherUser = currentChat ? getOtherParticipant(currentChat) : null;
+
+  const isCurrentUserBlocked = currentOtherUser
+    ? blockedUserIds.has(currentOtherUser._id)
+    : false;
 
   // ─── Core send helper ─────────────────────────────────────────
   const sendTextMessage = useCallback(
@@ -289,6 +340,36 @@ const MessagesPage = () => {
     }
   };
 
+  const handleBlockUser = async () => {
+    if (!selectedReceiverId) return;
+    if (!blockReason.trim()) {
+      toast.error('Please enter a reason for blocking');
+      return;
+    }
+    try {
+      await blockUser({
+        userId: selectedReceiverId,
+        reason: blockReason.trim(),
+      }).unwrap();
+      toast.success('User blocked successfully');
+      setShowBlockModal(false);
+      setBlockReason('');
+      refetchBlockedList();
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to block user');
+    }
+  };
+
+  const handleUnblockUser = async (userId: string) => {
+    try {
+      await unblockUser(userId).unwrap();
+      toast.success('User unblocked successfully');
+      refetchBlockedList();
+    } catch (error: any) {
+      toast.error(error?.data?.message || 'Failed to unblock user');
+    }
+  };
+
   // ─── Render message bubble ────────────────────────────────────
   const renderMessageBubble = (msg: Message, index: number) => {
     const isMe = msg.senderId?._id === MY_USER_ID;
@@ -376,11 +457,38 @@ const MessagesPage = () => {
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-white">Messages</h2>
           <div className="bg-purple-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
-            {chatUsers.length}
+            {sidebarTab === 'chats' ? chatUsers.length : blockedUsers.length}
           </div>
         </div>
 
+        <div className="flex gap-2 mb-3">
+          <button
+            type="button"
+            onClick={() => setSidebarTab('chats')}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+              sidebarTab === 'chats'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:text-white'
+            }`}
+          >
+            Chats
+          </button>
+          <button
+            type="button"
+            onClick={() => setSidebarTab('blocked')}
+            className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+              sidebarTab === 'blocked'
+                ? 'bg-purple-600 text-white'
+                : 'bg-gray-800 text-gray-400 hover:text-white'
+            }`}
+          >
+            Blocked
+          </button>
+        </div>
+
         <div className="space-y-2 overflow-y-auto flex-1 custom-scrollbar pr-1">
+          {sidebarTab === 'chats' ? (
+            <>
           {chatListLoading ? (
             <div className="flex items-center justify-center py-8 text-gray-400 gap-2">
               <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
@@ -426,6 +534,60 @@ const MessagesPage = () => {
               );
             })
           )}
+            </>
+          ) : (
+            <>
+              <input
+                type="text"
+                value={blockSearch}
+                onChange={(e) => setBlockSearch(e.target.value)}
+                placeholder="Search blocked users..."
+                className="w-full px-3 py-2 mb-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              {blockedListLoading ? (
+                <div className="flex items-center justify-center py-8 text-gray-400 gap-2">
+                  <div className="w-5 h-5 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                  Loading blocked list...
+                </div>
+              ) : blockedUsers.length === 0 ? (
+                <div className="text-center text-gray-400 py-8">No blocked users</div>
+              ) : (
+                blockedUsers.map((entry) => {
+                  const user = entry.blockedUser;
+                  if (!user) return null;
+                  return (
+                    <div
+                      key={entry._id}
+                      className="flex items-center p-3 rounded-lg bg-gray-800/40 border border-gray-700/50"
+                    >
+                      <img
+                        src={getUserImage(user.image)}
+                        alt={user.name}
+                        className="w-12 h-12 rounded-full border-2 border-gray-700 mr-3 flex-shrink-0"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-white truncate">{user.name}</div>
+                        {user.role && (
+                          <div className="text-xs text-purple-300 capitalize">{user.role}</div>
+                        )}
+                        {entry.reason && (
+                          <div className="text-xs text-gray-400 truncate">Reason: {entry.reason}</div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleUnblockUser(user._id)}
+                        disabled={isUnblocking}
+                        className="ml-2 px-3 py-1.5 text-xs font-medium bg-green-600/20 text-green-400 border border-green-500/30 rounded-lg hover:bg-green-600/30 disabled:opacity-50"
+                      >
+                        Unblock
+                      </button>
+                    </div>
+                  );
+                })
+              )}
+            </>
+          )}
         </div>
       </div>
 
@@ -454,15 +616,49 @@ const MessagesPage = () => {
               </button>
               <div className="relative mr-3">
                 <img
-                  src={currentOtherUser?.image || 'https://i.pravatar.cc/150?img=2'}
+                  src={getUserImage(currentOtherUser?.image)}
                   alt={currentOtherUser?.name}
                   className="w-10 h-10 rounded-full border-2 border-purple-500"
                 />
                 <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 bg-gray-500" />
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="font-semibold text-white">{currentOtherUser?.name}</div>
+                {isCurrentUserBlocked && (
+                  <div className="text-xs text-red-400">Blocked</div>
+                )}
               </div>
+              {selectedReceiverId && (
+                <div className="flex items-center gap-2 shrink-0">
+                {isCurrentUserBlocked ? (
+                  <button
+                    type="button"
+                    onClick={() => handleUnblockUser(selectedReceiverId)}
+                    disabled={isUnblocking}
+                    className="px-3 py-1.5 text-sm font-medium bg-green-600/20 text-green-400 border border-green-500/30 rounded-lg hover:bg-green-600/30 disabled:opacity-50"
+                  >
+                    Unblock
+                  </button>
+                ) : (
+                  <>
+                  <button
+                    type="button"
+                    onClick={() => setShowReportModal(true)}
+                    className="px-3 py-1.5 text-sm font-medium bg-orange-600/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-600/30"
+                  >
+                    Report
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowBlockModal(true)}
+                    className="px-3 py-1.5 text-sm font-medium bg-red-600/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-600/30"
+                  >
+                    Block
+                  </button>
+                  </>
+                )}
+                </div>
+              )}
             </div>
 
             {/* Messages */}
@@ -579,6 +775,56 @@ const MessagesPage = () => {
           </>
         )}
       </div>
+
+      {/* Block user modal */}
+      {showBlockModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md bg-gray-900 border border-gray-700 rounded-xl p-5">
+            <h3 className="text-lg font-semibold text-white mb-2">Block User</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Block {currentOtherUser?.name}? They will not be able to message you.
+            </p>
+            <label className="block text-sm text-gray-300 mb-2">Reason *</label>
+            <textarea
+              value={blockReason}
+              onChange={(e) => setBlockReason(e.target.value)}
+              placeholder="Enter reason for blocking..."
+              rows={3}
+              className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-4 resize-none"
+            />
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setShowBlockModal(false);
+                  setBlockReason('');
+                }}
+                className="flex-1 py-2.5 bg-gray-800 text-gray-300 rounded-lg hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleBlockUser}
+                disabled={isBlocking}
+                className="flex-1 py-2.5 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+              >
+                {isBlocking ? 'Blocking...' : 'Block'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showReportModal && selectedReceiverId && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          targetType="USER"
+          targetId={selectedReceiverId}
+          targetLabel={currentOtherUser?.name}
+        />
+      )}
 
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }

@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   CheckCircle,
   CloudCog,
+  Flag,
   Mail,
   MapPin,
   Store,
@@ -14,11 +15,13 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import ReportModal from "@/components/shared/ReportModal";
 
 export default function VendorShowroomsClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [vendorId, setVendorId] = useState("");
+  const [showReportModal, setShowReportModal] = useState(false);
 
   useEffect(() => {
     const vId = searchParams.get("vendorId") || "";
@@ -115,9 +118,19 @@ export default function VendorShowroomsClient() {
 
             {/* Vendor Info */}
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl md:text-4xl font-cormorant font-semibold mb-2">
-                {vendorProfile?.name}
-              </h1>
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-2">
+                <h1 className="text-3xl md:text-4xl font-cormorant font-semibold">
+                  {vendorProfile?.name}
+                </h1>
+                <button
+                  type="button"
+                  onClick={() => setShowReportModal(true)}
+                  className="inline-flex items-center justify-center gap-1.5 text-sm text-red-400 hover:text-red-300 border border-red-500/30 px-3 py-1.5 rounded-lg mx-auto md:mx-0"
+                >
+                  <Flag className="w-4 h-4" />
+                  Report Vendor
+                </button>
+              </div>
               <p className="text-gray-400 text-lg mb-4">
                 @{vendorProfile?.username}
               </p>
@@ -264,6 +277,16 @@ export default function VendorShowroomsClient() {
           </div>
         )}
       </div>
+
+      {vendorId && (
+        <ReportModal
+          isOpen={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          targetType="VENDOR"
+          targetId={vendorId}
+          targetLabel={vendorProfile?.name}
+        />
+      )}
     </div>
   );
 }
