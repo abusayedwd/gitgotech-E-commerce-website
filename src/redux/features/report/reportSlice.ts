@@ -21,7 +21,7 @@ const reportSlice = apiSlice.injectEndpoints({
     }),
 
     getMyReports: builder.query({
-      query: ({ page = 1, limit = 10 } = {}) => ({
+      query: ({ page = 1, limit = 10 }) => ({
         url: "/report/my",
         params: { page, limit },
       }),

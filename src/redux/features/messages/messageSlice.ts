@@ -24,7 +24,7 @@ const messageSlice = apiSlice.injectEndpoints({
     }),
 
     getBlockedList: builder.query({
-      query: ({ page = 1, limit = 20, searchTerm = "" } = {}) => ({
+      query: ({ page = 1, limit = 20, searchTerm = "" }) => ({
         url: "/block/my-list",
         params: {
           page,

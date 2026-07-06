@@ -1,7 +1,7 @@
 import OrderDetails from "@/components/CustomerDashboard/OrderDetails";
 import { Suspense } from "react";
 
-const page = ({ params }: { params: { id: string } }) => {
+const page = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <OrderDetails />

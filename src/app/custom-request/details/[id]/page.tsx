@@ -1,7 +1,7 @@
 import CustomRequestDetails from "@/components/vendors/CustomRequestDetails";
 import { Suspense } from "react";
 
-const page = ({ params }: { params: { id: string } }) => {
+const page = () => {
   return (
     <Suspense fallback={<LoadingFallback />}>
       <CustomRequestDetails />
