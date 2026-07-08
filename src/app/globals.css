@@ -36,19 +36,15 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 
-/* iOS Safari: prevent horizontal shift when search keyboard opens */
-html.ios-search-focus,
-body.ios-search-focus {
-  overflow: hidden;
+/* Prevent horizontal swipe while home search is focused (mobile) */
+html.home-search-active,
+html.home-search-active body {
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
   max-width: 100%;
   width: 100%;
 }
 
-body.ios-search-focus {
-  position: fixed;
-  left: 0;
-  right: 0;
-}
 .font-cormorant {
   font-family: var(--font-cormorant), serif;
 }

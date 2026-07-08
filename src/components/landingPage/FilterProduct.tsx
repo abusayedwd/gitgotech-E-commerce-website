@@ -21,7 +21,6 @@ const FashionSearchNav = () => {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const tabContainerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scrollPositionRef = useRef(0);
 
   const { data: categoriesRes } = useGetHomeCategoriesQuery({});
   const categories = categoriesRes?.data ?? [];
@@ -140,54 +139,34 @@ const FashionSearchNav = () => {
     }
   };
 
-  const lockPageForIosSearch = () => {
-    scrollPositionRef.current = window.scrollY;
-    document.documentElement.classList.add("ios-search-focus");
-    document.body.classList.add("ios-search-focus");
-    document.body.style.top = `-${scrollPositionRef.current}px`;
-  };
-
-  const unlockPageForIosSearch = () => {
-    const scrollY = scrollPositionRef.current;
-    document.documentElement.classList.remove("ios-search-focus");
-    document.body.classList.remove("ios-search-focus");
-    document.body.style.top = "";
-    window.scrollTo(0, scrollY);
-  };
-
   const handleSearchFocus = () => {
     setIsSearchFocused(true);
-    lockPageForIosSearch();
+    document.documentElement.classList.add("home-search-active");
   };
 
   const handleSearchBlur = () => {
     setIsSearchFocused(false);
-    unlockPageForIosSearch();
+    document.documentElement.classList.remove("home-search-active");
   };
 
   useEffect(() => {
     return () => {
-      document.documentElement.classList.remove("ios-search-focus");
-      document.body.classList.remove("ios-search-focus");
-      document.body.style.top = "";
+      document.documentElement.classList.remove("home-search-active");
     };
   }, []);
 
   return (
     <div
-      className={`fixed left-0 right-0 top-[4.5rem] sm:top-[5rem] z-50 w-full max-w-[100vw] overflow-x-hidden box-border bg-gradient-to-r from-black via-[#0f0924] to-black text-white shadow-lg ${
+      className={`fixed inset-x-0 top-[4.5rem] sm:top-[5rem] z-50 overflow-hidden bg-gradient-to-r from-black via-[#0f0924] to-black text-white shadow-lg ${
         isVisible || isSearchFocused ? "translate-y-0" : "-translate-y-full"
       } ${isSearchFocused ? "" : "transition-transform duration-300 ease-in-out"}`}
     >
-      <div className="container mx-auto max-w-full overflow-x-hidden">
-        {/* Search Bar Section */}
-        <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-2 sm:py-4 max-w-full">
-          <div className="flex-1 max-w-4xl w-full min-w-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-            {/* Search Input — 16px font on mobile prevents iOS Safari auto-zoom */}
-            <div className="flex-1 relative min-w-0">
-              <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
-                <Search size={18} className="sm:w-5 sm:h-5" />
-              </div>
+      <div className="w-full max-w-full overflow-hidden px-2 sm:px-4">
+        {/* Search Bar — same mobile pattern as Vendors page */}
+        <div className="py-2 sm:py-4">
+          <div className="max-w-full sm:max-w-4xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 min-w-0">
+            <div className="relative flex-1 w-full min-w-0">
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 pointer-events-none" />
               <input
                 type="text"
                 inputMode="search"
@@ -201,24 +180,23 @@ const FashionSearchNav = () => {
                 autoCorrect="off"
                 autoCapitalize="off"
                 spellCheck={false}
-                placeholder="Find your perfect tailor, design, or outfit."
-                className="global-search-input w-full max-w-full min-w-0 box-border border border-gray-700 rounded-lg py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-base sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+                placeholder="Find your perfect tailor, design, or outfit"
+                className="global-search-input w-full min-w-0 box-border border border-gray-700 bg-transparent rounded-lg pl-10 sm:pl-12 pr-3 sm:pr-4 py-2.5 sm:py-3 text-base sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
 
-            {/* Search Button */}
             <button
               type="button"
               onClick={submitSearch}
-              className="shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-medium px-5 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-colors text-sm"
+              className="shrink-0 w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-white font-medium px-4 sm:px-8 py-2.5 sm:py-3 rounded-lg transition-colors text-sm"
             >
               Search
             </button>
           </div>
         </div>
 
-        {/* Tab Navigation — hidden while searching or input focused on mobile */}
-        <div className={`relative overflow-x-hidden max-w-full ${isSearching || isSearchFocused ? "hidden" : ""}`}>
+        {/* Tab Navigation — hidden while searching or input focused */}
+        <div className={`relative overflow-hidden ${isSearching || isSearchFocused ? "hidden" : ""}`}>
           {/* Left Arrow Button - Mobile Only */}
           {showLeftArrow && (
             <button
@@ -245,7 +223,7 @@ const FashionSearchNav = () => {
 
           <div
             ref={tabContainerRef}
-            className="flex items-center gap-2 container mx-auto sm:gap-3 px-3 sm:px-6 sm:pb-4 overflow-x-auto scrollbar-hide overscroll-x-contain touch-pan-x"
+            className="flex items-center gap-2 sm:gap-3 px-1 sm:px-2 pb-3 sm:pb-4 overflow-x-auto scrollbar-hide"
           >
             {categories.map(
               (category: { _id: string; name: string }, index: number) => (

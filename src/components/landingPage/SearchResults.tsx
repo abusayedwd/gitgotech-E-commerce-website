@@ -56,7 +56,7 @@ export default function SearchResults() {
   const totalCount = data?.data?.meta?.totalData ?? results.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white pt-32 sm:pt-36 md:pt-40 px-4 pb-8">
+    <div className="min-h-screen overflow-x-hidden max-w-full bg-gradient-to-r from-black via-[#0f0924] to-black text-white pt-32 sm:pt-36 md:pt-40 px-4 pb-8">
       <div className="container mx-auto">
         {/* Header summary */}
         {initialQuery && (

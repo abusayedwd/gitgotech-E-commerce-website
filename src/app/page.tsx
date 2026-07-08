@@ -33,7 +33,7 @@ function HomeBody() {
 
 export default function Home() {
   return (
-    <div>
+    <div className="overflow-x-hidden max-w-full">
       <Suspense fallback={null}>
         <HomeBody />
       </Suspense>
