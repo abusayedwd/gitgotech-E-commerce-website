@@ -163,6 +163,29 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
     );
   }
 
+  const vendorName =
+    typeof product.vendor === "string"
+      ? product.vendor
+      : product.vendor?.name || "Vendor";
+  const vendorId =
+    product.vendor && typeof product.vendor === "object"
+      ? product.vendor._id
+      : typeof product.vendor === "string"
+        ? product.vendor
+        : undefined;
+  const vendorInitial = vendorName.charAt(0).toUpperCase() || "V";
+
+  const formatPrice = (value: unknown) => {
+    const num = Number(value);
+    return Number.isFinite(num) ? num.toFixed(2) : "0.00";
+  };
+
+  const productPrice = Number(product.product_price ?? product.price ?? 0);
+
+  const stockItems = Array.isArray(product.product_stocks)
+    ? product.product_stocks
+    : [{ size: "M", stock: 10 }];
+
   const handleAddToCart = async () => {
     if (!isLoggedIn) {
       addToGuestCart(product, { quantity, size: selectedSize });
@@ -731,17 +754,21 @@ const sizeData = [
     );
   };
 
-  const rawImages =
-    product.product_images?.filter((img: string) => Boolean(img)) || [];
+  const rawImages = (
+    Array.isArray(product.product_images) ? product.product_images : []
+  ).filter((img: unknown) => typeof img === "string" && Boolean(img));
   const productImages =
     rawImages.length > 0
       ? [...new Set(rawImages as string[])]
       : product.image
-        ? [product.image]
+        ? [typeof product.image === "string" ? product.image : ""].filter(Boolean)
         : [];
 
-  const getImageUrl = (img: string) =>
-    img.startsWith("http") ? img : `${url}/${img}`;
+  const getImageUrl = (img: string) => {
+    if (!img) return "/images/jacket.png";
+    if (img.startsWith("http") || img.startsWith("/")) return img;
+    return url ? `${url}/${img}` : "/images/jacket.png";
+  };
 
   const currentImageUrl =
     productImages.length > 0
@@ -994,15 +1021,11 @@ const sizeData = [
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
                     <span className="text-sm font-medium">
-                      {product.vendor?.name?.charAt(0) ||
-                        product.vendor?.charAt(0) ||
-                        "V"}
+                      {vendorInitial}
                     </span>
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium">
-                      {product.vendor?.name || product.vendor || "Vendor"}
-                    </p>
+                    <p className="font-medium">{vendorName}</p>
                     <p className="text-xs text-gray-400">
                       Trusted seller with quality products
                     </p>
@@ -1011,22 +1034,23 @@ const sizeData = [
                 <div className="flex items-center gap-2">
                 <button
                   onClick={() =>
-                    router.push(`/messaging?vendorId=${product.vendor?._id}`)
+                    vendorId && router.push(`/messaging?vendorId=${vendorId}`)
                   }
-                  className="bg-[#6100FF] hover:bg-purple-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+                  disabled={!vendorId}
+                  className="bg-[#6100FF] hover:bg-purple-700 disabled:opacity-50 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
                 >
                   <MessageCircle className="w-4 h-4" />
                   Chat
                 </button>
-                {product.vendor?._id && (
+                {vendorId && (
                   <button
                     type="button"
                     onClick={() =>
                       setReportModal({
                         open: true,
                         targetType: "VENDOR",
-                        targetId: product.vendor._id,
-                        targetLabel: product.vendor?.name || "Vendor",
+                        targetId: vendorId,
+                        targetLabel: vendorName,
                       })
                     }
                     className="text-red-400 hover:text-red-300 border border-red-500/30 p-2 rounded-lg"
@@ -1045,16 +1069,13 @@ const sizeData = [
                 {product.discount?.percentage && (
                   <span className="text-l line-through text-gray-500">
                     ₵
-                    {(
-                      product.product_price *
-                      (1 + product.discount.percentage / 100)
-                    ).toFixed(2)}
+                    {formatPrice(
+                      productPrice * (1 + Number(product.discount.percentage) / 100),
+                    )}
                   </span>
                 )}
                 <span className="text-4xl font-semibold text-[#6100FF]">
-                  ₵
-                  {product.product_price?.toFixed(2) ||
-                    product.price?.toFixed(2)}
+                  ₵{formatPrice(productPrice)}
                 </span>
               </div>
               <div className="">
@@ -1116,7 +1137,7 @@ const sizeData = [
                 Select Size
               </h3>
               <div className="flex flex-wrap gap-2">
-                {(product.product_stocks || [{ size: "M", stock: 10 }]).map(
+                {stockItems.map(
                   (stockItem: {
                     _id?: string;
                     size: string;
@@ -1175,10 +1196,7 @@ const sizeData = [
               <div className="flex items-center justify-center space-x-2">
                 <ShoppingCart className="w-5 h-5" />
                 <span>
-                  Add to Cart - ₵
-                  {(
-                    (product.product_price || product.price || 0) * quantity
-                  ).toFixed(2)}
+                  Add to Cart - ₵{formatPrice(productPrice * quantity)}
                 </span>
               </div>
             </button>
@@ -1186,7 +1204,7 @@ const sizeData = [
             {/* Additional Actions */}
             <div className="grid grid-cols-2 gap-3">
               <Link
-                href={`/messaging?vendorId=${product.vendor?._id || product.vendor}`}
+                href={vendorId ? `/messaging?vendorId=${vendorId}` : "#"}
               >
                 <button className="bg-gray-800/50 cursor-pointer border w-full border-[#6100FF] hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
                   <MessageCircle className="w-4 h-4" />
@@ -1439,37 +1457,6 @@ const sizeData = [
         />
       )}
 
-      <style jsx>{`
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease-out;
-        }
-
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(75, 85, 99, 0.2);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(147, 51, 234, 0.5);
-          border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(147, 51, 234, 0.7);
-        }
-      `}</style>
     </div>
   );
 }
