@@ -10,7 +10,9 @@ import { useGetShowroomQuery } from "@/redux/features/vendor/showroomSlice/showr
 import {
   ChevronDown,
   Clock,
+  ClipboardList,
   FileText,
+  Flag,
   LayoutDashboard,
   Menu,
   Package,
@@ -160,12 +162,29 @@ export default function VendorDashboardLayout({
       icon: FileText,
       path: "/vendor-dashboard/custom-orders",
     },
+    {
+      name: "Reports",
+      icon: Flag,
+      path: "/vendor-dashboard/reports",
+    },
+    {
+      name: "My Reports",
+      icon: ClipboardList,
+      path: "/vendor-dashboard/my-reports",
+    },
     // { name: "Analytics", icon: BarChart3, path: "/vendor-dashboard/analytics" },
   ];
 
   const handleNavigation = (path: string) => {
     router.push(path);
     setIsMobileMenuOpen(false);
+  };
+
+  const isMenuActive = (path: string) => {
+    if (path === "/vendor-dashboard") {
+      return pathname === "/vendor-dashboard";
+    }
+    return pathname === path || pathname.startsWith(`${path}/`);
   };
 
   return (
@@ -191,7 +210,7 @@ export default function VendorDashboardLayout({
                     key={item.name}
                     onClick={() => handleNavigation(item.path)}
                     className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all ${
-                      pathname === item.path
+                      isMenuActive(item.path)
                         ? "bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white"
                         : "text-gray-400 hover:bg-gray-800 hover:text-white"
                     }`}
@@ -219,7 +238,7 @@ export default function VendorDashboardLayout({
                       key={item.name}
                       onClick={() => handleNavigation(item.path)}
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                        pathname === item.path
+                        isMenuActive(item.path)
                           ? "bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white"
                           : "text-gray-400 hover:bg-gray-800 hover:text-white"
                       }`}

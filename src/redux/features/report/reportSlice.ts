@@ -32,6 +32,14 @@ const reportSlice = apiSlice.injectEndpoints({
       query: (id: string) => `/report/my/${id}`,
       providesTags: (_result, _error, id) => [{ type: "Reports", id }],
     }),
+
+    getReportsOnMyEntities: builder.query({
+      query: ({ page = 1, limit = 10 }) => ({
+        url: "/report/on-my-entities",
+        params: { page, limit },
+      }),
+      providesTags: ["Reports"],
+    }),
   }),
 });
 
@@ -39,4 +47,5 @@ export const {
   useSubmitReportMutation,
   useGetMyReportsQuery,
   useGetMyReportByIdQuery,
+  useGetReportsOnMyEntitiesQuery,
 } = reportSlice;
