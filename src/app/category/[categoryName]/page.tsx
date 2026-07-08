@@ -19,10 +19,10 @@ export default function CategoryPage() {
   const products = data?.data?.data || [];
 
   return (
-    <div className="bg-black min-h-screen py-6 sm:py-8 md:py-10 mt-28 px-2 sm:px-4">
+    <div className="bg-black min-h-screen pt-20 md:pt-28 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
-        <div className="container mx-auto mt-24 mb-6 flex items-center gap-4">
+        <div className="mb-4 sm:mb-6 flex items-center gap-4">
           <button
             onClick={() => router.back()}
             className="flex items-center text-purple-400 hover:text-purple-300 transition-colors"

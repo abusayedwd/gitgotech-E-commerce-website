@@ -220,7 +220,8 @@ export default function MyDashboard() {
         onClick={() => router.push("/customer-dashboard/delivery-request")}
       >
         <button className="bg-blue-600 px-4 py-1.5 rounded cursor-pointer">
-          delivery request
+          Delivery 
+          Request
         </button>
       </div>
 

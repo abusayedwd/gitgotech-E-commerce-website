@@ -18,6 +18,7 @@ const FashionSearchNav = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [showLeftArrow, setShowLeftArrow] = useState(false);
   const [showRightArrow, setShowRightArrow] = useState(true);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const tabContainerRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -82,6 +83,12 @@ const FashionSearchNav = () => {
 
   useEffect(() => {
     const handleScroll = () => {
+      // iOS Safari fires scroll events when the keyboard opens — keep search visible
+      if (isSearchFocused || window.innerWidth < 1024) {
+        setIsVisible(true);
+        return;
+      }
+
       const currentScrollY = window.scrollY;
       if (currentScrollY < 10) {
         setIsVisible(true);
@@ -95,7 +102,7 @@ const FashionSearchNav = () => {
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  }, [lastScrollY, isSearchFocused]);
 
   useEffect(() => {
     const checkScroll = () => {
@@ -134,26 +141,31 @@ const FashionSearchNav = () => {
 
   return (
     <div
-      className={`fixed top-0 left-0 mt-16 sm:mt-20 md:mt-20 right-0 z-50 w-full bg-gradient-to-r from-black via-[#0f0924] to-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
-        isVisible ? "translate-y-0" : "-translate-y-full"
+      className={`fixed left-0 right-0 top-[4.5rem] sm:top-[5rem] z-50 w-full bg-gradient-to-r from-black via-[#0f0924] to-black text-white transition-transform duration-300 ease-in-out shadow-lg ${
+        isVisible || isSearchFocused ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       <div className="container mx-auto">
         {/* Search Bar Section */}
-        <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-2 sm:py-6">
+        <div className="flex items-center justify-center gap-2 sm:gap-4 px-3 sm:px-6 py-2 sm:py-4">
           <div className="flex-1 max-w-4xl flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-4">
-            {/* Search Input */}
-            <div className="flex-1 relative md:mt-1 mt-2">
-              <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400">
+            {/* Search Input — 16px font on mobile prevents iOS Safari auto-zoom */}
+            <div className="flex-1 relative">
+              <div className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
                 <Search size={18} className="sm:w-5 sm:h-5" />
               </div>
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 onKeyDown={handleSearchKeyDown}
+                onFocus={() => setIsSearchFocused(true)}
+                onBlur={() => setIsSearchFocused(false)}
+                enterKeyHint="search"
+                autoComplete="off"
+                autoCorrect="off"
                 placeholder="Find your perfect tailor, design, or outfit."
-                className="w-full border border-gray-700 rounded-lg py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-xs sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
+                className="w-full border border-gray-700 rounded-lg py-2.5 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-base sm:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors appearance-none"
               />
             </div>
 
@@ -196,7 +208,7 @@ const FashionSearchNav = () => {
 
           <div
             ref={tabContainerRef}
-            className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 pb-3 sm:pb-4 overflow-x-auto scrollbar-hide"
+            className="flex items-center gap-2 sm:gap-3 px-3 sm:px-6 pb-3 sm:pb-4 overflow-x-auto scrollbar-hide overscroll-x-contain touch-pan-x"
           >
             {categories.map(
               (category: { _id: string; name: string }, index: number) => (
@@ -224,6 +236,8 @@ const FashionSearchNav = () => {
         .scrollbar-hide {
           -ms-overflow-style: none;
           scrollbar-width: none;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior-x: contain;
         }
       `}</style>
     </div>
