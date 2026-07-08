@@ -17,6 +17,7 @@ const CategoryTabs = () => {
 
   // Extract categories array from the response
   const categories = categoriesData?.data || [];
+  console.log("Categories:", categories);
 
   // Hardcoded tabs with colors
   const tabs = [

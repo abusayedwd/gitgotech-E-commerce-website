@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { useGetProductDetailsforCustomerQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
 import url from '@/redux/api/baseUrl';
 import toast from 'react-hot-toast';
+import { showApiErrorToast } from '@/lib/apiErrorToast';
 import { useEventProductAddMutation, useGetEventsForProductAddQuery } from '@/redux/features/event/eventSlice';
 import { useAuth } from '@/hooks/useAuth';
 import { addToGuestCart } from '@/lib/guestCart';
@@ -67,7 +68,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
         setShowEventModal(false);
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to add to event");
+      showApiErrorToast(error, "Failed to add to event");
     }
   };
 
@@ -178,7 +179,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
         toast.success("Added to cart!");
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to add to cart");
+      showApiErrorToast(error, "Failed to add to cart");
     }
   };
 
@@ -194,7 +195,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
         toast.success("Added to wishlist!");
       }
     } catch (error: any) {
-      toast.error(error?.data?.message || "Failed to add to wishlist");
+      showApiErrorToast(error, "Failed to add to wishlist");
     }
   };
 

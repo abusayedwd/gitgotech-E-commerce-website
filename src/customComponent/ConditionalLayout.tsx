@@ -32,7 +32,7 @@ const isDashboardRoute =
     <>
       <Navbar />
       <RouteConditionalNav />
-      <main className="">
+      <main className="overflow-x-hidden max-w-full">
         {children}
       </main>
       <Footer />
