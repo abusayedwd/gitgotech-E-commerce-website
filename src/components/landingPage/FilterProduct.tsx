@@ -223,7 +223,7 @@ const FashionSearchNav = () => {
 
           <div
             ref={tabContainerRef}
-            className="flex items-center gap-2 sm:gap-3 px-1 sm:px-2 pb-3 sm:pb-4 overflow-x-auto scrollbar-hide"
+            className="flex items-center container mx-auto gap-2 sm:gap-3 px-1 sm:px-2 pb-3 sm:pb-4 overflow-x-auto scrollbar-hide"
           >
             {categories.map(
               (category: { _id: string; name: string }, index: number) => (
