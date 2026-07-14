@@ -77,6 +77,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
   const product = productData?.data || null;
 
+  console.log("Product Details:", product);
+
   useEffect(() => {
     setSelectedImageIndex(0);
     setShowLightbox(false);
@@ -1103,7 +1105,7 @@ const sizeData = [
                 </div>
                 <p className="text-sm text-gray-300 mb-4">
                   {product.isMixable
-                    ? "This product supports custom mix-mixing! You can combine elements from different products to create your unique style."
+                    ? "Explore all designs from this showroom and mix elements from different products to create your own unique style. style."
                     : "This product can be customized according to your preferences."}
                 </p>
                 <button
@@ -1112,7 +1114,17 @@ const sizeData = [
                       !requireLogin("Please sign in to start a custom design")
                     )
                       return;
-                    router.push(`/top-products`);
+                    const showroomId =
+                      typeof product.showroom === "object"
+                        ? product.showroom?._id
+                        : product.showroom;
+                    if (showroomId) {
+                      router.push(
+                        `/showroom/view-showroom?showroomId=${showroomId}`,
+                      );
+                    } else {
+                      router.push(`/top-products`);
+                    }
                   }}
                   className="w-full bg-[#912DAD] hover:bg-purple-700 text-white py-2.5 px-4 rounded-lg font-medium transition-colors"
                 >
@@ -1133,9 +1145,19 @@ const sizeData = [
 
             {/* Size Selection */}
             <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
-              <h3 className="font-medium mb-3 font-cormorant text-2xl">
-                Select Size
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-medium font-cormorant text-2xl">
+                  Select Size
+                </h3>
+                <span className="text-sm text-purple-300 bg-purple-900/30 border border-purple-500/40 px-3 py-1 rounded-full">
+                  Total available:{" "}
+                  {stockItems.reduce(
+                    (sum: number, s: { stock: number }) =>
+                      sum + (Number(s.stock) || 0),
+                    0,
+                  )}
+                </span>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {stockItems.map(
                   (stockItem: {
