@@ -51,10 +51,11 @@ export default function ReturnRequestForm() {
   const [selectedLocation, setSelectedLocation] =
     useState<SelectedLocation | null>(null);
 
-  // Extract order data
+  // Extract order data — a main order can bundle multiple products (same
+  // showroom, one order), so keep the raw products array.
   const orderData = mainOrderDetails?.data;
   console.log(orderData);
-  const product = orderData?.product;
+  const products = orderData?.products || [];
   const price = orderData?.price;
 
   // console.log("===== RETURN REQUEST PAGE DATA =====");
@@ -374,27 +375,31 @@ export default function ReturnRequestForm() {
             <h3 className="text-xl font-bold mb-6">Order Summary</h3>
 
             {/* Product Info */}
-            {product && (
-              <div className="mb-6 pb-6 border-b border-gray-700">
-                <div className="flex items-start gap-4">
-                  <img
-                    src={
-                      product.product_images?.[0]
-                        ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
-                        : "/images/jacket.png"
-                    }
-                    alt={product.product_name}
-                    className="w-20 h-20 object-cover rounded-lg"
-                  />
-                  <div>
-                    <h4 className="font-semibold text-white">
-                      {product.product_name}
-                    </h4>
-                    <p className="text-sm text-gray-400 mt-1">
-                      Product ID: {product._id}
-                    </p>
+            {products.length > 0 && (
+              <div className="mb-6 pb-6 border-b border-gray-700 space-y-4">
+                {products.map((p: any, idx: number) => (
+                  <div key={p._id || idx} className="flex items-start gap-4">
+                    <img
+                      src={
+                        p.product?.product_images?.[0]
+                          ? `${IMAGE_BASE_URL}/${p.product.product_images[0]}`
+                          : "/images/jacket.png"
+                      }
+                      alt={p.product?.product_name}
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                    <div>
+                      <h4 className="font-semibold text-white">
+                        {p.product?.product_name}
+                      </h4>
+                      <p className="text-sm text-gray-400 mt-1">
+                        {(p.size || [])
+                          .map((s: any) => `${s.type} × ${s.quantity}`)
+                          .join(", ")}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
             )}
 

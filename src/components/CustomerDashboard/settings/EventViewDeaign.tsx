@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { ShoppingCart, Eye, Plus, ChevronDown } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import toast from 'react-hot-toast';
 import { useGetProductByEventQuery, useGetEventByIdQuery } from '@/redux/features/event/eventSlice';
 import url from '@/redux/api/baseUrl';
 
@@ -17,6 +18,13 @@ type Product = {
     review_count?: number | null;
     review_rating?: number | null;
     product_images?: string[];
+    product_weight?: { unit: string; amount: number } | null;
+    product_stocks?: { size: string; stock: number; _id?: string }[];
+    showroom?: {
+      _id?: string;
+      showroom_name?: string;
+      location?: { coordinates?: [number, number] } | unknown;
+    } | null;
     vendor?: {
       name?: string;
     } | string;
@@ -27,7 +35,57 @@ type Product = {
   updatedAt: string;
 };
 
-const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOption: string }) => {
+type EventShowroomGroup = {
+  _id: string;
+  showroom: {
+    _id: string;
+    showroom_name?: string;
+    logo?: string;
+    location?: unknown;
+  } | null;
+  products: Product[];
+};
+
+// GET /event/product/get/:eventId doesn't return product_weight (unlike the
+// cart endpoint), so fall back to the same default the product page uses
+// when weight is missing — otherwise event orders get $0 weight delivery.
+const DEFAULT_PRODUCT_WEIGHT = { unit: "gram", amount: 100 };
+
+const buildEventCartItem = (product: Product, size: string, quantity: number) => ({
+  productId: product.product._id,
+  productName: product.product.product_name,
+  productPrice: product.product.product_price,
+  productImage: product.product.product_images?.[0] ?? null,
+  productWeight: product.product.product_weight ?? DEFAULT_PRODUCT_WEIGHT,
+  showroomName: product.product.showroom?.showroom_name ?? null,
+  showroomCoordinates:
+    (product.product.showroom?.location as any)?.coordinates ?? null,
+  size: [{ type: size, quantity }],
+});
+
+const ProductCard = ({
+  product,
+  purchaseOption,
+  isSelectable,
+  isSelected,
+  selectionDisabled,
+  onToggleSelect,
+  orderSize,
+  orderQty,
+  onOrderSizeChange,
+  onOrderQtyChange,
+}: {
+  product: Product;
+  purchaseOption: string;
+  isSelectable: boolean;
+  isSelected: boolean;
+  selectionDisabled: boolean;
+  onToggleSelect: () => void;
+  orderSize: string;
+  orderQty: number;
+  onOrderSizeChange: (size: string) => void;
+  onOrderQtyChange: (qty: number) => void;
+}) => {
   const router = useRouter();
   const searchParams = useSearchParams()
   const status = searchParams.get("status")
@@ -60,12 +118,35 @@ const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOp
     setOpenDropdown(null);
   };
 
+  // Participant's own individual checkout (purchaseOption "participator")
   const handleCheckout = () => {
     if (isInvited && isParticipator && !selectedSize) {
       alert('Please select a size before checkout');
       return;
     }
     router.push(`/checkout?productId=${productData._id}&eventId=${product.event}&size=${selectedSize}`);
+  };
+
+  const stockItems = productData.product_stocks || [];
+  const orderStockInfo = stockItems.find((s) => s.size === orderSize);
+  const orderSizeStock = orderStockInfo ? orderStockInfo.stock : 0;
+
+  // Creator's own order — picks size/qty directly, same as adding to cart.
+  const handlePlaceSingleOrder = () => {
+    if (!orderSize) {
+      toast.error('Please select a size first');
+      return;
+    }
+    if (orderSizeStock <= 0 || orderQty > orderSizeStock) {
+      toast.error(`Only ${orderSizeStock} in stock for size ${orderSize}`);
+      return;
+    }
+    const eventCartData = [buildEventCartItem(product, orderSize, orderQty)];
+    router.push(
+      `/checkout?eventId=${product.event}&eventCartData=${encodeURIComponent(
+        JSON.stringify(eventCartData),
+      )}`,
+    );
   };
 
   const cardContent = (
@@ -77,6 +158,24 @@ const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOp
           alt={productData.product_name}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
         />
+        {isSelectable && (
+          <input
+            type="checkbox"
+            checked={isSelected}
+            disabled={selectionDisabled || product.isOrderd}
+            onClick={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              e.stopPropagation();
+              onToggleSelect();
+            }}
+            title={
+              selectionDisabled
+                ? "Deselect designs from the other showroom first — an order can only contain products from one showroom"
+                : undefined
+            }
+            className="absolute top-3 left-3 w-5 h-5 rounded cursor-pointer disabled:cursor-not-allowed z-10"
+          />
+        )}
         <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
           {product.isOrderd ? 'Ordered' : 'No Design'}
         </span>
@@ -151,6 +250,55 @@ const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOp
           </div>
         )}
 
+        {/* Size + Quantity picker for the creator's own order — same as cart */}
+        {!isInvited && stockItems.length > 0 && (
+          <div className="mb-4" onClick={(e) => e.stopPropagation()}>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Select Size & Quantity
+            </label>
+            <div className="flex flex-wrap gap-2 mb-3">
+              {stockItems.map((stock) => (
+                <button
+                  key={stock.size}
+                  type="button"
+                  disabled={stock.stock === 0 || product.isOrderd}
+                  onClick={() => onOrderSizeChange(stock.size)}
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-colors ${
+                    orderSize === stock.size
+                      ? 'bg-purple-600 border-purple-600 text-white'
+                      : stock.stock === 0
+                        ? 'bg-gray-900 border-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-gray-800 border-gray-600 hover:border-purple-500 text-gray-300'
+                  }`}
+                >
+                  {stock.size} {stock.stock === 0 ? '(Out)' : `(${stock.stock})`}
+                </button>
+              ))}
+            </div>
+            {orderSize && (
+              <div className="flex items-center gap-3 bg-[#2E2E34] rounded-full px-3 py-1.5 w-fit">
+                <button
+                  type="button"
+                  onClick={() => onOrderQtyChange(Math.max(1, orderQty - 1))}
+                  disabled={orderQty <= 1}
+                  className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center"
+                >
+                  −
+                </button>
+                <span className="text-sm font-semibold w-5 text-center">{orderQty}</span>
+                <button
+                  type="button"
+                  onClick={() => onOrderQtyChange(Math.min(orderSizeStock, orderQty + 1))}
+                  disabled={orderQty >= orderSizeStock}
+                  className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center"
+                >
+                  +
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Action Buttons */}
         {!isInvited && (
           <div className="flex gap-3">
@@ -160,24 +308,42 @@ const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOp
               </button>
             )}
 
-            <button onClick={handleCheckout} className="flex-1 w-full cursor-pointer bg-[#6100FF] text-white py-2.5 rounded-lg font-medium transition-colors">
-              Place Order
+            <button
+              onClick={handlePlaceSingleOrder}
+              disabled={product.isOrderd || !orderSize}
+              className={`flex-1 w-full py-2.5 rounded-lg font-medium transition-colors ${
+                product.isOrderd || !orderSize
+                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                  : "cursor-pointer bg-[#6100FF] text-white"
+              }`}
+            >
+              {product.isOrderd
+                ? "Order Placed"
+                : orderSize
+                  ? "Place Order"
+                  : "Select a size"}
             </button>
           </div>
         )}
 
         {/* Checkout Button for Invited Participator */}
         {isInvited && isParticipator && (
-          <button 
-            onClick={handleCheckout} 
-            disabled={!selectedSize}
-            className={`flex-1 w-full cursor-pointer py-2.5 rounded-lg font-medium transition-colors ${
-              selectedSize 
-                ? 'bg-[#6100FF] text-white hover:bg-purple-700' 
-                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+          <button
+            onClick={handleCheckout}
+            disabled={!selectedSize || product.isOrderd}
+            className={`flex-1 w-full py-2.5 rounded-lg font-medium transition-colors ${
+              product.isOrderd
+                ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                : selectedSize
+                  ? "cursor-pointer bg-[#6100FF] text-white hover:bg-purple-700"
+                  : "bg-gray-600 text-gray-400 cursor-not-allowed"
             }`}
           >
-            {selectedSize ? `Checkout - Size: ${selectedSize}` : 'Select Size to Checkout'}
+            {product.isOrderd
+              ? "Order Placed"
+              : selectedSize
+                ? `Checkout - Size: ${selectedSize}`
+                : "Select Size to Checkout"}
           </button>
         )}
       </div>
@@ -187,7 +353,7 @@ const ProductCard = ({ product, purchaseOption }: { product: Product, purchaseOp
   return (
     <div className="text-white bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow">
       {isInvited ? (
-        <Link href={`/profile/event/details?id=${productData._id}&type=${type}&eventId=${eventId}`}>
+        <Link href={`/profile/event/details?id=${productData._id}&type=${type}&eventId=${eventId}&isOrdered=${product.isOrderd}`}>
           <div className="cursor-pointer">
             {cardContent}
           </div>
@@ -204,17 +370,98 @@ export default function EventViewDeaign() {
 
  const searchParams = useSearchParams()
   const id = searchParams.get('id')
+  const status = searchParams.get('status')
+  const isInvited = status === 'invited';
 
   const {data: eventProduct, isLoading, error} = useGetProductByEventQuery(id)
   console.log(eventProduct)
-  
+
   const {data: eventData} = useGetEventByIdQuery(id || '')
-  
+
   const purchaseOption = eventData?.data?.purchaseOption || 'creator';
 
   const router = useRouter()
 
-  const products: Product[] = eventProduct?.data || [];
+  // /event/product/get/:eventId groups event products by showroom, same as
+  // the cart endpoint — data: [{ showroom, products: [...] }]
+  const groups: EventShowroomGroup[] = eventProduct?.data || [];
+  const totalProducts = groups.reduce(
+    (sum, g) => sum + (g.products?.length || 0),
+    0,
+  );
+
+  // Multi-select — same-showroom designs can be batched into a single order,
+  // the same way products from the same showroom are batched in the cart.
+  // Sizes/quantities are picked manually here (like the cart), not pulled
+  // from participant submissions — that flow is separate ("View Size").
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [orderSizes, setOrderSizes] = useState<Record<string, string>>({});
+  const [orderQtys, setOrderQtys] = useState<Record<string, number>>({});
+
+  const entriesById = useMemo(() => {
+    const map = new Map<string, { entry: Product; showroomId: string }>();
+    groups.forEach((group) => {
+      const showroomId = group.showroom?._id || "unknown";
+      group.products.forEach((entry) => {
+        map.set(entry._id, { entry, showroomId });
+      });
+    });
+    return map;
+  }, [groups]);
+
+  const selectedShowroomId = useMemo(() => {
+    const selectedIds = Object.keys(selectedItems).filter((k) => selectedItems[k]);
+    if (selectedIds.length === 0) return null;
+    return entriesById.get(selectedIds[0])?.showroomId ?? null;
+  }, [selectedItems, entriesById]);
+
+  const toggleSelectItem = (entryId: string) => {
+    setSelectedItems((prev) => {
+      const next = { ...prev };
+      if (next[entryId]) {
+        delete next[entryId];
+      } else {
+        next[entryId] = true;
+      }
+      return next;
+    });
+  };
+
+  const handleOrderSizeChange = (entryId: string, size: string) => {
+    setOrderSizes((prev) => ({ ...prev, [entryId]: size }));
+    setOrderQtys((prev) => ({ ...prev, [entryId]: 1 }));
+  };
+
+  const handleOrderQtyChange = (entryId: string, qty: number) => {
+    setOrderQtys((prev) => ({ ...prev, [entryId]: qty }));
+  };
+
+  const handleProceedToOrder = (group: EventShowroomGroup) => {
+    const selectedEntries = group.products.filter((p) => selectedItems[p._id]);
+    if (selectedEntries.length === 0) return;
+
+    const missingSize = selectedEntries.find((entry) => !orderSizes[entry._id]);
+    if (missingSize) {
+      toast.error(
+        `Please select a size for "${missingSize.product.product_name}"`,
+      );
+      return;
+    }
+
+    const eventCartData = selectedEntries.map((entry) =>
+      buildEventCartItem(
+        entry,
+        orderSizes[entry._id],
+        orderQtys[entry._id] || 1,
+      ),
+    );
+
+    router.push(
+      `/checkout?eventId=${id}&eventCartData=${encodeURIComponent(
+        JSON.stringify(eventCartData),
+      )}`,
+    );
+  };
 
   return (
     <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black  text-white">
@@ -239,7 +486,7 @@ export default function EventViewDeaign() {
 
         </div>
 
-        {/* Product Grid */}
+        {/* Product Grid — grouped by showroom */}
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-purple-400 text-xl">Loading products...</div>
@@ -248,7 +495,7 @@ export default function EventViewDeaign() {
           <div className="flex items-center justify-center py-20">
             <div className="text-red-400 text-xl">Failed to load products</div>
           </div>
-        ) : products.length === 0 ? (
+        ) : totalProducts === 0 ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center text-gray-400">
               <ShoppingCart className="w-16 h-16 mx-auto mb-4" />
@@ -256,10 +503,87 @@ export default function EventViewDeaign() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map(product => (
-              <ProductCard key={product._id} product={product} purchaseOption={purchaseOption} />
-            ))}
+          <div className="space-y-10">
+            {groups
+              .filter((group) => (group.products?.length || 0) > 0)
+              .map((group) => {
+                const showroomId = group.showroom?._id || "unknown";
+                const selectedCount = group.products.filter(
+                  (p) => selectedItems[p._id],
+                ).length;
+                const isOtherShowroomActive =
+                  selectedShowroomId !== null && selectedShowroomId !== showroomId;
+
+                return (
+                  <div key={group._id}>
+                    {/* Showroom header */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        {group.showroom?.logo && (
+                          <img
+                            src={`${url}/${group.showroom.logo}`}
+                            alt={group.showroom?.showroom_name}
+                            className="w-10 h-10 rounded-full object-cover border border-purple-500/40"
+                          />
+                        )}
+                        <div>
+                          <h2 className="text-lg font-semibold">
+                            {group.showroom?.showroom_name || "Showroom"}
+                          </h2>
+                          {typeof group.showroom?.location === "string" &&
+                            group.showroom.location && (
+                              <p className="text-xs text-gray-400">
+                                {group.showroom.location}
+                              </p>
+                            )}
+                        </div>
+                      </div>
+                      <span className="text-xs font-medium px-3 py-1 rounded-full bg-purple-600/20 text-purple-300 whitespace-nowrap">
+                        {group.products.length}{" "}
+                        {group.products.length === 1 ? "product" : "products"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {group.products.map((product) => (
+                        <ProductCard
+                          key={product._id}
+                          product={product}
+                          purchaseOption={purchaseOption}
+                          isSelectable={!isInvited}
+                          isSelected={!!selectedItems[product._id]}
+                          selectionDisabled={isOtherShowroomActive}
+                          onToggleSelect={() => toggleSelectItem(product._id)}
+                          orderSize={orderSizes[product._id] || ""}
+                          orderQty={orderQtys[product._id] || 1}
+                          onOrderSizeChange={(size) =>
+                            handleOrderSizeChange(product._id, size)
+                          }
+                          onOrderQtyChange={(qty) =>
+                            handleOrderQtyChange(product._id, qty)
+                          }
+                        />
+                      ))}
+                    </div>
+
+                    {/* Batch order same-showroom designs together, or one at a time */}
+                    {!isInvited && selectedCount > 0 && (
+                      <div className="mt-4 flex items-center justify-between bg-purple-900/20 border border-purple-500/30 rounded-xl px-5 py-3">
+                        <span className="text-sm text-purple-200">
+                          {selectedCount} design{selectedCount === 1 ? "" : "s"} selected
+                          from {group.showroom?.showroom_name || "this showroom"}
+                        </span>
+                        <button
+                          onClick={() => handleProceedToOrder(group)}
+                          className="flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium bg-[#6100FF] hover:bg-purple-700 text-white"
+                        >
+                          Proceed to Order ({selectedCount})
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
           </div>
         )}
       </div>

@@ -172,7 +172,7 @@ import { useState } from 'react';
 import { X, Heart, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { FaArrowLeft } from 'react-icons/fa';
-import { useDeleteSaveListMutation, useGetWishlistAndCartQuery, useAddToCartWishListMutation, useAddWishlistToCartMutation } from '@/redux/features/home/homeSlice';
+import { useDeleteSaveListMutation, useGetWishlistAndCartQuery, useAddToCartWishListMutation } from '@/redux/features/home/homeSlice';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 import toast from 'react-hot-toast';
 
@@ -186,9 +186,14 @@ export default function WishlistPage() {
     });
 
     const [deleteSaveItem] = useDeleteSaveListMutation();
-    const [addToCartWishList] = useAddWishlistToCartMutation();
+    const [addToCartWishList] = useAddToCartWishListMutation();
 
-    const wishlistItems = wishlistData?.data || [];
+    const wishlistItems = (wishlistData?.data || []).flatMap((group: any) =>
+        (group?.products || []).map((p: any) => ({
+            ...p,
+            showroom: group?.showroom,
+        })),
+    );
     const pagination = wishlistData?.pagination || {};
 
     const removeFromWishlist = async (id: string) => {
@@ -208,18 +213,27 @@ export default function WishlistPage() {
 
     const handleAddToCart = async (item: any) => {
         try {
+            const firstSize =
+                item?.size?.[0]?.type ??
+                item?.product?.product_stocks?.[0]?.size ??
+                "M";
+            const qty = item?.size?.[0]?.quantity ?? 1;
             const data = {
                 product: item.product._id,
-                saveType: "cart"
+                saveType: "cart",
+                size: [
+                    {
+                        type: firstSize,
+                        quantity: qty,
+                    },
+                ],
             };
-            const res = await addToCartWishList(item.product._id).unwrap();
-            console.log(res)
+            const res = await addToCartWishList(data).unwrap();
             if (res?.success) {
                 toast.success('Added to cart!');
             }
         } catch (error: any) {
             toast.error(error?.data?.message || 'Failed to add to cart');
-            console.log(error.data, 'add to cart error');
         }
     };
 
@@ -335,7 +349,7 @@ export default function WishlistPage() {
                                                 Add to Cart
                                             </button>
                                             <button
-                                                onClick={() => removeFromWishlist(product._id)}
+                                                onClick={() => removeFromWishlist(item._id)}
                                                 className="w-10 h-10 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors flex-shrink-0"
                                                 aria-label="Remove from wishlist"
                                             >

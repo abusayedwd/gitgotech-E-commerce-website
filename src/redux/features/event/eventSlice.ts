@@ -107,5 +107,6 @@ export const {
   ///size get event product
   useEventProductSizeAddEditMutation,
   useGetProductEventWishesSizeQuery,
+  useLazyGetProductEventWishesSizeQuery,
   useAddEventMemberMutation,
 } = eventSlice;

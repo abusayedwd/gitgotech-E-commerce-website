@@ -559,7 +559,9 @@ export default function ShoppingCart() {
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>(
     {},
   );
-  const [selectedProduct, setSelectedProduct] = useState<string | null>(null);
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>(
+    {},
+  );
   const [guestItems, setGuestItems] = useState<GuestCartItem[]>([]);
 
   const {
@@ -589,9 +591,41 @@ export default function ShoppingCart() {
     };
   }, [isLoggedIn]);
 
-  const cartItems = isLoggedIn
-    ? cartData?.data?.filter((item: any) => item.product !== null) || []
-    : guestItems.filter((item) => item.product !== null);
+  // Group cart items by showroom so the same-showroom products can be
+  // selected and ordered together (multiple at once, or just one at a time).
+  const groupedCart = useMemo(() => {
+    if (isLoggedIn) {
+      return (cartData?.data || [])
+        .map((group: any) => ({
+          showroom: group?.showroom,
+          items: (group?.products || [])
+            .filter((p: any) => p.product !== null)
+            .map((p: any) => ({
+              ...p,
+              quantity: p?.size?.[0]?.quantity ?? 1,
+              size: p?.size?.[0]?.type ?? "",
+              showroom: group?.showroom,
+            })),
+        }))
+        .filter((g: any) => g.items.length > 0);
+    }
+
+    const map = new Map<string, { showroom: any; items: any[] }>();
+    guestItems
+      .filter((item) => item.product !== null)
+      .forEach((item) => {
+        const showroom = item.product?.showroom;
+        const key = showroom?._id || "unknown";
+        if (!map.has(key)) map.set(key, { showroom, items: [] });
+        map.get(key)!.items.push(item);
+      });
+    return Array.from(map.values());
+  }, [isLoggedIn, cartData, guestItems]);
+
+  const cartItems = useMemo(
+    () => groupedCart.flatMap((g: any) => g.items),
+    [groupedCart],
+  );
 
   // Initialize quantities and sizes when cart data loads
   useEffect(() => {
@@ -690,74 +724,90 @@ export default function ShoppingCart() {
     return stocks.reduce((acc, stock) => acc + (stock.stock || 0), 0);
   };
 
-  const calculateSubtotal = () => {
-    if (!selectedProduct) return 0;
-
-    const selectedItem = cartItems.find(
-      (item: any) => item._id === selectedProduct,
+  // Selected items must all belong to the same showroom — that's what
+  // /order/vendor/add requires (single order = single showroom).
+  const selectedShowroomId = useMemo(() => {
+    const selectedIds = Object.keys(selectedItems).filter(
+      (id) => selectedItems[id],
     );
-    if (!selectedItem) return 0;
+    if (selectedIds.length === 0) return null;
+    const first = cartItems.find((item: any) => item._id === selectedIds[0]);
+    return first?.showroom?._id ?? null;
+  }, [selectedItems, cartItems]);
 
-    const quantity = quantities[selectedItem._id] || 1;
-    const discountedPrice = getDiscountedPrice(selectedItem.product);
-    return discountedPrice * quantity;
+  const selectedCartItems = useMemo(
+    () => cartItems.filter((item: any) => selectedItems[item._id]),
+    [cartItems, selectedItems],
+  );
+
+  const toggleSelectItem = (item: any) => {
+    setSelectedItems((prev) => {
+      const next = { ...prev };
+      if (next[item._id]) {
+        delete next[item._id];
+      } else {
+        next[item._id] = true;
+      }
+      return next;
+    });
+  };
+
+  const calculateSubtotal = () => {
+    return selectedCartItems.reduce((total: number, item: any) => {
+      const quantity = quantities[item._id] || item.quantity || 1;
+      const discountedPrice = getDiscountedPrice(item.product);
+      return total + discountedPrice * quantity;
+    }, 0);
   };
 
   const estimatedDeliveryCharge = useMemo(() => {
-    if (!selectedProduct) return FALLBACK_DISTANCE_DELIVERY_USD;
-    const item = cartItems.find((i: any) => i._id === selectedProduct);
-    if (!item?.product) return FALLBACK_DISTANCE_DELIVERY_USD;
-    const qty = quantities[item._id] || 1;
-    const weightFee =
-      productWeightToKg(item.product.product_weight) * qty * ratePerKg;
+    if (selectedCartItems.length === 0) return FALLBACK_DISTANCE_DELIVERY_USD;
+    const weightFee = selectedCartItems.reduce((sum: number, item: any) => {
+      const qty = quantities[item._id] || item.quantity || 1;
+      return (
+        sum + productWeightToKg(item.product?.product_weight) * qty * ratePerKg
+      );
+    }, 0);
     return parseFloat(
       (FALLBACK_DISTANCE_DELIVERY_USD + weightFee).toFixed(2),
     );
-  }, [selectedProduct, cartItems, quantities, ratePerKg]);
+  }, [selectedCartItems, quantities, ratePerKg]);
 
   const calculateTotal = () => {
     return calculateSubtotal() + estimatedDeliveryCharge;
   };
 
-  const selectedItem = cartItems.find((item: any) => item._id === selectedProduct);
-  const selectedSize = selectedProduct ? selectedSizes[selectedProduct] : null;
-  const selectedStockInfo = selectedItem?.product?.product_stocks?.find(
-    (s: any) => s.size === selectedSize
-  );
-  const isOutOfStock = selectedProduct ? (selectedStockInfo ? selectedStockInfo.stock <= 0 : true) : false;
-
-  // Prepare cart data for checkout - ONLY selected product
-  const getCartDataForCheckout = () => {
-    if (!selectedProduct) return [];
-
-    const selectedItem = cartItems.find(
-      (item: any) => item._id === selectedProduct,
+  const isSelectionOutOfStock = selectedCartItems.some((item: any) => {
+    const size = selectedSizes[item._id];
+    const stockInfo = item.product?.product_stocks?.find(
+      (s: any) => s.size === size,
     );
-    if (!selectedItem) return [];
+    return !stockInfo || stockInfo.stock <= 0;
+  });
 
-    return [
-      {
-        product: selectedItem.product._id,
-        size: [
-          {
-            type:
-              selectedSizes[selectedItem._id] ||
-              selectedItem.product.product_stocks?.[0]?.size ||
-              "",
-            quantity: quantities[selectedItem._id] || 1,
-          },
-        ],
-        orderType: selectedItem.product.vendor ? "vendor" : "custom",
-        deliveryType: "delivery",
-        price: {
-          unit: "usd",
-          amount: getDiscountedPrice(selectedItem.product),
-          tip: 0,
-          coupon: "",
-          deliveryCharge: estimatedDeliveryCharge,
+  // Prepare cart data for checkout — every selected item (same showroom)
+  const getCartDataForCheckout = () => {
+    return selectedCartItems.map((item: any) => ({
+      product: item.product._id,
+      size: [
+        {
+          type:
+            selectedSizes[item._id] ||
+            item.product.product_stocks?.[0]?.size ||
+            "",
+          quantity: quantities[item._id] || 1,
         },
+      ],
+      orderType: item.product.vendor ? "vendor" : "custom",
+      deliveryType: "delivery",
+      price: {
+        unit: "usd",
+        amount: getDiscountedPrice(item.product),
+        tip: 0,
+        coupon: "",
+        deliveryCharge: estimatedDeliveryCharge,
       },
-    ];
+    }));
   };
 
   return (
@@ -799,10 +849,48 @@ export default function ShoppingCart() {
               </div>
             )}
 
-            {/* Cart Items */}
-            <div className="space-y-4">
-              {cartItems.length > 0
-                ? cartItems.map((item: any) => {
+            {/* Cart Items — grouped by showroom */}
+            <div className="space-y-8">
+              {groupedCart.length > 0
+                ? groupedCart.map((group: any) => {
+                    const showroomId = group.showroom?._id || "unknown";
+                    const isOtherShowroomActive =
+                      selectedShowroomId !== null &&
+                      selectedShowroomId !== showroomId;
+
+                    return (
+                      <div key={showroomId}>
+                        {/* Showroom header */}
+                        <div className="flex items-center justify-between mb-3 px-1">
+                          <div className="flex items-center gap-3">
+                            {group.showroom?.logo && (
+                              <img
+                                src={`${IMAGE_BASE_URL}/${group.showroom.logo}`}
+                                alt={group.showroom?.showroom_name}
+                                className="w-9 h-9 rounded-full object-cover border border-purple-500/40"
+                              />
+                            )}
+                            <div>
+                              <h3 className="font-semibold text-sm md:text-base">
+                                {group.showroom?.showroom_name || "Showroom"}
+                              </h3>
+                              {typeof group.showroom?.location === "string" &&
+                                group.showroom.location && (
+                                  <p className="text-xs text-gray-400">
+                                    {group.showroom.location}
+                                  </p>
+                                )}
+                            </div>
+                          </div>
+                          <span className="text-xs font-medium px-3 py-1 rounded-full bg-purple-600/20 text-purple-300 whitespace-nowrap">
+                            {group.items.length}{" "}
+                            {group.items.length === 1 ? "item" : "items"} in
+                            cart
+                          </span>
+                        </div>
+
+                        <div className="space-y-4">
+                          {group.items.map((item: any) => {
                     const product = item.product;
                     const imageUrl = getProductImage(product);
                     const currentSize = selectedSizes[item._id];
@@ -817,24 +905,33 @@ export default function ShoppingCart() {
                     const hasDiscount =
                       product?.discount?.isValid &&
                       product?.discount?.percentage;
+                    const isChecked = !!selectedItems[item._id];
 
                     return (
                       <div
                         key={item._id}
                         className={`grid grid-cols-1 md:grid-cols-12 gap-4 items-center p-4 border-[#B8B8B8] border-b rounded-lg transition-all ${
-                          selectedProduct === item._id
+                          isChecked
                             ? "bg-purple-900/30 border-purple-500"
-                            : "bg-purple-900/10 hover:bg-purple-900/20"
+                            : isOtherShowroomActive
+                              ? "bg-purple-900/5 opacity-50"
+                              : "bg-purple-900/10 hover:bg-purple-900/20"
                         }`}
                       >
-                        {/* Radio Button for Selection */}
+                        {/* Checkbox for Selection — allows picking multiple
+                            products from the same showroom to order together */}
                         <div className="md:col-span-1 flex justify-center">
                           <input
-                            type="radio"
-                            name="selectedProduct"
-                            checked={selectedProduct === item._id}
-                            onChange={() => setSelectedProduct(item._id)}
-                            className="w-5 h-5 text-purple-600 cursor-pointer"
+                            type="checkbox"
+                            checked={isChecked}
+                            disabled={isOtherShowroomActive}
+                            onChange={() => toggleSelectItem(item)}
+                            title={
+                              isOtherShowroomActive
+                                ? "Deselect items from the other showroom first — an order can only contain products from one showroom"
+                                : undefined
+                            }
+                            className="w-5 h-5 text-purple-600 rounded cursor-pointer disabled:cursor-not-allowed"
                           />
                         </div>
 
@@ -978,15 +1075,15 @@ export default function ShoppingCart() {
                             )}
                           </div>
                           <button
-                            onClick={() =>
-                              handleRemoveFromCart(
-                                item.product?._id || item._id,
-                              )
-                            }
+                            onClick={() => handleRemoveFromCart(item._id)}
                             className="w-8 h-8 rounded-full bg-red-500/20 hover:bg-red-500/30 flex items-center justify-center transition-colors"
                           >
                             <Trash2 className="w-4 h-4 text-red-400" />
                           </button>
+                        </div>
+                      </div>
+                    );
+                          })}
                         </div>
                       </div>
                     );
@@ -1074,9 +1171,10 @@ export default function ShoppingCart() {
             </div>
 
             <button
-              disabled={!selectedProduct || isOutOfStock}
+              disabled={selectedCartItems.length === 0 || isSelectionOutOfStock}
               onClick={() => {
-                if (!selectedProduct || isOutOfStock) return;
+                if (selectedCartItems.length === 0 || isSelectionOutOfStock)
+                  return;
                 if (!requireLogin("Please sign in to proceed to checkout")) return;
                 router.push(
                   `/checkout?tip=0&cartData=${encodeURIComponent(
@@ -1085,15 +1183,19 @@ export default function ShoppingCart() {
                 );
               }}
               className={`w-full py-3 rounded-full font-semibold transition-all duration-300 transform ${
-                selectedProduct && !isOutOfStock
+                selectedCartItems.length > 0 && !isSelectionOutOfStock
                   ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:scale-105 cursor-pointer"
                   : "bg-gray-600 cursor-not-allowed opacity-50"
               }`}
             >
-              {isOutOfStock
+              {isSelectionOutOfStock
                 ? "Out of Stock"
                 : isLoggedIn
-                  ? "Proceed to Checkout"
+                  ? selectedCartItems.length > 0
+                    ? `Proceed to Checkout (${selectedCartItems.length} item${
+                        selectedCartItems.length === 1 ? "" : "s"
+                      })`
+                    : "Select items to checkout"
                   : "Sign in to Checkout"}
             </button>
           </div>

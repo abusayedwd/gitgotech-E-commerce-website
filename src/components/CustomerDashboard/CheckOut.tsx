@@ -26,6 +26,7 @@ import {
 } from "@/lib/deliveryPricing";
 
 const TAX_RATE = 0.1; // 10%
+const DEFAULT_PRODUCT_WEIGHT = { unit: "gram", amount: 100 };
 
 const CHECKOUT_COUNTRY_OPTIONS = [
   "United States",
@@ -75,15 +76,28 @@ export default function CheckoutPage() {
   const product = searchParams.get("productId");
   const event = searchParams.get("eventId");
 
-  // ── Event wishlist sizes ──────────────────────────────────────────────────
+  // Multiple same-showroom event designs selected together on the "View
+  // Design" page — batched into one order, same idea as the cart.
+  const eventCartDataFromUrl = searchParams.get("eventCartData");
+  const parsedEventCartData = eventCartDataFromUrl
+    ? JSON.parse(eventCartDataFromUrl)
+    : [];
+  const isMultiEventOrder = parsedEventCartData.length > 0;
+
+  // ── Event wishlist sizes (legacy single-design flow) ──────────────────────
   const { data: sizesData, isLoading: sizesLoading } =
-    useGetProductEventWishesSizeQuery({ product, event });
+    useGetProductEventWishesSizeQuery(
+      { product, event },
+      { skip: isMultiEventOrder || !product || !event },
+    );
 
     console.log(sizesData)
 
-  const isEventOrder = (sizesData?.data?.length ?? 0) > 0;
+  const isSingleEventOrder =
+    !isMultiEventOrder && (sizesData?.data?.length ?? 0) > 0;
+  const isEventOrder = isMultiEventOrder || isSingleEventOrder;
 
-  // Build sizes array for the event order payload
+  // Build sizes array for the (legacy single-design) event order payload
   const eventSizes = useMemo(
     () =>
       sizesData?.data?.map((item: any) => ({
@@ -93,12 +107,18 @@ export default function CheckoutPage() {
     [sizesData],
   );
 
-  // Derive display items from sizesData when it is an event order.
+  // Derive display items from sizesData when it is a single-design event order.
   const eventDisplayItems = useMemo(
     () =>
       sizesData?.data?.map((item: any) => ({
         _id: item._id,
-        product: item.product,
+        product: {
+          ...item.product,
+          // The event size-wishes endpoint doesn't always return product
+          // weight — fall back to the same default the product page uses,
+          // otherwise event orders get charged $0 for weight delivery.
+          product_weight: item.product?.product_weight ?? DEFAULT_PRODUCT_WEIGHT,
+        },
         size: item.size,
         quantity: 1,
         showroomCoordinates:
@@ -107,14 +127,50 @@ export default function CheckoutPage() {
     [sizesData],
   );
 
+  // Derive display items for the multi-design event order — each entry is
+  // one selected design with its aggregated participant sizes.
+  const multiEventDisplayItems = useMemo(
+    () =>
+      parsedEventCartData.map((item: any) => {
+        const totalQty = (item.size || []).reduce(
+          (sum: number, s: any) => sum + (s.quantity ?? 1),
+          0,
+        );
+        return {
+          _id: item.productId,
+          product: {
+            _id: item.productId,
+            product_name: item.productName,
+            product_price: item.productPrice,
+            product_images: item.productImage ? [item.productImage] : [],
+            product_weight: item.productWeight,
+            showroom: { showroom_name: item.showroomName },
+          },
+          size: (item.size || [])
+            .map((s: any) => `${s.type} x${s.quantity}`)
+            .join(", "),
+          quantity: totalQty || 1,
+          eventSize: item.size,
+          showroomCoordinates: item.showroomCoordinates ?? null,
+        };
+      }),
+    [parsedEventCartData],
+  );
+
   // ── Cart data ─────────────────────────────────────────────────────────────
   const { data: cartData } = useGetWishlistAndCartQuery({
     type: "cart",
     page: 1,
   });
 
-  const allCartItems =
-    cartData?.data?.filter((item: any) => item.product !== null) ?? [];
+  const allCartItems = (cartData?.data ?? [])
+    .flatMap((group: any) =>
+      (group?.products || []).map((p: any) => ({
+        ...p,
+        showroom: group?.showroom,
+      })),
+    )
+    .filter((item: any) => item.product !== null);
 
   // Build cart display items from parsedCartData + API cart details
   const cartDisplayItems = useMemo(() => {
@@ -142,7 +198,11 @@ export default function CheckoutPage() {
   }, [parsedCartData, allCartItems]);
 
   // The items we actually display in the summary
-  const displayItems = isEventOrder ? eventDisplayItems : cartDisplayItems;
+  const displayItems = isMultiEventOrder
+    ? multiEventDisplayItems
+    : isSingleEventOrder
+      ? eventDisplayItems
+      : cartDisplayItems;
 
   // Showroom coordinates – use the first item's showroom (single vendor assumed)
   const showroomCoordinates: [number, number] | null =
@@ -189,17 +249,12 @@ export default function CheckoutPage() {
 
   // ── Price calculations ────────────────────────────────────────────────────
   const subtotal = useMemo(() => {
-    if (isEventOrder) {
-      return eventDisplayItems.reduce((sum: number, item: any) => {
-        return sum + (item.product?.product_price ?? 0) * item.quantity;
-      }, 0);
-    }
-    return cartDisplayItems.reduce((sum: number, item: any) => {
+    return displayItems.reduce((sum: number, item: any) => {
       const price =
         item.priceFromCart?.amount ?? item.product?.product_price ?? 0;
       return sum + price * item.quantity;
     }, 0);
-  }, [isEventOrder, eventDisplayItems, cartDisplayItems]);
+  }, [displayItems]);
 
   const distanceDeliveryCharge = useMemo(
     () => distanceDeliveryUsd(selectedLocation, showroomCoordinates, ratePerKm),
@@ -340,29 +395,42 @@ export default function CheckoutPage() {
         weightCharge: weightDeliveryCharge,
       };
 
-      const orderData = isEventOrder
-        ? {
-            product,
-            size: eventSizes,
-            orderType: "vendor",
-            deliveryType: deliveryMethod,
-            price: pricePayload,
-            deliveryInfo,
-          }
-        : {
-            product: cartDisplayItems[0]?.product?._id,
-            size: [
+      const weightPayload = {
+        unit: "kg",
+        amount: totalWeightKg,
+      };
+
+      const productsPayload = isMultiEventOrder
+        ? parsedEventCartData.map((item: any) => ({
+            product: item.productId,
+            size: item.size,
+          }))
+        : isSingleEventOrder
+          ? [
               {
-                type: cartDisplayItems[0]?.selectedSize ?? "M",
-                quantity: cartDisplayItems[0]?.quantity ?? 1,
+                product,
+                size: eventSizes,
               },
-            ],
-            orderType: cartDisplayItems[0]?.orderData?.orderType ?? "vendor",
-            deliveryType:
-              cartDisplayItems[0]?.orderData?.deliveryType ?? deliveryMethod,
-            price: pricePayload,
-            deliveryInfo,
-          };
+            ]
+          : cartDisplayItems.map((ci: any) => ({
+              product: ci.product?._id,
+              size: [
+                {
+                  type: ci.selectedSize ?? "M",
+                  quantity: ci.quantity ?? 1,
+                },
+              ],
+            }));
+
+      const orderData = {
+        products: productsPayload,
+        orderType: isEventOrder ? "event" : "vendor",
+        deliveryType: deliveryMethod,
+        deliveryInfo,
+        weight: weightPayload,
+        price: pricePayload,
+        ...(isEventOrder && event ? { eventId: event } : {}),
+      };
 
       console.log("Order payload:", orderData);
 

@@ -1,5 +1,6 @@
 "use client";
 import url from "@/redux/api/baseUrl";
+import { buildImageUrl } from "@/lib/imageBaseUrl";
 import {
   useGetCustomerMainOrdersQuery,
   useGetCustomerReturnOrdersQuery,
@@ -46,27 +47,41 @@ export default function MyDashboard() {
   const totalOrderPages = Math.max(1, mainPagination?.totalPage ?? 1);
   const totalOrdersCount = mainPagination?.totalData ?? 0;
 
+  // Each main order can bundle multiple products (same showroom, one order) —
+  // keep the raw products array instead of collapsing to a single item.
   const orders =
-    mainOrderData?.data?.map((order: any) => ({
-      id: order.id,
-      productName: order.name,
-      brand: order.showroom_name,
-      image: order.product_images?.[0] || "/images/jacket.png",
-      price: order.price?.amount || 0,
-      quantity:
-        order.size?.reduce((acc: number, s: any) => acc + s.quantity, 0) || 1, // ← sum all size quantities
-      otp: "N/A",
-      total:
-        (order.price?.amount || 0) +
-        (order.price?.tip || 0) +
-        (order.price?.tax || 0) +
-        (order.price?.deliveryCharge || 0) -
-        (Number(order.price?.coupon) || 0),
-      status: order.status,
-      hasReview: false,
-      productId: order.productId || null,
-      size: order.size,
-    })) || [];
+    mainOrderData?.data?.map((order: any) => {
+      const products = order.products || [];
+      const totalQuantity = products.reduce(
+        (sum: number, p: any) =>
+          sum +
+          (p.size?.reduce(
+            (acc: number, s: any) => acc + (s.quantity || 0),
+            0,
+          ) || 0),
+        0,
+      );
+      return {
+        id: order.id,
+        brand: order.showroom_name,
+        showroomImage: order.showroom_image,
+        products,
+        price: order.price?.amount || 0,
+        quantity: totalQuantity || 1,
+        otp: "N/A",
+        total:
+          (order.price?.amount || 0) +
+          (order.price?.tip || 0) +
+          (order.price?.tax || 0) +
+          (order.price?.weightCharge || 0) +
+          (order.price?.deliveryCharge || 0),
+        coupon: order.price?.coupon || null,
+        status: order.status,
+        orderType: order.orderType,
+        trackingNumber: order.trackingNumber,
+        hasReview: false,
+      };
+    }) || [];
 
   // Transform API data for returns
   const returns =
@@ -92,13 +107,18 @@ export default function MyDashboard() {
 
   interface Order {
     id: number;
-    productName: string;
+    productName?: string;
     brand: string;
-    image: string;
+    image?: string;
+    showroomImage?: string;
+    products?: any[];
     price: number;
     quantity: number;
     otp: string;
     total: number;
+    coupon?: string | null;
+    orderType?: string;
+    trackingNumber?: number;
     status:
       | "Completed"
       | "Ready for Pickup"
@@ -262,34 +282,88 @@ export default function MyDashboard() {
             className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 border border-gray-800 rounded-2xl p-4 md:p-6 hover:border-purple-500/30 transition-all duration-300"
           >
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
-              {/* Product Image */}
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
-                <img
-                  src={`${url}/${order.image}`}
-                  alt={order.productName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = "/images/jacket.png";
-                  }}
-                />
-              </div>
+              {/* Showroom + Products, or single product for returns */}
+              {order.products ? (
+                <div className="flex-1 w-full md:w-auto">
+                  <div className="flex items-center gap-2 mb-3">
+                    {order.showroomImage && (
+                      <img
+                        src={buildImageUrl(order.showroomImage)}
+                        alt={order.brand}
+                        className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/jacket.png";
+                        }}
+                      />
+                    )}
+                    <span className="text-gray-300 text-sm font-medium">
+                      {order.brand}
+                    </span>
+                    {order.trackingNumber && (
+                      <span className="text-gray-500 text-xs">
+                        · Tracking #{order.trackingNumber}
+                      </span>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    {order.products.map((p: any) => (
+                      <div key={p._id} className="flex items-center gap-3">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
+                          <img
+                            src={buildImageUrl(p.product?.product_images?.[0])}
+                            alt={p.product?.product_name}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              e.currentTarget.src = "/images/jacket.png";
+                            }}
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm md:text-base font-medium truncate">
+                            {p.product?.product_name}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {(p.size || [])
+                              .map((s: any) => `${s.type} × ${s.quantity}`)
+                              .join(", ")}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Product Image */}
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
+                    <img
+                      src={`${url}/${order.image}`}
+                      alt={order.productName}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/jacket.png";
+                      }}
+                    />
+                  </div>
 
-              {/* Product Details */}
-              <div className="flex-1 w-full md:w-auto">
-                <h3 className="text-lg md:text-xl font-semibold mb-1">
-                  {order.productName}
-                </h3>
-                <div className="flex items-center gap-2 mb-2 md:mb-3">
-                  <span className="text-purple-400 text-xs md:text-sm">👑</span>
-                  <span className="text-gray-400 text-xs md:text-sm">
-                    {order.brand}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm md:text-base">
-                  <span className="text-white">₵{order.price}</span>
-                  <span className="text-gray-400">Qty: {order.quantity}</span>
-                </div>
-              </div>
+                  {/* Product Details */}
+                  <div className="flex-1 w-full md:w-auto">
+                    <h3 className="text-lg md:text-xl font-semibold mb-1">
+                      {order.productName}
+                    </h3>
+                    <div className="flex items-center gap-2 mb-2 md:mb-3">
+                      <span className="text-purple-400 text-xs md:text-sm">👑</span>
+                      <span className="text-gray-400 text-xs md:text-sm">
+                        {order.brand}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm md:text-base">
+                      <span className="text-white">₵{order.price}</span>
+                      <span className="text-gray-400">Qty: {order.quantity}</span>
+                    </div>
+                  </div>
+                </>
+              )}
 
               {/* Right Side - Status & Actions */}
               <div className="w-full md:w-auto flex flex-col items-start md:items-end gap-3 md:gap-4">

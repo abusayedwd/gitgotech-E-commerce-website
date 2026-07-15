@@ -198,6 +198,12 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       const data = {
         product: product._id,
         saveType: "cart",
+        size: [
+          {
+            type: selectedSize,
+            quantity,
+          },
+        ],
       };
       const res = await addToCartWishList(data).unwrap();
       if (res?.success) {
@@ -214,6 +220,12 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
       const data = {
         product: product._id,
         saveType: "wishlist",
+        size: [
+          {
+            type: selectedSize,
+            quantity,
+          },
+        ],
       };
       const res = await addToCartWishList(data).unwrap();
       if (res?.success) {

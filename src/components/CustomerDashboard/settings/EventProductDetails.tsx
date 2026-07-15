@@ -19,6 +19,7 @@ export default function EventProductDetails() {
   const productId = searchParams.get('id');
   const eventType = searchParams.get('type');
   const eventId = searchParams.get('eventId');
+  const isOrdered = searchParams.get('isOrdered') === 'true';
 
   const { data: eventProductData, isLoading } = useGetProductDetailsforCustomerQuery(productId);
 
@@ -81,6 +82,7 @@ export default function EventProductDetails() {
   };
 
   const handleCheckout = () => {
+    if (isOrdered) return;
     if (isInvited && !selectedSize) {
       alert('Please select a size before checkout');
       return;
@@ -336,16 +338,22 @@ export default function EventProductDetails() {
               ) : (
                 <button
                   onClick={handleCheckout}
-                  disabled={isInvited && !selectedSize}
+                  disabled={isOrdered || (isInvited && !selectedSize)}
                   className={`flex items-center justify-center gap-2 border border-[#3d3648] text-white py-4 rounded-xl transition-all duration-200 col-span-2 ${
-                    isInvited && !selectedSize
+                    isOrdered || (isInvited && !selectedSize)
                       ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
                       : 'bg-[#6100FF] cursor-pointer hover:bg-[#7A2491]'
                   }`}
                 >
                   <MessageCircle size={20} />
                   <span className="font-medium">
-                    {isInvited && selectedSize ? `Checkout - Size: ${selectedSize}` : isInvited ? 'Select Size to Checkout' : 'Checkout'}
+                    {isOrdered
+                      ? 'Order Placed'
+                      : isInvited && selectedSize
+                        ? `Checkout - Size: ${selectedSize}`
+                        : isInvited
+                          ? 'Select Size to Checkout'
+                          : 'Checkout'}
                   </span>
                 </button>
               )}

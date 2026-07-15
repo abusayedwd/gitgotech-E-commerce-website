@@ -5,7 +5,6 @@ import {
   useGetMainOrderDetailsQuery,
   useGetReturnOrderDetailsQuery,
 } from "@/redux/features/order/orderSlice";
-import { Star } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
@@ -37,39 +36,37 @@ const OrderDetails = () => {
   console.log(mainOrderDetails);
   console.log(returnOrderDetails);
 
-  // Get data from mainOrderDetails (main order) or returnOrderDetails (return order)
-  const orderDataToDisplay = mainOrderDetails?.data || returnOrderDetails?.data;
-
   // Get status from mainOrderDetails if available, otherwise fallback to returnOrderDetails status
   const mainOrderStatus = mainOrderDetails?.data?.orderStatus || "Processing";
   const returnOrderStatus = returnOrderDetails?.data?.status;
 
-  // Extract product info from mainOrderDetails or returnOrderDetails
-  const productInfo =
-    mainOrderDetails?.data?.product || returnOrderDetails?.data?.product;
   const priceInfo =
     mainOrderDetails?.data?.price || returnOrderDetails?.data?.price;
-  const sizeInfo =
-    mainOrderDetails?.data?.size || returnOrderDetails?.data?.size;
 
-  const product = {
-    name: productInfo?.product_name || "Product",
-    price: priceInfo?.amount || 0,
-    tip: priceInfo?.tip || 0,
-    deliveryCharge: priceInfo?.deliveryCharge || 0,
-    originalPrice: priceInfo?.amount ? priceInfo.amount * 1.1 : 0,
-    discount: priceInfo?.coupon || "10% OFF",
-    size: sizeInfo?.[0]?.size || sizeInfo?.[0]?.type || "M",
-    quantity: sizeInfo?.reduce((acc: number, s: any) => acc + (s.quantity || 0), 0) || 1,
-    rating: 4.5,
-    reviews: 20,
-    image: productInfo?.product_images?.[0]
-      ? `${IMAGE_BASE_URL}/${productInfo.product_images[0]}`
-      : "/images/jacket.png",
-    description:
-      "Lorem ipsum dolor sit amet consectetur. Lacus et venenatis gravida vivamus mauris.",
-    status: mainOrderStatus,
-  };
+  // A main order can bundle multiple products (same showroom, one order).
+  // Return orders are single-product — normalise both into one list.
+  const products: any[] =
+    mainOrderDetails?.data?.products ??
+    (returnOrderDetails?.data?.product
+      ? [
+          {
+            _id: returnOrderDetails.data._id,
+            product: returnOrderDetails.data.product,
+            size: returnOrderDetails.data.size || [],
+          },
+        ]
+      : []);
+
+  const totalQuantity =
+    products.reduce(
+      (sum: number, p: any) =>
+        sum +
+        (p.size?.reduce(
+          (acc: number, s: any) => acc + (s.quantity || 0),
+          0,
+        ) || 0),
+      0,
+    ) || 1;
 
   const isDecline =
     mainOrderStatus === "Rejected" || mainOrderStatus === "Return Declined";
@@ -146,13 +143,6 @@ const OrderDetails = () => {
   //     },
   //   ];
 
-  const stars = Array.from({ length: 5 }, (_, i) => (
-    <Star
-      key={i}
-      className={`w-4 h-4 ${i < Math.floor(product.rating) ? "fill-yellow-400 text-yellow-400" : "text-gray-300"}`}
-    />
-  ));
-
   if (
     id &&
     id !== "undefined" &&
@@ -174,29 +164,57 @@ const OrderDetails = () => {
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Product Image */}
-        <div className="relative">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full object-contain rounded-lg shadow-lg"
-          />
-          <button className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-md text-sm">
-            Mix Design
-          </button>
+        {/* Products in this order */}
+        <div className="space-y-4">
+          {products.length > 0 ? (
+            products.map((p: any, idx: number) => (
+              <div
+                key={p._id || idx}
+                className="flex items-center gap-4 bg-gray-900 rounded-lg p-4 border border-purple-500/40"
+              >
+                <img
+                  src={
+                    p.product?.product_images?.[0]
+                      ? `${IMAGE_BASE_URL}/${p.product.product_images[0]}`
+                      : "/images/jacket.png"
+                  }
+                  alt={p.product?.product_name}
+                  className="w-20 h-20 rounded-lg object-cover flex-shrink-0"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/jacket.png";
+                  }}
+                />
+                <div className="min-w-0">
+                  <p className="font-semibold truncate">
+                    {p.product?.product_name || "Product"}
+                  </p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1">
+                    {(p.size || []).map((s: any, sIdx: number) => (
+                      <span key={sIdx} className="text-sm text-gray-400">
+                        Size: {s.size || s.type || "M"} · Qty: {s.quantity || 1}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-gray-400">No product info available</div>
+          )}
         </div>
 
         {/* Product Info */}
         <div className="space-y-6">
           <div className="flex justify-between">
             <div>
-              <h2 className="text-3xl font-bold">{product.name}</h2>
-              <div className="flex items-center mt-2">
-                <div className="flex items-center space-x-1">{stars}</div>
-                <span className="ml-2 text-sm text-gray-400">
-                  {product.reviews} Reviews
-                </span>
-              </div>
+              <h2 className="text-2xl font-bold">
+                {mainOrderDetails?.data?.pickUpInfo?.name ||
+                  returnOrderDetails?.data?.showroom?.showroom_name ||
+                  "Order"}
+              </h2>
+              <p className="text-sm text-gray-400 mt-1">
+                {totalQuantity} item{totalQuantity === 1 ? "" : "s"} in this order
+              </p>
             </div>
             <div>
               <div className="flex items-center space-x-4">
@@ -261,42 +279,20 @@ const OrderDetails = () => {
             </div>
           </div> */}
 
-          {/* Price & Discount */}
-          <div className="space-y-3">
+          {/* Coupon badge, if one was applied */}
+          {priceInfo?.coupon && (
             <div className="bg-purple-600 text-white px-4 py-2 rounded-full w-fit text-sm font-medium">
-              {product.discount}
+              Coupon: {priceInfo.coupon}
             </div>
-            <div className="flex items-center space-x-3">
-              <span className="text-xl line-through text-gray-400">
-                ₵{product.originalPrice.toFixed(2)}
-              </span>
-              <span className="text-2xl font-bold text-purple-400">
-                ₵{product.price.toFixed(2)}
-              </span>
-            </div>
-            <div className="space-y-1">
-              {sizeInfo && sizeInfo.length > 0 ? (
-                sizeInfo.map((s: any, idx: number) => (
-                  <div key={idx} className="flex items-center gap-4">
-                    <div className="text-sm text-gray-400">Size: {s.size || s.type || "M"}</div>
-                    <div className="text-sm text-gray-400">Qty: {s.quantity || 1}</div>
-                  </div>
-                ))
-              ) : (
-                <>
-                  <div className="text-sm text-gray-400">Size: {product.size}</div>
-                  <div className="text-sm text-gray-400">Qty: {product.quantity}</div>
-                </>
-              )}
-            </div>
-          </div>
+          )}
 
           {/* Price Info */}
-       {mainOrderDetails?.data?.price && (() => {
-  const p = mainOrderDetails.data.price;
+       {priceInfo && (() => {
+  const p = priceInfo;
   const total = (
     (p?.amount ?? 0) +
     (p?.deliveryCharge ?? 0) +
+    (p?.weightCharge ?? 0) +
     (p?.tip ?? 0) +
     (p?.tax ?? 0)
   ).toFixed(2);
@@ -304,8 +300,9 @@ const OrderDetails = () => {
   const rows = [
     { label: "Product Amount", value: p?.amount, icon: "🛍️" },
     { label: "Delivery Fee",   value: p?.deliveryCharge, icon: "🚚" },
+    { label: "Weight Charge",  value: p?.weightCharge, icon: "⚖️" },
     { label: "Driver Tip",     value: p?.tip, icon: "💝" },
-    { label: "Tax (10%)",      value: p?.tax, icon: "🧾" },
+    { label: "Tax",            value: p?.tax, icon: "🧾" },
   ];
 
   return (
@@ -438,13 +435,6 @@ const OrderDetails = () => {
               </div>
             </div>
           )}
-
-          {/* Total Price */}
-          <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
-            <div className="text-center text-lg font-medium">
-              Total Price: ₵{product.price.toFixed(2)}
-            </div>
-          </div>
 
           {/* Buy Again / Report Buttons */}
           {isDecline ? (
