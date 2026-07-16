@@ -17,7 +17,7 @@ const CategoryTabs = () => {
 
   // Extract categories array from the response
   const categories = categoriesData?.data || [];
-  console.log("Categories:", categories);
+  // console.log("Categories:", categories);
 
   // Hardcoded tabs with colors
   const tabs = [
@@ -92,8 +92,8 @@ const CategoryTabs = () => {
 
   const handleCategoryClick = (tabName: string) => {
     setActiveTab(tabName);
-    console.log("Selected Tab:", tabName);
-    console.log("API Categories:", categories);
+    // console.log("Selected Tab:", tabName);
+    // console.log("API Categories:", categories);
   };
 
   return (

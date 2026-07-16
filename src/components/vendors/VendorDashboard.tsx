@@ -13,7 +13,7 @@ export default function DashboardHome() {
   const { data: dashboardOverviewData } = useDashboardStatusQuery(showroomId);
 
   const dashData = dashboardOverviewData?.data;
-  console.log(dashData);
+  // console.log(dashData);
 
   const stats = [
     {

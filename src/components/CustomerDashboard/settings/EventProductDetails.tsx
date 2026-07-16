@@ -23,7 +23,7 @@ export default function EventProductDetails() {
 
   const { data: eventProductData, isLoading } = useGetProductDetailsforCustomerQuery(productId);
 
-  console.log(eventProductData);
+  // console.log(eventProductData);
 
   // Get user from localStorage
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function EventProductDetails() {
     }
 
     if (!eventId || !productId || !user?._id) {
-      console.log("Missing required data");
+      // console.log("Missing required data");
       return;
     }
 
@@ -68,14 +68,14 @@ export default function EventProductDetails() {
       size: selectedSize
     };
 
-    console.log(updateData);
+    // console.log(updateData);
 
     try {
       const res = await eventProductSizeAddEdit(updateData).unwrap();
       if(res?.status ===200){
         toast.success(res?.message)
       }
-      console.log("Success:", res);
+      // console.log("Success:", res);
     } catch (error) {
       console.error("Error:", error);
     }

@@ -11,7 +11,7 @@ import FooterPageBack from "@/components/landingPage/FooterPageBack";
 export default function VendorsPage() {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  console.log(searchQuery);
+  // console.log(searchQuery);
 
   const { data: topVendorsRes } = useTopVendorsQuery(searchQuery);
   const vendors = topVendorsRes?.data?.data ?? [];

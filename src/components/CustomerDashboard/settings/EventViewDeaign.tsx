@@ -373,7 +373,7 @@ export default function EventViewDeaign() {
   const isInvited = status === 'invited';
 
   const {data: eventProduct, isLoading, error} = useGetProductByEventQuery(id)
-  console.log(eventProduct)
+  // console.log(eventProduct)
 
   const {data: eventData} = useGetEventByIdQuery(id || '')
 

@@ -8,14 +8,14 @@ export const initializeSocket = (token: string): Socket => {
   }
 
   const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_BASE_URL || "http://localhost:4000";
-  console.log(SOCKET_URL);
+  // console.log(SOCKET_URL);
 
-  console.log("🔌 Connecting to socket:", SOCKET_URL);
-  console.log("🔑 Token:", token ? `${token.substring(0, 20)}...` : "No token");
+  // console.log("🔌 Connecting to socket:", SOCKET_URL);
+  // console.log("🔑 Token:", token ? `${token.substring(0, 20)}...` : "No token");
 
   // Remove 'Bearer ' prefix if present - server expects raw JWT token
   const rawToken = token.startsWith("Bearer ") ? token.substring(7) : token;
-  console.log(rawToken);
+  // console.log(rawToken);
 
   socket = io(SOCKET_URL, {
     extraHeaders: {
@@ -29,11 +29,11 @@ export const initializeSocket = (token: string): Socket => {
   });
 
   socket.on("connect", () => {
-    console.log("✅ Socket connected:", socket?.id);
+    // console.log("✅ Socket connected:", socket?.id);
   });
 
   socket.on("disconnect", (reason) => {
-    console.log("❌ Socket disconnected:", reason);
+    // console.log("❌ Socket disconnected:", reason);
   });
 
   socket.on("connect_error", (error) => {
@@ -62,7 +62,7 @@ export const disconnectSocket = (): void => {
 
 export const emitEvent = (eventName: string, data: any): void => {
   if (socket?.connected) {
-    console.log("📤 Emitting event:", eventName, data);
+    // console.log("📤 Emitting event:", eventName, data);
     socket.emit(eventName, data);
   } else {
     console.warn("⚠️ Socket not connected, cannot emit:", eventName);
@@ -75,7 +75,7 @@ export const onEvent = (
 ): void => {
   if (socket) {
     socket.on(eventName, callback);
-    console.log("📡 Listening for event:", eventName);
+    // console.log("📡 Listening for event:", eventName);
   }
 };
 
@@ -85,6 +85,6 @@ export const offEvent = (
 ): void => {
   if (socket) {
     socket.off(eventName, callback);
-    console.log("🔇 Stopped listening for event:", eventName);
+    // console.log("🔇 Stopped listening for event:", eventName);
   }
 };

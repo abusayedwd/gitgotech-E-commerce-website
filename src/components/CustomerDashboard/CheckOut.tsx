@@ -72,7 +72,7 @@ export default function CheckoutPage() {
   const tipFromCart = searchParams.get("tip") || "5";
   const cartDataFromUrl = searchParams.get("cartData");
   const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
- console.log(parsedCartData)
+ // console.log(parsedCartData)
   const product = searchParams.get("productId");
   const event = searchParams.get("eventId");
 
@@ -91,7 +91,7 @@ export default function CheckoutPage() {
       { skip: isMultiEventOrder || !product || !event },
     );
 
-    console.log(sizesData)
+    // console.log(sizesData)
 
   const isSingleEventOrder =
     !isMultiEventOrder && (sizesData?.data?.length ?? 0) > 0;
@@ -432,10 +432,10 @@ export default function CheckoutPage() {
         ...(isEventOrder && event ? { eventId: event } : {}),
       };
 
-      console.log("Order payload:", orderData);
+      // console.log("Order payload:", orderData);
 
       const res = await orderSubmitted(orderData).unwrap();
-      console.log(res);
+      // console.log(res);
       toast.success("Order placed successfully!");
       setTimeout(() => router.push("/customer-dashboard"), 2000);
     } catch (error: any) {

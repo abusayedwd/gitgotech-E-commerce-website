@@ -133,12 +133,12 @@ function LocationMapPicker({
             )
             .openPopup();
         }
-        console.log("📍 Location picked:", {
-          lat,
-          lng,
-          address,
-          displayName: data.display_name,
-        });
+        // console.log("📍 Location picked:", {
+          // lat,
+          // lng,
+          // address,
+          // displayName: data.display_name,
+        // });
       } catch (e) {
         console.error("Reverse geocode error:", e);
       } finally {
@@ -255,7 +255,7 @@ function LocationMapPicker({
   const handleConfirm = () => {
     if (!pickedLocation) return;
     onLocationSelect(pickedLocation);
-    console.log("✅ Confirmed delivery location:", pickedLocation);
+    // console.log("✅ Confirmed delivery location:", pickedLocation);
   };
 
   return (
@@ -473,13 +473,13 @@ export default function CustomDesignRequest() {
       address: loc.address || prev.address,
       location: { type: "Point", coordinates: [loc.lng, loc.lat] }, // GeoJSON: [lng, lat]
     }));
-    console.log("📦 Delivery location confirmed:", {
-      address: loc.address,
-      displayName: loc.displayName,
-      lat: loc.lat,
-      lng: loc.lng,
-      coordinates: [loc.lng, loc.lat],
-    });
+    // console.log("📦 Delivery location confirmed:", {
+      // address: loc.address,
+      // displayName: loc.displayName,
+      // lat: loc.lat,
+      // lng: loc.lng,
+      // coordinates: [loc.lng, loc.lat],
+    // });
   };
 
   const buildMeasurementsPayload = () => {
@@ -560,7 +560,7 @@ export default function CustomDesignRequest() {
   };
 
   const [location, setLocation] = useState<MapSelectedLocation | null>(null);
-  console.log(location);
+  // console.log(location);
 
   const handleSubmit = async () => {
     if (!selectedMeasurementType) {
@@ -590,7 +590,7 @@ export default function CustomDesignRequest() {
         },
         ...(notes && { notes }),
       };
-      console.log("Submitting custom order with data:", data);
+      // console.log("Submitting custom order with data:", data);
 
       const formData = new FormData();
       formData.append("data", JSON.stringify(data));
@@ -609,7 +609,7 @@ export default function CustomDesignRequest() {
   };
 
   const handleLocationSave = (selectedLocation: MapSelectedLocation) => {
-    console.log("Saved location:", selectedLocation);
+    // console.log("Saved location:", selectedLocation);
     setLocation(selectedLocation);
 
     // Extract coordinates from the nested structure

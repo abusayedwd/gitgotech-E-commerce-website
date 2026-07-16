@@ -44,12 +44,12 @@ export default function ViewShowroomPage() {
       skip: !vendorId,
     });
 
-  console.log(vendorShowroomData);
+  // console.log(vendorShowroomData);
   const showrooms = vendorShowroomData?.data?.showrooms || [];
   const vendorProfile = vendorShowroomData?.data?.vendorProfile;
 
-  console.log(showrooms);
-  console.log(showrooms);
+  // console.log(showrooms);
+  // console.log(showrooms);
 
   // Get showroom details for the selected showroom
   const { data: showroomDetails } = useGetShowroomDetailsQuery(id, {
@@ -82,7 +82,7 @@ export default function ViewShowroomPage() {
   const handleDelete = async () => {
     try {
       const res = await deleteShowroom(id).unwrap();
-      console.log(res);
+      // console.log(res);
       if (res?.status === 200) {
         toast.success(res?.message || "Showroom deleted");
         router.push("/v-profile");

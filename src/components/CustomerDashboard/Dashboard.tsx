@@ -155,17 +155,17 @@ export default function MyDashboard() {
   };
 
   const handleSubmitReward = () => {
-    console.log({
-      type: "Reward",
-      orderId: selectedOrder?.id,
-      productName: selectedOrder?.productName,
-      amount: rewardAmount,
-    });
+    // console.log({
+      // type: "Reward",
+      // orderId: selectedOrder?.id,
+      // productName: selectedOrder?.productName,
+      // amount: rewardAmount,
+    // });
     setShowRewardModal(false);
   };
 
   const handleSubmitReviews = async (orderId: string | number) => {
-    console.log(orderId);
+    // console.log(orderId);
     const data = {
       driver: {
         rating: driverRating,
@@ -176,11 +176,11 @@ export default function MyDashboard() {
         comment: productReview,
       },
     };
-    console.log(data);
+    // console.log(data);
 
     try {
       const res = await reviewProduct({ body: data, id: orderId }).unwrap();
-      console.log(res);
+      // console.log(res);
       if (res.success) {
         toast.success("Review submitted successfully!");
       } 

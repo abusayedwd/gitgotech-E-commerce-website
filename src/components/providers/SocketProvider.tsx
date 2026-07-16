@@ -28,7 +28,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const token = localStorage.getItem('token');
-      console.log('📍 SocketProvider - Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'No token');
+      // console.log('📍 SocketProvider - Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'No token');
 
       if (token) {
         const socket = initializeSocket(token);
@@ -36,12 +36,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
 
         socket.on('connect', () => {
           setIsConnected(true);
-          console.log('✅ Socket connected globally, ID:', socket.id);
+          // console.log('✅ Socket connected globally, ID:', socket.id);
         });
 
         socket.on('disconnect', () => {
           setIsConnected(false);
-          console.log('❌ Socket disconnected');
+          // console.log('❌ Socket disconnected');
         });
 
         socket.on('connect_error', (error: any) => {

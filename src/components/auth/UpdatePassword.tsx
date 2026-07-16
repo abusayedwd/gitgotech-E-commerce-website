@@ -57,7 +57,7 @@ export default function CreatePasswordPage() {
         token 
       }).unwrap();
 
-      console.log(res);
+      // console.log(res);
 
       if (res?.success || res?.status === 200) {
         toast.success(res?.message || 'Password reset successfully!');

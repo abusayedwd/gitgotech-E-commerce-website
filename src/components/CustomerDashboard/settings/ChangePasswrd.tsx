@@ -29,9 +29,9 @@ export default function ChangePasswordPage() {
       return;
     }
 
-    console.log("Current Password:", currentPassword);
-    console.log("New Password:", newPassword);
-    console.log("Confirm Password:", confirmPassword);
+    // console.log("Current Password:", currentPassword);
+    // console.log("New Password:", newPassword);
+    // console.log("Confirm Password:", confirmPassword);
     const data = {
       oldPassword: currentPassword,
       newPassword: newPassword,
@@ -39,13 +39,13 @@ export default function ChangePasswordPage() {
     };
     try {
       const res = await changePassword(data).unwrap();
-      console.log(res);
+      // console.log(res);
       if (res?.status === 200) {
         toast.success(res?.message);
       }
       router.push("/settings");
     } catch (error: any) {
-      console.log(error?.data?.message);
+      // console.log(error?.data?.message);
       setError(error.data.message);
     }
   };

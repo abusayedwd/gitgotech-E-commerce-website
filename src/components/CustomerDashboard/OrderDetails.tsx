@@ -16,7 +16,7 @@ const OrderDetails = () => {
 
   const params = useParams();
   const id = params.id;
-  console.log(id);
+  // console.log(id);
 
   const [showModal, setShowModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
@@ -28,13 +28,13 @@ const OrderDetails = () => {
     useGetMainOrderDetailsQuery(id, {
       skip: !id || id === "undefined",
     });
-    console.log(mainOrderDetails)
+    // console.log(mainOrderDetails)
   const { data: returnOrderDetails, isLoading: isReturnOrderDetailsLoading } =
     useGetReturnOrderDetailsQuery(id, {
       skip: !id || id === "undefined",
     });
-  console.log(mainOrderDetails);
-  console.log(returnOrderDetails);
+  // console.log(mainOrderDetails);
+  // console.log(returnOrderDetails);
 
   // Get status from mainOrderDetails if available, otherwise fallback to returnOrderDetails status
   const mainOrderStatus = mainOrderDetails?.data?.orderStatus || "Processing";
@@ -99,20 +99,20 @@ const OrderDetails = () => {
   };
 
   const handleSubmit = () => {
-    console.log("===== REPORT SUBMISSION =====");
-    console.log("Image Files:", imageFiles);
-    console.log("Reason:", reason);
-    console.log("Total Images:", imageFiles.length);
+    // console.log("===== REPORT SUBMISSION =====");
+    // console.log("Image Files:", imageFiles);
+    // console.log("Reason:", reason);
+    // console.log("Total Images:", imageFiles.length);
 
     imageFiles.forEach((file, index) => {
-      console.log(`Image ${index + 1}:`, {
-        name: file.name,
-        size: file.size,
-        type: file.type,
-        lastModified: new Date(file.lastModified),
-      });
+      // console.log(`Image ${index + 1}:`, {
+        // name: file.name,
+        // size: file.size,
+        // type: file.type,
+        // lastModified: new Date(file.lastModified),
+      // });
     });
-    console.log("============================");
+    // console.log("============================");
 
     alert("Report submitted! Check console for details.");
     setShowReportModal(false);

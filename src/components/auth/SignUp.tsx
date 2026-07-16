@@ -358,13 +358,13 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log('Sign Up:', { ...formData, userType });
-      console.log(pathName)
+      // console.log('Sign Up:', { ...formData, userType });
+      // console.log(pathName)
     }
 
     try {
       const res = await signUpUser({ ...formData, role: userType }).unwrap();
-      console.log(res)
+      // console.log(res)
       if (res?.status === 200 || res?.success) {
         const token = res?.token || res?.data?.token || '';
         toast.success(typeof res?.message === 'string' ? res?.message : 'Sign up successful! Please verify your email')
@@ -372,7 +372,7 @@ export default function SignUpPage() {
         router.push(`/auth/verify-email?path=${pathName}&email=${formData.email}&token=${token}`)
       }
     } catch (error: any) {
-      console.log(error);
+      // console.log(error);
       const errorMessage = typeof error?.data?.message === 'string'
         ? error?.data?.message
         : 'An error occurreddddd';

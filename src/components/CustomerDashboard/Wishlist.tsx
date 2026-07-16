@@ -207,7 +207,7 @@ export default function WishlistPage() {
             }
         } catch (error: any) {
             toast.error(error?.data?.message || 'Failed to remove item');
-            console.log(error.data)
+            // console.log(error.data)
         }
     };
 

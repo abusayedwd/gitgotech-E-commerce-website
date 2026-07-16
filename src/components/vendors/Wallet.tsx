@@ -81,7 +81,7 @@ export default function Wallett() {
         phone: paymentPhone,
       }).unwrap();
 
-      console.log("Add Money Response:", res);
+      // console.log("Add Money Response:", res);
 
       if (res?.success) {
         toast.success("Payment added successfully!");

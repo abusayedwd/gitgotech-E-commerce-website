@@ -20,9 +20,9 @@ const page = () => {
   });
 
   useEffect(() => {
-    console.log("Top Products Page - Category:", selectedCategory);
-    console.log("Top Products Page - Search:", searchQuery);
-    console.log("Top Products API Response:", topProductsData);
+    // console.log("Top Products Page - Category:", selectedCategory);
+    // console.log("Top Products Page - Search:", searchQuery);
+    // console.log("Top Products API Response:", topProductsData);
   }, [selectedCategory, searchQuery, topProductsData]);
 
   return (

@@ -6,7 +6,7 @@ import FooterPageBack from '@/components/landingPage/FooterPageBack';
 export default function AboutPage() {
   const { data: aboutData, isLoading } = useGetAboutUsQuery({});
   const aboutInfo = aboutData?.data;
-  console.log(aboutInfo);
+  // console.log(aboutInfo);
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">

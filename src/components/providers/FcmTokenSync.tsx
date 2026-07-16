@@ -30,21 +30,21 @@ export default function FcmTokenSync() {
 
   useEffect(() => {
     if (!isHydrated) {
-      console.log("[FcmTokenSync] waiting for hydration");
+      // console.log("[FcmTokenSync] waiting for hydration");
       return;
     }
     if (!isLoggedIn) {
-      console.log("[FcmTokenSync] user is not logged in — nothing to do");
+      // console.log("[FcmTokenSync] user is not logged in — nothing to do");
       return;
     }
     if (syncingRef.current) {
-      console.log("[FcmTokenSync] sync already in progress");
+      // console.log("[FcmTokenSync] sync already in progress");
       return;
     }
 
     let cancelled = false;
     syncingRef.current = true;
-    console.log("[FcmTokenSync] starting sync flow");
+    // console.log("[FcmTokenSync] starting sync flow");
 
     (async () => {
       try {
@@ -52,7 +52,7 @@ export default function FcmTokenSync() {
         // (possibly refreshed) token, or null if unsupported/denied.
         const fcmToken = await requestFcmToken();
         if (cancelled) {
-          console.log("[FcmTokenSync] cancelled before token usage");
+          // console.log("[FcmTokenSync] cancelled before token usage");
           return;
         }
         if (!fcmToken) {
@@ -62,14 +62,14 @@ export default function FcmTokenSync() {
           return;
         }
 
-        console.log("[FcmTokenSync] got FCM token:", fcmToken);
+        // console.log("[FcmTokenSync] got FCM token:", fcmToken);
 
         const cachedSynced = localStorage.getItem(SYNCED_KEY);
         if (cachedSynced === fcmToken) {
-          console.log(
-            "[FcmTokenSync] dedup hit — token unchanged since last register. Skip POST. " +
-              "To force re-register, run: localStorage.removeItem('fcmTokenSynced')",
-          );
+          // console.log(
+            // "[FcmTokenSync] dedup hit — token unchanged since last register. Skip POST. " +
+              // "To force re-register, run: localStorage.removeItem('fcmTokenSynced')",
+          // );
           // Ensure fcmToken is still mirrored even if we skip the POST.
           if (localStorage.getItem("fcmToken") !== fcmToken) {
             localStorage.setItem("fcmToken", fcmToken);
@@ -78,19 +78,19 @@ export default function FcmTokenSync() {
         }
 
         const deviceId = getOrCreateDeviceId();
-        console.log("[FcmTokenSync] registering with backend", {
-          fcmToken,
-          deviceId,
-        });
+        // console.log("[FcmTokenSync] registering with backend", {
+          // fcmToken,
+          // deviceId,
+        // });
 
         const res = await registerFcmToken({ fcmToken, deviceId }).unwrap();
-        console.log("[FcmTokenSync] backend register success:", res);
+        // console.log("[FcmTokenSync] backend register success:", res);
 
         localStorage.setItem("fcmToken", fcmToken);
         localStorage.setItem(SYNCED_KEY, fcmToken);
-        console.log(
-          "[FcmTokenSync] saved fcmToken + fcmTokenSynced to localStorage",
-        );
+        // console.log(
+          // "[FcmTokenSync] saved fcmToken + fcmTokenSynced to localStorage",
+        // );
       } catch (err) {
         // Non-fatal: push notifications just won't reach this device.
         console.error("[FcmTokenSync] registration failed:", err);

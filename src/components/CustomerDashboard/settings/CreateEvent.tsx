@@ -33,13 +33,13 @@ export default function CreateEvent() {
         description: formData.description,
         customer: localStorage.getItem('userId') || '' // Get from auth context
       };
-      console.log(eventData)
+      // console.log(eventData)
       await createEvent(eventData).unwrap();
       toast.success('Event created successfully!');
       router.push('/profile/event'); // Redirect to events list
     } catch (err: any) {
       toast.error(err?.data?.message || 'Failed to create event');
-      console.log(err.data)
+      // console.log(err.data)
     }
   };
 

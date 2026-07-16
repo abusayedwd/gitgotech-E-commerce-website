@@ -107,7 +107,7 @@ export default function ReturnDetails() {
   };
 
   const submitReport = () => {
-    console.log('Report submitted with reason:', reportReason, 'and images:', uploadedImages);
+    // console.log('Report submitted with reason:', reportReason, 'and images:', uploadedImages);
     setShowReportModal(false);
     // Add your report submission logic here
   };

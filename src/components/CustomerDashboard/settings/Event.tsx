@@ -52,10 +52,10 @@ export default function Event() {
   });
 
   const events: EventType[] = eventsData?.data?.data || [];
-  console.log(events);
+  // console.log(events);
 
   const eventStatus = eventsData?.data.eventType;
-  console.log(eventStatus);
+  // console.log(eventStatus);
 
   const handleAddEmailField = () => {
     setEmailFields([...emailFields, ""]);
@@ -75,10 +75,10 @@ export default function Event() {
   };
 
   const handleSendInvitations = () => {
-    console.log(
-      "Sending invitations to:",
-      emailFields.filter((email) => email),
-    );
+    // console.log(
+      // "Sending invitations to:",
+      // emailFields.filter((email) => email),
+    // );
     setIsInviteModalOpen(false);
     setEmailFields([""]);
   };
@@ -105,12 +105,12 @@ export default function Event() {
 
   const handleDeleteEvent = () => {
     // TODO: Implement delete functionality
-    console.log("Delete event functionality not yet implemented");
+    // console.log("Delete event functionality not yet implemented");
   };
 
   const handleUpdateEvent = () => {
     // TODO: Implement update functionality
-    console.log("Update event functionality not yet implemented");
+    // console.log("Update event functionality not yet implemented");
   };
 
   // Filter events based on active tab

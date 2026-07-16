@@ -37,7 +37,7 @@ export default function VendorShowroomsClient() {
 
   const showrooms = vendorShowroomData?.data?.showrooms || [];
   const vendorProfile = vendorShowroomData?.data?.vendorProfile;
-  console.log(vendorProfile)
+  // console.log(vendorProfile)
 
   const getImageUrl = (image: string) => {
     if (!image) return undefined;

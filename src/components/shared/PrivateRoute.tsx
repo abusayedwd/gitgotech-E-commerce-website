@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
+import { consumeIntentionalLogoutFlag, useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
@@ -31,6 +31,11 @@ export default function PrivateRoute({
 
   useEffect(() => {
     if (!isHydrated || isLoggedIn) return;
+    if (consumeIntentionalLogoutFlag()) {
+      // A deliberate logout already shows its own toast and navigates —
+      // don't also fire the "please sign in" toast/redirect on top of it.
+      return;
+    }
     if (!toastedRef.current) {
       toast.error(message);
       toastedRef.current = true;

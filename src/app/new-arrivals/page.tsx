@@ -14,9 +14,9 @@ const page = () => {
   });
 
   useEffect(() => {
-    console.log("New Arrivals Page - Category:", selectedCategory);
-    console.log("New Arrivals Page - Search:", searchQuery);
-    console.log("New Arrivals API Response:", newArrivalsData);
+    // console.log("New Arrivals Page - Category:", selectedCategory);
+    // console.log("New Arrivals Page - Search:", searchQuery);
+    // console.log("New Arrivals API Response:", newArrivalsData);
   }, [selectedCategory, searchQuery, newArrivalsData]);
 
   return (

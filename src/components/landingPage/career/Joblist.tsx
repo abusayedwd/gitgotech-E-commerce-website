@@ -282,7 +282,7 @@ const Joblist = () => {
   const jobs = joblistData?.data || [];
   const totalPages = joblistData?.totalPages || 1;
 
-  console.log(jobs);
+  // console.log(jobs);
 
   // Extract unique countries from job list
   const countries = useMemo(() => {

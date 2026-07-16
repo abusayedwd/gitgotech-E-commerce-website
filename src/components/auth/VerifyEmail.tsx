@@ -70,7 +70,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     };
 
     const res = await verifyEmail({ data, token }).unwrap();
-    console.log(res);
+    // console.log(res);
 
     if (res?.success || res?.status === 200) {
       toast.success(res?.message || 'Email verified successfully!');
@@ -98,7 +98,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
     setError(message);
     toast.error(message);
-    console.log(err);
+    // console.log(err);
   } finally {
     setIsLoading(false);
   }

@@ -358,12 +358,12 @@ export default function JobApplicationForm() {
 
     try {
       const res = await applyCareer({ id: jobId, formData }).unwrap();
-      console.log(res);
+      // console.log(res);
       toast.success("Application submitted successfully!");
       router.push("/careers");
     } catch (err: any) {
       toast.error(err?.data?.message || "Failed to submit application");
-      console.log(err.data);
+      // console.log(err.data);
     }
   };
 

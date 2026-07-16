@@ -206,7 +206,7 @@ export default function SelectSize() {
 
   const { data: sizesData, isLoading } =
     useGetProductEventWishesSizeQuery(data);
-    console.log(sizesData)
+    // console.log(sizesData)
 
   const [eventProductSizeAddEdit] = useEventProductSizeAddEditMutation();
 
@@ -255,7 +255,7 @@ export default function SelectSize() {
       );
 
       await Promise.all(updatePromises);
-      console.log("All sizes updated successfully!");
+      // console.log("All sizes updated successfully!");
     } catch (error) {
       console.error("Error updating sizes:", error);
     }

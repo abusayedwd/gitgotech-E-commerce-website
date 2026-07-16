@@ -149,7 +149,7 @@ export default function WithdrawRequest() {
         moreInfo: selectedCard.moreInfo || "Nothing to say",
       };
 
-      console.log("Withdraw Request Body:", withdrawBody);
+      // console.log("Withdraw Request Body:", withdrawBody);
 
       await withdrawRequest(withdrawBody).unwrap();
 

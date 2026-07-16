@@ -18,7 +18,7 @@ export default function MyProducts() {
 
   const { data: productData, isLoading } = useGetProductsQuery({ showroomId }, { skip: !showroomId });
  
-  console.log(productData)
+  // console.log(productData)
 
   const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);

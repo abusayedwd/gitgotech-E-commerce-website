@@ -70,16 +70,21 @@ interface BlockedUserEntry {
   };
 }
 
+
+
 const getUserImage = (image?: string) => {
   if (!image) return 'https://i.pravatar.cc/150?img=2';
   if (image.startsWith('http')) return image;
   return `${url}/${image}`;
 };
+ 
 
 const MessagesPage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const vendorId = searchParams.get('vendorId');
+
+  // console.log(url);
 
   // ✅ FIX: isMounted prevents SSR/client HTML mismatch
   // All conditional UI that depends on client-only state (loading, localStorage, window)
@@ -116,6 +121,8 @@ const MessagesPage = () => {
     // ✅ FIX: skip on server — only fetch after mount to avoid SSR mismatch
     skip: !isMounted,
   });
+
+  // console.log('Chat List Data:', chatListData);
 
   const {
     data: messagesData,
@@ -168,6 +175,8 @@ const MessagesPage = () => {
     },
     [MY_USER_ID]
   );
+
+  // console.log('Blocked User IDs:', getOtherParticipant);
 
   const currentChat = chatUsers.find((c) => c._id === selectedChatId);
   const currentOtherUser = currentChat ? getOtherParticipant(currentChat) : null;
@@ -373,8 +382,8 @@ const MessagesPage = () => {
   // ─── Render message bubble ────────────────────────────────────
   const renderMessageBubble = (msg: Message, index: number) => {
     const isMe = msg.senderId?._id === MY_USER_ID;
-    const myAvatar = msg.senderId?.image || 'https://i.pravatar.cc/150?img=1';
-    const otherAvatar = currentOtherUser?.image || 'https://i.pravatar.cc/150?img=2';
+    const myAvatar = getUserImage(msg.senderId?.image);
+    const otherAvatar = getUserImage(currentOtherUser?.image);
 
     return (
       <div
@@ -383,7 +392,7 @@ const MessagesPage = () => {
       >
         {!isMe && (
           <img
-            src={url + otherAvatar}
+            src={otherAvatar}
             alt={currentOtherUser?.name}
             className="w-8 h-8 rounded-full flex-shrink-0 border-2 border-gray-700"
           />
@@ -511,7 +520,7 @@ const MessagesPage = () => {
                 >
                   <div className="relative mr-3">
                     <img
-                      src={otherUser.image || 'https://i.pravatar.cc/150?img=2'}
+                      src={getUserImage(otherUser.image)}
                       alt={otherUser.name}
                       className="w-12 h-12 rounded-full border-2 border-gray-700"
                     />

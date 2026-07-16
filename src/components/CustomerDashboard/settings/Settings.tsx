@@ -5,6 +5,7 @@ import { useState, ReactNode } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import { useDeleteAccountMutation } from "@/redux/features/auth/authSlice";
+import { markIntentionalLogout } from "@/hooks/useAuth";
 
 export default function SettingsPage() {
     const router = useRouter();
@@ -31,6 +32,7 @@ export default function SettingsPage() {
         toast.success("Account deleted");
 
         // Clean up the session exactly like a logout would.
+        markIntentionalLogout();
         localStorage.removeItem("user");
         localStorage.removeItem("token");
         localStorage.removeItem("deviceId");

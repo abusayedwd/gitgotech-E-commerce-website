@@ -54,7 +54,7 @@ export default function ReturnRequestForm() {
   // Extract order data — a main order can bundle multiple products (same
   // showroom, one order), so keep the raw products array.
   const orderData = mainOrderDetails?.data;
-  console.log(orderData);
+  // console.log(orderData);
   const products = orderData?.products || [];
   const price = orderData?.price;
 
@@ -67,7 +67,7 @@ export default function ReturnRequestForm() {
 
   // Handle location save from MapComponent
   const handleLocationSave = (selectedLocation: SelectedLocation) => {
-    console.log("Saved location:", selectedLocation);
+    // console.log("Saved location:", selectedLocation);
     setSelectedLocation(selectedLocation);
 
     // Extract coordinates from the nested structure
@@ -153,9 +153,9 @@ export default function ReturnRequestForm() {
     };
 
     // Console log the form data
-    console.log("===== RETURN REQUEST FORM DATA ===== orderId:", orderId);
-    console.log("return request data:", JSON.stringify(formData, null, 2));
-    console.log("====================================");
+    // console.log("===== RETURN REQUEST FORM DATA ===== orderId:", orderId);
+    // console.log("return request data:", JSON.stringify(formData, null, 2));
+    // console.log("====================================");
 
     try {
       // Send return request
@@ -163,7 +163,7 @@ export default function ReturnRequestForm() {
         orderId: orderId,
         data: formData,
       }).unwrap();
-      console.log("Return request submitted successfully:", result);
+      // console.log("Return request submitted successfully:", result);
       if (result?.success) {  
         toast.success("Return request submitted successfully!");
         router.push("/customer-dashboard"); // Redirect to returns page after successful submission

@@ -10,6 +10,7 @@ import {
 } from "@/redux/features/vendor/showroomSlice/showroomSlice";
 import { useLogoutUserMutation } from "@/redux/features/auth/authSlice";
 import { getOrCreateDeviceId } from "@/lib/firebase";
+import { markIntentionalLogout } from "@/hooks/useAuth";
 import {
   BadgeCheck,
   Camera,
@@ -40,11 +41,11 @@ export default function VendorProfilePage() {
     useGetMyProfileQuery(undefined);
   const [updateProfile] = useUpdateProfileMutation();
 
-   console.log(profileData);
+   // console.log(profileData);
 
   const { data: showroomData, refetch: refetchShowrooms } =
     useGetShowroomQuery({});
-  console.log(showroomData);
+  // console.log(showroomData);
 
   const [logoutUser] = useLogoutUserMutation();
   const [deleteShowroom, { isLoading: isDeletingShowroom }] =
@@ -192,6 +193,8 @@ export default function VendorProfilePage() {
       console.error("Logout request failed:", err);
     }
 
+    markIntentionalLogout();
+
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("deviceId");
@@ -200,6 +203,8 @@ export default function VendorProfilePage() {
 
     // Notify Navbar to update
     window.dispatchEvent(new Event("authChanged"));
+
+    toast.success("Logged out successfully");
 
     // Navigate to home page without reload
     router.push("/");

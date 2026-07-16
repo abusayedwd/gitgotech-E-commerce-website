@@ -18,11 +18,11 @@ export default function ViewShowroomClient() {
   const vendorId = searchParams.get("vendorId");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [showReportModal, setShowReportModal] = useState(false);
-  console.log(selectedCategory);
+  // console.log(selectedCategory);
 
   const { data: categoriesRes } = useGetHomeCategoriesQuery({});
   const categories = categoriesRes?.data ?? [];
-  console.log(categories);
+  // console.log(categories);
 
   const { data: showroomData } = useGetAllShowroomQuery({});
   const { data: showroomProductData } = useGetShowroomProductQuery(

@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
 
     try {
       const res = await forgotPassword({ email }).unwrap();
-      console.log(res);
+      // console.log(res);
 
       if (res?.success || res?.status === 200) {
         toast.success(res?.message || 'Reset link sent to your email!');

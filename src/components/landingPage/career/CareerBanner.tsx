@@ -22,7 +22,7 @@ const CareerBanner = () => {
     }
   };
 
-  console.log(searchQuery);
+  // console.log(searchQuery);
 
   return (
     <div className="relative mt-24 w-full h-[550px] overflow-hidden rounded-xl">

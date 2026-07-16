@@ -77,7 +77,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
   const product = productData?.data || null;
 
-  console.log("Product Details:", product);
+  // console.log("Product Details:", product);
 
   useEffect(() => {
     setSelectedImageIndex(0);

@@ -10,6 +10,27 @@ interface AuthState {
   isHydrated: boolean;
 }
 
+const LOGOUT_FLAG_KEY = "__intentional_logout__";
+
+/**
+ * Call right before clearing the session on a deliberate logout. Suppresses
+ * the "Please sign in to continue" toast + redirect that PrivateRoute would
+ * otherwise fire when it notices `isLoggedIn` flip to false out from under it
+ * (the logout flow already shows its own toast and navigates).
+ */
+export function markIntentionalLogout() {
+  if (typeof window === "undefined") return;
+  sessionStorage.setItem(LOGOUT_FLAG_KEY, "1");
+}
+
+/** Reads and clears the intentional-logout flag. Consume once per check. */
+export function consumeIntentionalLogoutFlag(): boolean {
+  if (typeof window === "undefined") return false;
+  const flagged = sessionStorage.getItem(LOGOUT_FLAG_KEY) === "1";
+  if (flagged) sessionStorage.removeItem(LOGOUT_FLAG_KEY);
+  return flagged;
+}
+
 function readAuth(): AuthState {
   if (typeof window === "undefined") {
     return { isLoggedIn: false, role: null, isHydrated: false };

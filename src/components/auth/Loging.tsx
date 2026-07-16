@@ -59,7 +59,7 @@ export default function LoginPage() {
 
         // Tell <FcmTokenSync /> + useAuth listeners that auth state changed.
         window.dispatchEvent(new Event("authChanged"));
-        console.log("[Login] dispatched authChanged. user:", userToStore);
+        // console.log("[Login] dispatched authChanged. user:", userToStore);
 
         if (role === "vendor") {
           router.push("/vendor-dashboard");

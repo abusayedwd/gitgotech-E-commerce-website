@@ -167,10 +167,12 @@ import url from "@/redux/api/baseUrl";
 import { useGetMyProfileQuery } from "@/redux/features/settings/settingsSlice";
 import { useLogoutUserMutation } from "@/redux/features/auth/authSlice";
 import { getOrCreateDeviceId } from "@/lib/firebase";
+import { markIntentionalLogout } from "@/hooks/useAuth";
 import { Calendar, Edit2, Flag, LogOut, Settings, Wallet } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 
 export default function ProfilePage() {
@@ -202,6 +204,8 @@ export default function ProfilePage() {
       console.error("Logout request failed:", err);
     }
 
+    markIntentionalLogout();
+
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     localStorage.removeItem("deviceId");
@@ -210,6 +214,8 @@ export default function ProfilePage() {
 
     // Notify Navbar to update
     window.dispatchEvent(new Event("authChanged"));
+
+    toast.success("Logged out successfully");
 
     // Navigate to home page without reload
     router.push("/");

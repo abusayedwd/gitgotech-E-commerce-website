@@ -20,7 +20,7 @@ export default function VendorShowroomsPage() {
     {},
   );
 
-  console.log(vendorShowroomData);
+  // console.log(vendorShowroomData);
 
   const showrooms = vendorShowroomData?.data || [];
   const vendorProfile = vendorShowroomData?.data?.vendorProfile;

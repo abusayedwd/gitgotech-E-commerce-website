@@ -98,7 +98,7 @@ const DeliveryRequestFrom = () => {
     selectedLocation: MapSelectedLocation,
     section: "pickup" | "delivery",
   ): void => {
-    console.log(`📍 ${section} location saved:`, selectedLocation);
+    // console.log(`📍 ${section} location saved:`, selectedLocation);
 
     const lat = selectedLocation.coordinates?.latitude || 0;
     const lng = selectedLocation.coordinates?.longitude || 0;
@@ -205,10 +205,10 @@ const DeliveryRequestFrom = () => {
       },
     };
 
-    console.log(
-      "📦 Delivery Request Payload:",
-      JSON.stringify(requestBody, null, 2),
-    );
+    // console.log(
+      // "📦 Delivery Request Payload:",
+      // JSON.stringify(requestBody, null, 2),
+    // );
 
     // ── Submit ──
     try {
@@ -219,7 +219,7 @@ const DeliveryRequestFrom = () => {
       }
 
       const response = await deliveryRequest(formDataToSend).unwrap();
-      console.log("✅ Success Response:", response);
+      // console.log("✅ Success Response:", response);
 
       alert("Delivery request submitted successfully!");
 

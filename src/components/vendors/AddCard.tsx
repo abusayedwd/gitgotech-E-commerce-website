@@ -37,7 +37,7 @@ export default function AddCardPage() {
         moreInfo: moreInfo || "Nothing to say",
       }).unwrap();
 
-      console.log("Add Card Response:", res);
+      // console.log("Add Card Response:", res);
 
       if (res?.success) {
         toast.success("Card added successfully!");
