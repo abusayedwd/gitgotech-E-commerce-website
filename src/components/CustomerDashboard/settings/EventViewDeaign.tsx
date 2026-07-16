@@ -173,43 +173,42 @@ const ProductCard = ({
                 ? "Deselect designs from the other showroom first — an order can only contain products from one showroom"
                 : undefined
             }
-            className="absolute top-3 left-3 w-5 h-5 rounded cursor-pointer disabled:cursor-not-allowed z-10"
+            className="absolute top-2 left-2 w-4 h-4 rounded cursor-pointer disabled:cursor-not-allowed z-10"
           />
         )}
-        <span className="absolute top-3 right-3 bg-blue-500 text-white text-xs px-3 py-1 rounded-full">
+        <span className="absolute top-2 right-2 bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full">
           {product.isOrderd ? 'Ordered' : 'No Design'}
         </span>
       </div>
 
       {/* Product Info */}
-      <div className="p-5 text-white">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-2xl font-bold">₵{productData.product_price.toFixed(2)}</span>
-          <div className="flex items-center gap-1">
+      <div className="p-3 text-white">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-base font-bold">₵{productData.product_price.toFixed(2)}</span>
+          <div className="flex items-center gap-0.5">
             {[...Array(5)].map((_, i) => (
-              <svg key={i} className={`w-4 h-4 ${i < (productData.review_rating || 0) ? 'fill-yellow-400' : 'fill-gray-600'}`} viewBox="0 0 20 20">
+              <svg key={i} className={`w-2.5 h-2.5 ${i < (productData.review_rating || 0) ? 'fill-yellow-400' : 'fill-gray-600'}`} viewBox="0 0 20 20">
                 <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
               </svg>
             ))}
-            <span className="text-sm   ml-1">{productData.review_count || 0} Reviews</span>
           </div>
         </div>
 
-        <h3 className="text-xl font-semibold   mb-2">{productData.product_name}</h3>
+        <h3 className="text-sm font-semibold truncate mb-1">{productData.product_name}</h3>
 
-        <div className="flex items-center gap-2 mb-4">
-          <ShoppingCart className="w-4 h-4 text-red-500" />
-          <span className="text-[16px] text-[#B8B8B8]">{vendorName}</span>
+        <div className="flex items-center gap-1.5 mb-2">
+          <ShoppingCart className="w-3 h-3 text-red-500" />
+          <span className="text-xs text-[#B8B8B8] truncate">{vendorName}</span>
         </div>
 
         {/* Size Selection for Invited Participator Events */}
         {isInvited && isParticipator && (
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">Select Size</label>
+          <div className="mb-2">
+            <label className="block text-xs font-medium text-gray-300 mb-1">Select Size</label>
             <div className="relative">
               <button
                 onClick={toggleDropdown}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-lg transition-all duration-200 ${
+                className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-lg text-sm transition-all duration-200 ${
                   selectedSize
                     ? 'bg-[#242428] text-purple-400 border border-purple-500'
                     : 'bg-[#242428] text-gray-400 border border-gray-600'
@@ -217,19 +216,19 @@ const ProductCard = ({
               >
                 <span className="font-medium">{selectedSize || 'Select Size'}</span>
                 <ChevronDown
-                  size={18}
+                  size={14}
                   className={`transition-transform ${openDropdown === productData._id ? 'rotate-180' : ''}`}
                 />
               </button>
 
               {/* Dropdown Menu */}
               {openDropdown === productData._id && (
-                <div className="absolute top-full mt-2 left-0 right-0 bg-[#2a2438] border border-purple-500 rounded-lg shadow-xl z-10 max-h-60 overflow-y-auto">
+                <div className="absolute top-full mt-1 left-0 right-0 bg-[#2a2438] border border-purple-500 rounded-lg shadow-xl z-10 max-h-48 overflow-y-auto">
                   {sizes.map((size) => (
                     <button
                       key={size}
                       onClick={() => handleSizeSelect(size)}
-                      className={`w-full px-4 py-2.5 text-left hover:bg-purple-600/30 transition-colors ${
+                      className={`w-full px-3 py-2 text-left text-sm hover:bg-purple-600/30 transition-colors ${
                         selectedSize === size ? 'bg-purple-600/20 text-purple-400' : 'text-gray-300'
                       }`}
                     >
@@ -242,9 +241,9 @@ const ProductCard = ({
 
             {/* Selected Size Display */}
             {selectedSize && (
-              <div className="mt-3 flex items-center justify-between px-4 py-3 bg-[#242428] border border-purple-500 rounded-lg">
-                <span className="text-gray-300 text-sm">Selected Size:</span>
-                <span className="text-purple-400 font-semibold text-lg">{selectedSize}</span>
+              <div className="mt-2 flex items-center justify-between px-2.5 py-1.5 bg-[#242428] border border-purple-500 rounded-lg">
+                <span className="text-gray-300 text-xs">Selected Size:</span>
+                <span className="text-purple-400 font-semibold text-sm">{selectedSize}</span>
               </div>
             )}
           </div>
@@ -252,18 +251,18 @@ const ProductCard = ({
 
         {/* Size + Quantity picker for the creator's own order — same as cart */}
         {!isInvited && stockItems.length > 0 && (
-          <div className="mb-4" onClick={(e) => e.stopPropagation()}>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Select Size & Quantity
+          <div className="mb-2" onClick={(e) => e.stopPropagation()}>
+            <label className="block text-xs font-medium text-gray-300 mb-1">
+              Size & Qty
             </label>
-            <div className="flex flex-wrap gap-2 mb-3">
+            <div className="flex flex-wrap gap-1.5 mb-2">
               {stockItems.map((stock) => (
                 <button
                   key={stock.size}
                   type="button"
                   disabled={stock.stock === 0 || product.isOrderd}
                   onClick={() => onOrderSizeChange(stock.size)}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium border transition-colors ${
+                  className={`px-2 py-1 rounded text-xs font-medium border transition-colors ${
                     orderSize === stock.size
                       ? 'bg-purple-600 border-purple-600 text-white'
                       : stock.stock === 0
@@ -276,21 +275,21 @@ const ProductCard = ({
               ))}
             </div>
             {orderSize && (
-              <div className="flex items-center gap-3 bg-[#2E2E34] rounded-full px-3 py-1.5 w-fit">
+              <div className="flex items-center gap-2 bg-[#2E2E34] rounded-full px-2 py-1 w-fit">
                 <button
                   type="button"
                   onClick={() => onOrderQtyChange(Math.max(1, orderQty - 1))}
                   disabled={orderQty <= 1}
-                  className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center"
+                  className="w-5 h-5 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center text-xs"
                 >
                   −
                 </button>
-                <span className="text-sm font-semibold w-5 text-center">{orderQty}</span>
+                <span className="text-xs font-semibold w-4 text-center">{orderQty}</span>
                 <button
                   type="button"
                   onClick={() => onOrderQtyChange(Math.min(orderSizeStock, orderQty + 1))}
                   disabled={orderQty >= orderSizeStock}
-                  className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center"
+                  className="w-5 h-5 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 flex items-center justify-center text-xs"
                 >
                   +
                 </button>
@@ -301,9 +300,9 @@ const ProductCard = ({
 
         {/* Action Buttons */}
         {!isInvited && (
-          <div className="flex gap-3">
+          <div className="flex gap-2">
             {!isParticipator && (
-              <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border-2 border-purple-600 text-purple-600 py-2.5 rounded-lg font-medium transition-colors">
+              <button onClick={() => router.push(`/profile/event/view-deaign/select-size?productId=${productData._id}&eventId=${product.event}`)} className="flex-1 border border-purple-600 text-purple-600 py-1.5 rounded-lg text-xs font-medium transition-colors">
                 View Size
               </button>
             )}
@@ -311,7 +310,7 @@ const ProductCard = ({
             <button
               onClick={handlePlaceSingleOrder}
               disabled={product.isOrderd || !orderSize}
-              className={`flex-1 w-full py-2.5 rounded-lg font-medium transition-colors ${
+              className={`flex-1 w-full py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 product.isOrderd || !orderSize
                   ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                   : "cursor-pointer bg-[#6100FF] text-white"
@@ -331,7 +330,7 @@ const ProductCard = ({
           <button
             onClick={handleCheckout}
             disabled={!selectedSize || product.isOrderd}
-            className={`flex-1 w-full py-2.5 rounded-lg font-medium transition-colors ${
+            className={`flex-1 w-full py-1.5 rounded-lg text-xs font-medium transition-colors ${
               product.isOrderd
                 ? "bg-gray-600 text-gray-400 cursor-not-allowed"
                 : selectedSize
@@ -544,7 +543,7 @@ export default function EventViewDeaign() {
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                       {group.products.map((product) => (
                         <ProductCard
                           key={product._id}

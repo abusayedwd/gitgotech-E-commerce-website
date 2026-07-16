@@ -16,12 +16,24 @@ interface Order {
     _id: string;
     name: string;
   };
-  product?: {
-    _id: string;
-    product_name: string;
-  };
+  // An order can bundle multiple products (same showroom, one order).
+  products?: {
+    product?: {
+      _id: string;
+      product_name: string;
+    };
+  }[];
   orderStatus: string;
   createdAt: string;
+}
+
+function orderProductLabel(item: Order): string {
+  const names = (item.products || [])
+    .map((p) => p.product?.product_name)
+    .filter(Boolean) as string[];
+  if (names.length === 0) return "";
+  if (names.length === 1) return names[0];
+  return `${names[0]} +${names.length - 1} more`;
 }
 
 interface Return {
@@ -330,9 +342,9 @@ export default function OrderHistory() {
                       ? item.showroom?.showroom_name
                       : "N/A"}
                 </div>
-                {"product" in item && item.product?.product_name && (
+                {"products" in item && orderProductLabel(item) && (
                   <div className="text-xs text-gray-400 truncate max-w-full">
-                    {item.product.product_name}
+                    {orderProductLabel(item)}
                   </div>
                 )}
               </div>
@@ -416,8 +428,8 @@ export default function OrderHistory() {
                         : "N/A"}
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-300 max-w-[10rem] truncate">
-                    {"product" in item && item.product?.product_name
-                      ? item.product.product_name
+                    {"products" in item && orderProductLabel(item)
+                      ? orderProductLabel(item)
                       : "—"}
                   </td>
                   <td className="py-3 px-4">

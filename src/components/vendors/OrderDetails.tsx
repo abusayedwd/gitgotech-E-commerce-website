@@ -24,18 +24,27 @@ interface SizeItem {
   quantity: number;
 }
 
-interface OrderDetails {
+interface OrderProduct {
   _id: string;
   product: {
     _id: string;
     product_name: string;
+    product_images?: string[];
   };
   size: SizeItem[];
+}
+
+interface OrderDetails {
+  _id: string;
+  // An order can bundle multiple products (same showroom, one order).
+  products: OrderProduct[];
   orderStatus: string;
   price: {
     unit: string;
     amount: number;
     tip: number;
+    tax?: number;
+    weightCharge?: number;
     coupon: string;
     deliveryCharge: number;
   };
@@ -141,7 +150,14 @@ export default function OrderDetailsPage() {
     );
   }
 
-  const totalAmount = orderDetails.price.amount + orderDetails.price.tip + orderDetails.price.deliveryCharge;
+  const products = orderDetails.products || [];
+
+  const totalAmount =
+    orderDetails.price.amount +
+    orderDetails.price.tip +
+    (orderDetails.price.tax || 0) +
+    (orderDetails.price.weightCharge || 0) +
+    orderDetails.price.deliveryCharge;
   const discountAmount = orderDetails.price.coupon ? totalAmount * 0.1 : 0; // Assuming 10% coupon discount
   const finalTotal = totalAmount - discountAmount;
 
@@ -160,15 +176,38 @@ export default function OrderDetailsPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Product Image */}
-          <div className="bg-white rounded-2xl p-6">
-            <div className="bg-white rounded-xl overflow-hidden aspect-square flex items-center justify-center">
-              <img
-                src="/images/jacket.png"
-                alt={orderDetails.product.product_name}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-              />
-            </div>
+          {/* Products in this order */}
+          <div className="bg-white rounded-2xl p-6 space-y-4">
+            {products.length > 0 ? (
+              products.map((p) => (
+                <div key={p._id} className="flex items-center gap-4">
+                  <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <img
+                      src={p.product?.product_images?.[0] || "/images/jacket.png"}
+                      alt={p.product?.product_name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/jacket.png";
+                      }}
+                    />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-gray-900 truncate">
+                      {p.product?.product_name}
+                    </p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
+                      {p.size.map((size) => (
+                        <span key={size._id} className="text-sm text-gray-600">
+                          {size.type} x{size.quantity}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-gray-500 text-center py-8">No product info available</div>
+            )}
           </div>
 
           {/* Details Section */}
@@ -177,10 +216,6 @@ export default function OrderDetailsPage() {
             <div className="bg-gradient-to-tr from-[#05011a] via-[#090322] to-[#05011a] border rounded-2xl p-6">
               <h2 className="text-xl font-semibold mb-6 border-b border-gray-700/50 pb-3">Order Details</h2>
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Product Name:</span>
-                  <span className="text-white font-medium">{orderDetails.product.product_name}</span>
-                </div>
                 <div className="flex justify-between items-center">
                   <span className="text-gray-400 text-sm">Order ID:</span>
                   <span className="text-white font-medium">#{orderDetails._id.slice(-8)}</span>
@@ -209,16 +244,6 @@ export default function OrderDetailsPage() {
                     </button>
                   </div>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-400 text-sm">Sizes & Quantity:</span>
-                  <div className="flex gap-2">
-                    {orderDetails.size.map((size) => (
-                      <span key={size._id} className="text-white font-medium">
-                        {size.type} x{size.quantity}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -238,6 +263,18 @@ export default function OrderDetailsPage() {
                   <span className="text-gray-400 text-sm">Delivery Charge:</span>
                   <span className="text-white font-medium">{formatCurrency(orderDetails.price.deliveryCharge)}</span>
                 </div>
+                {!!orderDetails.price.weightCharge && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 text-sm">Weight Charge:</span>
+                    <span className="text-white font-medium">{formatCurrency(orderDetails.price.weightCharge)}</span>
+                  </div>
+                )}
+                {!!orderDetails.price.tax && (
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-400 text-sm">Tax:</span>
+                    <span className="text-white font-medium">{formatCurrency(orderDetails.price.tax)}</span>
+                  </div>
+                )}
                 {orderDetails.price.coupon && (
                   <div className="flex justify-between items-center">
                     <span className="text-gray-400 text-sm">Coupon ({orderDetails.price.coupon}):</span>
