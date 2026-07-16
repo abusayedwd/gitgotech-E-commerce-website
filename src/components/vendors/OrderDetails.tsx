@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useGetOrderDetailsQuery, useUpdateOrderStatusMutation } from '@/redux/features/vendor/order/orderSlice';
 import { useSelector } from 'react-redux';
 import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
+import { buildImageUrl } from '@/lib/imageBaseUrl';
 
 const ORDER_STATUS_OPTIONS = [
   'Pending',
@@ -74,6 +75,8 @@ export default function OrderDetailsPage() {
     id: orderId,
     showroomId,
   });
+
+  console.log('OrderDetailsPage data:', data);
 
   const [updateOrderStatus, { isLoading: isUpdating }] = useUpdateOrderStatusMutation();
 
@@ -177,13 +180,13 @@ export default function OrderDetailsPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Products in this order */}
-          <div className="bg-white rounded-2xl p-6 space-y-4">
+          <div className="bg-gradient-to-tr from-[#05011a] via-[#090322] to-[#05011a] border rounded-2xl p-6 space-y-4">
             {products.length > 0 ? (
               products.map((p) => (
                 <div key={p._id} className="flex items-center gap-4">
-                  <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <div className="w-24 h-24 rounded-xl overflow-hidden bg-gray-800 flex items-center justify-center flex-shrink-0">
                     <img
-                      src={p.product?.product_images?.[0] || "/images/jacket.png"}
+                      src={buildImageUrl(p.product?.product_images?.[0], "/images/jacket.png")}
                       alt={p.product?.product_name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -192,12 +195,12 @@ export default function OrderDetailsPage() {
                     />
                   </div>
                   <div className="min-w-0">
-                    <p className="font-semibold text-gray-900 truncate">
+                    <p className="font-semibold text-white truncate">
                       {p.product?.product_name}
                     </p>
                     <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1">
                       {p.size.map((size) => (
-                        <span key={size._id} className="text-sm text-gray-600">
+                        <span key={size._id} className="text-sm text-gray-400">
                           {size.type} x{size.quantity}
                         </span>
                       ))}
