@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Minus, Plus, Trash2, Pencil, ShoppingCart, Shuffle, Palette, Loader2, Weight, Calendar, Tag } from 'lucide-react';
+import { ArrowLeft, Trash2, Pencil, Shuffle, Palette, Loader2, Weight, Calendar, Tag, Lock, TrendingUp } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import { selectShowroomId } from '@/redux/features/vendor/showroomSlice/selectedShowroomSlice';
@@ -26,11 +26,7 @@ export default function ProductDetails() {
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState('');
-  const [quantity, setQuantity] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  const inc = () => setQuantity(q => q + 1);
-  const dec = () => setQuantity(q => Math.max(1, q - 1));
 
   const handleDelete = async () => {
     try {
@@ -160,13 +156,25 @@ export default function ProductDetails() {
             )}
           </div>
 
-          {/* Category */}
-          {product.product_category && (
-            <div className="flex items-center gap-2 mb-4">
-              <Tag size={14} className="text-gray-400" />
-              <span className="text-sm text-gray-400">Category: <span className="text-white capitalize">{product.product_category}</span></span>
+          {/* Category, Sales, Privacy */}
+          <div className="flex flex-wrap items-center gap-4 mb-4">
+            {product.product_category && (
+              <div className="flex items-center gap-2">
+                <Tag size={14} className="text-gray-400" />
+                <span className="text-sm text-gray-400">Category: <span className="text-white capitalize">{product.product_category}</span></span>
+              </div>
+            )}
+            <div className="flex items-center gap-2">
+              <TrendingUp size={14} className="text-gray-400" />
+              <span className="text-sm text-gray-400">Sold: <span className="text-white">{product.sale_count ?? 0}</span></span>
             </div>
-          )}
+            {product.isPrivate && (
+              <span className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium px-2.5 py-1 rounded-full">
+                <Lock size={11} />
+                Private{product.privateReason ? `: ${product.privateReason}` : ''}
+              </span>
+            )}
+          </div>
 
           {/* Description card */}
           <div className="bg-white/4 border border-purple-500/20 rounded-2xl p-5 mb-4 backdrop-blur-sm">
@@ -214,11 +222,11 @@ export default function ProductDetails() {
             </div>
           )}
 
-          {/* Size + Quantity card */}
+          {/* Sizes & Stock card — informational only, no quantity/purchase for vendors */}
           {stocks.length > 0 && (
             <div className="bg-white/4 border border-purple-500/20 rounded-2xl p-5 mb-4 backdrop-blur-sm">
-              <h3 className="text-sm font-semibold text-purple-200 mb-3">Select Size</h3>
-              <div className="flex flex-wrap gap-2 mb-5">
+              <h3 className="text-sm font-semibold text-purple-200 mb-3">Sizes & Stock</h3>
+              <div className="flex flex-wrap gap-2">
                 {stocks.map((s: any) => (
                   <button
                     key={s.size}
@@ -229,26 +237,9 @@ export default function ProductDetails() {
                         : 'bg-white/5 border border-white/10 text-gray-300 hover:border-white/25'
                     }`}
                   >
-                    {s.size}({s.stock})
+                    {s.size} ({s.stock} in stock)
                   </button>
                 ))}
-              </div>
-
-              <h3 className="text-sm font-semibold text-purple-200 mb-3">Quantity</h3>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={dec}
-                  className="w-8 h-8 rounded-lg bg-purple-600/30 border border-purple-500/40 flex items-center justify-center hover:bg-purple-600/50 transition-colors"
-                >
-                  <Minus size={13} />
-                </button>
-                <span className="text-lg font-bold w-6 text-center">{quantity}</span>
-                <button
-                  onClick={inc}
-                  className="w-8 h-8 rounded-lg bg-purple-600/30 border border-purple-500/40 flex items-center justify-center hover:bg-purple-600/50 transition-colors"
-                >
-                  <Plus size={13} />
-                </button>
               </div>
             </div>
           )}
