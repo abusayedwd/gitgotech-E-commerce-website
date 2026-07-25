@@ -250,6 +250,7 @@ import Link from 'next/link';
 import { useRegisterUserMutation } from '@/redux/features/auth/authSlice';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
+import { usePrivacyTermsModal } from '@/context/PrivacyTermsModalContext';
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -259,6 +260,7 @@ export default function SignUpPage() {
   const [error, setError] = useState(" ")
   const [pathName, setPathName] = useState("");
   const router = useRouter()
+  const { openTerms, openPrivacy } = usePrivacyTermsModal();
 
   const [formData, setFormData] = useState({
     name: '',
@@ -623,11 +625,17 @@ export default function SignUpPage() {
               />
               <label htmlFor="terms" className="text-sm text-gray-400">
                 I agree to SleeKnit's{' '}
-                <span className="text-purple-400 hover:text-purple-300 cursor-pointer">
+                <span
+                  onClick={openTerms}
+                  className="text-purple-400 hover:text-purple-300 cursor-pointer underline"
+                >
                   Terms of Use
                 </span>
                 {' '}and{' '}
-                <span className="text-purple-400 hover:text-purple-300 cursor-pointer">
+                <span
+                  onClick={openPrivacy}
+                  className="text-purple-400 hover:text-purple-300 cursor-pointer underline"
+                >
                   Privacy Policy
                 </span>
               </label>

@@ -1382,7 +1382,7 @@ const sizeData = [
                   <button
                     onClick={() => {
                       setShowEventModal(false);
-                      router.push("/settings/events");
+                      router.push("/profile/event/create-event");
                     }}
                     className="mt-4 text-purple-400 hover:text-purple-300 text-sm"
                   >

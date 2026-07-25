@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Mail, Phone } from 'lucide-react';
 import { FaFacebookF, FaInstagram, FaTiktok } from 'react-icons/fa';
 import { useSupportModal } from '@/context/SupportModalContext';
+import { usePrivacyTermsModal } from '@/context/PrivacyTermsModalContext';
 import { useGetSupportQuery } from '@/redux/features/settings/settingsSlice';
 
 const FALLBACK_SUPPORT_EMAIL = 'support@sleeknit.com';
@@ -16,6 +17,7 @@ const FACEBOOK_URL = 'https://www.facebook.com/share/1CgSqqRaiw/?mibextid=wwXIfr
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { openSupport } = useSupportModal();
+  const { openPrivacy, openTerms } = usePrivacyTermsModal();
 
   const { data: supportRes } = useGetSupportQuery({});
   const supportEmail = supportRes?.data?.value?.email || FALLBACK_SUPPORT_EMAIL;
@@ -160,12 +162,20 @@ const Footer = () => {
             © {currentYear} Sleeknit All rights reserved.
           </p>
           <div className="mt-4 md:mt-0 flex space-x-6">
-            <p className="text-gray-500 hover:text-white transition-colors">
+            <button
+              type="button"
+              onClick={openPrivacy}
+              className="text-gray-500 hover:text-white transition-colors"
+            >
               Privacy Policy
-            </p>
-            <p className="text-gray-500 hover:text-white transition-colors">
+            </button>
+            <button
+              type="button"
+              onClick={openTerms}
+              className="text-gray-500 hover:text-white transition-colors"
+            >
               Terms of Service
-            </p>
+            </button>
           </div>
         </div>
       </div>

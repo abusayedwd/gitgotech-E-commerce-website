@@ -4,9 +4,11 @@ import Providers from "@/redux/Providers";
 import ToastProvider from "@/components/ToastProvider";
 import { FilterProvider } from "@/context/FilterContext";
 import { SupportModalProvider } from "@/context/SupportModalContext";
+import { PrivacyTermsModalProvider } from "@/context/PrivacyTermsModalContext";
 import { SocketProvider } from "@/components/providers/SocketProvider";
 import FcmTokenSync from "@/components/providers/FcmTokenSync";
 import TokenExpiredModal from "@/components/providers/TokenExpiredModal";
+import PrivacyTermsModal from "@/components/providers/PrivacyTermsModal";
 import ToastErrorGuard from "@/components/providers/ToastErrorGuard";
 
 import type { Metadata } from "next";
@@ -54,6 +56,7 @@ export default function RootLayout({
           <FcmTokenSync />
           <TokenExpiredModal />
           <SupportModalProvider>
+            <PrivacyTermsModalProvider>
              <Suspense fallback={null}>
       <FilterProvider>
         <SocketProvider>
@@ -61,6 +64,8 @@ export default function RootLayout({
         </SocketProvider>
       </FilterProvider>
     </Suspense>
+              <PrivacyTermsModal />
+            </PrivacyTermsModalProvider>
           </SupportModalProvider>
         </Providers>
         <ToastProvider />
