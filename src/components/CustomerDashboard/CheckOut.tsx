@@ -9,24 +9,21 @@ import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
 import { useGetMyCouponsQuery, useValidateCouponMutation } from "@/redux/features/coupon/couponSlice";
 import { useAuth } from "@/hooks/useAuth";
-import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
 import { Loader2, MapPin, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
-import {
-  calcDistanceDeliveryUsd,
-  calcWeightDeliveryUsdForItems,
-  FALLBACK_DISTANCE_DELIVERY_USD,
-  haversineKm,
-  productWeightToKg,
-  RATE_PER_KG,
-  RATE_PER_KM,
-} from "@/lib/deliveryPricing";
+import { productWeightToKg } from "@/lib/deliveryPricing";
 
 const TAX_RATE = 0.1; // 10%
 const DEFAULT_PRODUCT_WEIGHT = { unit: "gram", amount: 100 };
+
+// Pick-up orders don't need a map/address — send this fixed placeholder location.
+const PICKUP_DEFAULT_LOCATION: SelectedLocation = {
+  name: "Store Pickup",
+  coordinates: { latitude: 40.7128, longitude: -74.006 },
+};
 
 const CHECKOUT_COUNTRY_OPTIONS = [
   "United States",
@@ -34,23 +31,6 @@ const CHECKOUT_COUNTRY_OPTIONS = [
   "UK",
   "Australia",
 ] as const;
-
-function distanceDeliveryUsd(
-  customerLocation: SelectedLocation | null,
-  showroomCoordinates: [number, number] | null,
-  ratePerKm: number,
-): number {
-  if (!customerLocation || !showroomCoordinates) {
-    return FALLBACK_DISTANCE_DELIVERY_USD;
-  }
-  return calcDistanceDeliveryUsd(
-    customerLocation.coordinates.latitude,
-    customerLocation.coordinates.longitude,
-    showroomCoordinates[0],
-    showroomCoordinates[1],
-    ratePerKm,
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -69,7 +49,6 @@ export default function CheckoutPage() {
   }, [isHydrated, isLoggedIn, router]);
 
   // URL params
-  const tipFromCart = searchParams.get("tip") || "5";
   const cartDataFromUrl = searchParams.get("cartData");
   const parsedCartData = cartDataFromUrl ? JSON.parse(cartDataFromUrl) : [];
  // console.log(parsedCartData)
@@ -212,9 +191,9 @@ export default function CheckoutPage() {
   const [deliveryMethod, setDeliveryMethod] = useState("delivery");
   const [showCouponModal, setShowCouponModal] = useState(false);
   const [showTipModal, setShowTipModal] = useState(false);
+  const [tipAmount, setTipAmount] = useState("0");
   const [selectedCouponName, setSelectedCouponName] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<{name: string; percentage: number} | null>(null);
-  const [tipAmount, setTipAmount] = useState(tipFromCart);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<SelectedLocation | null>(null);
@@ -241,11 +220,6 @@ export default function CheckoutPage() {
   });
 
   const [orderSubmitted] = useAddVendorOrderMutation();
-  const { data: platformData } = usePlatformFreeQuery(undefined);
-  const platformSettings = platformData?.data;
-
-  const ratePerKm = platformSettings?.perKmDistancePrice ?? RATE_PER_KM;
-  const ratePerKg = platformSettings?.perKgWeightPrice ?? RATE_PER_KG;
 
   // ── Price calculations ────────────────────────────────────────────────────
   const subtotal = useMemo(() => {
@@ -256,17 +230,10 @@ export default function CheckoutPage() {
     }, 0);
   }, [displayItems]);
 
-  const distanceDeliveryCharge = useMemo(
-    () => distanceDeliveryUsd(selectedLocation, showroomCoordinates, ratePerKm),
-    [selectedLocation, showroomCoordinates, ratePerKm],
-  );
-
-  const weightDeliveryCharge = useMemo(
-    () => calcWeightDeliveryUsdForItems(displayItems, ratePerKg),
-    [displayItems, ratePerKg],
-  );
-
-  const deliveryCharge = distanceDeliveryCharge + weightDeliveryCharge;
+  // Delivery is always free for now — distance/weight fees are disabled.
+  const distanceDeliveryCharge = 0;
+  const weightDeliveryCharge = 0;
+  const deliveryCharge = 0;
 
   const totalWeightKg = useMemo(() => {
     return parseFloat(
@@ -280,16 +247,6 @@ export default function CheckoutPage() {
     );
   }, [displayItems]);
 
-  const distanceKm = useMemo(() => {
-    if (!selectedLocation || !showroomCoordinates) return null;
-    return haversineKm(
-      selectedLocation.coordinates.latitude,
-      selectedLocation.coordinates.longitude,
-      showroomCoordinates[1],
-      showroomCoordinates[0],
-    ).toFixed(1);
-  }, [selectedLocation, showroomCoordinates]);
-
   // ✅ TAX: Calculated as 10% of subtotal
   const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
 
@@ -300,8 +257,9 @@ export default function CheckoutPage() {
     ? parseFloat((amountBeforeDiscount * (appliedCoupon.percentage / 100)).toFixed(2)) 
     : 0;
   
-  const tip = parseFloat(tipAmount) || 0;
-  
+  // Tip only applies to delivery orders — no driver to tip on pick-up.
+  const tip = deliveryMethod === "delivery" ? parseFloat(tipAmount) || 0 : 0;
+
   // Total = (Product + Tax - Discount) + Delivery + Tip
   const total = subtotal + tax - discount + deliveryCharge + tip;
 
@@ -358,16 +316,20 @@ export default function CheckoutPage() {
       toast.error("Your cart is empty");
       return;
     }
-    if (!selectedLocation) {
+    if (deliveryMethod === "delivery" && !selectedLocation) {
       toast.error("Please provide your delivery location on the map");
       return;
     }
+
+    // Pick-up orders skip the map — fall back to a fixed placeholder location.
+    const orderLocation =
+      deliveryMethod === "delivery" ? selectedLocation! : PICKUP_DEFAULT_LOCATION;
 
     setIsSubmitting(true);
     try {
       const deliveryInfo = {
         name: formData.fullName,
-        address: selectedLocation.name,
+        address: orderLocation.name,
         country: formData.country,
         state: formData.state,
         zipcode: formData.zipcode,
@@ -376,8 +338,8 @@ export default function CheckoutPage() {
         location: {
           type: "Point",
           coordinates: [
-            selectedLocation.coordinates.longitude,
-            selectedLocation.coordinates.latitude,
+            orderLocation.coordinates.longitude,
+            orderLocation.coordinates.latitude,
           ],
         },
       };
@@ -498,7 +460,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Delivery Method */}
           <div className="space-y-3">
-            {["delivery", "pickup"].map((method) => (
+            {["delivery", "pick-up"].map((method) => (
               <div key={method} className="flex items-center gap-3">
                 <input
                   type="radio"
@@ -535,115 +497,108 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              {/* Address (auto-filled from map) */}
-              <div>
-                <label className="block text-sm mb-2">Address *</label>
-                <input
-                  type="text"
-                  name="address"
-                  value={selectedLocation?.name || formData.address}
-                  onChange={handleInputChange}
-                  placeholder="Select from map below"
-                  readOnly={!!selectedLocation}
-                  className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                />
-              </div>
-
-              {/* Map */}
-              <div>
-                <label className="block text-sm mb-2">
-                  <MapPin className="w-4 h-4 inline mr-1" />
-                  Delivery Location *
-                </label>
-                <MapComponent
-                  onLocationSave={handleLocationSave}
-                  showroomCoordinates={showroomCoordinates}
-                  showroomName={
-                    displayItems[0]?.product?.showroom?.showroom_name ?? "Showroom"
-                  }
-                  weightDeliveryUsd={weightDeliveryCharge}
-                />
-
-                {selectedLocation && (
-                  <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg space-y-1">
-                    <p className="text-xs text-gray-300">
-                      <span className="font-medium">Selected:</span>{" "}
-                      {selectedLocation.name}
-                    </p>
-                    <p className="text-xs text-gray-400">
-                      Coordinates: [{selectedLocation.coordinates.longitude.toFixed(6)},{" "}
-                      {selectedLocation.coordinates.latitude.toFixed(6)}]
-                    </p>
-                    {distanceKm !== null && (
-                      <p className="text-xs text-purple-300 font-medium">
-                        Distance fee ({distanceKm} km): ₵
-                        {distanceDeliveryCharge.toFixed(2)}
-                      </p>
-                    )}
-                    {totalWeightKg > 0 && (
-                      <p className="text-xs text-purple-300/90">
-                        Weight fee ({totalWeightKg} kg): ₵
-                        {weightDeliveryCharge.toFixed(2)}
-                      </p>
-                    )}
-                    <p className="text-xs text-gray-300">
-                      Total delivery:{" "}
-                      <span className="font-semibold text-white">
-                        ₵{deliveryCharge.toFixed(2)}
-                      </span>
-                    </p>
+              {deliveryMethod === "delivery" ? (
+                <>
+                  {/* Address (auto-filled from map) */}
+                  <div>
+                    <label className="block text-sm mb-2">Address *</label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={selectedLocation?.name || formData.address}
+                      onChange={handleInputChange}
+                      placeholder="Select from map below"
+                      readOnly={!!selectedLocation}
+                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                    />
                   </div>
-                )}
-              </div>
+
+                  {/* Map */}
+                  <div>
+                    <label className="block text-sm mb-2">
+                      <MapPin className="w-4 h-4 inline mr-1" />
+                      Delivery Location *
+                    </label>
+                    <MapComponent
+                      onLocationSave={handleLocationSave}
+                      showroomCoordinates={showroomCoordinates}
+                      showroomName={
+                        displayItems[0]?.product?.showroom?.showroom_name ?? "Showroom"
+                      }
+                      weightDeliveryUsd={weightDeliveryCharge}
+                    />
+
+                    {selectedLocation && (
+                      <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg space-y-1">
+                        <p className="text-xs text-gray-300">
+                          <span className="font-medium">Selected:</span>{" "}
+                          {selectedLocation.name}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Coordinates: [{selectedLocation.coordinates.longitude.toFixed(6)},{" "}
+                          {selectedLocation.coordinates.latitude.toFixed(6)}]
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg flex items-center gap-2 text-sm text-gray-300">
+                  <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                  Pick-up order — no delivery location needed. Collect your order at the showroom.
+                </div>
+              )}
 
               {/* Country / State / Zip */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-sm mb-2">Country / Region *</label>
-                  <select
-                    name="country"
-                    value={formData.country}
-                    onChange={handleInputChange}
-                    className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
-                  >
-                    {[...CHECKOUT_COUNTRY_OPTIONS].map((c) => (
-                      <option key={c} value={c}>
-                        {c}
-                      </option>
-                    ))}
-                    {formData.country &&
-                      !CHECKOUT_COUNTRY_OPTIONS.includes(
-                        formData.country as (typeof CHECKOUT_COUNTRY_OPTIONS)[number],
-                      ) && (
-                        <option value={formData.country}>
-                          {formData.country}
+              {deliveryMethod === "delivery" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <label className="block text-sm mb-2">Country / Region *</label>
+                    <select
+                      name="country"
+                      value={formData.country}
+                      onChange={handleInputChange}
+                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                    >
+                      {[...CHECKOUT_COUNTRY_OPTIONS].map((c) => (
+                        <option key={c} value={c}>
+                          {c}
                         </option>
-                      )}
-                  </select>
+                      ))}
+                      {formData.country &&
+                        !CHECKOUT_COUNTRY_OPTIONS.includes(
+                          formData.country as (typeof CHECKOUT_COUNTRY_OPTIONS)[number],
+                        ) && (
+                          <option value={formData.country}>
+                            {formData.country}
+                          </option>
+                        )}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-2">State *</label>
+                    <input
+                      type="text"
+                      name="state"
+                      value={formData.state}
+                      onChange={handleInputChange}
+                      placeholder="New York"
+                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-2">Zip Code *</label>
+                    <input
+                      type="text"
+                      name="zipcode"
+                      value={formData.zipcode}
+                      onChange={handleInputChange}
+                      placeholder="10001"
+                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm mb-2">State *</label>
-                  <input
-                    type="text"
-                    name="state"
-                    value={formData.state}
-                    onChange={handleInputChange}
-                    placeholder="New York"
-                    className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm mb-2">Zip Code *</label>
-                  <input
-                    type="text"
-                    name="zipcode"
-                    value={formData.zipcode}
-                    onChange={handleInputChange}
-                    placeholder="10001"
-                    className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
-                  />
-                </div>
-              </div>
+              )}
 
               {/* Email & Phone */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -745,32 +700,8 @@ export default function CheckoutPage() {
                 <span className="font-medium">₵{subtotal.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">
-                  Delivery (distance)
-                  {distanceKm !== null && (
-                    <span className="ml-1 text-xs text-purple-300/70">
-                      ({distanceKm} km)
-                    </span>
-                  )}
-                </span>
-                <span className="font-medium">₵{distanceDeliveryCharge.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400">
-                  Delivery (weight)
-                  {totalWeightKg > 0 ? (
-                    <span className="ml-1 text-xs text-purple-300/70">
-                      ({totalWeightKg} kg)
-                    </span>
-                  ) : (
-                    <span className="ml-1 text-xs text-gray-500">(no weight on product)</span>
-                  )}
-                </span>
-                <span className="font-medium">₵{weightDeliveryCharge.toFixed(2)}</span>
-              </div>
               <div className="flex justify-between text-sm border-b border-gray-700/60 pb-2">
-                <span className="text-gray-300 font-medium">Delivery total</span>
+                <span className="text-gray-300 font-medium">Delivery</span>
                 <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
               </div>
 
@@ -789,12 +720,16 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Tip</span>
-                <button
-                  onClick={() => setShowTipModal(true)}
-                  className="text-purple-400 hover:text-purple-300 font-medium"
-                >
-                  ₵{tip.toFixed(2)}
-                </button>
+                {deliveryMethod === "delivery" ? (
+                  <button
+                    onClick={() => setShowTipModal(true)}
+                    className="text-purple-400 hover:text-purple-300 font-medium"
+                  >
+                    ₵{tip.toFixed(2)}
+                  </button>
+                ) : (
+                  <span className="font-medium">₵{tip.toFixed(2)}</span>
+                )}
               </div>
 
               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
@@ -833,13 +768,15 @@ export default function CheckoutPage() {
               </button>
             )}
 
-            {/* Tip */}
-            <button
-              onClick={() => setShowTipModal(true)}
-              className="w-full mb-4 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
-            >
-              Tip Your Driver
-            </button>
+            {/* Tip (delivery orders only) */}
+            {deliveryMethod === "delivery" && (
+              <button
+                onClick={() => setShowTipModal(true)}
+                className="w-full mb-4 border border-purple-500/30 text-purple-400 py-3 rounded-lg font-medium hover:bg-purple-900/20 transition-colors"
+              >
+                Tip Your Driver
+              </button>
+            )}
 
             {/* Place Order */}
             <button

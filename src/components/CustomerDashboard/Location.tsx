@@ -155,6 +155,35 @@ async function forwardGeocode(
   }
 }
 
+// ─── Road route (OSRM, free, no API key) ──────────────────────────────────────
+
+async function fetchRoadRoute(
+  lat1: number,
+  lng1: number,
+  lat2: number,
+  lng2: number
+): Promise<[number, number][] | null> {
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
+    const res = await fetch(
+      `https://router.project-osrm.org/route/v1/driving/${lng1},${lat1};${lng2},${lat2}?overview=full&geometries=geojson`,
+      { signal: controller.signal }
+    );
+    clearTimeout(timer);
+    if (!res.ok) throw new Error("bad response");
+    const data = await res.json();
+    const coords = data?.routes?.[0]?.geometry?.coordinates as
+      | [number, number][]
+      | undefined;
+    if (!coords || coords.length < 2) return null;
+    // GeoJSON gives [lng, lat] — Leaflet wants [lat, lng]
+    return coords.map(([lng, lat]) => [lat, lng] as [number, number]);
+  } catch {
+    return null;
+  }
+}
+
 // ─── Load Leaflet once ────────────────────────────────────────────────────────
 
 let leafletLoadPromise: Promise<void> | null = null;
@@ -256,6 +285,8 @@ interface LeafletMapProps {
   showroomName: string;
   distanceKm: number | null;
   deliveryCharge: number | null;
+  /** Real road-route geometry from OSRM, [lat, lng] pairs. Falls back to a straight line when null. */
+  routeCoords: [number, number][] | null;
 }
 
 function LeafletMap({
@@ -266,6 +297,7 @@ function LeafletMap({
   showroomName,
   distanceKm,
   deliveryCharge,
+  routeCoords,
 }: LeafletMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
@@ -387,20 +419,22 @@ function LeafletMap({
 
       // Route + badge when showroom is known
       if (showroomMarker && distanceKm !== null && deliveryCharge !== null) {
-        const latlngs: [number, number][] = [
-          [userMarker.lat, userMarker.lng],
-          [showroomMarker.lat, showroomMarker.lng],
-        ];
+        const isRealRoute = routeCoords !== null && routeCoords.length > 1;
+        const latlngs: [number, number][] = isRealRoute
+          ? routeCoords!
+          : [
+              [userMarker.lat, userMarker.lng],
+              [showroomMarker.lat, showroomMarker.lng],
+            ];
 
         routeLineRef.current = L.polyline(latlngs, {
           color: "#a855f7",
-          weight: 3,
+          weight: isRealRoute ? 4 : 3,
           opacity: 0.85,
-          dashArray: "10, 8",
+          ...(isRealRoute ? {} : { dashArray: "10, 8" }),
         }).addTo(mapInstanceRef.current);
 
-        const midLat = (userMarker.lat + showroomMarker.lat) / 2;
-        const midLng = (userMarker.lng + showroomMarker.lng) / 2;
+        const [midLat, midLng] = latlngs[Math.floor(latlngs.length / 2)];
 
         midBadgeRef.current = L.marker([midLat, midLng], {
           icon: L.divIcon({
@@ -436,6 +470,7 @@ function LeafletMap({
     showroomMarker?.lng,
     distanceKm,
     deliveryCharge,
+    routeCoords,
     isLoaded,
   ]);
 
@@ -501,12 +536,32 @@ export default function MapComponent({
   const [isMapExpanded, setIsMapExpanded] = useState(false);
   const [searchInput, setSearchInput] = useState("");
   const [isSaved, setIsSaved] = useState(false);
+  const [routeCoords, setRouteCoords] = useState<[number, number][] | null>(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
     isMountedRef.current = true;
     return () => { isMountedRef.current = false; };
   }, []);
+
+  // Fetch the real road route whenever both points are known — falls back to
+  // a straight line (routeCoords stays null) if the routing service is unreachable.
+  useEffect(() => {
+    if (!userLatLng || !showroomLatLng) {
+      setRouteCoords(null);
+      return;
+    }
+    let cancelled = false;
+    fetchRoadRoute(
+      userLatLng.lat,
+      userLatLng.lng,
+      showroomLatLng.lat,
+      showroomLatLng.lng
+    ).then((coords) => {
+      if (!cancelled) setRouteCoords(coords);
+    });
+    return () => { cancelled = true; };
+  }, [userLatLng?.lat, userLatLng?.lng, showroomLatLng?.lat, showroomLatLng?.lng]);
 
   const distanceKm =
     userLatLng && showroomLatLng
@@ -690,6 +745,7 @@ export default function MapComponent({
               showroomName={showroomName}
               distanceKm={distanceKm}
               deliveryCharge={deliveryCharge}
+              routeCoords={routeCoords}
             />
 
             {/* Legend overlay */}

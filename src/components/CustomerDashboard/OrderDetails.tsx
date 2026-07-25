@@ -5,9 +5,11 @@ import {
   useGetMainOrderDetailsQuery,
   useGetReturnOrderDetailsQuery,
 } from "@/redux/features/order/orderSlice";
+import { useAddToCartWishListMutation } from "@/redux/features/home/homeSlice";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useState } from "react";
+import toast from "react-hot-toast";
 
 const OrderDetails = () => {
   const router = useRouter();
@@ -23,6 +25,9 @@ const OrderDetails = () => {
   const [reason, setReason] = useState("");
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [isBuyingAgain, setIsBuyingAgain] = useState(false);
+
+  const [addToCartWishList] = useAddToCartWishListMutation();
 
   const { data: mainOrderDetails, isLoading: isMainOrderDetailsLoading } =
     useGetMainOrderDetailsQuery(id, {
@@ -96,6 +101,52 @@ const OrderDetails = () => {
 
   const removeImage = (index: number) => {
     setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+  };
+
+  // Re-add every product from this order to the cart, then send the
+  // customer to the cart to review quantities/sizes before checking out.
+  // A single item failing (e.g. it's already in the cart) shouldn't block
+  // the rest, so each add is tracked independently via allSettled.
+  const handleBuyAgain = async () => {
+    if (products.length === 0) return;
+    setIsBuyingAgain(true);
+    try {
+      const results = await Promise.allSettled(
+        products.map((p: any) =>
+          addToCartWishList({
+            product: p.product?._id,
+            saveType: "cart",
+            size: (p.size?.length ? p.size : [{ type: "M", quantity: 1 }]).map(
+              (s: any) => ({
+                type: s.type || s.size || "M",
+                quantity: s.quantity || 1,
+              }),
+            ),
+          }).unwrap(),
+        ),
+      );
+
+      const succeeded = results.filter((r) => r.status === "fulfilled").length;
+
+      if (succeeded === 0) {
+        const firstError = results.find(
+          (r): r is PromiseRejectedResult => r.status === "rejected",
+        );
+        toast.error(
+          firstError?.reason?.data?.message || "Failed to add items to cart",
+        );
+        return;
+      }
+
+      toast.success(
+        succeeded < products.length
+          ? `Added ${succeeded} of ${products.length} items to cart`
+          : "Added to cart!",
+      );
+      router.push("/shopping-cart");
+    } finally {
+      setIsBuyingAgain(false);
+    }
   };
 
   const handleSubmit = () => {
@@ -453,8 +504,12 @@ const OrderDetails = () => {
               </button>
             </div>
           ) : (
-            <button className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-lg font-medium transition-colors">
-              Buy Again
+            <button
+              onClick={handleBuyAgain}
+              disabled={isBuyingAgain || products.length === 0}
+              className="w-full bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
+            >
+              {isBuyingAgain ? "Adding to cart..." : "Buy Again"}
             </button>
           )}
 
