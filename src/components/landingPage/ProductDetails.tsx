@@ -205,10 +205,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
           },
         ],
       };
-      const res = await addToCartWishList(data).unwrap();
-      if (res?.success) {
-        toast.success("Added to cart!");
-      }
+      await addToCartWishList(data).unwrap();
+      toast.success("Added to cart!");
     } catch (error: any) {
       showApiErrorToast(error, "Failed to add to cart");
     }
@@ -227,10 +225,8 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
           },
         ],
       };
-      const res = await addToCartWishList(data).unwrap();
-      if (res?.success) {
-        toast.success("Added to wishlist!");
-      }
+      await addToCartWishList(data).unwrap();
+      toast.success("Added to wishlist!");
     } catch (error: any) {
       showApiErrorToast(error, "Failed to add to wishlist");
     }

@@ -199,12 +199,10 @@ export default function WishlistPage() {
     const removeFromWishlist = async (id: string) => {
       
         try {
-            const res = await deleteSaveItem(id).unwrap();
-         
-            if (res?.success) {
-                toast.success('Removed from wishlist');
-                refetch();
-            }
+            await deleteSaveItem(id).unwrap();
+
+            toast.success('Removed from wishlist');
+            refetch();
         } catch (error: any) {
             toast.error(error?.data?.message || 'Failed to remove item');
             // console.log(error.data)
@@ -228,10 +226,8 @@ export default function WishlistPage() {
                     },
                 ],
             };
-            const res = await addToCartWishList(data).unwrap();
-            if (res?.success) {
-                toast.success('Added to cart!');
-            }
+            await addToCartWishList(data).unwrap();
+            toast.success('Added to cart!');
         } catch (error: any) {
             toast.error(error?.data?.message || 'Failed to add to cart');
         }
