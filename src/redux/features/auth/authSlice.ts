@@ -41,10 +41,13 @@ const authSlice = apiSlice.injectEndpoints({
     }),
 
     resendOtp: builder.mutation({
-      query: (email) => ({
+      query: ({ email, token }) => ({
         url: `/auth/resend-otp`,
         method: "POST",
         params: { email },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }),
     }),
 

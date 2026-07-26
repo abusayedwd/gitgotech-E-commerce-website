@@ -51,6 +51,22 @@ export default function VerifyEmailPage() {
     }
   };
 
+  const handleOtpPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const digits = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6);
+    if (!digits) return;
+
+    const newOtp = ['', '', '', '', '', ''];
+    for (let i = 0; i < digits.length; i++) {
+      newOtp[i] = digits[i];
+    }
+    setOtp(newOtp);
+
+    const focusIndex = Math.min(digits.length, 6) - 1;
+    const nextInput = document.getElementById(`otp-${focusIndex}`);
+    if (nextInput) nextInput.focus();
+  };
+
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
   setIsLoading(true);
@@ -110,7 +126,9 @@ const handleSubmit = async (e: React.FormEvent) => {
       return;
     }
     try {
-      const res = await resendOtp(email.trim()).unwrap();
+      const res = await resendOtp({ email: email.trim(), token }).unwrap();
+      const newToken = (res as any)?.data?.token ?? (res as any)?.token;
+      if (newToken) setToken(newToken);
       toast.success(
         (res as { message?: string })?.message ??
           "A new verification code has been sent to your email."
@@ -156,6 +174,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     value={digit}
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
+                    onPaste={handleOtpPaste}
                     className="w-14 h-14 text-center text-xl font-semibold border border-[#912DAD] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     pattern="[0-9]"
                     inputMode="numeric"
