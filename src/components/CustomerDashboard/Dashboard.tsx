@@ -86,7 +86,7 @@ export default function MyDashboard() {
   // Transform API data for returns
   const returns =
     returnOrderData?.data?.map((order: any) => ({
-      id: order._id,
+      id: order.id,
       productName: order.product?.product_name || "Product",
       brand: order.showroom?.showroom_name || "Vendor",
       image:

@@ -9,12 +9,21 @@ import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { useAddVendorOrderMutation } from "@/redux/features/order/orderSlice";
 import { useGetMyCouponsQuery, useValidateCouponMutation } from "@/redux/features/coupon/couponSlice";
 import { useAuth } from "@/hooks/useAuth";
+import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
 import { Loader2, MapPin, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
-import { productWeightToKg } from "@/lib/deliveryPricing";
+import {
+  calcDistanceDeliveryUsd,
+  calcWeightDeliveryUsdForItems,
+  FALLBACK_DISTANCE_DELIVERY_USD,
+  haversineKm,
+  productWeightToKg,
+  RATE_PER_KG,
+  RATE_PER_KM,
+} from "@/lib/deliveryPricing";
 
 const TAX_RATE = 0.1; // 10%
 const DEFAULT_PRODUCT_WEIGHT = { unit: "gram", amount: 100 };
@@ -31,6 +40,23 @@ const CHECKOUT_COUNTRY_OPTIONS = [
   "UK",
   "Australia",
 ] as const;
+
+function distanceDeliveryUsd(
+  customerLocation: SelectedLocation | null,
+  showroomCoordinates: [number, number] | null,
+  ratePerKm: number,
+): number {
+  if (!customerLocation || !showroomCoordinates) {
+    return FALLBACK_DISTANCE_DELIVERY_USD;
+  }
+  return calcDistanceDeliveryUsd(
+    customerLocation.coordinates.latitude,
+    customerLocation.coordinates.longitude,
+    showroomCoordinates[0],
+    showroomCoordinates[1],
+    ratePerKm,
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Component
@@ -220,6 +246,11 @@ export default function CheckoutPage() {
   });
 
   const [orderSubmitted] = useAddVendorOrderMutation();
+  const { data: platformData } = usePlatformFreeQuery(undefined);
+  const platformSettings = platformData?.data;
+
+  const ratePerKm = platformSettings?.perKmDistancePrice ?? RATE_PER_KM;
+  const ratePerKg = platformSettings?.perKgWeightPrice ?? RATE_PER_KG;
 
   // ── Price calculations ────────────────────────────────────────────────────
   const subtotal = useMemo(() => {
@@ -230,10 +261,25 @@ export default function CheckoutPage() {
     }, 0);
   }, [displayItems]);
 
-  // Delivery is always free for now — distance/weight fees are disabled.
-  const distanceDeliveryCharge = 0;
-  const weightDeliveryCharge = 0;
-  const deliveryCharge = 0;
+  // Distance/weight-based delivery fee — only for "delivery" orders.
+  // Pick-up skips the map entirely and stays free.
+  const distanceDeliveryCharge = useMemo(
+    () =>
+      deliveryMethod === "delivery"
+        ? distanceDeliveryUsd(selectedLocation, showroomCoordinates, ratePerKm)
+        : 0,
+    [deliveryMethod, selectedLocation, showroomCoordinates, ratePerKm],
+  );
+
+  const weightDeliveryCharge = useMemo(
+    () =>
+      deliveryMethod === "delivery"
+        ? calcWeightDeliveryUsdForItems(displayItems, ratePerKg)
+        : 0,
+    [deliveryMethod, displayItems, ratePerKg],
+  );
+
+  const deliveryCharge = distanceDeliveryCharge + weightDeliveryCharge;
 
   const totalWeightKg = useMemo(() => {
     return parseFloat(
@@ -246,6 +292,17 @@ export default function CheckoutPage() {
         .toFixed(2),
     );
   }, [displayItems]);
+
+  const distanceKm = useMemo(() => {
+    if (deliveryMethod !== "delivery" || !selectedLocation || !showroomCoordinates)
+      return null;
+    return haversineKm(
+      selectedLocation.coordinates.latitude,
+      selectedLocation.coordinates.longitude,
+      showroomCoordinates[1],
+      showroomCoordinates[0],
+    ).toFixed(1);
+  }, [deliveryMethod, selectedLocation, showroomCoordinates]);
 
   // ✅ TAX: Calculated as 10% of subtotal
   const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
@@ -538,6 +595,24 @@ export default function CheckoutPage() {
                           Coordinates: [{selectedLocation.coordinates.longitude.toFixed(6)},{" "}
                           {selectedLocation.coordinates.latitude.toFixed(6)}]
                         </p>
+                        {distanceKm !== null && (
+                          <p className="text-xs text-purple-300 font-medium">
+                            Distance fee ({distanceKm} km): ₵
+                            {distanceDeliveryCharge.toFixed(2)}
+                          </p>
+                        )}
+                        {totalWeightKg > 0 && (
+                          <p className="text-xs text-purple-300/90">
+                            Weight fee ({totalWeightKg} kg): ₵
+                            {weightDeliveryCharge.toFixed(2)}
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-300">
+                          Total delivery:{" "}
+                          <span className="font-semibold text-white">
+                            ₵{deliveryCharge.toFixed(2)}
+                          </span>
+                        </p>
                       </div>
                     )}
                   </div>
@@ -700,10 +775,43 @@ export default function CheckoutPage() {
                 <span className="font-medium">₵{subtotal.toFixed(2)}</span>
               </div>
 
-              <div className="flex justify-between text-sm border-b border-gray-700/60 pb-2">
-                <span className="text-gray-300 font-medium">Delivery</span>
-                <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
-              </div>
+              {deliveryMethod === "delivery" ? (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">
+                      Delivery (distance)
+                      {distanceKm !== null && (
+                        <span className="ml-1 text-xs text-purple-300/70">
+                          ({distanceKm} km)
+                        </span>
+                      )}
+                    </span>
+                    <span className="font-medium">₵{distanceDeliveryCharge.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">
+                      Delivery (weight)
+                      {totalWeightKg > 0 ? (
+                        <span className="ml-1 text-xs text-purple-300/70">
+                          ({totalWeightKg} kg)
+                        </span>
+                      ) : (
+                        <span className="ml-1 text-xs text-gray-500">(no weight on product)</span>
+                      )}
+                    </span>
+                    <span className="font-medium">₵{weightDeliveryCharge.toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between text-sm border-b border-gray-700/60 pb-2">
+                    <span className="text-gray-300 font-medium">Delivery total</span>
+                    <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
+                  </div>
+                </>
+              ) : (
+                <div className="flex justify-between text-sm border-b border-gray-700/60 pb-2">
+                  <span className="text-gray-300 font-medium">Delivery</span>
+                  <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
+                </div>
+              )}
 
               {/* ✅ Tax displayed as calculated 10% of subtotal */}
               <div className="flex justify-between text-sm">

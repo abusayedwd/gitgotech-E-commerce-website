@@ -155,28 +155,30 @@ export default function ReturnDetails() {
             <h1 className="text-2xl font-bold text-white">Return Details</h1>
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={handleAccept}
-              disabled={isActionLoading}
-              className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white font-medium transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isActionLoading ? 'Processing...' : 'Accept'}
-            </button>
-            <button
-              onClick={handleDecline}
-              disabled={isActionLoading}
-              className="px-6 py-2.5 bg-transparent border border-red-500/50 hover:bg-red-500/10 rounded-lg text-red-400 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isActionLoading ? 'Processing...' : 'Decline'}
-            </button>
-            {/* <button
-              onClick={handleReport}
-              className="px-6 py-2.5 bg-transparent border border-yellow-500/50 hover:bg-yellow-500/10 rounded-lg text-yellow-400 font-medium transition-all"
-            >
-              Report
-            </button> */}
-          </div>
+          {returnData.status !== 'Vendor Accepted' && (
+            <div className="flex gap-3">
+              <button
+                onClick={handleAccept}
+                disabled={isActionLoading}
+                className="px-6 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white font-medium transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isActionLoading ? 'Processing...' : 'Accept'}
+              </button>
+              <button
+                onClick={handleDecline}
+                disabled={isActionLoading}
+                className="px-6 py-2.5 bg-transparent border border-red-500/50 hover:bg-red-500/10 rounded-lg text-red-400 font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isActionLoading ? 'Processing...' : 'Decline'}
+              </button>
+              {/* <button
+                onClick={handleReport}
+                className="px-6 py-2.5 bg-transparent border border-yellow-500/50 hover:bg-yellow-500/10 rounded-lg text-yellow-400 font-medium transition-all"
+              >
+                Report
+              </button> */}
+            </div>
+          )}
         </div>
 
         {/* Main Content */}
