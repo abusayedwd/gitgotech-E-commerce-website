@@ -86,12 +86,16 @@ export default function SettingsPage() {
               label="Return Policy" 
             />
 
-            <SettingButton
+            
+
+            {/* <SettingButton
               icon={<Trash2 />}
               label="Delete Account"
               danger
               onClick={() => setShowDeleteModal(true)}
-            />
+            /> */}
+
+
           </div>
         </div>
 

@@ -121,7 +121,7 @@ export default function Navbar() {
           {isHydrated && !isLoggedIn && (
             <Link href="/shopping-cart">
               <button
-                className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative ${
+                className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                   isActive("/shopping-cart") ? "bg-purple-600/40" : ""
                 }`}
               >
@@ -133,6 +133,9 @@ export default function Navbar() {
                 />
                 <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                   {cartCount}
+                </span>
+                <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                  Cart
                 </span>
               </button>
             </Link>
@@ -147,7 +150,7 @@ export default function Navbar() {
 
                  <Link href="/coupon">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                         isActive("/coupon") ? "bg-purple-600/40" : ""
                       }`}
                     >
@@ -158,12 +161,15 @@ export default function Navbar() {
                         height={30}
                       /> */}
                       <RiCoupon4Line />
+                      <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                        Coupon
+                      </span>
                     </button>
                   </Link>
 
                   <Link href="/custom-orders">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                         isActive("/custom-orders") ? "bg-purple-600/40" : ""
                       }`}
                     >
@@ -173,11 +179,14 @@ export default function Navbar() {
                         width={40}
                         height={30}
                       />
+                      <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                        Custom Orders
+                      </span>
                     </button>
                   </Link>
                   <Link href="/wishlist">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                         isActive("/wishlist") ? "bg-purple-600/40" : ""
                       }`}
                     >
@@ -187,12 +196,15 @@ export default function Navbar() {
                         width={40}
                         height={30}
                       />
+                      <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                        Wishlist
+                      </span>
                     </button>
                   </Link>
 
                   <Link href="/shopping-cart">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative ${
+                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                         isActive("/shopping-cart") ? "bg-purple-600/40" : ""
                       }`}
                     >
@@ -205,6 +217,9 @@ export default function Navbar() {
                       <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                         {cartCount}
                       </span>
+                      <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                        Cart
+                      </span>
                     </button>
                   </Link>
                 </>
@@ -214,7 +229,7 @@ export default function Navbar() {
 
               <Link href="/messaging">
                 <button
-                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                     isActive("/messaging") ? "bg-purple-600/40" : ""
                   }`}
                 >
@@ -224,12 +239,15 @@ export default function Navbar() {
                     width={40}
                     height={30}
                   />
+                  <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                    Messages
+                  </span>
                 </button>
               </Link>
 
               <Link href={profileRoute}>
                 <button
-                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                     isActive(profileRoute) ? "bg-purple-600/40" : ""
                   }`}
                 >
@@ -239,12 +257,15 @@ export default function Navbar() {
                     width={40}
                     height={30}
                   />
+                  <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                    Profile
+                  </span>
                 </button>
               </Link>
 
               <Link href="/notification">
                 <button
-                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors ${
+                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
                     isActive("/notification") ? "bg-purple-600/40" : ""
                   }`}
                 >
@@ -254,6 +275,9 @@ export default function Navbar() {
                     width={40}
                     height={30}
                   />
+                  <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+                    Notifications
+                  </span>
                 </button>
               </Link>
 

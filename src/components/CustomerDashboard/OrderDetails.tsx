@@ -41,12 +41,20 @@ const OrderDetails = () => {
   // console.log(mainOrderDetails);
   // console.log(returnOrderDetails);
 
-  // Get status from mainOrderDetails if available, otherwise fallback to returnOrderDetails status
-  const mainOrderStatus = mainOrderDetails?.data?.orderStatus || "Processing";
+  // Only set when there's a real main order — don't fake a "Processing"
+  // status for a standalone return order that has no main order of its own.
+  const mainOrderStatus = mainOrderDetails?.data?.orderStatus;
   const returnOrderStatus = returnOrderDetails?.data?.status;
 
   const priceInfo =
     mainOrderDetails?.data?.price || returnOrderDetails?.data?.price;
+
+  // A standalone return order carries its own deliveryInfo/pickUpInfo — fall
+  // back to it when there's no main order (or the main order lacks these).
+  const deliveryInfo =
+    mainOrderDetails?.data?.deliveryInfo || returnOrderDetails?.data?.deliveryInfo;
+  const pickUpInfo =
+    mainOrderDetails?.data?.pickUpInfo || returnOrderDetails?.data?.pickUpInfo;
 
   // A main order can bundle multiple products (same showroom, one order).
   // Return orders are single-product — normalise both into one list.
@@ -278,22 +286,24 @@ const OrderDetails = () => {
                       </div>
                     </Link>
                   )}
-                  <div
-                    className={`px-4 py-1 rounded-lg text-sm font-medium ${
-                      mainOrderStatus === "Delivered"
-                        ? "bg-[#0070254D] text-[#00DD00]"
-                        : mainOrderStatus === "Rejected" ||
-                            mainOrderStatus === "Vendor Rejected" ||
-                            mainOrderStatus === "Customer Rejected"
-                          ? "bg-red-500/20 text-red-500"
-                          : mainOrderStatus === "Processing" ||
-                              mainOrderStatus === "Order Placed"
-                            ? "bg-orange-500/20 text-orange-400"
-                            : "bg-blue-500/20 text-blue-400"
-                    }`}
-                  >
-                    {mainOrderStatus}
-                  </div>
+                  {mainOrderStatus && (
+                    <div
+                      className={`px-4 py-1 rounded-lg text-sm font-medium ${
+                        mainOrderStatus === "Delivered"
+                          ? "bg-[#0070254D] text-[#00DD00]"
+                          : mainOrderStatus === "Rejected" ||
+                              mainOrderStatus === "Vendor Rejected" ||
+                              mainOrderStatus === "Customer Rejected"
+                            ? "bg-red-500/20 text-red-500"
+                            : mainOrderStatus === "Processing" ||
+                                mainOrderStatus === "Order Placed"
+                              ? "bg-orange-500/20 text-orange-400"
+                              : "bg-blue-500/20 text-blue-400"
+                      }`}
+                    >
+                      {mainOrderStatus}
+                    </div>
+                  )}
                   {/* Show return status if return order exists */}
                   {returnOrderStatus && (
                     <div
@@ -394,7 +404,7 @@ const OrderDetails = () => {
   );
 })()}
 
-          {mainOrderDetails?.data?.deliveryInfo && (
+          {deliveryInfo && (
             <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <svg
@@ -421,30 +431,30 @@ const OrderDetails = () => {
               <div className="space-y-2 text-sm text-gray-300">
                 <p>
                   <span className="text-gray-500">Name:</span>{" "}
-                  {mainOrderDetails.data.deliveryInfo.name}
+                  {deliveryInfo.name}
                 </p>
                 <p>
                   <span className="text-gray-500">Address:</span>{" "}
-                  {mainOrderDetails.data.deliveryInfo.address}
+                  {deliveryInfo.address}
                 </p>
                 <p>
                   <span className="text-gray-500">City:</span>{" "}
-                  {mainOrderDetails.data.deliveryInfo.state}
+                  {deliveryInfo.state}
                 </p>
                 <p>
                   <span className="text-gray-500">Country:</span>{" "}
-                  {mainOrderDetails.data.deliveryInfo.country}
+                  {deliveryInfo.country}
                 </p>
                 <p>
                   <span className="text-gray-500">Zip Code:</span>{" "}
-                  {mainOrderDetails.data.deliveryInfo.zipcode}
+                  {deliveryInfo.zipcode}
                 </p>
               </div>
             </div>
           )}
 
           {/* Pickup Info */}
-          {mainOrderDetails?.data?.pickUpInfo && (
+          {pickUpInfo && (
             <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
               <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                 <svg
@@ -465,25 +475,45 @@ const OrderDetails = () => {
               <div className="space-y-2 text-sm text-gray-300">
                 <p>
                   <span className="text-gray-500">Name:</span>{" "}
-                  {mainOrderDetails.data.pickUpInfo.name}
+                  {pickUpInfo.name}
                 </p>
                 <p>
                   <span className="text-gray-500">Address:</span>{" "}
-                  {mainOrderDetails.data.pickUpInfo.address}
+                  {pickUpInfo.address}
                 </p>
                 <p>
                   <span className="text-gray-500">City:</span>{" "}
-                  {mainOrderDetails.data.pickUpInfo.state}
+                  {pickUpInfo.state}
                 </p>
                 <p>
                   <span className="text-gray-500">Country:</span>{" "}
-                  {mainOrderDetails.data.pickUpInfo.country}
+                  {pickUpInfo.country}
                 </p>
                 <p>
                   <span className="text-gray-500">Zip Code:</span>{" "}
-                  {mainOrderDetails.data.pickUpInfo.zipcode}
+                  {pickUpInfo.zipcode}
                 </p>
               </div>
+            </div>
+          )}
+
+          {/* Return Reason (only present on return orders) */}
+          {returnOrderDetails?.data?.clientReason && (
+            <div className="bg-gray-900 rounded-lg p-4 border border-purple-500">
+              <h3 className="text-lg font-semibold mb-3">Return Reason</h3>
+              <p className="text-sm text-gray-300">
+                {returnOrderDetails.data.clientReason}
+              </p>
+              {returnOrderDetails.data.vendorReason && (
+                <div className="mt-3 pt-3 border-t border-purple-500/30">
+                  <p className="text-purple-400 text-xs mb-1">
+                    Vendor Response:
+                  </p>
+                  <p className="text-sm text-gray-300">
+                    {returnOrderDetails.data.vendorReason}
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
