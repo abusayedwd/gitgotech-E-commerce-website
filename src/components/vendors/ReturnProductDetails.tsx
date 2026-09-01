@@ -4,14 +4,18 @@ import { showApiErrorToast } from "@/lib/apiErrorToast";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
 import {
   useGetReturnDetailsQuery,
+  useInspectReturnOrderMutation,
   useReturnOrderActionMutation,
+  useReviewReturnOrderMutation,
 } from "@/redux/features/vendor/order/orderSlice";
 import { selectShowroomId } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
 import {
   ArrowLeft,
+  ClipboardCheck,
   History,
   MapPin,
   Package,
+  SearchCheck,
   Store,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -21,10 +25,10 @@ import { useSelector } from "react-redux";
 
 const TRACKING_PREVIEW_COUNT = 3;
 
-const REVIEWABLE_STATUSES = new Set([
-  "Return Order Placed",
-  "Pending",
-]);
+const ACCEPT_DECLINE_STATUSES = new Set(["Return Order Placed"]);
+
+type ReviewDecision = "APPROVED" | "REJECTED";
+type InspectResult = "PASSED" | "FAILED";
 
 const TERMINAL_STATUSES = new Set([
   "Completed",
@@ -180,11 +184,52 @@ function findOrderProduct(orderProducts: OrderProduct[] | undefined, productId?:
   return orderProducts.find((item) => getProductId(item.product) === productId);
 }
 
-function vendorCanReviewReturn(status?: string, items: ReturnItem[] = []) {
-  const current = (status || "").trim();
+function normalizeReturnStatus(status?: string) {
+  return (status || "").trim();
+}
+
+function isPendingReturn(status?: string) {
+  return /^pending$/i.test(normalizeReturnStatus(status));
+}
+
+function isReturnReceived(status?: string) {
+  return /^return received$/i.test(normalizeReturnStatus(status));
+}
+
+function itemsAlreadyReviewed(items: ReturnItem[] = []) {
+  return items.some((item) => Boolean(item.vendorReview?.decision));
+}
+
+function vendorCanSubmitItemReview(status?: string, items: ReturnItem[] = []) {
+  if (!isPendingReturn(status)) return false;
+  return items.length > 0;
+}
+
+function isReviewApprovedItem(item: ReturnItem) {
+  const decision = (item.vendorReview?.decision || "").trim().toUpperCase();
+  const itemStatus = (item.itemStatus || "").trim().toUpperCase();
+  return decision === "APPROVED" || itemStatus === "APPROVED";
+}
+
+function getReviewApprovedItems(items: ReturnItem[] = []) {
+  return items.filter(isReviewApprovedItem);
+}
+
+function vendorCanInspectReturn(status?: string, items: ReturnItem[] = []) {
+  if (!isReturnReceived(status)) return false;
+  return getReviewApprovedItems(items).length > 0;
+}
+
+function vendorCanAcceptDecline(status?: string, items: ReturnItem[] = []) {
+  const current = normalizeReturnStatus(status);
+  if (isPendingReturn(current)) return false;
   if (TERMINAL_STATUSES.has(current)) return false;
-  if (items.some((item) => item.vendorReview?.decision)) return false;
-  return REVIEWABLE_STATUSES.has(current) || current === "";
+  if (itemsAlreadyReviewed(items)) return false;
+  return ACCEPT_DECLINE_STATUSES.has(current);
+}
+
+function getItemOrderProductId(item: ReturnItem) {
+  return item.orderProductId || item.product || "";
 }
 
 function statusBadgeClass(status?: string) {
@@ -195,7 +240,11 @@ function statusBadgeClass(status?: string) {
   if (["REJECTED", "FAILED", "DECLINED"].includes(value)) {
     return "bg-red-900/30 text-red-300 border border-red-500/30";
   }
-  if (["HELD", "PENDING", "VENDOR REVIEW", "INSPECTION STARTED"].includes(value)) {
+  if (
+    ["HELD", "PENDING", "VENDOR REVIEW", "INSPECTION STARTED", "RETURN RECEIVED"].includes(
+      value,
+    )
+  ) {
     return "bg-amber-900/30 text-amber-300 border border-amber-500/30";
   }
   if (["RELEASED", "AVAILABLE"].includes(value)) {
@@ -500,6 +549,404 @@ function ReturnItemCard({
   );
 }
 
+type ReviewDraft = {
+  key: string;
+  orderProductId: string;
+  decision: ReviewDecision | "";
+  reason: string;
+  name: string;
+  image?: string;
+  category?: string;
+  sizeType?: string;
+  quantity?: number;
+  customerReason?: string;
+};
+
+function buildReviewDrafts(
+  items: ReturnItem[],
+  orderProducts: OrderProduct[] | undefined,
+): ReviewDraft[] {
+  return items.map((item, index) => {
+    const matched = findOrderProduct(
+      orderProducts,
+      item.product || item.orderProductId,
+    );
+    const snapshot = matched?.productSnapshot;
+    return {
+      key: `${getItemOrderProductId(item)}-${item.sizeType || index}`,
+      orderProductId: getItemOrderProductId(item),
+      decision:
+        item.vendorReview?.decision === "REJECTED"
+          ? "REJECTED"
+          : item.vendorReview?.decision === "APPROVED"
+            ? "APPROVED"
+            : "",
+      reason: item.vendorReview?.reason || "",
+      name: snapshot?.name || "Returned product",
+      image: snapshot?.thumbnail,
+      category: snapshot?.category,
+      sizeType: item.sizeType,
+      quantity: item.quantity,
+      customerReason: item.customerReason,
+    };
+  });
+}
+
+function validateReviewDrafts(drafts: ReviewDraft[]) {
+  if (drafts.length === 0) return "There are no items to review.";
+  if (drafts.some((item) => !item.orderProductId)) {
+    return "A returned item is missing its product id.";
+  }
+  if (drafts.some((item) => !item.decision)) {
+    return "Choose Approve or Reject for every item.";
+  }
+  if (
+    drafts.some(
+      (item) => item.decision === "REJECTED" && !item.reason.trim(),
+    )
+  ) {
+    return "Add a reason for every rejected item.";
+  }
+  return "";
+}
+
+function ReturnReviewModal({
+  drafts,
+  isSubmitting,
+  error,
+  onChange,
+  onClose,
+  onSubmit,
+}: {
+  drafts: ReviewDraft[];
+  isSubmitting: boolean;
+  error: string;
+  onChange: (key: string, patch: Partial<ReviewDraft>) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#0a0a0f] border border-purple-500/30 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between mb-4 shrink-0">
+          <div>
+            <h3 className="text-xl font-semibold text-white">Review Return</h3>
+            <p className="text-sm text-gray-400 mt-1">
+              Approve or reject each item. A reason is required when you reject.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="text-gray-400 hover:text-white text-2xl leading-none disabled:opacity-50"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0">
+          {drafts.map((item) => (
+            <div
+              key={item.key}
+              className="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-3"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-800 shrink-0">
+                  <img
+                    src={buildImageUrl(item.image, "/images/jacket.png")}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/images/jacket.png";
+                    }}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-white truncate">{item.name}</p>
+                  {item.category && (
+                    <p className="text-xs text-gray-400">{item.category}</p>
+                  )}
+                  <p className="text-sm text-gray-300 mt-1">
+                    Size {item.sizeType || "—"} · Qty {item.quantity ?? 1}
+                  </p>
+                </div>
+              </div>
+
+              {item.customerReason && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Customer reason</p>
+                  <p className="text-sm text-gray-300">{item.customerReason}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => onChange(item.key, { decision: "APPROVED" })}
+                  disabled={isSubmitting}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all disabled:opacity-50 ${
+                    item.decision === "APPROVED"
+                      ? "bg-green-600/20 border-green-500 text-green-300"
+                      : "border-gray-700 text-gray-400 hover:border-green-500/50"
+                  }`}
+                >
+                  Approve
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange(item.key, { decision: "REJECTED" })}
+                  disabled={isSubmitting}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all disabled:opacity-50 ${
+                    item.decision === "REJECTED"
+                      ? "bg-red-600/20 border-red-500 text-red-300"
+                      : "border-gray-700 text-gray-400 hover:border-red-500/50"
+                  }`}
+                >
+                  Reject
+                </button>
+              </div>
+
+              <textarea
+                value={item.reason}
+                onChange={(e) => onChange(item.key, { reason: e.target.value })}
+                disabled={isSubmitting}
+                placeholder={
+                  item.decision === "REJECTED"
+                    ? "Reason for rejecting this item"
+                    : "Optional note"
+                }
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/30 rounded-lg focus:outline-none focus:border-purple-500 text-white placeholder-gray-500 resize-none h-20 text-sm disabled:opacity-50"
+              />
+            </div>
+          ))}
+        </div>
+
+        {error && (
+          <p className="text-red-400 text-sm mt-3 shrink-0">{error}</p>
+        )}
+
+        <div className="flex gap-3 mt-4 shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="flex-1 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white font-medium disabled:opacity-50"
+          >
+            {isSubmitting ? "Submitting..." : "Submit review"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type InspectDraft = {
+  key: string;
+  orderProductId: string;
+  result: InspectResult | "";
+  reason: string;
+  name: string;
+  image?: string;
+  category?: string;
+  sizeType?: string;
+  quantity?: number;
+  customerReason?: string;
+};
+
+function buildInspectDrafts(
+  items: ReturnItem[],
+  orderProducts: OrderProduct[] | undefined,
+): InspectDraft[] {
+  return getReviewApprovedItems(items).map((item, index) => {
+    const matched = findOrderProduct(
+      orderProducts,
+      item.product || item.orderProductId,
+    );
+    const snapshot = matched?.productSnapshot;
+    return {
+      key: `${getItemOrderProductId(item)}-${item.sizeType || index}`,
+      orderProductId: getItemOrderProductId(item),
+      result:
+        item.inspection?.result === "FAILED"
+          ? "FAILED"
+          : item.inspection?.result === "PASSED"
+            ? "PASSED"
+            : "",
+      reason: item.inspection?.reason || "",
+      name: snapshot?.name || "Returned product",
+      image: snapshot?.thumbnail,
+      category: snapshot?.category,
+      sizeType: item.sizeType,
+      quantity: item.quantity,
+      customerReason: item.customerReason,
+    };
+  });
+}
+
+function validateInspectDrafts(drafts: InspectDraft[]) {
+  if (drafts.length === 0) return "There are no review-approved items to inspect.";
+  if (drafts.some((item) => !item.orderProductId)) {
+    return "A returned item is missing its product id.";
+  }
+  if (drafts.some((item) => !item.result)) {
+    return "Choose Passed or Failed for every item.";
+  }
+  if (drafts.some((item) => item.result === "FAILED" && !item.reason.trim())) {
+    return "Add a reason for every failed item.";
+  }
+  return "";
+}
+
+function ReturnInspectModal({
+  drafts,
+  isSubmitting,
+  error,
+  onChange,
+  onClose,
+  onSubmit,
+}: {
+  drafts: InspectDraft[];
+  isSubmitting: boolean;
+  error: string;
+  onChange: (key: string, patch: Partial<InspectDraft>) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-[#0a0a0f] border border-purple-500/30 rounded-2xl p-6 w-full max-w-2xl max-h-[90vh] flex flex-col">
+        <div className="flex items-center justify-between mb-4 shrink-0">
+          <div>
+            <h3 className="text-xl font-semibold text-white">Inspect Return</h3>
+            <p className="text-sm text-gray-400 mt-1">
+              Inspect only the products that passed vendor review. Mark each as
+              passed or failed. A reason is required when an item fails
+              inspection.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="text-gray-400 hover:text-white text-2xl leading-none disabled:opacity-50"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="space-y-4 overflow-y-auto pr-1 flex-1 min-h-0">
+          {drafts.map((item) => (
+            <div
+              key={item.key}
+              className="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-3"
+            >
+              <div className="flex items-start gap-3">
+                <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-800 shrink-0">
+                  <img
+                    src={buildImageUrl(item.image, "/images/jacket.png")}
+                    alt={item.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/images/jacket.png";
+                    }}
+                  />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-white truncate">{item.name}</p>
+                  {item.category && (
+                    <p className="text-xs text-gray-400">{item.category}</p>
+                  )}
+                  <p className="text-sm text-gray-300 mt-1">
+                    Size {item.sizeType || "—"} · Qty {item.quantity ?? 1}
+                  </p>
+                </div>
+              </div>
+
+              {item.customerReason && (
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Customer reason</p>
+                  <p className="text-sm text-gray-300">{item.customerReason}</p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => onChange(item.key, { result: "PASSED" })}
+                  disabled={isSubmitting}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all disabled:opacity-50 ${
+                    item.result === "PASSED"
+                      ? "bg-green-600/20 border-green-500 text-green-300"
+                      : "border-gray-700 text-gray-400 hover:border-green-500/50"
+                  }`}
+                >
+                  Passed
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onChange(item.key, { result: "FAILED" })}
+                  disabled={isSubmitting}
+                  className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all disabled:opacity-50 ${
+                    item.result === "FAILED"
+                      ? "bg-red-600/20 border-red-500 text-red-300"
+                      : "border-gray-700 text-gray-400 hover:border-red-500/50"
+                  }`}
+                >
+                  Failed
+                </button>
+              </div>
+
+              <textarea
+                value={item.reason}
+                onChange={(e) => onChange(item.key, { reason: e.target.value })}
+                disabled={isSubmitting}
+                placeholder={
+                  item.result === "FAILED"
+                    ? "Reason this item failed inspection"
+                    : "Optional inspection note"
+                }
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600/30 rounded-lg focus:outline-none focus:border-purple-500 text-white placeholder-gray-500 resize-none h-20 text-sm disabled:opacity-50"
+              />
+            </div>
+          ))}
+        </div>
+
+        {error && (
+          <p className="text-red-400 text-sm mt-3 shrink-0">{error}</p>
+        )}
+
+        <div className="flex gap-3 mt-4 shrink-0">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="flex-1 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium disabled:opacity-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onSubmit}
+            disabled={isSubmitting}
+            className="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white font-medium disabled:opacity-50"
+          >
+            {isSubmitting ? "Submitting..." : "Submit inspection"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ReturnDetails() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -508,7 +955,13 @@ export default function ReturnDetails() {
 
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [showInspectModal, setShowInspectModal] = useState(false);
   const [declineReason, setDeclineReason] = useState("");
+  const [reviewDrafts, setReviewDrafts] = useState<ReviewDraft[]>([]);
+  const [reviewError, setReviewError] = useState("");
+  const [inspectDrafts, setInspectDrafts] = useState<InspectDraft[]>([]);
+  const [inspectError, setInspectError] = useState("");
 
   const { data, isLoading, error, refetch } = useGetReturnDetailsQuery(
     { id: returnId, showroomId },
@@ -517,11 +970,109 @@ export default function ReturnDetails() {
 
   const [returnOrderAction, { isLoading: isActionLoading }] =
     useReturnOrderActionMutation();
+  const [reviewReturnOrder, { isLoading: isReviewLoading }] =
+    useReviewReturnOrderMutation();
+  const [inspectReturnOrder, { isLoading: isInspectLoading }] =
+    useInspectReturnOrderMutation();
 
   const envelope = data as ApiEnvelope<ReturnDetailsData> | undefined;
   const returnData = envelope?.data ?? null;
   const items = returnData?.items || [];
-  const canReview = vendorCanReviewReturn(returnData?.status, items);
+  const canReviewItems = vendorCanSubmitItemReview(returnData?.status, items);
+  const canInspectItems = vendorCanInspectReturn(returnData?.status, items);
+  const canAcceptDecline = vendorCanAcceptDecline(returnData?.status, items);
+
+  const openReviewModal = () => {
+    setReviewDrafts(
+      buildReviewDrafts(items, returnData?.order?.products),
+    );
+    setReviewError("");
+    setShowReviewModal(true);
+  };
+
+  const updateReviewDraft = (key: string, patch: Partial<ReviewDraft>) => {
+    setReviewDrafts((current) =>
+      current.map((item) => (item.key === key ? { ...item, ...patch } : item)),
+    );
+    setReviewError("");
+  };
+
+  const handleSubmitReview = async () => {
+    const errorMessage = validateReviewDrafts(reviewDrafts);
+    if (errorMessage) {
+      setReviewError(errorMessage);
+      return;
+    }
+
+    if (!returnData?._id) {
+      setReviewError("Missing return order id.");
+      return;
+    }
+
+    try {
+      const res = await reviewReturnOrder({
+        orderId: returnData._id,
+        showroomId,
+        items: reviewDrafts.map((item) => ({
+          orderProductId: item.orderProductId,
+          decision: item.decision as ReviewDecision,
+          reason: item.reason.trim(),
+        })),
+      }).unwrap();
+      toast.success(getApiMessage(res, "Return review submitted"));
+      setShowReviewModal(false);
+      setReviewDrafts([]);
+      refetch();
+    } catch (err) {
+      showApiErrorToast(err, "Failed to submit return review");
+    }
+  };
+
+  const openInspectModal = () => {
+    setInspectDrafts(
+      buildInspectDrafts(items, returnData?.order?.products),
+    );
+    setInspectError("");
+    setShowInspectModal(true);
+  };
+
+  const updateInspectDraft = (key: string, patch: Partial<InspectDraft>) => {
+    setInspectDrafts((current) =>
+      current.map((item) => (item.key === key ? { ...item, ...patch } : item)),
+    );
+    setInspectError("");
+  };
+
+  const handleSubmitInspect = async () => {
+    const errorMessage = validateInspectDrafts(inspectDrafts);
+    if (errorMessage) {
+      setInspectError(errorMessage);
+      return;
+    }
+
+    if (!returnData?._id) {
+      setInspectError("Missing return order id.");
+      return;
+    }
+
+    try {
+      const res = await inspectReturnOrder({
+        returnOrderId: returnData._id,
+        showroomId,
+        items: inspectDrafts.map((item) => ({
+          orderProductId: item.orderProductId,
+          result: item.result as InspectResult,
+          reason: item.reason.trim(),
+        })),
+      }).unwrap();
+      toast.success(getApiMessage(res, "Return inspection submitted"));
+      setShowInspectModal(false);
+      setInspectDrafts([]);
+      refetch();
+    } catch (err) {
+      showApiErrorToast(err, "Failed to submit return inspection");
+    }
+  };
 
   const handleAccept = async () => {
     try {
@@ -623,7 +1174,29 @@ export default function ReturnDetails() {
                 {returnData.status}
               </span>
             )}
-            {canReview && (
+            {canReviewItems && (
+              <button
+                type="button"
+                onClick={openReviewModal}
+                disabled={isReviewLoading}
+                className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-sm font-medium transition-all disabled:opacity-50 inline-flex items-center gap-2"
+              >
+                <ClipboardCheck className="w-4 h-4" />
+                Review
+              </button>
+            )}
+            {canInspectItems && (
+              <button
+                type="button"
+                onClick={openInspectModal}
+                disabled={isInspectLoading}
+                className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-white text-sm font-medium transition-all disabled:opacity-50 inline-flex items-center gap-2"
+              >
+                <SearchCheck className="w-4 h-4" />
+                Inspect
+              </button>
+            )}
+            {canAcceptDecline && (
               <>
                 <button
                   type="button"
@@ -755,6 +1328,36 @@ export default function ReturnDetails() {
           </div>
         </div>
       </div>
+
+      {showReviewModal && (
+        <ReturnReviewModal
+          drafts={reviewDrafts}
+          isSubmitting={isReviewLoading}
+          error={reviewError}
+          onChange={updateReviewDraft}
+          onClose={() => {
+            if (isReviewLoading) return;
+            setShowReviewModal(false);
+            setReviewError("");
+          }}
+          onSubmit={handleSubmitReview}
+        />
+      )}
+
+      {showInspectModal && (
+        <ReturnInspectModal
+          drafts={inspectDrafts}
+          isSubmitting={isInspectLoading}
+          error={inspectError}
+          onChange={updateInspectDraft}
+          onClose={() => {
+            if (isInspectLoading) return;
+            setShowInspectModal(false);
+            setInspectError("");
+          }}
+          onSubmit={handleSubmitInspect}
+        />
+      )}
 
       {showDeclineModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

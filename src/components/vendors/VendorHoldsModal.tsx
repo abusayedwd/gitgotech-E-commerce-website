@@ -143,7 +143,7 @@ export default function VendorHoldsModal({
                             `/vendor-dashboard/orders/details?id=${hold.orderId}`,
                           );
                         }}
-                        className="w-full text-left rounded-xl border border-gray-800 bg-black/30 p-4 hover:border-purple-500/40 transition-colors"
+                        className="w-full text-left rounded-xl cursor-pointer border border-gray-800 bg-black/30 p-4 hover:border-purple-500/40 transition-colors"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div>

@@ -152,6 +152,37 @@ const orderSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Returns"],
     }),
 
+    // Per-item vendor review (Pending returns)
+    reviewReturnOrder: builder.mutation({
+      query: ({ orderId, items, showroomId }) => ({
+        url: `/order/vendor/return-review`,
+        method: "PATCH",
+        headers: {
+          showroom: showroomId,
+        },
+        body: {
+          orderId,
+          items,
+        },
+      }),
+      invalidatesTags: ["Returns", "Holds"],
+    }),
+
+    // Per-item vendor inspection (Return Received)
+    inspectReturnOrder: builder.mutation({
+      query: ({ returnOrderId, items, showroomId }) => ({
+        url: `/order/vendor/return-inspect/${returnOrderId}`,
+        method: "PATCH",
+        headers: {
+          showroom: showroomId,
+        },
+        body: {
+          items,
+        },
+      }),
+      invalidatesTags: ["Returns", "Holds"],
+    }),
+
     // ==================== CUSTOM ORDERS ====================
 
     // Get Custom Design Orders
@@ -256,6 +287,8 @@ export const {
   useGetVendorReturnsQuery,
   useGetReturnDetailsQuery,
   useReturnOrderActionMutation,
+  useReviewReturnOrderMutation,
+  useInspectReturnOrderMutation,
   // Custom Orders
   useGetCustomOrdersQuery,
   useGetCustomOrderDetailsQuery,
