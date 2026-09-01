@@ -15,6 +15,8 @@ interface Order {
   customer: {
     _id: string;
     name: string;
+    email?: string;
+    phone?: number | string;
   };
   // An order can bundle multiple products (same showroom, one order).
   products?: {
@@ -25,6 +27,7 @@ interface Order {
   }[];
   orderStatus: string;
   createdAt: string;
+  deliveryType?: string;
 }
 
 function orderProductLabel(item: Order): string {
@@ -415,20 +418,20 @@ export default function OrderHistory() {
                   <td className="py-3 px-4 text-sm text-white">
                     {activeTab === "orders"
                       ? "customer" in item
-                        ? item.customer?.email
+                        ? item.customer?.email || item.customer?.name || "N/A"
                         : "N/A"
                       : "showroom" in item
                         ? item.showroom?.showroom_name
                         : "N/A"}
                   </td>
-                  {activeTab === "orders" && (
+                  {activeTab === "orders" && "deliveryType" in item && (
                     <td className={`py- px-4 text-xs capitalize font-bold ${item.deliveryType==="pick-up"?'text-amber-300':'text-green-400'}`}><span className="border p-1.5 rounded-2xl">{item.deliveryType}</span></td>
                   )}
                   <td className="py-3 px-4">
                     {activeTab === "orders" ? (
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}>
-                        {item.orderStatus}
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle("orderStatus" in item ? item.orderStatus : "")}`}>
+                        {"orderStatus" in item ? item.orderStatus : "N/A"}
                       </span>
                     ) : (
                       <span

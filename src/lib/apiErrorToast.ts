@@ -63,7 +63,9 @@ const TOKEN_EXPIRED_MESSAGE_PATTERNS = [
 
 export function isTokenExpiredError(error: unknown): boolean {
   const err = error as ApiError;
-  return err?.status === 401 || err?.data?.isTokenExpired === true;
+  if (err?.status === 401) return true;
+  const data = err?.data;
+  return typeof data === "object" && data?.isTokenExpired === true;
 }
 
 export function shouldSuppressErrorToast(message: string): boolean {
