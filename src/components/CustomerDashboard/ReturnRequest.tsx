@@ -5,9 +5,16 @@ import { showApiErrorToast } from "@/lib/apiErrorToast";
 import { calcDistanceDeliveryUsd } from "@/lib/deliveryPricing";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
 import {
+  canRequestOrderReturn,
+  getReturnDeadline,
+  getOrderDeliveredAt,
+  getReturnWindowDays,
+} from "@/lib/returnWindow";
+import {
   useAddReturnOrderMutation,
   useGetMainOrderDetailsQuery,
 } from "@/redux/features/order/orderSlice";
+import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -127,6 +134,7 @@ export default function ReturnRequestForm() {
     orderId,
     { skip: !orderId || orderId === "undefined" },
   );
+  const { data: platformSettings } = usePlatformFreeQuery(undefined);
 
   const orderData = mainOrderDetails?.data;
   const products = orderData?.products || [];
@@ -280,6 +288,14 @@ export default function ReturnRequestForm() {
     if (orderData?.orderStatus && orderData.orderStatus !== "Delivered") {
       return "Only delivered orders can be returned";
     }
+    if (
+      !canRequestOrderReturn(
+        orderData,
+        getReturnWindowDays(platformSettings),
+      )
+    ) {
+      return "The return window for this order has ended";
+    }
     if (selectedLines.length === 0) {
       return "Select at least one item from this order to return";
     }
@@ -395,7 +411,12 @@ export default function ReturnRequestForm() {
     );
   }
 
-  const canReturn = orderData.orderStatus === "Delivered";
+  const returnWindowDays = getReturnWindowDays(platformSettings);
+  const canReturn = canRequestOrderReturn(orderData, returnWindowDays);
+  const returnDeadline = getReturnDeadline(
+    getOrderDeliveredAt(orderData),
+    returnWindowDays,
+  );
 
   return (
     <div className="bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
@@ -413,8 +434,17 @@ export default function ReturnRequestForm() {
 
       {!canReturn && (
         <div className="max-w-6xl mx-auto mb-6 rounded-xl border border-amber-500/40 bg-amber-950/30 px-4 py-3 text-sm text-amber-100">
-          Only delivered orders can be returned. This order is{" "}
-          {orderData.orderStatus || "not delivered"}.
+          {orderData.orderStatus !== "Delivered"
+            ? `Only delivered orders can be returned. This order is ${orderData.orderStatus || "not delivered"}.`
+            : returnDeadline
+              ? `The return window for this order ended on ${returnDeadline.toLocaleString("en-US", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}.`
+              : "This order is no longer eligible for return."}
         </div>
       )}
 

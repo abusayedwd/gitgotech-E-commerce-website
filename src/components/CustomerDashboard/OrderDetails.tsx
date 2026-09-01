@@ -2,11 +2,16 @@
 
 import BackButton from "@/customComponent/BackButton";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
+import {
+  canRequestOrderReturn,
+  getReturnWindowDays,
+} from "@/lib/returnWindow";
 import { useAddToCartWishListMutation } from "@/redux/features/home/homeSlice";
 import {
   useGetMainOrderDetailsQuery,
   useGetReturnOrderDetailsQuery,
 } from "@/redux/features/order/orderSlice";
+import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
@@ -87,6 +92,7 @@ type MainOrder = {
   products?: OrderProduct[];
   deliveryType?: string;
   orderStatus?: string;
+  deliveredAt?: string;
   price?: OrderPrice;
   deliveryInfo?: ContactInfo;
   pickUpInfo?: ContactInfo;
@@ -326,6 +332,8 @@ const OrderDetails = () => {
     useGetReturnOrderDetailsQuery(id, {
       skip: !id || id === "undefined",
     });
+  const { data: platformSettings, isLoading: isPlatformSettingsLoading } =
+    usePlatformFreeQuery(undefined);
 
   const mainOrder = (mainOrderDetails?.data || null) as MainOrder | null;
   const returnData = returnOrderDetails?.data;
@@ -359,7 +367,10 @@ const OrderDetails = () => {
     mainOrderStatus === "Rejected" ||
     mainOrderStatus === "Return Declined" ||
     returnOrderStatus === "Return Declined";
-  const isCompleted = mainOrderStatus === "Delivered";
+  const returnWindowDays = getReturnWindowDays(platformSettings);
+  const canShowReturn =
+    !isPlatformSettingsLoading &&
+    canRequestOrderReturn(mainOrder, returnWindowDays);
   const showroomName =
     pickUpInfo?.name || returnData?.showroom?.showroom_name || "Order";
 
@@ -503,13 +514,6 @@ const OrderDetails = () => {
               {deliveryType}
             </span>
           )}
-          {isCompleted && (
-            <Link href={`/customer-dashboard/return-request?id=${id}`}>
-              <div className="bg-[#6100FF] px-4 py-2 rounded-lg text-sm font-medium cursor-pointer hover:bg-[#6100FF]/80">
-                Return
-              </div>
-            </Link>
-          )}
           {mainOrderStatus && (
             <div
               className={`px-4 py-1 rounded-lg text-sm font-medium ${statusClass(mainOrderStatus)}`}
@@ -523,6 +527,13 @@ const OrderDetails = () => {
             >
               Return: {returnOrderStatus}
             </div>
+          )}
+          {canShowReturn && (
+            <Link href={`/customer-dashboard/return-request?id=${id}`}>
+              <div className="bg-[#6100FF] px-4 py-2 rounded-lg text-sm font-medium cursor-pointer hover:bg-[#6100FF]/80">
+                Return
+              </div>
+            </Link>
           )}
         </div>
       </div>

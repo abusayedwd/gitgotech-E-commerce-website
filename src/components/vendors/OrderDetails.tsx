@@ -148,16 +148,16 @@ type ApiEnvelope<T> = {
   data?: T;
 };
 
-function formatMoney(amount: number | undefined, unit = "usd") {
+function formatMoney(amount: number | undefined, unit = "ghs") {
   const value = Number(amount ?? 0);
-  const code = (unit || "usd").toUpperCase();
+  const code = (unit || "ghs").toUpperCase();
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: code,
     }).format(value);
   } catch {
-    return `${code} ${value.toFixed(2)}`;
+    return `${"GHS"} ${value.toFixed(2)}`;
   }
 }
 
@@ -463,6 +463,7 @@ export default function OrderDetailsPage() {
 
   const [updateOrderStatus, { isLoading: isUpdating }] =
     useUpdateOrderStatusMutation();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const envelope = data as ApiEnvelope<VendorOrderDetails> | undefined;
   const order = envelope?.data ?? null;
@@ -481,6 +482,7 @@ export default function OrderDetailsPage() {
         showroomId,
       }).unwrap();
       toast.success(getApiMessage(res, "Order status updated successfully"));
+      setShowConfirmModal(false);
       refetch();
     } catch (err) {
       showApiErrorToast(err, "Failed to update order status");
@@ -618,11 +620,11 @@ export default function OrderDetailsPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={handleStatusUpdate}
+                  onClick={() => setShowConfirmModal(true)}
                   disabled={isUpdating}
                   className="px-5 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isUpdating ? "Updating..." : nextAction.label}
+                  {nextAction.label}
                 </button>
               </div>
             ) : (
@@ -822,6 +824,53 @@ export default function OrderDetailsPage() {
           </div>
         </div>
       </div>
+
+      {showConfirmModal && nextAction && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-[#0a0a0f] border border-purple-500/30 rounded-2xl p-6 w-full max-w-md">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-semibold text-white">
+                Confirm status update
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                disabled={isUpdating}
+                className="text-gray-400 hover:text-white disabled:opacity-50"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-gray-300 text-sm mb-6">
+              Update this order from{" "}
+              <span className="text-white font-medium">
+                {order.orderStatus}
+              </span>{" "}
+              to{" "}
+              <span className="text-white font-medium">{nextAction.label}</span>
+              ?
+            </p>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                disabled={isUpdating}
+                className="flex-1 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-white font-medium disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleStatusUpdate}
+                disabled={isUpdating}
+                className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg text-white font-medium disabled:opacity-50"
+              >
+                {isUpdating ? "Updating..." : `Confirm ${nextAction.label}`}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

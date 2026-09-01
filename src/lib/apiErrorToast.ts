@@ -1,12 +1,56 @@
 import toast from "react-hot-toast";
 
 type ApiError = {
-  status?: number;
+  status?: number | string;
+  error?: string;
+  message?: string;
   data?: {
     isTokenExpired?: boolean;
     message?: string;
-  };
+    data?: { message?: string };
+  } | string;
 };
+
+function extractApiErrorMessage(error: unknown, fallback: string): string {
+  if (!error || typeof error !== "object") return fallback;
+
+  const err = error as ApiError;
+  const data = err.data;
+
+  if (data && typeof data === "object") {
+    if (typeof data.message === "string" && data.message.trim()) {
+      return data.message.trim();
+    }
+    if (typeof data.data?.message === "string" && data.data.message.trim()) {
+      return data.data.message.trim();
+    }
+  }
+
+  if (typeof data === "string" && data.trim()) {
+    try {
+      const parsed = JSON.parse(data) as { message?: unknown };
+      if (typeof parsed?.message === "string" && parsed.message.trim()) {
+        return parsed.message.trim();
+      }
+    } catch {
+      // Keep looking at other fields instead of showing raw HTML/text.
+    }
+  }
+
+  if (
+    typeof err.message === "string" &&
+    err.message.trim() &&
+    err.message !== "Rejected"
+  ) {
+    return err.message.trim();
+  }
+
+  if (typeof err.error === "string" && err.error.trim()) {
+    return err.error.trim();
+  }
+
+  return fallback;
+}
 
 let tokenExpiredActive = false;
 
@@ -53,8 +97,7 @@ export function notifyTokenExpired(message?: string): void {
 export function showApiErrorToast(error: unknown, fallback: string): void {
   if (isTokenExpiredError(error)) return;
 
-  const err = error as ApiError;
-  const message = err?.data?.message || fallback;
+  const message = extractApiErrorMessage(error, fallback);
   if (shouldSuppressErrorToast(message)) return;
 
   toast.error(message);
