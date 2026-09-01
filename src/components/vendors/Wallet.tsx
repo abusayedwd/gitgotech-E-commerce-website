@@ -5,11 +5,12 @@ import {
   useGetWalletTransactionsQuery,
 } from "@/redux/features/paymentTransaction/paymentTransactionSlice";
 import { useGetMyProfileQuery } from "@/redux/features/settings/settingsSlice";
-import { DollarSign, Wallet as WalletIcon, X } from "lucide-react";
+import { Clock, DollarSign, Wallet as WalletIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
+import VendorHoldsModal from "./VendorHoldsModal";
 
 interface Transaction {
   _id: string;
@@ -26,6 +27,7 @@ interface Transaction {
 export default function Wallett() {
   const router = useRouter();
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [isHoldsModalOpen, setIsHoldsModalOpen] = useState(false);
   const [paymentAmount, setPaymentAmount] = useState("");
   const [paymentPhone, setPaymentPhone] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +36,8 @@ export default function Wallett() {
   const [addMoney] = useAddMoneyMutation();
  const {data:profileData} = useGetMyProfileQuery({});
  const userRole = profileData?.data?.role;
-  const balance = walletData?.data?.balance || 0;
+  const balance = walletData?.data?.balance ?? profileData?.data?.balance ?? 0;
+  const heldBalance = Number(profileData?.data?.heldBalance || 0);
   const transactions: Transaction[] = walletData?.data?.transactions || [];
 
   const formatDate = (dateString: string) => {
@@ -121,19 +124,16 @@ export default function Wallett() {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Balance Card - Redesigned */}
-        <div className="w-full">
+        <div className={`grid grid-cols-1 ${userRole === "vendor" ? "md:grid-cols-2" : ""} gap-4`}>
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-purple-600 via-purple-500 to-indigo-600 p-6 md:p-8 shadow-[0_0_30px_rgba(139,92,246,0.4)]">
-            {/* Background Decoration */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
 
-            {/* Content */}
             <div className="relative z-10">
               <div className="flex items-center gap-2 mb-2">
                 <WalletIcon className="w-6 h-6 text-white" />
                 <span className="text-white/80 text-sm md:text-base font-medium tracking-wide">
-                  BALANCE
+                  AVAILABLE BALANCE
                 </span>
               </div>
 
@@ -141,22 +141,44 @@ export default function Wallett() {
                 {formatCurrency(balance)}
               </div>
 
-              {/* Coin Icon */}
-              <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block">
-                <div className="relative">
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/50">
-                    <DollarSign
-                      className="w-10 h-10 md:w-14 md:h-14 text-yellow-800"
-                      strokeWidth={3}
-                    />
+              {userRole !== "vendor" && (
+                <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block">
+                  <div className="relative">
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/50">
+                      <DollarSign
+                        className="w-10 h-10 md:w-14 md:h-14 text-yellow-800"
+                        strokeWidth={3}
+                      />
+                    </div>
+                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 -z-10"></div>
+                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-800 -z-20"></div>
                   </div>
-                  {/* Coin Stack Effect */}
-                  <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 -z-10"></div>
-                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-800 -z-20"></div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
+
+          {userRole === "vendor" && (
+            <button
+              type="button"
+              onClick={() => setIsHoldsModalOpen(true)}
+              className="relative overflow-hidden cursor-pointer rounded-2xl bg-gradient-to-r from-amber-600 via-amber-500 to-orange-500 p-6 md:p-8 shadow-[0_0_30px_rgba(245,158,11,0.35)] text-left hover:brightness-110 transition"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+              <div className="relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-6 h-6 text-white" />
+                  <span className="text-white/80 text-sm md:text-base font-medium tracking-wide">
+                    HELD BALANCE
+                  </span>
+                </div>
+                <div className="text-white text-3xl md:text-5xl font-bold mb-2">
+                  {formatCurrency(heldBalance)}
+                </div>
+                <p className="text-white/80 text-sm">Tap to view holds</p>
+              </div>
+            </button>
+          )}
         </div>
 
         {/* Action Buttons */}
@@ -318,6 +340,10 @@ export default function Wallett() {
           </div>
         </div>
       )}
+      <VendorHoldsModal
+        open={isHoldsModalOpen}
+        onClose={() => setIsHoldsModalOpen(false)}
+      />
     </div>
   );
 }

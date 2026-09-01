@@ -72,14 +72,14 @@ export const orderSlice = apiSlice.injectEndpoints({
      invalidatesTags: ["Orders"],
     }),
 
-    // ✅ POST - Add Return Order (with ID)
+    // ✅ POST - Add Return Order (multipart: data JSON + product-N files)
     addReturnOrder: builder.mutation({
-      query: ({ orderId, data }) => ({
+      query: ({ orderId, formData }) => ({
         url: `/order/return/add/${orderId}`,
         method: "POST",
-        body: data,
+        body: formData,
       }),
-     invalidatesTags: ["Orders"],
+      invalidatesTags: ["Orders", "Returns"],
     }),
 
     customOrderPlace: builder.mutation({

@@ -141,12 +141,13 @@ const orderSlice = apiSlice.injectEndpoints({
 
     // Return Order Action (accept/decline)
     returnOrderAction: builder.mutation({
-      query: ({ id, action, showroomId }) => ({
+      query: ({ id, action, showroomId, reason }) => ({
         url: `/order/vendor/return-action?order=${id}&action=${action}`,
         method: "PATCH",
         headers: {
           showroom: showroomId,
         },
+        ...(reason ? { body: { reason } } : {}),
       }),
       invalidatesTags: ["Returns"],
     }),
@@ -237,6 +238,14 @@ const orderSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["CustomOrders"],
     }),
 
+    getVendorHolds: builder.query({
+      query: () => ({
+        url: `/order/vendor/holds`,
+        method: "GET",
+      }),
+      providesTags: ["Holds"],
+    }),
+
   }),
 });
 
@@ -252,4 +261,5 @@ export const {
   useGetCustomOrderDetailsQuery,
   useAcceptOrDeclineCustomOrderMutation,
   useChangeCustomOrderStatusMutation,
+  useGetVendorHoldsQuery,
 } = orderSlice;

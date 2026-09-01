@@ -62,6 +62,7 @@ export const apiSlice = createApi({
     "CustomOrders",
     "Wallet",
     "Withdraw",
+    "Holds",
     "Support",
     "Review",
     "DeliveryRequests",

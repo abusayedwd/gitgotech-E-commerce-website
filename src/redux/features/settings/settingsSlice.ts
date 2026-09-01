@@ -12,6 +12,15 @@ const settingsSlice = apiSlice.injectEndpoints({
       providesTags: ["Settings"],
     }),
 
+    // Get Terms
+    getRefundPolicy: builder.query({
+      query: () => ({
+        url: `/setting/refund-policy`,
+        method: "GET",
+      }),
+      providesTags: ["Settings"],
+    }),
+
     // Get About
     getAboutUs: builder.query({
       query: () => ({
@@ -69,6 +78,7 @@ const settingsSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetTermsQuery,
+  useGetRefundPolicyQuery,
   useGetAboutUsQuery,
   useGetPrivacyQuery,
   useGetSupportQuery,
