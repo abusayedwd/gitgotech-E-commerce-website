@@ -161,8 +161,7 @@ export default function OrderHistory() {
     : activeTab === "orders"
       ? ordersLoading
       : returnsLoading;
-  const listError =
-    activeTab === "orders" ? ordersError : returnsError;
+  const listError = activeTab === "orders" ? ordersError : returnsError;
 
   const getStatusStyle = (status: string) => {
     const styles: { [key: string]: string } = {
@@ -208,8 +207,7 @@ export default function OrderHistory() {
             activeTab === "orders"
               ? "bg-gradient-to-r from-[#6100FF] to-pink-600 text-white"
               : "bg-gray-800/50 text-gray-400 hover:text-white"
-          }`}
-        >
+          }`}>
           Orders
         </button>
         <button
@@ -218,8 +216,7 @@ export default function OrderHistory() {
             activeTab === "returns"
               ? "bg-gradient-to-r from-[#6100FF] to-pink-600 text-white"
               : "bg-gray-800/50 text-gray-400 hover:text-white"
-          }`}
-        >
+          }`}>
           Returns
         </button>
       </div>
@@ -234,8 +231,7 @@ export default function OrderHistory() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
-          >
+            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm">
             <option>Filter</option>
             {(activeTab === "orders" ? ORDER_FILTERS : RETURN_FILTERS).map(
               (filter) => (
@@ -255,8 +251,7 @@ export default function OrderHistory() {
               className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
               fill="none"
               stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+              viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -298,8 +293,7 @@ export default function OrderHistory() {
           (activeTab === "orders" ? allOrders : allReturns).map((item) => (
             <div
               key={item._id}
-              className="bg-gray-800/20 border border-gray-700/30 rounded-lg p-4 hover:bg-gray-800/30 transition-colors"
-            >
+              className="bg-gray-800/20 border border-gray-700/30 rounded-lg p-4 hover:bg-gray-800/30 transition-colors">
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <div className="text-sm font-medium text-white mb-1">
@@ -316,8 +310,7 @@ export default function OrderHistory() {
                       handleStatusUpdate(item._id, e.target.value)
                     }
                     disabled={updatingOrderId === item._id}
-                    className="px-2 py-1 bg-gray-800/50 border border-purple-500/30 rounded-lg text-xs text-white focus:outline-none focus:border-purple-500 disabled:opacity-50"
-                  >
+                    className="px-2 py-1 bg-gray-800/50 border border-purple-500/30 rounded-lg text-xs text-white focus:outline-none focus:border-purple-500 disabled:opacity-50">
                     {ORDER_STATUS_OPTIONS.map((status) => (
                       <option key={status} value={status}>
                         {status}
@@ -326,8 +319,7 @@ export default function OrderHistory() {
                   </select>
                 ) : (
                   <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}
-                  >
+                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}>
                     {"status" in item ? item.status : "N/A"}
                   </span>
                 )}
@@ -351,8 +343,7 @@ export default function OrderHistory() {
               <div className="flex justify-end pt-2">
                 <button
                   onClick={() => handleViewDetails(item._id)}
-                  className="px-3 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
-                >
+                  className="px-3 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
                   View Details
                 </button>
               </div>
@@ -375,9 +366,11 @@ export default function OrderHistory() {
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
                 {activeTab === "orders" ? "Customer" : "Showroom"}
               </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
-                Product
-              </th>
+              {activeTab === "orders" && (
+                <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  Delivery Type
+                </th>
+              )}
               <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
                 {activeTab === "orders" ? "Order Status" : "Return Status"}
               </th>
@@ -389,7 +382,9 @@ export default function OrderHistory() {
           <tbody>
             {skipVendorList ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-gray-500 text-sm">
+                <td
+                  colSpan={6}
+                  className="py-8 text-center text-gray-500 text-sm">
                   Choose a showroom to load this table.
                 </td>
               </tr>
@@ -410,8 +405,7 @@ export default function OrderHistory() {
               (activeTab === "orders" ? allOrders : allReturns).map((item) => (
                 <tr
                   key={item._id}
-                  className="border-b border-gray-800/30 hover:bg-gray-800/20 transition-colors"
-                >
+                  className="border-b border-gray-800/30 hover:bg-gray-800/20 transition-colors">
                   <td className="py-3 px-4 text-sm text-white">
                     #{item._id.slice(-8)}
                   </td>
@@ -421,39 +415,24 @@ export default function OrderHistory() {
                   <td className="py-3 px-4 text-sm text-white">
                     {activeTab === "orders"
                       ? "customer" in item
-                        ? item.customer?.name
+                        ? item.customer?.email
                         : "N/A"
                       : "showroom" in item
                         ? item.showroom?.showroom_name
                         : "N/A"}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-300 max-w-[10rem] truncate">
-                    {"products" in item && orderProductLabel(item)
-                      ? orderProductLabel(item)
-                      : "—"}
-                  </td>
+                  {activeTab === "orders" && (
+                    <td className={`py- px-4 text-xs capitalize font-bold ${item.deliveryType==="pick-up"?'text-amber-300':'text-green-400'}`}><span className="border p-1.5 rounded-2xl">{item.deliveryType}</span></td>
+                  )}
                   <td className="py-3 px-4">
                     {activeTab === "orders" ? (
-                      <div className="flex items-center gap-2">
-                        <select
-                          value={"orderStatus" in item ? item.orderStatus : ""}
-                          onChange={(e) =>
-                            handleStatusUpdate(item._id, e.target.value)
-                          }
-                          disabled={updatingOrderId === item._id}
-                          className="px-3 py-1 bg-gray-800/50 border border-purple-500/30 rounded-lg text-xs text-white focus:outline-none focus:border-purple-500 disabled:opacity-50"
-                        >
-                          {ORDER_STATUS_OPTIONS.map((status) => (
-                            <option key={status} value={status}>
-                              {status}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                      <span
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}>
+                        {item.orderStatus}
+                      </span>
                     ) : (
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}
-                      >
+                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusStyle("status" in item ? item.status : "")}`}>
                         {"status" in item ? item.status : "N/A"}
                       </span>
                     )}
@@ -461,8 +440,7 @@ export default function OrderHistory() {
                   <td className="py-3 px-4">
                     <button
                       onClick={() => handleViewDetails(item._id)}
-                      className="px-4 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20"
-                    >
+                      className="px-4 py-1.5 bg-gradient-to-r cursor-pointer from-[#6100FF] to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-lg text-xs font-medium transition-all shadow-lg shadow-purple-500/20">
                       View Details
                     </button>
                   </td>
@@ -479,8 +457,7 @@ export default function OrderHistory() {
           <button
             onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
-            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed">
             ←
           </button>
 
@@ -503,8 +480,7 @@ export default function OrderHistory() {
                   currentPage === pageNum
                     ? "bg-purple-600"
                     : "bg-gray-800 hover:bg-gray-700"
-                }`}
-              >
+                }`}>
                 {pageNum}
               </button>
             );
@@ -515,8 +491,7 @@ export default function OrderHistory() {
               setCurrentPage(Math.min(totalPages, currentPage + 1))
             }
             disabled={currentPage === totalPages}
-            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+            className="w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm md:text-base disabled:opacity-50 disabled:cursor-not-allowed">
             →
           </button>
         </div>
