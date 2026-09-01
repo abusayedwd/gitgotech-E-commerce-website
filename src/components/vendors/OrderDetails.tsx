@@ -15,11 +15,22 @@ import {
   useUpdateOrderStatusMutation,
 } from "@/redux/features/vendor/order/orderSlice";
 import { selectShowroomId } from "@/redux/features/vendor/showroomSlice/selectedShowroomSlice";
-import { ArrowLeft, MapPin, Package, Store, Truck, User } from "lucide-react";
+import {
+  ArrowLeft,
+  History,
+  MapPin,
+  Package,
+  Store,
+  Truck,
+  User,
+  Wallet,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+
+const TRACKING_PREVIEW_COUNT = 3;
 
 type SizePricing = {
   originalUnitPrice?: number;
@@ -93,6 +104,22 @@ type OrderDriver = {
   image?: string;
 };
 
+type VendorSettlement = {
+  vendor?: string;
+  amount?: number;
+  status?: string;
+  heldAt?: string;
+  availableAt?: string;
+};
+
+type TrackingEvent = {
+  _id?: string;
+  status: string;
+  message?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
 type VendorOrderDetails = {
   _id: string;
   customer?: {
@@ -107,6 +134,8 @@ type VendorOrderDetails = {
   orderStatus: string;
   deliveryType?: string;
   price?: OrderPrice;
+  vendorSettlement?: VendorSettlement | null;
+  tracking?: TrackingEvent[];
   deliveryInfo?: ContactInfo;
   pickUpInfo?: ContactInfo;
   createdAt?: string;
@@ -159,6 +188,28 @@ function getAssignedDriver(driver?: OrderDriver | null): OrderDriver | null {
 function driverInitials(name?: string) {
   const parts = (name || "Driver").trim().split(/\s+/).filter(Boolean);
   return ((parts[0]?.[0] || "D") + (parts[1]?.[0] || "")).toUpperCase();
+}
+
+function getSettlementStatusStyle(status?: string) {
+  const value = (status || "").toUpperCase();
+  if (value === "HELD") {
+    return "bg-amber-900/30 text-amber-300 border border-amber-500/30";
+  }
+  if (value === "AVAILABLE" || value === "RELEASED") {
+    return "bg-blue-900/30 text-blue-300 border border-blue-500/30";
+  }
+  if (value === "PAID" || value === "SETTLED") {
+    return "bg-green-900/30 text-green-300 border border-green-500/30";
+  }
+  return "bg-gray-900/30 text-gray-300 border border-gray-500/30";
+}
+
+function sortTrackingEvents(events: TrackingEvent[]) {
+  return [...events].sort((a, b) => {
+    const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return aTime - bTime;
+  });
 }
 
 function getApiMessage(payload: unknown, fallback: string) {
@@ -263,6 +314,104 @@ function AddressBlock({ info }: { info?: ContactInfo }) {
       <DetailRow label="Email" value={info.email} />
       <DetailRow label="Phone" value={info.phone} />
       <DetailRow label="Address" value={location || info.address} />
+    </div>
+  );
+}
+
+function SettlementBlock({
+  settlement,
+  unit,
+}: {
+  settlement: VendorSettlement;
+  unit: string;
+}) {
+  return (
+    <div className="space-y-3">
+      <DetailRow
+        label="Amount"
+        value={formatMoney(settlement.amount, unit)}
+      />
+      {settlement.status && (
+        <div className="flex justify-between items-center gap-4">
+          <span className="text-gray-400 text-sm">Status</span>
+          <span
+            className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getSettlementStatusStyle(settlement.status)}`}
+          >
+            {settlement.status}
+          </span>
+        </div>
+      )}
+      <DetailRow label="Held at" value={formatDate(settlement.heldAt)} />
+      <DetailRow
+        label="Available at"
+        value={formatDate(settlement.availableAt)}
+      />
+    </div>
+  );
+}
+
+function TrackingBlock({ events }: { events: TrackingEvent[] }) {
+  const [expanded, setExpanded] = useState(false);
+  const sorted = sortTrackingEvents(events);
+  const canToggle = sorted.length > TRACKING_PREVIEW_COUNT;
+  const visible =
+    expanded || !canToggle
+      ? sorted
+      : sorted.slice(-TRACKING_PREVIEW_COUNT);
+
+  if (sorted.length === 0) {
+    return <p className="text-sm text-gray-500">No tracking updates yet.</p>;
+  }
+
+  return (
+    <div>
+      <ol className="space-y-0">
+        {visible.map((event, index) => {
+          const isLast = index === visible.length - 1;
+          return (
+            <li key={event._id || `${event.status}-${event.createdAt}`} className="flex gap-3">
+              <div className="flex flex-col items-center">
+                <span
+                  className={`mt-1 w-2.5 h-2.5 rounded-full shrink-0 ${
+                    isLast
+                      ? "bg-purple-400"
+                      : "bg-green-400/80"
+                  }`}
+                />
+                {!isLast && (
+                  <span className="w-px flex-1 bg-gray-700/80 my-1" />
+                )}
+              </div>
+              <div className={`min-w-0 flex-1 ${isLast ? "" : "pb-4"}`}>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${getOrderStatusStyle(event.status)}`}
+                  >
+                    {event.status}
+                  </span>
+                  {event.createdAt && (
+                    <span className="text-xs text-gray-500">
+                      {formatDate(event.createdAt)}
+                    </span>
+                  )}
+                </div>
+                {event.message && (
+                  <p className="text-sm text-gray-300 mt-1">{event.message}</p>
+                )}
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+      {canToggle && (
+        <button
+          type="button"
+          onClick={() => setExpanded((open) => !open)}
+          className="mt-4 text-sm text-purple-300 hover:text-purple-200 font-medium"
+        >
+          {expanded ? "See less" : "See more"}
+        </button>
+      )}
     </div>
   );
 }
@@ -484,6 +633,15 @@ export default function OrderDetailsPage() {
           </div>
         </SectionCard>
 
+        {order.tracking && order.tracking.length > 0 && (
+          <SectionCard
+            title="Tracking"
+            icon={<History className="w-4 h-4 text-purple-400" />}
+          >
+            <TrackingBlock events={order.tracking} />
+          </SectionCard>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
           <div className="space-y-6 min-w-0">
             <SectionCard
@@ -619,6 +777,18 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
             </SectionCard>
+
+            {order.vendorSettlement && (
+              <SectionCard
+                title="Vendor settlement"
+                icon={<Wallet className="w-4 h-4 text-purple-400" />}
+              >
+                <SettlementBlock
+                  settlement={order.vendorSettlement}
+                  unit={unit}
+                />
+              </SectionCard>
+            )}
 
             <SectionCard
               title="Customer"
