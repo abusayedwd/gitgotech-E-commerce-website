@@ -91,7 +91,7 @@ const FashionSearchNav = () => {
 
   return (
     <div
-      className={`fixed inset-x-0 top-[4.5rem] sm:top-[5rem] z-50 overflow-hidden bg-gradient-to-r from-black via-[#0f0924] to-black text-white shadow-lg transition-transform duration-300 ease-in-out ${
+      className={`fixed mt-2 inset-x-0 top-[4.5rem] sm:top-[5rem] z-50 overflow-hidden bg-gradient-to-r from-black via-[#0f0924] to-black text-white shadow-lg transition-transform duration-300 ease-in-out ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >

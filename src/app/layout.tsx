@@ -1,5 +1,3 @@
- 
-
 import Providers from "@/redux/Providers";
 import ToastProvider from "@/components/ToastProvider";
 import { FilterProvider } from "@/context/FilterContext";
@@ -48,22 +46,21 @@ export default function RootLayout({
   return (
     <html lang="en" className={cormorantGaramond.variable}>
       <body
-         className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} antialiased`}
-  suppressHydrationWarning
-      >
+        className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} antialiased`}
+        suppressHydrationWarning>
         <Providers>
           <ToastErrorGuard />
           <FcmTokenSync />
           <TokenExpiredModal />
           <SupportModalProvider>
             <PrivacyTermsModalProvider>
-             <Suspense fallback={null}>
-      <FilterProvider>
-        <SocketProvider>
-          <ConditionalLayout>{children}</ConditionalLayout>
-        </SocketProvider>
-      </FilterProvider>
-    </Suspense>
+              <Suspense fallback={null}>
+                <FilterProvider>
+                  <SocketProvider>
+                    <ConditionalLayout>{children}</ConditionalLayout>
+                  </SocketProvider>
+                </FilterProvider>
+              </Suspense>
               <PrivacyTermsModal />
             </PrivacyTermsModalProvider>
           </SupportModalProvider>

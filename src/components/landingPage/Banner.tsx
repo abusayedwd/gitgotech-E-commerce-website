@@ -47,7 +47,7 @@ export default function BannerSection() {
   };
 
   return (
-    <div className="bg-linear-to-r from-gray-950 via-purple-900/20 to-black py-4 px-4 mt-56">
+    <div className="bg-linear-to-r from-gray-950 via-purple-900/20 to-black py-4 px-4 mt-38">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
           {/* Left Column - Top Vendors & Top Products */}
