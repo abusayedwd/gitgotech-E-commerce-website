@@ -2,7 +2,8 @@
 
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { GUEST_CART_EVENT, getGuestCartCount } from "@/lib/guestCart";
-import { Menu, X } from "lucide-react";
+import SearchModal from "@/components/landingPage/SearchModal";
+import { Menu, Search, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +12,7 @@ import { RiCoupon4Line } from "react-icons/ri";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -91,6 +93,18 @@ export default function Navbar() {
 
         {/* Desktop Navigation & Icons - Hidden on mobile */}
         <div className="hidden lg:flex items-center space-x-2 xl:space-x-1">
+          <button
+            type="button"
+            onClick={() => setIsSearchOpen(true)}
+            aria-label="Open search"
+            className="p-2 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group"
+          >
+            <Search className="w-6 h-6 text-white" />
+            <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+              Search
+            </span>
+          </button>
+
           {/* Desktop Navigation Links - Visible to customers and guests */}
           {showCustomerLinks && (
             <div className="flex items-center space-x-4 mr-4">
@@ -305,6 +319,18 @@ export default function Navbar() {
 
         {/* Mobile Icons - Visible on mobile/tablet */}
         <div className="flex lg:hidden items-center space-x-1 sm:space-x-2">
+          <button
+            type="button"
+            onClick={() => {
+              setIsSearchOpen(true);
+              setIsMenuOpen(false);
+            }}
+            aria-label="Open search"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors"
+          >
+            <Search className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+          </button>
+
           {/* Cart Icon - Visible to customers and guests */}
           {showCustomerLinks && (
             <Link href="/shopping-cart">
@@ -538,6 +564,8 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      <SearchModal open={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </nav>
   );
 }

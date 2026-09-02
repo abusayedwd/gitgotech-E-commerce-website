@@ -27,9 +27,20 @@ type ResultItem =
   | { type: "showroom"; data: Showroom }
   | { type: "product"; data: Product };
 
-export default function SearchResults() {
+type SearchResultsProps = {
+  query?: string;
+  variant?: "page" | "modal";
+  onNavigate?: () => void;
+};
+
+export default function SearchResults({
+  query,
+  variant = "page",
+  onNavigate,
+}: SearchResultsProps = {}) {
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get("q") || "";
+  const initialQuery = (query ?? searchParams.get("q") ?? "").trim();
+  const isModal = variant === "modal";
 
   const { data, isLoading, isFetching, isError } = useGlobalSearchQuery(
     { q: initialQuery, page: 1, limit: 10 },
@@ -56,11 +67,17 @@ export default function SearchResults() {
   const totalCount = data?.data?.meta?.totalData ?? results.length;
 
   return (
-    <div className="min-h-screen overflow-x-hidden max-w-full bg-gradient-to-r from-black via-[#0f0924] to-black text-white pt-32 sm:pt-36 md:pt-40 px-4 pb-8">
-      <div className="container mx-auto">
+    <div
+      className={
+        isModal
+          ? "overflow-x-hidden max-w-full text-white px-3 sm:px-4 py-4"
+          : "min-h-screen overflow-x-hidden max-w-full bg-gradient-to-r from-black via-[#0f0924] to-black text-white pt-32 sm:pt-36 md:pt-40 px-4 pb-8"
+      }
+    >
+      <div className={isModal ? "w-full" : "container mx-auto"}>
         {/* Header summary */}
         {initialQuery && (
-          <p className="text-sm text-gray-400 mb-6">
+          <p className={`text-sm text-gray-400 ${isModal ? "mb-4" : "mb-6"}`}>
             {isLoading || isFetching ? (
               <>Searching for &ldquo;<span className="text-white">{initialQuery}</span>&rdquo;...</>
             ) : (
@@ -75,6 +92,7 @@ export default function SearchResults() {
         {/* Empty / loading / error states */}
         {!initialQuery && (
           <EmptyState
+            compact={isModal}
             icon={<Search className="w-10 h-10 text-purple-400" />}
             title="Start searching"
             message="Type a vendor, showroom or product name above."
@@ -82,13 +100,14 @@ export default function SearchResults() {
         )}
 
         {initialQuery && (isLoading || isFetching) && (
-          <div className="flex justify-center py-16">
+          <div className={`flex justify-center ${isModal ? "py-10" : "py-16"}`}>
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
           </div>
         )}
 
         {initialQuery && isError && (
           <EmptyState
+            compact={isModal}
             icon={<Search className="w-10 h-10 text-red-400" />}
             title="Search failed"
             message="Please try again in a moment."
@@ -97,6 +116,7 @@ export default function SearchResults() {
 
         {initialQuery && !isLoading && !isFetching && results.length === 0 && (
           <EmptyState
+            compact={isModal}
             icon={<Search className="w-10 h-10 text-purple-400" />}
             title="No results"
             message={`Nothing matched “${initialQuery}”. Try a different keyword.`}
@@ -105,7 +125,7 @@ export default function SearchResults() {
 
         {/* Grouped result sections */}
         {!isLoading && !isFetching && results.length > 0 && (
-          <div className="space-y-12">
+          <div className={isModal ? "space-y-8" : "space-y-12"}>
             {grouped.products.length > 0 && (
               <Section
                 title="Products"
@@ -114,7 +134,7 @@ export default function SearchResults() {
               >
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {grouped.products.map((p) => (
-                    <ProductCard key={p._id} product={p} />
+                    <ProductCard key={p._id} product={p} onNavigate={onNavigate} />
                   ))}
                 </div>
               </Section>
@@ -128,7 +148,7 @@ export default function SearchResults() {
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {grouped.showrooms.map((s) => (
-                    <ShowroomCard key={s._id} showroom={s} />
+                    <ShowroomCard key={s._id} showroom={s} onNavigate={onNavigate} />
                   ))}
                 </div>
               </Section>
@@ -142,7 +162,7 @@ export default function SearchResults() {
               >
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                   {grouped.vendors.map((v) => (
-                    <VendorCard key={v._id} vendor={v} />
+                    <VendorCard key={v._id} vendor={v} onNavigate={onNavigate} />
                   ))}
                 </div>
               </Section>
@@ -185,10 +205,17 @@ function Section({
   );
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({
+  product,
+  onNavigate,
+}: {
+  product: Product;
+  onNavigate?: () => void;
+}) {
   return (
     <Link
       href={`/product/details?id=${product._id}`}
+      onClick={onNavigate}
       className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow"
     >
       <ProductImageSlider
@@ -209,11 +236,18 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
-function ShowroomCard({ showroom }: { showroom: Showroom }) {
+function ShowroomCard({
+  showroom,
+  onNavigate,
+}: {
+  showroom: Showroom;
+  onNavigate?: () => void;
+}) {
   const img = buildImageUrl(showroom.logo, "/images/jacket.png");
   return (
     <Link
       href={`/showroom/view-showroom?showroomId=${showroom._id}`}
+      onClick={onNavigate}
       className="bg-[#1B1B1F] rounded-xl overflow-hidden group hover:bg-gray-800/50 border border-gray-700/50 transition-all"
     >
       <div className="relative h-32 overflow-hidden bg-gray-900">
@@ -250,11 +284,18 @@ function ShowroomCard({ showroom }: { showroom: Showroom }) {
   );
 }
 
-function VendorCard({ vendor }: { vendor: Vendor }) {
+function VendorCard({
+  vendor,
+  onNavigate,
+}: {
+  vendor: Vendor;
+  onNavigate?: () => void;
+}) {
   const img = buildImageUrl(vendor.image, "");
   return (
     <Link
       href={`/vendors/showrooms?vendorId=${vendor._id}`}
+      onClick={onNavigate}
       className="bg-[#1B1B1F] rounded-xl p-4 flex flex-col items-center text-center border border-gray-700/50 hover:border-purple-500 transition-colors"
     >
       <div className="w-20 h-20 rounded-full overflow-hidden bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center mb-3">
@@ -284,13 +325,15 @@ function EmptyState({
   icon,
   title,
   message,
+  compact = false,
 }: {
   icon: React.ReactNode;
   title: string;
   message: string;
+  compact?: boolean;
 }) {
   return (
-    <div className="text-center py-20">
+    <div className={`text-center ${compact ? "py-10" : "py-20"}`}>
       <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-purple-600/20 flex items-center justify-center">
         {icon}
       </div>
