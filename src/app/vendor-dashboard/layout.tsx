@@ -17,6 +17,7 @@ import {
   Menu,
   Package,
   Store,
+  Truck,
   X,
 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -161,6 +162,11 @@ export default function VendorDashboardLayout({
       name: "Custom Orders",
       icon: FileText,
       path: "/vendor-dashboard/custom-orders",
+    },
+    {
+      name: "Delivery Request",
+      icon: Truck,
+      path: "/vendor-dashboard/delivery-request",
     },
     {
       name: "Reports",

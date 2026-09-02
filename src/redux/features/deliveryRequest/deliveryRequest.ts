@@ -11,6 +11,14 @@ const deleveryRequest = apiSlice.injectEndpoints({
       providesTags: ["DeliveryRequests"],
     }),
 
+    getVendorDeliveryRequests: builder.query({
+      query: () => ({
+        url: "/delivery-request/vendor",
+        method: "GET",
+      }),
+      providesTags: ["DeliveryRequests"],
+    }),
+
     // ✅ POST - Create Delivery Request
     createDeliveryRequest: builder.mutation({
       query: (body) => ({   
@@ -27,7 +35,8 @@ const deleveryRequest = apiSlice.injectEndpoints({
 
     }),});
 
-export const {  
+export const {
     useGetDeliveryRequestsQuery,
+    useGetVendorDeliveryRequestsQuery,
     useCreateDeliveryRequestMutation,
 } = deleveryRequest;
