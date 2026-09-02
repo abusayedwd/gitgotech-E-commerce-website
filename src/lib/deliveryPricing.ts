@@ -44,16 +44,46 @@ export type ProductWeightLike = {
   unit?: string;
 } | null | undefined;
 
+/** Convert a weight amount + unit to kilograms. Unknown units are treated as kg. */
+export function weightAmountToKg(amount: number, unit?: string): number {
+  if (!Number.isFinite(amount) || amount <= 0) return 0;
+  const u = (unit || "kg").toLowerCase();
+  if (u === "kg" || u === "kgs") return amount;
+  if (u === "g" || u === "gm" || u === "gram" || u === "grams") return amount / 1000;
+  if (u === "mg") return amount / 1_000_000;
+  if (u === "lb" || u === "lbs" || u === "pound" || u === "pounds") {
+    return amount * 0.453592;
+  }
+  if (u === "oz" || u === "ounce" || u === "ounces") return amount * 0.0283495;
+  return amount;
+}
+
 /** Normalise API `product_weight` to kilograms for one product unit. */
 export function productWeightToKg(weight: ProductWeightLike): number {
   if (!weight || typeof weight.amount !== "number" || !Number.isFinite(weight.amount)) {
     return 0;
   }
-  const u = (weight.unit || "kg").toLowerCase();
-  if (u === "kg" || u === "kgs") return Math.max(0, weight.amount);
-  if (u === "lb" || u === "lbs") return Math.max(0, weight.amount * 0.453592);
-  if (u === "g" || u === "gram" || u === "grams") return Math.max(0, weight.amount / 1000);
-  return Math.max(0, weight.amount);
+  return Math.max(0, weightAmountToKg(weight.amount, weight.unit));
+}
+
+export function calcWeightChargeUsd(
+  kg: number,
+  ratePerKg: number = RATE_PER_KG,
+): number {
+  if (!Number.isFinite(kg) || kg <= 0) return 0;
+  return parseFloat((kg * Math.max(0, ratePerKg)).toFixed(2));
+}
+
+/** GeoJSON [lng, lat]. Treats [0, 0] as unset. */
+export function validLngLat(
+  coordinates?: number[] | null,
+): [number, number] | null {
+  if (!Array.isArray(coordinates) || coordinates.length < 2) return null;
+  const lng = Number(coordinates[0]);
+  const lat = Number(coordinates[1]);
+  if (!Number.isFinite(lng) || !Number.isFinite(lat)) return null;
+  if (lng === 0 && lat === 0) return null;
+  return [lng, lat];
 }
 
 /** Weight-based delivery: sum over lines (kg × qty × rate). */

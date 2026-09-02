@@ -21,11 +21,9 @@ import {
   FALLBACK_DISTANCE_DELIVERY_USD,
   haversineKm,
   productWeightToKg,
-  RATE_PER_KG,
-  RATE_PER_KM,
 } from "@/lib/deliveryPricing";
+import { parsePlatformSettings } from "@/lib/platformSettings";
 
-const TAX_RATE = 0.1; // 10%
 const DEFAULT_PRODUCT_WEIGHT = { unit: "gram", amount: 100 };
 
 // Pick-up orders don't need a map/address — send this fixed placeholder location.
@@ -247,10 +245,11 @@ export default function CheckoutPage() {
 
   const [orderSubmitted] = useAddVendorOrderMutation();
   const { data: platformData } = usePlatformFreeQuery(undefined);
-  const platformSettings = platformData?.data;
+  const platformSettings = parsePlatformSettings(platformData);
 
-  const ratePerKm = platformSettings?.perKmDistancePrice ?? RATE_PER_KM;
-  const ratePerKg = platformSettings?.perKgWeightPrice ?? RATE_PER_KG;
+  const ratePerKm = platformSettings.perKmDistancePrice;
+  const ratePerKg = platformSettings.perKgWeightPrice;
+  const taxRate = platformSettings.taxPercentage / 100;
 
   // ── Price calculations ────────────────────────────────────────────────────
   const subtotal = useMemo(() => {
@@ -304,8 +303,7 @@ export default function CheckoutPage() {
     ).toFixed(1);
   }, [deliveryMethod, selectedLocation, showroomCoordinates]);
 
-  // ✅ TAX: Calculated as 10% of subtotal
-  const tax = parseFloat((subtotal * TAX_RATE).toFixed(2));
+  const tax = parseFloat((subtotal * taxRate).toFixed(2));
 
   // ✅ DISCOUNT: Apply coupon percentage ONLY to (product price + tax)
   // NOT to delivery charges or tips
@@ -583,6 +581,7 @@ export default function CheckoutPage() {
                         displayItems[0]?.product?.showroom?.showroom_name ?? "Showroom"
                       }
                       weightDeliveryUsd={weightDeliveryCharge}
+                      ratePerKm={ratePerKm}
                     />
 
                     {selectedLocation && (
@@ -782,7 +781,7 @@ export default function CheckoutPage() {
                       Delivery (distance)
                       {distanceKm !== null && (
                         <span className="ml-1 text-xs text-purple-300/70">
-                          ({distanceKm} km)
+                          ({distanceKm} km · ₵{ratePerKm}/km)
                         </span>
                       )}
                     </span>
@@ -793,7 +792,7 @@ export default function CheckoutPage() {
                       Delivery (weight)
                       {totalWeightKg > 0 ? (
                         <span className="ml-1 text-xs text-purple-300/70">
-                          ({totalWeightKg} kg)
+                          ({totalWeightKg} kg · ₵{ratePerKg}/kg)
                         </span>
                       ) : (
                         <span className="ml-1 text-xs text-gray-500">(no weight on product)</span>
@@ -813,9 +812,10 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* ✅ Tax displayed as calculated 10% of subtotal */}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Tax (10%)</span>
+                <span className="text-gray-400">
+                  Tax ({platformSettings.taxPercentage}%)
+                </span>
                 <span className="font-medium">₵{tax.toFixed(2)}</span>
               </div>
 
@@ -844,6 +844,20 @@ export default function CheckoutPage() {
                 <span>Total</span>
                 <span className="text-purple-400">₵{total.toFixed(2)}</span>
               </div>
+              {(platformSettings.returnWindowDays != null ||
+                platformSettings.refundDeductionPercentage > 0) && (
+                <p className="text-xs text-gray-500 pt-2 leading-relaxed">
+                  {platformSettings.returnWindowDays != null && (
+                    <>Returns are allowed within {platformSettings.returnWindowDays} day{platformSettings.returnWindowDays === 1 ? "" : "s"} of delivery.</>
+                  )}
+                  {platformSettings.refundDeductionPercentage > 0 && (
+                    <>
+                      {platformSettings.returnWindowDays != null ? " " : ""}
+                      Approved refunds deduct {platformSettings.refundDeductionPercentage}%.
+                    </>
+                  )}
+                </p>
+              )}
             </div>
 
             {/* Coupon */}

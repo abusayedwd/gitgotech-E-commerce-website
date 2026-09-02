@@ -5,13 +5,13 @@ import { buildImageUrl } from "@/lib/imageBaseUrl";
 import { formatStatusLabel, statusBadgeClass as sharedStatusBadgeClass } from "@/lib/orderStatus";
 import {
   ReturnAdminReviewCards,
-  ReturnDeliveryRequestCard,
   ReturnReviewTrail,
   getReturnProductId,
   getReturnProductImage,
   getReturnProductName,
   type ReturnDeliveryRequest,
 } from "@/components/shared/ReturnAdminSections";
+import ReturnDeliveryRequestPanel from "@/components/shared/ReturnDeliveryRequestPanel";
 import {
   useGetReturnDetailsQuery,
   useInspectReturnOrderMutation,
@@ -57,6 +57,7 @@ type ContactInfo = {
   zipcode?: number | string;
   email?: string;
   phone?: number | string;
+  location?: { type?: string; coordinates?: number[] };
 };
 
 type SizePricing = {
@@ -1309,9 +1310,12 @@ export default function ReturnDetails() {
             </SectionCard>
 
             {returnData.deliveryRequest && (
-              <ReturnDeliveryRequestCard
+              <ReturnDeliveryRequestPanel
+                returnOrderId={returnData._id}
                 request={returnData.deliveryRequest}
-                audience="vendor"
+                pickupPrefill={returnData.pickUpInfo}
+                addressPrefill={returnData.deliveryInfo}
+                onCreated={refetch}
               />
             )}
 

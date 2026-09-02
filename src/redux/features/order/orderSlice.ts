@@ -101,6 +101,24 @@ export const orderSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["Orders", "Returns"],
     }),
 
+    getReturnDeliveryEligibility: builder.query({
+      query: (orderId: string) => ({
+        url: `/order/return/delivery-request/${orderId}`,
+        method: "GET",
+      }),
+      providesTags: ["Returns"],
+    }),
+
+    createReturnDeliveryRequest: builder.mutation({
+      query: ({ orderId, formData }: { orderId: string; formData: FormData }) => ({
+        url: `/order/return/delivery-request/${orderId}`,
+        method: "POST",
+        body: formData,
+        formData: true,
+      }),
+      invalidatesTags: ["Orders", "Returns"],
+    }),
+
    
   }),
 });
@@ -117,4 +135,7 @@ export const {
   useGetReturnOrderDetailsQuery,
   useCustomOrderPlaceMutation,
   useReportCustomerReturnMutation,
+  useGetReturnDeliveryEligibilityQuery,
+  useLazyGetReturnDeliveryEligibilityQuery,
+  useCreateReturnDeliveryRequestMutation,
 } = orderSlice;

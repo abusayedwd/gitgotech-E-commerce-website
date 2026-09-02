@@ -2,13 +2,13 @@
 
 import {
   ReturnAdminReviewCards,
-  ReturnDeliveryRequestCard,
   ReturnReviewTrail,
   getReturnProductId,
   getReturnProductImage,
   getReturnProductName,
   type ReturnDeliveryRequest,
 } from "@/components/shared/ReturnAdminSections";
+import ReturnDeliveryRequestPanel from "@/components/shared/ReturnDeliveryRequestPanel";
 import { showApiErrorToast } from "@/lib/apiErrorToast";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
 import { formatStatusLabel, statusBadgeClass } from "@/lib/orderStatus";
@@ -40,6 +40,7 @@ type ContactInfo = {
   zipcode?: number | string;
   email?: string;
   phone?: number | string;
+  location?: { type?: string; coordinates?: number[] };
 };
 
 type SizePricing = {
@@ -784,7 +785,7 @@ export default function ReturnOrderDetails() {
   const returnId = String(params.id || "");
   const [showReportModal, setShowReportModal] = useState(false);
 
-  const { data, isLoading, error } = useGetReturnOrderDetailsQuery(returnId, {
+  const { data, isLoading, error, refetch } = useGetReturnOrderDetailsQuery(returnId, {
     skip: !returnId || returnId === "undefined",
   });
 
@@ -1006,9 +1007,12 @@ export default function ReturnOrderDetails() {
             </SectionCard>
 
             {returnData.deliveryRequest && (
-              <ReturnDeliveryRequestCard
+              <ReturnDeliveryRequestPanel
+                returnOrderId={returnData._id}
                 request={returnData.deliveryRequest}
-                audience="customer"
+                pickupPrefill={returnData.pickUpInfo}
+                addressPrefill={returnData.deliveryInfo}
+                onCreated={refetch}
               />
             )}
 

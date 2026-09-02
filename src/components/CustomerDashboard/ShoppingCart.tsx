@@ -532,8 +532,8 @@ import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
 import {
   FALLBACK_DISTANCE_DELIVERY_USD,
   productWeightToKg,
-  RATE_PER_KG,
 } from "@/lib/deliveryPricing";
+import { parsePlatformSettings } from "@/lib/platformSettings";
 import {
   useDeleteSaveListMutation,
   useGetWishlistAndCartQuery,
@@ -575,9 +575,9 @@ export default function ShoppingCart() {
 
   const [deleteSaveItem] = useDeleteSaveListMutation();
   const { data: platformData } = usePlatformFreeQuery(undefined);
-  const platformSettings = platformData?.data;
+  const platformSettings = parsePlatformSettings(platformData);
 
-  const ratePerKg = platformSettings?.perKgWeightPrice ?? RATE_PER_KG;
+  const ratePerKg = platformSettings.perKgWeightPrice;
 
   useEffect(() => {
     if (isLoggedIn) return;

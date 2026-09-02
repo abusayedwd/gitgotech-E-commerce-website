@@ -55,6 +55,7 @@ const settingsSlice = apiSlice.injectEndpoints({
         method: "GET",
       }),
       providesTags: ["Settings"],
+      keepUnusedDataFor: 60 * 60,
      }),
 
     getMyProfile: builder.query({

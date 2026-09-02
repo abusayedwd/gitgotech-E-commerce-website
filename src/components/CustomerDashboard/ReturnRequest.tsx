@@ -8,13 +8,13 @@ import {
   canRequestOrderReturn,
   getReturnDeadline,
   getOrderDeliveredAt,
-  getReturnWindowDays,
 } from "@/lib/returnWindow";
 import {
   useAddReturnOrderMutation,
   useGetMainOrderDetailsQuery,
 } from "@/redux/features/order/orderSlice";
 import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
+import { parsePlatformSettings } from "@/lib/platformSettings";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
@@ -135,6 +135,7 @@ export default function ReturnRequestForm() {
     { skip: !orderId || orderId === "undefined" },
   );
   const { data: platformSettings } = usePlatformFreeQuery(undefined);
+  const settings = parsePlatformSettings(platformSettings);
 
   const orderData = mainOrderDetails?.data;
   const products = orderData?.products || [];
@@ -214,6 +215,15 @@ export default function ReturnRequestForm() {
     const qty = drafts[line.key]?.quantity || 0;
     return sum + line.paidUnitPrice * qty;
   }, 0);
+  const refundDeduction = parseFloat(
+    (
+      refundSubtotal *
+      (settings.refundDeductionPercentage / 100)
+    ).toFixed(2),
+  );
+  const estimatedRefund = parseFloat(
+    (refundSubtotal - refundDeduction).toFixed(2),
+  );
 
   const showroomCoords = orderData?.pickUpInfo?.location?.coordinates;
   const pickupCoords = selectedLocation?.coordinates;
@@ -289,10 +299,7 @@ export default function ReturnRequestForm() {
       return "Only delivered orders can be returned";
     }
     if (
-      !canRequestOrderReturn(
-        orderData,
-        getReturnWindowDays(platformSettings),
-      )
+      !canRequestOrderReturn(orderData, settings.returnWindowDays)
     ) {
       return "The return window for this order has ended";
     }
@@ -411,7 +418,7 @@ export default function ReturnRequestForm() {
     );
   }
 
-  const returnWindowDays = getReturnWindowDays(platformSettings);
+  const returnWindowDays = settings.returnWindowDays;
   const canReturn = canRequestOrderReturn(orderData, returnWindowDays);
   const returnDeadline = getReturnDeadline(
     getOrderDeliveredAt(orderData),
@@ -773,7 +780,27 @@ export default function ReturnRequestForm() {
                 <span className="text-gray-400">Refund subtotal</span>
                 <span>{formatMoney(refundSubtotal, unit)}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              {settings.refundDeductionPercentage > 0 && (
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-400">
+                    Platform deduction ({settings.refundDeductionPercentage}%)
+                  </span>
+                  <span className="text-red-400">
+                    −{formatMoney(refundDeduction, unit)}
+                  </span>
+                </div>
+              )}
+              <div className="flex justify-between text-sm font-semibold">
+                <span className="text-gray-300">Estimated refund</span>
+                <span className="text-green-400">
+                  {formatMoney(estimatedRefund, unit)}
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed">
+                Estimate only. Pickup charge and driver tip are paid separately
+                and are not deducted from this refund.
+              </p>
+              <div className="flex justify-between text-sm pt-2 border-t border-gray-700">
                 <span className="text-gray-400">Pickup charge</span>
                 <span>{formatMoney(deliveryCharge, unit)}</span>
               </div>

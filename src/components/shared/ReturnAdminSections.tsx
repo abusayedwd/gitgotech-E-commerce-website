@@ -1,7 +1,7 @@
 "use client";
 
 import { formatStatusLabel, statusBadgeClass } from "@/lib/orderStatus";
-import { ShieldCheck, Truck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 
 export type ReturnProductRef =
@@ -88,6 +88,12 @@ export function getReturnProductName(product?: ReturnProductRef, fallback = "Ret
 export function getReturnProductImage(product?: ReturnProductRef) {
   if (!product || typeof product === "string") return "";
   return product.product_images?.[0] || "";
+}
+
+export function canCreateReturnDelivery(request?: ReturnDeliveryRequest | null) {
+  return (
+    request?.canCreate === true && (request.eligibleItems?.length ?? 0) > 0
+  );
 }
 
 export function hasAdminReview(item: ReturnAdminFields) {
@@ -211,76 +217,6 @@ export function ReturnAdminReviewCards({ item }: { item: ReturnAdminFields }) {
               {ownershipHint(item.productOwnership)}
             </p>
           )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export function ReturnDeliveryRequestCard({
-  request,
-  audience,
-}: {
-  request?: ReturnDeliveryRequest | null;
-  audience: "vendor" | "customer";
-}) {
-  if (!request) return null;
-
-  const purpose = formatStatusLabel(request.purpose);
-  const payer = formatStatusLabel(request.payer);
-  const nextStep =
-    audience === "vendor"
-      ? request.canCreate
-        ? "You can create a delivery request to recover this product."
-        : request.existingRequestId
-          ? "A recovery delivery request already exists."
-          : request.reason || "No recovery delivery can be created right now."
-      : request.purpose === "PRODUCT_RECOVERY"
-        ? "A pickup may be arranged to recover this item."
-        : request.reason || "";
-
-  return (
-    <div className="rounded-xl border border-gray-800 bg-black/20 p-4 space-y-3">
-      <div className="flex items-center gap-2">
-        <Truck className="w-4 h-4 text-purple-400" />
-        <p className="text-sm font-medium text-white">Recovery delivery</p>
-      </div>
-      {nextStep && <p className="text-sm text-gray-300">{nextStep}</p>}
-      <div className="space-y-2">
-        <Row label="Purpose" value={purpose} />
-        <Row label="Payer" value={payer} />
-        <Row
-          label="Delivery address needed"
-          value={
-            request.requiresDeliveryAddress == null
-              ? undefined
-              : request.requiresDeliveryAddress
-                ? "Yes"
-                : "No"
-          }
-        />
-      </div>
-      {request.eligibleItems && request.eligibleItems.length > 0 && (
-        <div className="pt-2 border-t border-gray-800 space-y-2">
-          <p className="text-xs uppercase tracking-wide text-gray-500">
-            Eligible items
-          </p>
-          {request.eligibleItems.map((item, index) => (
-            <div
-              key={`${getReturnProductId(item.product) || item.orderProductId}-${index}`}
-              className="flex items-center justify-between gap-3 text-sm"
-            >
-              <span className="text-gray-200 truncate">
-                {getReturnProductName(item.product)} · Size {item.sizeType || "—"} ×{" "}
-                {item.quantity ?? 1}
-              </span>
-              {item.location && (
-                <span className="text-[11px] text-gray-400 shrink-0">
-                  {formatStatusLabel(item.location)}
-                </span>
-              )}
-            </div>
-          ))}
         </div>
       )}
     </div>

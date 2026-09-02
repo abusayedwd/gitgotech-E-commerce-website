@@ -1,3 +1,5 @@
+import { parsePlatformSettings } from "@/lib/platformSettings";
+
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 type TrackingLike = {
@@ -29,20 +31,7 @@ export function getOrderDeliveredAt(order: OrderLike): Date | null {
 }
 
 export function getReturnWindowDays(settings: unknown): number | null {
-  const data = settings as
-    | {
-        returnSetting?: { returnWindowDays?: unknown };
-        data?: { returnSetting?: { returnWindowDays?: unknown } };
-      }
-    | null
-    | undefined;
-
-  const raw =
-    data?.returnSetting?.returnWindowDays ??
-    data?.data?.returnSetting?.returnWindowDays;
-  const days = Number(raw);
-  if (!Number.isFinite(days) || days < 0) return null;
-  return days;
+  return parsePlatformSettings(settings).returnWindowDays;
 }
 
 export function getReturnDeadline(

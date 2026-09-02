@@ -1,15 +1,26 @@
 "use client";
 import BackButton from "@/customComponent/BackButton";
+import {
+  calcDistanceDeliveryUsd,
+  calcWeightChargeUsd,
+  FALLBACK_DISTANCE_DELIVERY_USD,
+  haversineKm,
+  validLngLat,
+  weightAmountToKg,
+} from "@/lib/deliveryPricing";
+import { parsePlatformSettings } from "@/lib/platformSettings";
 import { useCreateDeliveryRequestMutation } from "@/redux/features/deliveryRequest/deliveryRequest";
+import { usePlatformFreeQuery } from "@/redux/features/settings/settingsSlice";
 import {
   CheckCircle2,
   Loader2,
   Mail,
   MapPin,
   Package,
+  Scale,
   Upload,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import MapComponent, {
   SelectedLocation as MapSelectedLocation,
 } from "../CustomerDashboard/Location";
@@ -68,6 +79,75 @@ const DeliveryRequestFrom = () => {
     useState<MapSelectedLocation | null>(null);
 
   const [deliveryRequest, { isLoading }] = useCreateDeliveryRequestMutation();
+  const { data: platformData } = usePlatformFreeQuery(undefined);
+  const settings = parsePlatformSettings(platformData);
+
+  const pickupCoords = validLngLat(pickupLocation.coordinates);
+  const dropoffCoords = validLngLat(deliveryAddress.coordinates);
+
+  const quote = useMemo(() => {
+    const enteredWeight = Number(formData.totalWeight);
+    const hasWeight =
+      formData.totalWeight.trim() !== "" &&
+      Number.isFinite(enteredWeight) &&
+      enteredWeight > 0;
+    const weightKg = hasWeight
+      ? weightAmountToKg(enteredWeight, formData.weightUnit)
+      : 0;
+    const weightFee = calcWeightChargeUsd(weightKg, settings.perKgWeightPrice);
+    const tipAmount = Number(formData.tip);
+    const tip = Number.isFinite(tipAmount) && tipAmount > 0 ? tipAmount : 0;
+
+    if (pickupCoords && dropoffCoords) {
+      const km = haversineKm(
+        pickupCoords[1],
+        pickupCoords[0],
+        dropoffCoords[1],
+        dropoffCoords[0],
+      );
+      const distanceFee = calcDistanceDeliveryUsd(
+        pickupCoords[1],
+        pickupCoords[0],
+        dropoffCoords[0],
+        dropoffCoords[1],
+        settings.perKmDistancePrice,
+      );
+      const deliveryFee = parseFloat((distanceFee + weightFee).toFixed(2));
+      return {
+        km: parseFloat(km.toFixed(1)),
+        distanceFee,
+        weightFee,
+        weightKg: parseFloat(weightKg.toFixed(3)),
+        hasWeight,
+        usingFallback: false,
+        deliveryFee,
+        tip,
+        total: parseFloat((deliveryFee + tip).toFixed(2)),
+      };
+    }
+
+    const distanceFee = FALLBACK_DISTANCE_DELIVERY_USD;
+    const deliveryFee = parseFloat((distanceFee + weightFee).toFixed(2));
+    return {
+      km: null as number | null,
+      distanceFee,
+      weightFee,
+      weightKg: parseFloat(weightKg.toFixed(3)),
+      hasWeight,
+      usingFallback: true,
+      deliveryFee,
+      tip,
+      total: parseFloat((deliveryFee + tip).toFixed(2)),
+    };
+  }, [
+    pickupCoords,
+    dropoffCoords,
+    formData.totalWeight,
+    formData.weightUnit,
+    formData.tip,
+    settings.perKmDistancePrice,
+    settings.perKgWeightPrice,
+  ]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -137,13 +217,12 @@ const DeliveryRequestFrom = () => {
       errors.push("Number of items must be at least 1");
 
     const weightVal = parseFloat(formData.totalWeight);
-    if (isNaN(weightVal) || weightVal <= 0) {
-      errors.push("Weight value must be greater than 0");
-    }
-
-    const validUnits = ["kg", "mg", "gm", "pound", "ounce"];
-    if (!validUnits.includes(formData.weightUnit)) {
-      errors.push("Invalid weight unit selected");
+    const hasWeight =
+      formData.totalWeight.trim() !== "" &&
+      Number.isFinite(weightVal) &&
+      weightVal > 0;
+    if (formData.totalWeight.trim() && !hasWeight) {
+      errors.push("Weight must be greater than 0 if provided");
     }
 
     if (!pickupMapLocation)
@@ -174,10 +253,14 @@ const DeliveryRequestFrom = () => {
     const requestBody = {
       category: formData.category,
       numberOfItems: parseInt(formData.numberOfItems),
-      weight: {
-        unit: formData.weightUnit,
-        value: weightVal,
-      },
+      ...(hasWeight
+        ? {
+            weight: {
+              unit: formData.weightUnit,
+              value: weightVal,
+            },
+          }
+        : {}),
       pickupLocation: {
         name: pickupLocation.name,
         phone: pickupLocation.phone,
@@ -199,8 +282,8 @@ const DeliveryRequestFrom = () => {
         zipCode: deliveryAddress.zipCode,
       },
       price: {
-        tip: parseFloat(formData.tip) || 0,
-        deliveryFee: parseFloat(formData.deliveryFee) || 0,
+        tip: quote.tip,
+        deliveryFee: quote.deliveryFee,
         currency: formData.currency.toLowerCase(),
       },
     };
@@ -353,37 +436,52 @@ const DeliveryRequestFrom = () => {
                   </label>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Category
-                  </label>
-                  <input
-                    type="text"
-                    name="category"
-                    value={formData.category}
-                    onChange={(e) => handleInputChange(e, "product")}
-                    className={inputClass}
-                    placeholder="e.g., cake, clothes, electronics"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Category
+                    </label>
+                    <input
+                      type="text"
+                      name="category"
+                      value={formData.category}
+                      onChange={(e) => handleInputChange(e, "product")}
+                      className={inputClass}
+                      placeholder="e.g., cake, clothes, electronics"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">
+                      Number of items
+                    </label>
+                    <input
+                      type="number"
+                      name="numberOfItems"
+                      value={formData.numberOfItems}
+                      onChange={(e) => handleInputChange(e, "product")}
+                      className={inputClass}
+                      min="1"
+                      placeholder="3"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Number of Items
-                  </label>
-                  <input
-                    type="number"
-                    name="numberOfItems"
-                    value={formData.numberOfItems}
-                    onChange={(e) => handleInputChange(e, "product")}
-                    className={inputClass}
-                    min="1"
-                    placeholder="3"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">
-                    Total Weight
-                  </label>
+                <div className="rounded-xl border border-dashed border-gray-700 bg-black/20 p-4 space-y-3">
+                  <div className="flex items-start gap-2">
+                    <Scale className="w-4 h-4 text-purple-400 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-sm font-medium">
+                        Package weight
+                        <span className="ml-2 text-[11px] uppercase tracking-wide text-purple-300">
+                          Optional
+                        </span>
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Leave blank if you don&apos;t know it. Adding weight
+                        includes ₵{settings.perKgWeightPrice}/kg in the
+                        delivery fee so you can see the extra cost.
+                      </p>
+                    </div>
+                  </div>
                   <div className="flex items-center space-x-2">
                     <input
                       type="number"
@@ -391,9 +489,9 @@ const DeliveryRequestFrom = () => {
                       value={formData.totalWeight}
                       onChange={(e) => handleInputChange(e, "product")}
                       className="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] text-white"
-                      placeholder="2.5"
+                      placeholder="Leave blank to skip"
                       step="0.1"
-                      min="0.1"
+                      min="0"
                     />
                     <select
                       name="weightUnit"
@@ -408,6 +506,12 @@ const DeliveryRequestFrom = () => {
                       ))}
                     </select>
                   </div>
+                  {quote.hasWeight && (
+                    <p className="text-xs text-purple-300">
+                      {quote.weightKg} kg × ₵{settings.perKgWeightPrice}/kg = ₵
+                      {quote.weightFee.toFixed(2)}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -660,6 +764,10 @@ const DeliveryRequestFrom = () => {
                     onLocationSave={(loc) =>
                       handleLocationSave(loc, "delivery")
                     }
+                    showroomCoordinates={pickupCoords}
+                    showroomName={pickupLocation.name || "Pickup"}
+                    weightDeliveryUsd={quote.weightFee}
+                    ratePerKm={settings.perKmDistancePrice}
                   />
                   {deliveryMapLocation && (
                     <div className="mt-3 p-3 bg-[#2ACCED]/10 border border-[#2ACCED]/30 rounded-lg">
@@ -682,59 +790,90 @@ const DeliveryRequestFrom = () => {
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl p-6 sticky top-8">
-              <h2 className="text-xl font-bold mb-6">Order Summary</h2>
+              <h2 className="text-xl font-bold mb-2">Amount to submit</h2>
+              <p className="text-xs text-gray-500 mb-6">
+                Delivery fee is calculated from distance
+                {quote.hasWeight ? " plus optional weight" : ""}. Tip is extra.
+              </p>
 
-              {/* Product Info */}
-              <div className="space-y-4 mb-6">
+              <div className="space-y-3 mb-6 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Category</span>
-                  <span className="text-sm text-white">
-                    {formData.category || "-"}
-                  </span>
+                  <span className="text-gray-400">Category</span>
+                  <span className="text-white">{formData.category || "—"}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Items</span>
-                  <span className="text-sm text-white">
-                    {formData.numberOfItems}
-                  </span>
+                  <span className="text-gray-400">Items</span>
+                  <span className="text-white">{formData.numberOfItems}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Weight</span>
-                  <span className="text-sm text-white">
-                    {formData.totalWeight || "0"} {formData.weightUnit}
+                  <span className="text-gray-400">Weight</span>
+                  <span className="text-white">
+                    {quote.hasWeight
+                      ? `${formData.totalWeight} ${formData.weightUnit}`
+                      : "Not added"}
                   </span>
                 </div>
               </div>
 
-              {/* Price Breakdown */}
               <div className="border-t border-gray-700 pt-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Delivery Fee</span>
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-sm text-gray-400">
+                    Distance
+                    <span className="block text-xs text-purple-300/80 mt-0.5">
+                      {quote.km != null
+                        ? `${quote.km} km · ₵${settings.perKmDistancePrice}/km`
+                        : pickupMapLocation && deliveryMapLocation
+                          ? "Calculating route"
+                          : "Select pickup and drop-off to calculate"}
+                    </span>
+                  </span>
                   <span className="text-sm text-white">
-                    ${parseFloat(formData.deliveryFee || "0").toFixed(2)}
+                    ₵{quote.distanceFee.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-400">Tip</span>
-                  <span className="text-sm text-white">
-                    ${parseFloat(formData.tip || "0").toFixed(2)}
+                <div className="flex items-start justify-between gap-3">
+                  <span className="text-sm text-gray-400">
+                    Weight
+                    <span className="block text-xs text-gray-500 mt-0.5">
+                      {quote.hasWeight
+                        ? `${quote.weightKg} kg · ₵${settings.perKgWeightPrice}/kg`
+                        : `Optional · ₵${settings.perKgWeightPrice}/kg`}
+                    </span>
                   </span>
+                  <span className="text-sm text-white">
+                    ₵{quote.weightFee.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sm font-medium">
+                  <span className="text-gray-300">Delivery fee</span>
+                  <span className="text-white">
+                    ₵{quote.deliveryFee.toFixed(2)}
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-400 mb-2">
+                    Driver tip
+                  </label>
+                  <input
+                    type="number"
+                    name="tip"
+                    min="0"
+                    step="0.01"
+                    value={formData.tip}
+                    onChange={(e) => handleInputChange(e, "product")}
+                    className={inputClass}
+                  />
                 </div>
                 <div className="border-t border-gray-700 pt-3 flex items-center justify-between">
                   <span className="text-lg font-semibold text-white">
-                    Total
+                    Total to submit
                   </span>
                   <span className="text-lg font-semibold text-[#2ACCED]">
-                    $
-                    {(
-                      parseFloat(formData.deliveryFee || "0") +
-                      parseFloat(formData.tip || "0")
-                    ).toFixed(2)}
+                    ₵{quote.total.toFixed(2)}
                   </span>
                 </div>
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isLoading}
@@ -753,7 +892,7 @@ const DeliveryRequestFrom = () => {
                 ) : (
                   <>
                     <CheckCircle2 className="w-5 h-5" />
-                    Submit Request
+                    Submit ₵{quote.total.toFixed(2)}
                   </>
                 )}
               </button>
