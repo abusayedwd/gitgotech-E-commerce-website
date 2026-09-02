@@ -1,6 +1,7 @@
 "use client";
 import url from "@/redux/api/baseUrl";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
+import { formatStatusLabel, statusBadgeClass } from "@/lib/orderStatus";
 import {
   useGetCustomerMainOrdersQuery,
   useGetCustomerReturnOrdersQuery,
@@ -86,15 +87,26 @@ export default function MyDashboard() {
   // Transform API data for returns
   const returns =
     returnOrderData?.data?.map((order: any) => ({
-      id: order.id,
-      productName: order.product?.product_name || "Product",
+      id: order.id || order._id,
+      productName:
+        order.items?.[0]?.productSnapshot?.name ||
+        order.order?.products?.[0]?.productSnapshot?.name ||
+        order.product?.product_name ||
+        "Return order",
       brand: order.showroom?.showroom_name || "Vendor",
       image:
+        order.items?.[0]?.attachments?.[0] ||
+        order.order?.products?.[0]?.productSnapshot?.thumbnail ||
         order.product?.product_images?.[0] ||
         order.showroom?.showroom_image ||
         "/images/jacket.png",
       price: order.price?.amount || 0,
-      quantity: 1,
+      quantity:
+        order.items?.reduce(
+          (sum: number, item: { quantity?: number }) =>
+            sum + (item.quantity || 0),
+          0,
+        ) || 1,
       otp: "N/A",
       total:
         (order.price?.amount || 0) +
@@ -119,21 +131,7 @@ export default function MyDashboard() {
     coupon?: string | null;
     orderType?: string;
     trackingNumber?: number;
-    status:
-      | "Completed"
-      | "Ready for Pickup"
-      | "Picked Up"
-      | "Cancelled"
-      | "Return Opened"
-      | "Delivered"
-      | "Order Placed"
-      | "Driver Accepted"
-      | "Processing"
-      | "Return Completed"
-      | "Rejected"
-      | "Returned"
-      | "Return Accepted"
-      | "Return Declined";
+    status: string;
     hasReview: boolean;
     productId?: string | null;
     size?: any[];
@@ -369,49 +367,13 @@ export default function MyDashboard() {
               <div className="w-full md:w-auto flex flex-col items-start md:items-end gap-3 md:gap-4">
                 {/* Status Badge */}
                 <div className="flex items-center gap-2">
-                  {order.status === "Delivered" && (
-                    <span className="px-3 py-1 bg-green-500/20 text-green-500 rounded-full text-xs font-medium">
-                      Completed
-                    </span>
-                  )}
-                  {order.status === "Order Placed" && (
-                    <span className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs font-medium">
-                      Order Placed
-                    </span>
-                  )}
-                  {order.status === "Driver Accepted" && (
-                    <span className="px-3 py-1 bg-blue-500/20 text-blue-500 rounded-full text-xs font-medium">
-                      Driver Accepted
-                    </span>
-                  )}
-                  {order.status === "Ready for Pickup" && (
-                    <span className="px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium">
-                      Ready for Pickup
-                    </span>
-                  )}
-                  {order.status === "Processing" && (
-                    <span className="px-3 py-1 bg-orange-500/20 text-orange-400 rounded-full text-xs font-medium">
-                      Processing
-                    </span>
-                  )}
-                  {order.status === "Rejected" && (
-                    <span className="px-3 py-1 bg-red-500/20 text-red-500 rounded-full text-xs font-medium">
-                      Rejected
-                    </span>
-                  )}
-                  {order.status === "Returned" && (
-                    <span className="px-3 py-1 bg-red-500/20 text-[#00DD00] rounded-full text-xs font-medium">
-                      Returned
-                    </span>
-                  )}
-                  {order.status === "Return Accepted" && (
-                    <span className="px-3 py-1 bg-red-500/20 text-[#0B6A99] rounded-full text-xs font-medium">
-                      Return Accepted
-                    </span>
-                  )}
-                  {order.status === "Return Declined" && (
-                    <span className="px-3 py-1 bg-red-500/20 text-[#CC1247] rounded-full text-xs font-medium">
-                      Return Declined
+                  {order.status && (
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadgeClass(order.status)}`}
+                    >
+                      {order.status === "Delivered"
+                        ? "Completed"
+                        : formatStatusLabel(order.status)}
                     </span>
                   )}
                 </div>
@@ -467,7 +429,13 @@ export default function MyDashboard() {
                   )}
 
                   {/* View Details - Show for all statuses */}
-                  <Link href={`/customer-dashboard/details/${order.id}`}>
+                  <Link
+                    href={
+                      activeTab === "returns"
+                        ? `/customer-dashboard/return-details/${order.id}`
+                        : `/customer-dashboard/details/${order.id}`
+                    }
+                  >
                     <button className="px-4 md:px-6 py-2 cursor-pointer bg-purple-600 hover:bg-purple-700 rounded-full text-sm font-medium transition-colors">
                       View Details
                     </button>

@@ -2,6 +2,16 @@
 
 import { showApiErrorToast } from "@/lib/apiErrorToast";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
+import { formatStatusLabel, statusBadgeClass as sharedStatusBadgeClass } from "@/lib/orderStatus";
+import {
+  ReturnAdminReviewCards,
+  ReturnDeliveryRequestCard,
+  ReturnReviewTrail,
+  getReturnProductId,
+  getReturnProductImage,
+  getReturnProductName,
+  type ReturnDeliveryRequest,
+} from "@/components/shared/ReturnAdminSections";
 import {
   useGetReturnDetailsQuery,
   useInspectReturnOrderMutation,
@@ -68,7 +78,7 @@ type OrderProduct = {
 
 type ReturnItem = {
   orderProductId?: string;
-  product?: string;
+  product?: string | { _id?: string; product_name?: string; product_images?: string[] };
   sizeType?: string;
   quantity?: number;
   customerReason?: string;
@@ -95,6 +105,19 @@ type ReturnItem = {
     inspectedAt?: string;
     inspectedBy?: string;
   };
+  adminReview?: {
+    status?: string;
+    assignedTo?: string;
+    assignedAt?: string;
+    completedAt?: string;
+  };
+  adminDecision?: {
+    decision?: string;
+    reason?: string;
+    decidedAt?: string;
+    decidedBy?: string;
+  };
+  productOwnership?: string;
 };
 
 type TrackingEvent = {
@@ -129,6 +152,7 @@ type ReturnDetailsData = {
   deliveryInfo?: ContactInfo;
   pickUpInfo?: ContactInfo;
   tracking?: TrackingEvent[];
+  deliveryRequest?: ReturnDeliveryRequest | null;
 };
 
 type ApiEnvelope<T> = {
@@ -229,28 +253,11 @@ function vendorCanAcceptDecline(status?: string, items: ReturnItem[] = []) {
 }
 
 function getItemOrderProductId(item: ReturnItem) {
-  return item.orderProductId || item.product || "";
+  return item.orderProductId || getReturnProductId(item.product) || getProductId(item.product);
 }
 
 function statusBadgeClass(status?: string) {
-  const value = (status || "").toUpperCase();
-  if (["APPROVED", "PASSED", "SETTLED", "COMPLETED", "PAID", "CONSUMED"].includes(value)) {
-    return "bg-green-900/30 text-green-300 border border-green-500/30";
-  }
-  if (["REJECTED", "FAILED", "DECLINED"].includes(value)) {
-    return "bg-red-900/30 text-red-300 border border-red-500/30";
-  }
-  if (
-    ["HELD", "PENDING", "VENDOR REVIEW", "INSPECTION STARTED", "RETURN RECEIVED"].includes(
-      value,
-    )
-  ) {
-    return "bg-amber-900/30 text-amber-300 border border-amber-500/30";
-  }
-  if (["RELEASED", "AVAILABLE"].includes(value)) {
-    return "bg-blue-900/30 text-blue-300 border border-blue-500/30";
-  }
-  return "bg-purple-900/30 text-purple-300 border border-purple-500/30";
+  return sharedStatusBadgeClass(status, "chip");
 }
 
 function DetailRow({
@@ -395,8 +402,10 @@ function ReturnItemCard({
   snapshot?: OrderProduct["productSnapshot"];
   unit: string;
 }) {
-  const name = snapshot?.name || "Returned product";
-  const image = snapshot?.thumbnail;
+  const name =
+    getReturnProductName(item.product, snapshot?.name || "Returned product");
+  const image =
+    getReturnProductImage(item.product) || snapshot?.thumbnail;
 
   return (
     <div className="rounded-xl border border-gray-800/80 bg-black/20 p-4 space-y-4">
@@ -426,12 +435,14 @@ function ReturnItemCard({
               <span
                 className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium shrink-0 ${statusBadgeClass(item.itemStatus)}`}
               >
-                {item.itemStatus}
+                {formatStatusLabel(item.itemStatus)}
               </span>
             )}
           </div>
         </div>
       </div>
+
+      <ReturnReviewTrail item={item} />
 
       {item.customerReason && (
         <div>
@@ -491,7 +502,7 @@ function ReturnItemCard({
               <span
                 className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${statusBadgeClass(item.holdStatus)}`}
               >
-                {item.holdStatus}
+                {formatStatusLabel(item.holdStatus)}
               </span>
             </div>
           )}
@@ -512,7 +523,7 @@ function ReturnItemCard({
               <span
                 className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${statusBadgeClass(item.vendorReview.decision)}`}
               >
-                {item.vendorReview.decision}
+                {formatStatusLabel(item.vendorReview.decision)}
               </span>
             )}
           </div>
@@ -534,7 +545,7 @@ function ReturnItemCard({
               <span
                 className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${statusBadgeClass(item.inspection.result)}`}
               >
-                {item.inspection.result}
+                {formatStatusLabel(item.inspection.result)}
               </span>
             )}
           </div>
@@ -545,6 +556,8 @@ function ReturnItemCard({
           />
         </div>
       )}
+
+      <ReturnAdminReviewCards item={item} />
     </div>
   );
 }
@@ -569,7 +582,7 @@ function buildReviewDrafts(
   return items.map((item, index) => {
     const matched = findOrderProduct(
       orderProducts,
-      item.product || item.orderProductId,
+      getItemOrderProductId(item),
     );
     const snapshot = matched?.productSnapshot;
     return {
@@ -769,7 +782,7 @@ function buildInspectDrafts(
   return getReviewApprovedItems(items).map((item, index) => {
     const matched = findOrderProduct(
       orderProducts,
-      item.product || item.orderProductId,
+      getItemOrderProductId(item),
     );
     const snapshot = matched?.productSnapshot;
     return {
@@ -1171,7 +1184,7 @@ export default function ReturnDetails() {
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${statusBadgeClass(returnData.status)}`}
               >
-                {returnData.status}
+                {formatStatusLabel(returnData.status)}
               </span>
             )}
             {canReviewItems && (
@@ -1239,11 +1252,11 @@ export default function ReturnDetails() {
                   {items.map((item, index) => {
                     const matched = findOrderProduct(
                       returnData.order?.products,
-                      item.product || item.orderProductId,
+                      getItemOrderProductId(item),
                     );
                     return (
                       <ReturnItemCard
-                        key={`${item.product}-${item.sizeType}-${index}`}
+                        key={`${getItemOrderProductId(item)}-${item.sizeType}-${index}`}
                         item={item}
                         snapshot={matched?.productSnapshot}
                         unit={unit}
@@ -1274,7 +1287,7 @@ export default function ReturnDetails() {
                   label="Showroom"
                   value={returnData.showroom?.showroom_name}
                 />
-                <DetailRow label="Status" value={returnData.status} />
+                <DetailRow label="Status" value={formatStatusLabel(returnData.status)} />
                 <DetailRow
                   label="Return tracking"
                   value={returnData.trackingNumber}
@@ -1294,6 +1307,13 @@ export default function ReturnDetails() {
                 <DetailRow label="Vendor note" value={returnData.vendorReason} />
               </div>
             </SectionCard>
+
+            {returnData.deliveryRequest && (
+              <ReturnDeliveryRequestCard
+                request={returnData.deliveryRequest}
+                audience="vendor"
+              />
+            )}
 
             <SectionCard title="Price details">
               <div className="space-y-3">

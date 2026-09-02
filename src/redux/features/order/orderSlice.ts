@@ -91,6 +91,16 @@ export const orderSlice = apiSlice.injectEndpoints({
       invalidatesTags: [{type:"Orders"}],
     }),
 
+    reportCustomerReturn: builder.mutation({
+      query: ({ orderId, formData }) => ({
+        url: `/order/customer/return/report/${orderId}`,
+        method: "POST",
+        body: formData,
+        formData: true,
+      }),
+      invalidatesTags: ["Orders", "Returns"],
+    }),
+
    
   }),
 });
@@ -106,4 +116,5 @@ export const {
   useGetMainOrderDetailsQuery,
   useGetReturnOrderDetailsQuery,
   useCustomOrderPlaceMutation,
+  useReportCustomerReturnMutation,
 } = orderSlice;

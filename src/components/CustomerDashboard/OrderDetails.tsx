@@ -2,6 +2,7 @@
 
 import BackButton from "@/customComponent/BackButton";
 import { buildImageUrl } from "@/lib/imageBaseUrl";
+import { formatStatusLabel, statusBadgeClass } from "@/lib/orderStatus";
 import {
   canRequestOrderReturn,
   getReturnWindowDays,
@@ -149,21 +150,7 @@ function driverInitials(name?: string) {
 }
 
 function statusClass(status?: string) {
-  if (status === "Delivered" || status === "Completed" || status === "Returned") {
-    return "bg-[#0070254D] text-[#00DD00]";
-  }
-  if (
-    status === "Rejected" ||
-    status === "Vendor Rejected" ||
-    status === "Customer Rejected" ||
-    status === "Return Declined"
-  ) {
-    return "bg-red-500/20 text-red-400";
-  }
-  if (status === "Processing" || status === "Order Placed") {
-    return "bg-orange-500/20 text-orange-400";
-  }
-  return "bg-blue-500/20 text-blue-400";
+  return statusBadgeClass(status);
 }
 
 function productsFromReturn(returnData: any): OrderProduct[] {
@@ -281,7 +268,7 @@ function TrackingCard({ events }: { events: TrackingEvent[] }) {
                   <span
                     className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${statusClass(event.status)}`}
                   >
-                    {event.status}
+                    {formatStatusLabel(event.status)}
                   </span>
                   {event.createdAt && (
                     <span className="text-xs text-gray-500">
@@ -518,14 +505,14 @@ const OrderDetails = () => {
             <div
               className={`px-4 py-1 rounded-lg text-sm font-medium ${statusClass(mainOrderStatus)}`}
             >
-              {mainOrderStatus}
+              {formatStatusLabel(mainOrderStatus)}
             </div>
           )}
           {returnOrderStatus && (
             <div
               className={`px-4 py-1 rounded-lg text-sm font-medium ${statusClass(returnOrderStatus)}`}
             >
-              Return: {returnOrderStatus}
+              Return: {formatStatusLabel(returnOrderStatus)}
             </div>
           )}
           {canShowReturn && (
