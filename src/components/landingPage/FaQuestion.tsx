@@ -5,33 +5,45 @@ import { useState } from 'react';
 
 const faqData = [
   {
-    question: "Can I set my delivery for a specific date?",
-    answer: "Yes! You can choose a specific delivery date during checkout for eligible items. We offer scheduled delivery options for most products. You'll see available dates in the delivery options section before completing your purchase."
+    question: "How long will my order take to arrive?",
+    answer:
+      "Deliveries are completed within 3–4 days after your order is placed. You cannot choose a specific delivery date at checkout — we schedule the drop-off for you within that window.",
   },
   {
-    question: "How long will the order take to arrive?",
-    answer: "Delivery times vary based on your location and the product. Standard delivery typically takes 3-7 business days. Express options (1-2 days) are available for most items. You'll see estimated delivery dates for each item before checkout."
+    question: "Can I pick up my order instead of having it delivered?",
+    answer:
+      "Yes. At checkout you can choose Delivery or Pickup. Pickup is collected from the vendor’s showroom, so no delivery fee or tip is charged. Home delivery includes a fee based on distance and item weight, shown before you pay.",
   },
   {
-    question: "Where is my order?",
-    answer: "You can track your order in real-time through your account dashboard. We'll send you tracking updates via email and SMS. If you're having trouble locating your order, contact our support team with your order number for assistance."
+    question: "How is the delivery fee calculated?",
+    answer:
+      "The delivery fee is calculated from the distance between the vendor’s showroom and your address, plus the weight of your items. You can add an optional tip. Tax is applied at checkout and shown in your order summary before payment.",
   },
   {
-    question: "Why was my package returned to sender?",
-    answer: "Packages may be returned if: the address was incorrect or incomplete, delivery attempts were unsuccessful after multiple tries, customs clearance couldn't be completed, or the recipient refused delivery. We'll notify you if this happens and help reschedule delivery."
+    question: "How do I track my order?",
+    answer:
+      "Sign in and open your customer dashboard, then view the order for live status and tracking. If something looks wrong, use Support in the site or email us with your order number so we can help.",
   },
   {
-    question: "Why am I charged for sales tax?",
-    answer: "Sales tax is applied based on your shipping address and local regulations. Tax rates vary by state and municipality. The tax amount is calculated during checkout and shown before payment. Some items may be tax-exempt depending on your location."
+    question: "How do I return an item or get a refund?",
+    answer:
+      "Once an order is marked Delivered, you can request a return from that order’s details page, as long as you are still inside the return window. You choose the items, reason, and refund method, and can arrange return pickup. Refunds follow our Refund Policy, and any processing deduction is shown before you submit.",
   },
   {
-    question: "Are there any additional fees for customs?",
-    answer: "For international orders, customs duties and import taxes may apply. These fees are determined by your country's customs authority and are the responsibility of the recipient. We'll provide all necessary documentation to help with customs clearance."
+    question: "Can I request a custom design?",
+    answer:
+      "Yes. Sleeknit lets you shop ready-made pieces or request a custom design from a vendor. Share your measurements and notes on the custom request form, and the vendor will tailor the piece for you.",
   },
   {
-    question: "What's Retail Delivery Fees?",
-    answer: "Some states have implemented retail delivery fees that apply to orders delivered within their jurisdiction. This is a small fee (usually $0.50-$2.00) added to orders to support transportation and infrastructure projects. It will appear as a separate line item during checkout if applicable."
-  }
+    question: "How do I become a vendor on Sleeknit?",
+    answer:
+      "Create an account and choose Vendor at sign-up. You can then set up your showroom, list products, manage orders, and sell directly to customers on the platform.",
+  },
+  {
+    question: "How can I contact Sleeknit support?",
+    answer:
+      "Open Support from the site after you sign in to chat with our team. You can also reach us by email or phone from the footer. Have your order number ready if your question is about a purchase.",
+  },
 ];
 
 export default function SimpleFAQ() {
@@ -49,7 +61,7 @@ export default function SimpleFAQ() {
           <h1 className='flex items-center justify-center'> 
           <SectionHeader title='Frequently Asked Questions'></SectionHeader>
           </h1>
-          <p className="text-xl text-gray-600">Get Answers to Your Qualibond Questions</p>
+          <p className="text-xl text-gray-400">Shopping, delivery, returns, and selling on Sleeknit</p>
         </div>
 
         {/* FAQ Accordion */}
