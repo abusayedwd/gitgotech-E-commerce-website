@@ -6,7 +6,12 @@ import SimpleFAQ from "@/components/landingPage/FaQuestion";
 import HotDealsSection from "@/components/landingPage/HotDeals";
 import TopRated from "@/components/landingPage/TopRated";
 import AdvertisementMarquee from "@/components/shared/AdvertisementMarquee";
-import { AD_SECTION_BELOW_HEADER } from "@/lib/advertisement";
+import AdvertisementSpotlight from "@/components/shared/AdvertisementSpotlight";
+import {
+  AD_SECTION_ABOVE_FAQ,
+  AD_SECTION_BELOW_HEADER,
+  AD_SECTION_BOTTOM_FAQ,
+} from "@/lib/advertisement";
 
 export default function Home() {
   return (
@@ -16,7 +21,9 @@ export default function Home() {
       <CategoryMarquee />
       <HotDealsSection />
       <TopRated />
+      <AdvertisementSpotlight section={AD_SECTION_ABOVE_FAQ} />
       <SimpleFAQ />
+      <AdvertisementSpotlight section={AD_SECTION_BOTTOM_FAQ} />
     </div>
   );
 }

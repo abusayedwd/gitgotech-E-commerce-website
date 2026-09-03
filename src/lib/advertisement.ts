@@ -1,4 +1,6 @@
 export const AD_SECTION_BELOW_HEADER = "below_header_section";
+export const AD_SECTION_ABOVE_FAQ = "above_faq_section";
+export const AD_SECTION_BOTTOM_FAQ = "bottom_faq_section";
 
 export const AD_MARQUEE_FIELDS = [
   "businessName",

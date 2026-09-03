@@ -91,7 +91,7 @@ export default function AdvertisementMarquee({
             </button>
           </div>
 
-          <div className="overflow-hidden pb-3">
+          <div className="overflow-hidden p-1">
             <div
               key={`${section}-${page}`}
               className="flex w-max ad-marquee-track"
@@ -155,7 +155,7 @@ function AdPill({
     <button
       type="button"
       onClick={onOpen}
-      className="flex-shrink-0 mx-2 flex items-center gap-3 rounded-2xl border border-white/10 px-3 py-2 min-w-[220px] max-w-[280px] text-left transition-shadow hover:shadow-[0_0_0_1px_rgba(34,211,238,0.75),0_0_18px_rgba(34,211,238,0.28)]"
+      className="flex-shrink-0 mx-2 flex items-center gap-3 rounded-4xl border border-white/10 px-3 py-2 min-w-[220px] max-w-[280px] text-left transition-shadow hover:shadow-[0_0_0_1px_rgba(34,211,238,0.75),0_0_18px_rgba(34,211,238,0.28)]"
       style={{ background, color: text }}
     >
       <div className="w-10 h-10 rounded-full overflow-hidden bg-white/10 border border-white/15 shrink-0">
