@@ -9,6 +9,16 @@ import TokenExpiredModal from "@/components/providers/TokenExpiredModal";
 import PrivacyTermsModal from "@/components/providers/PrivacyTermsModal";
 import ToastErrorGuard from "@/components/providers/ToastErrorGuard";
 
+import JsonLd from "@/components/shared/JsonLd";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+  DEFAULT_TITLE,
+  KEYWORDS,
+  SITE_NAME,
+  SITE_URL,
+  organizationJsonLd,
+} from "@/lib/seo";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Cormorant_Garamond } from "next/font/google";
 import "./globals.css";
@@ -33,9 +43,35 @@ const cormorantGaramond = Cormorant_Garamond({
 });
 
 export const metadata: Metadata = {
-  title: "Sleeknit - Digital Solutions for Your Business",
-  description:
-    "Transform your digital presence with cutting-edge web and app development",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: KEYWORDS,
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  alternates: { canonical: SITE_URL },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [{ url: DEFAULT_OG_IMAGE, alt: SITE_NAME }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+    images: [DEFAULT_OG_IMAGE],
+  },
+  icons: { icon: DEFAULT_OG_IMAGE },
 };
 
 export default function RootLayout({
@@ -66,6 +102,7 @@ export default function RootLayout({
           </SupportModalProvider>
         </Providers>
         <ToastProvider />
+        <JsonLd data={organizationJsonLd()} />
       </body>
     </html>
   );

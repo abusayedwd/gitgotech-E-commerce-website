@@ -1,9 +1,11 @@
 'use client';
 
+import JsonLd from '@/components/shared/JsonLd';
 import { SectionHeader } from '@/customComponent/Header';
+import { faqJsonLd } from '@/lib/seo';
 import { useState } from 'react';
 
-const faqData = [
+export const faqData = [
   {
     question: "How long will my order take to arrive?",
     answer:
@@ -55,6 +57,7 @@ export default function SimpleFAQ() {
 
   return (
     <div className=" py-12 px-4 sm:px-6 lg:px-8">
+      <JsonLd data={faqJsonLd(faqData)} />
       <div className="container mx-auto">
         {/* Header */}
         <div className="text-center mb-12">

@@ -11,6 +11,7 @@ import {
   useGetVendorShowroomsQuery,
 } from "@/redux/features/vendor/showroomSlice/showroomSlice";
 import { Edit, Star, Store, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -275,12 +276,10 @@ export default function ViewShowroomPage() {
                   : "/images/jacket.png";
 
                 return (
-                  <div
+                  <Link
                     key={product._id}
-                    onClick={() =>
-                      router.push(`/product/details?id=${product._id}`)
-                    }
-                    className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow border border-gray-700/50"
+                    href={`/product/${product._id}`}
+                    className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow border border-gray-700/50 block"
                   >
                     {/* Product Image */}
                     <div className="relative aspect-square overflow-hidden">
@@ -346,7 +345,7 @@ export default function ViewShowroomPage() {
                         </div>
                       )}
                     </div>
-                  </div>
+                  </Link>
                 );
               })}
             </div>

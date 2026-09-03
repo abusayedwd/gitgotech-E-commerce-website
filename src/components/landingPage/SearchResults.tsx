@@ -214,7 +214,7 @@ function ProductCard({
 }) {
   return (
     <Link
-      href={`/product/details?id=${product._id}`}
+      href={`/product/${product._id}`}
       onClick={onNavigate}
       className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow"
     >

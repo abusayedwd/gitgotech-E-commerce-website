@@ -227,7 +227,7 @@ export default function AdvertisementDetailsModal({
                   <div className="w-full h-full bg-gradient-to-br from-[#12325c] via-[#0b1a33] to-[#07101f]" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#07101f] via-[#07101f]/25 to-transparent" />
-                <span className="absolute top-3 left-4 text-[10px] bg-purple-400 font-bold tracking-[0.22em] text-white/90">
+                <span className="absolute top-3 px-2 py-1 rounded-4xl left-4 text-[10px] bg-purple-400 font-bold tracking-[0.22em] text-white/90">
                   SPONSORED
                 </span>
                 <button
