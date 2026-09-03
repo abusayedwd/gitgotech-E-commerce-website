@@ -18,7 +18,7 @@ export default function TopRated() {
   const products = topProductsData?.data?.data || [];
 
   return (
-    <div className="bg-black py-6 sm:py-8 px-2 sm:px-4">
+    <div className="py-6 sm:py-8 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">

@@ -72,6 +72,7 @@ export const apiSlice = createApi({
     "Settings",
     "BlockedUsers",
     "Reports",
+    "Advertisements",
   ],
   endpoints: () => ({}),
 });

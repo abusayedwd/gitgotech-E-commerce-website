@@ -18,7 +18,7 @@ export default function HotDealsSection() {
   const products = hotDealsData?.data?.data || [];
 
   return (
-    <div className="bg-black py-4 sm:py-8 px-2 sm:px-4">
+    <div className="py-4 sm:py-8 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">

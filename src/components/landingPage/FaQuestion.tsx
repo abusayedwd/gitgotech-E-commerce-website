@@ -43,7 +43,7 @@ export default function SimpleFAQ() {
 
   return (
     <div className=" py-12 px-4 sm:px-6 lg:px-8">
-      <div className="container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black">
+      <div className="container mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
           <h1 className='flex items-center justify-center'> 
