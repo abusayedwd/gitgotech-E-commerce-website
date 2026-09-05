@@ -1,5 +1,5 @@
 "use client";
-import { Lock, FileText, RotateCcw, Shield, Trash2, X } from "lucide-react";
+import { Lock, FileText, RotateCcw, Shield, Trash2, X, CircleDollarSign } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, ReactNode } from "react";
 import toast from "react-hot-toast";
@@ -80,20 +80,26 @@ export default function SettingsPage() {
               label="Privacy Policy" 
             />
 
-            <SettingButton 
+            {/* <SettingButton 
               onClick={() => router.push("/return-policy")} 
               icon={<RotateCcw />} 
               label="Return Policy" 
+            /> */}
+
+            <SettingButton 
+              onClick={() => router.push("/refund-policy")}
+              icon={<CircleDollarSign />} 
+              label="Refund Policy" 
             />
 
             
 
-            {/* <SettingButton
+            <SettingButton
               icon={<Trash2 />}
               label="Delete Account"
               danger
               onClick={() => setShowDeleteModal(true)}
-            /> */}
+            />
 
 
           </div>

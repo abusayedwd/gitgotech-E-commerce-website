@@ -72,14 +72,14 @@ export const orderSlice = apiSlice.injectEndpoints({
      invalidatesTags: ["Orders"],
     }),
 
-    // ✅ POST - Add Return Order (with ID)
+    // ✅ POST - Add Return Order (multipart: data JSON + product-N files)
     addReturnOrder: builder.mutation({
-      query: ({ orderId, data }) => ({
+      query: ({ orderId, formData }) => ({
         url: `/order/return/add/${orderId}`,
         method: "POST",
-        body: data,
+        body: formData,
       }),
-     invalidatesTags: ["Orders"],
+      invalidatesTags: ["Orders", "Returns"],
     }),
 
     customOrderPlace: builder.mutation({
@@ -89,6 +89,34 @@ export const orderSlice = apiSlice.injectEndpoints({
         body:data,
       }),
       invalidatesTags: [{type:"Orders"}],
+    }),
+
+    reportCustomerReturn: builder.mutation({
+      query: ({ orderId, formData }) => ({
+        url: `/order/customer/return/report/${orderId}`,
+        method: "POST",
+        body: formData,
+        formData: true,
+      }),
+      invalidatesTags: ["Orders", "Returns"],
+    }),
+
+    getReturnDeliveryEligibility: builder.query({
+      query: (orderId: string) => ({
+        url: `/order/return/delivery-request/${orderId}`,
+        method: "GET",
+      }),
+      providesTags: ["Returns"],
+    }),
+
+    createReturnDeliveryRequest: builder.mutation({
+      query: ({ orderId, formData }: { orderId: string; formData: FormData }) => ({
+        url: `/order/return/delivery-request/${orderId}`,
+        method: "POST",
+        body: formData,
+        formData: true,
+      }),
+      invalidatesTags: ["Orders", "Returns"],
     }),
 
    
@@ -106,4 +134,8 @@ export const {
   useGetMainOrderDetailsQuery,
   useGetReturnOrderDetailsQuery,
   useCustomOrderPlaceMutation,
+  useReportCustomerReturnMutation,
+  useGetReturnDeliveryEligibilityQuery,
+  useLazyGetReturnDeliveryEligibilityQuery,
+  useCreateReturnDeliveryRequestMutation,
 } = orderSlice;

@@ -1,5 +1,14 @@
 import SearchResults from "@/components/landingPage/SearchResults";
+import { createPageMetadata } from "@/lib/seo";
+import type { Metadata } from "next";
 import { Suspense } from "react";
+
+export const metadata: Metadata = createPageMetadata({
+  title: "Search",
+  description:
+    "Search Sleeknit for products, vendors, and showrooms across the fashion marketplace.",
+  path: "/search",
+});
 
 export default function SearchPage() {
   return (

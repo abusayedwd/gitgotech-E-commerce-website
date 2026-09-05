@@ -1,7 +1,7 @@
 'use client'
 
 import { Star } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import styles from "./../../customComponent/Discount.module.css"
 import BackButton from "@/customComponent/BackButton";
 import ProductImageSlider from "@/components/shared/ProductImageSlider";
@@ -15,7 +15,6 @@ export default function NewArrivals({
   selectedCategory: string | null;
   products?: any[];
 }) {
-  const router = useRouter();
 
   return (
     <div className="bg-black py-6 mt-44 sm:py-8 md:py-10 px-2 sm:px-4">
@@ -35,10 +34,10 @@ export default function NewArrivals({
               const discount = product.discount?.percentage || 0;
 
               return (
-                <div
+                <Link
                   key={product._id}
-                  onClick={() => router.push(`/product/details?id=${product._id}`)}
-                  className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
+                  href={`/product/${product._id}`}
+                  className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow block"
                 >
                   <ProductImageSlider
                     images={product.product_images}
@@ -87,7 +86,7 @@ export default function NewArrivals({
                       {product.product_category}
                     </p>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

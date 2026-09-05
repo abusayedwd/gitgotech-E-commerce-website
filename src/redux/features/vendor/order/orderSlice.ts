@@ -141,14 +141,46 @@ const orderSlice = apiSlice.injectEndpoints({
 
     // Return Order Action (accept/decline)
     returnOrderAction: builder.mutation({
-      query: ({ id, action, showroomId }) => ({
+      query: ({ id, action, showroomId, reason }) => ({
         url: `/order/vendor/return-action?order=${id}&action=${action}`,
         method: "PATCH",
         headers: {
           showroom: showroomId,
         },
+        ...(reason ? { body: { reason } } : {}),
       }),
       invalidatesTags: ["Returns"],
+    }),
+
+    // Per-item vendor review (Pending returns)
+    reviewReturnOrder: builder.mutation({
+      query: ({ orderId, items, showroomId }) => ({
+        url: `/order/vendor/return-review`,
+        method: "PATCH",
+        headers: {
+          showroom: showroomId,
+        },
+        body: {
+          orderId,
+          items,
+        },
+      }),
+      invalidatesTags: ["Returns", "Holds"],
+    }),
+
+    // Per-item vendor inspection (Return Received)
+    inspectReturnOrder: builder.mutation({
+      query: ({ returnOrderId, items, showroomId }) => ({
+        url: `/order/vendor/return-inspect/${returnOrderId}`,
+        method: "PATCH",
+        headers: {
+          showroom: showroomId,
+        },
+        body: {
+          items,
+        },
+      }),
+      invalidatesTags: ["Returns", "Holds"],
     }),
 
     // ==================== CUSTOM ORDERS ====================
@@ -237,6 +269,14 @@ const orderSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["CustomOrders"],
     }),
 
+    getVendorHolds: builder.query({
+      query: () => ({
+        url: `/order/vendor/holds`,
+        method: "GET",
+      }),
+      providesTags: ["Holds"],
+    }),
+
   }),
 });
 
@@ -247,9 +287,12 @@ export const {
   useGetVendorReturnsQuery,
   useGetReturnDetailsQuery,
   useReturnOrderActionMutation,
+  useReviewReturnOrderMutation,
+  useInspectReturnOrderMutation,
   // Custom Orders
   useGetCustomOrdersQuery,
   useGetCustomOrderDetailsQuery,
   useAcceptOrDeclineCustomOrderMutation,
   useChangeCustomOrderStatusMutation,
+  useGetVendorHoldsQuery,
 } = orderSlice;

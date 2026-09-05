@@ -4,39 +4,26 @@ import BannerSection from "@/components/landingPage/Banner";
 import CategoryMarquee from "@/components/landingPage/CategoryMarquee";
 import SimpleFAQ from "@/components/landingPage/FaQuestion";
 import HotDealsSection from "@/components/landingPage/HotDeals";
-import SearchResults from "@/components/landingPage/SearchResults";
 import TopRated from "@/components/landingPage/TopRated";
-import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import AdvertisementMarquee from "@/components/shared/AdvertisementMarquee";
+import AdvertisementSpotlight from "@/components/shared/AdvertisementSpotlight";
+import {
+  AD_SECTION_ABOVE_FAQ,
+  AD_SECTION_BELOW_HEADER,
+  AD_SECTION_BOTTOM_FAQ,
+} from "@/lib/advertisement";
 
-function HomeBody() {
-  const searchParams = useSearchParams();
-  const q = (searchParams.get("q") || "").trim();
-
-  // When a search query is present, hide the normal home sections and show
-  // search results in their place. The search bar (FashionSearchNav) stays
-  // mounted globally via the layout, so users can keep typing.
-  if (q) {
-    return <SearchResults />;
-  }
-
+export default function Home() {
   return (
-    <>
+    <div className="overflow-x-hidden max-w-full mt-38 bg-linear-to-r from-gray-950 via-purple-900/20 to-black">
+      <AdvertisementMarquee section={AD_SECTION_BELOW_HEADER} />
       <BannerSection />
       <CategoryMarquee />
       <HotDealsSection />
       <TopRated />
+      <AdvertisementSpotlight section={AD_SECTION_ABOVE_FAQ} />
       <SimpleFAQ />
-    </>
-  );
-}
-
-export default function Home() {
-  return (
-    <div className="overflow-x-hidden max-w-full">
-      <Suspense fallback={null}>
-        <HomeBody />
-      </Suspense>
+      <AdvertisementSpotlight section={AD_SECTION_BOTTOM_FAQ} />
     </div>
   );
 }

@@ -3,12 +3,10 @@ import { SectionHeader } from '@/customComponent/Header';
 import { useGetTopProductsQuery } from '@/redux/features/home/homeSlice';
 import { Star, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import styles from './../../customComponent/Discount.module.css';
 import ProductImageSlider from '@/components/shared/ProductImageSlider';
 
 export default function TopRated() {
-  const router = useRouter();
 
   const { data: topProductsData, isLoading } = useGetTopProductsQuery({
     searchTerm: '',
@@ -18,7 +16,7 @@ export default function TopRated() {
   const products = topProductsData?.data?.data || [];
 
   return (
-    <div className="bg-black py-6 sm:py-8 px-2 sm:px-4">
+    <div className="py-6 sm:py-8 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6">
@@ -45,10 +43,10 @@ export default function TopRated() {
               const discount = product.discount?.percentage || 0;
 
               return (
-                <div
+                <Link
                   key={product._id}
-                  onClick={() => router.push(`/product/details?id=${product._id}`)}
-                  className="bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow"
+                  href={`/product/${product._id}`}
+                  className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow block"
                 >
                   <ProductImageSlider
                     images={product.product_images}
@@ -97,7 +95,7 @@ export default function TopRated() {
                       {product.product_category}
                     </p>
                   </div>
-                </div>
+                </Link>
               );
             })}
           </div>

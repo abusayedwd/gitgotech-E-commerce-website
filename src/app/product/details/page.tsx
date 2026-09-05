@@ -1,18 +1,11 @@
-import { Suspense } from "react";
-import ProductDetailsClient from "./ProductDetailsClient";
+import { redirect } from "next/navigation";
 
-const page = () => {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-black flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
-        </div>
-      }
-    >
-      <ProductDetailsClient />
-    </Suspense>
-  );
-};
-
-export default page;
+export default async function LegacyProductDetailsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ id?: string }>;
+}) {
+  const { id } = await searchParams;
+  if (id) redirect(`/product/${id}`);
+  redirect("/");
+}

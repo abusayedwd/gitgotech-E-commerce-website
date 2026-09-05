@@ -1,4 +1,11 @@
 import PrivateRoute from "@/components/shared/PrivateRoute";
+import { NO_INDEX_ROBOTS } from "@/lib/seo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  robots: NO_INDEX_ROBOTS,
+  title: "Custom orders",
+};
 
 export default function CustomOrdersLayout({
   children,

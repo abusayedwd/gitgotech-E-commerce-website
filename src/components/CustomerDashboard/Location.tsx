@@ -507,6 +507,8 @@ interface MapComponentProps {
   showroomName?: string;
   /** Weight-based delivery (USD) added to distance fee on map preview */
   weightDeliveryUsd?: number;
+  /** Live platform rate; defaults to ₵2/km */
+  ratePerKm?: number;
 }
 
 // ─── Main MapComponent ────────────────────────────────────────────────────────
@@ -516,6 +518,7 @@ export default function MapComponent({
   showroomCoordinates,
   showroomName = "Showroom",
   weightDeliveryUsd = 0,
+  ratePerKm = 2,
 }: MapComponentProps) {
   // GeoJSON [lng, lat] → Leaflet { lat, lng }
   const showroomLatLng = showroomCoordinates
@@ -577,7 +580,7 @@ export default function MapComponent({
     distanceKm !== null
       ? parseFloat(
           (
-            Math.max(5, parseFloat((distanceKm * 2).toFixed(2))) +
+            Math.max(5, parseFloat((distanceKm * ratePerKm).toFixed(2))) +
             (weightDeliveryUsd ?? 0)
           ).toFixed(2),
         )
@@ -784,7 +787,10 @@ export default function MapComponent({
                       🚚 ₵{deliveryCharge?.toFixed(2)} delivery
                     </span>
                     <span className="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-500 px-2 py-1 rounded-full border border-gray-200">
-                      ₵2/km · min ₵5 + weight ₵2/kg
+                      ₵{ratePerKm}/km · min ₵5
+                      {weightDeliveryUsd > 0
+                        ? ` + weight ₵${weightDeliveryUsd.toFixed(2)}`
+                        : ""}
                     </span>
                   </div>
                 )}

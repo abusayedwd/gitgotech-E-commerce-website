@@ -14,6 +14,7 @@ import { markIntentionalLogout } from "@/hooks/useAuth";
 import {
   BadgeCheck,
   Camera,
+  Clock,
   Crown,
   Edit,
   FileCheck2,
@@ -31,10 +32,12 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import url from "./../../redux/api/baseUrl.js";
+import VendorHoldsModal from "./VendorHoldsModal";
 
 export default function VendorProfilePage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [isHoldsModalOpen, setIsHoldsModalOpen] = useState(false);
   const router = useRouter();
 
   const { data: profileData, refetch: refetchProfile } =
@@ -330,24 +333,54 @@ export default function VendorProfilePage() {
 
       {/* Balance card */}
       <div className="max-w-6xl mx-auto px-4">
-        <div className="bg-gradient-to-r from-[#6100FF]/25 via-[#241F30] to-[#0f0924] border border-purple-500/40 rounded-2xl p-6 flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-purple-300/80 mb-1">
-              Wallet Balance
-            </p>
-            <p className="text-3xl md:text-4xl font-bold text-white font-cormorant">
-              ₵
-              {Number(profile?.balance || 0).toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
-            </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="bg-gradient-to-r from-[#6100FF]/25 via-[#241F30] to-[#0f0924] border border-purple-500/40 rounded-2xl p-6 flex items-center justify-between">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-purple-300/80 mb-1">
+                Available balance
+              </p>
+              <p className="text-3xl md:text-4xl font-bold text-white font-cormorant">
+                ₵
+                {Number(profile?.balance || 0).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+            </div>
+            <div className="w-14 h-14 rounded-full bg-purple-600/25 flex items-center justify-center">
+              <Wallet className="text-purple-300" size={26} />
+            </div>
           </div>
-          <div className="w-14 h-14 rounded-full bg-purple-600/25 flex items-center justify-center">
-            <Wallet className="text-purple-300" size={26} />
-          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsHoldsModalOpen(true)}
+            className="bg-gradient-to-r cursor-pointer from-amber-500/20 via-[#241F30] to-[#0f0924] border border-amber-500/40 rounded-2xl p-6 flex items-center justify-between text-left hover:border-amber-400/70 transition-colors"
+          >
+            <div>
+              <p className="text-xs uppercase tracking-wider text-amber-300/80 mb-1">
+                Held balance
+              </p>
+              <p className="text-3xl md:text-4xl font-bold text-white font-cormorant">
+                ₵
+                {Number(profile?.heldBalance || 0).toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                })}
+              </p>
+              <p className="text-xs text-amber-200/70 mt-2">Tap to view holds</p>
+            </div>
+            <div className="w-14 h-14 rounded-full bg-amber-600/25 flex items-center justify-center">
+              <Clock className="text-amber-300" size={26} />
+            </div>
+          </button>
         </div>
       </div>
+
+      <VendorHoldsModal
+        open={isHoldsModalOpen}
+        onClose={() => setIsHoldsModalOpen(false)}
+      />
 
       {/* Personal Information */}
       <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">

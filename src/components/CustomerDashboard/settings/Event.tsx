@@ -1,6 +1,10 @@
 "use client";
 
-import { useGetEventsQuery } from "@/redux/features/event/eventSlice";
+import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import {
+  useGetEventsQuery,
+  useLazyGetEventParticipatorsQuery,
+} from "@/redux/features/event/eventSlice";
 import { Calendar, MapPin, X } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -15,6 +19,24 @@ type Participant = {
   name: string;
   email: string;
   image?: string;
+};
+
+type Participator = {
+  _id: string;
+  name: string;
+  username: string;
+  email: string;
+  gender: string | null;
+  image: string;
+  isOnline: boolean;
+};
+
+type Pagination = {
+  totalPage: number;
+  currentPage: number;
+  prevPage: number;
+  nextPage: number;
+  totalData: number;
 };
 
 type EventType = {
@@ -33,6 +55,11 @@ export default function Event() {
   const [activeTab, setActiveTab] = useState("created");
   const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isParticipantsModalOpen, setIsParticipantsModalOpen] =
+    useState(false);
+  const [participantsEvent, setParticipantsEvent] =
+    useState<EventType | null>(null);
+  const [participantsPage, setParticipantsPage] = useState(1);
   const [emailFields, setEmailFields] = useState([""]);
   const [selectedEvent, setSelectedEvent] = useState<EventType | null>(null);
   const [editFormData, setEditFormData] = useState({
@@ -50,6 +77,19 @@ export default function Event() {
     page: 1,
     limit: 10,
   });
+
+  const [
+    getParticipators,
+    {
+      data: participatorsData,
+      isLoading: isParticipatorsLoading,
+      isFetching: isParticipatorsFetching,
+    },
+  ] = useLazyGetEventParticipatorsQuery();
+
+  const participators: Participator[] = participatorsData?.data || [];
+  const participatorsPagination: Pagination | undefined =
+    participatorsData?.pagination;
 
   const events: EventType[] = eventsData?.data?.data || [];
   // console.log(events);
@@ -86,6 +126,19 @@ export default function Event() {
   const openInviteModal = () => {
     setIsInviteModalOpen(true);
     setEmailFields([""]);
+  };
+
+  const openParticipantsModal = (event: EventType) => {
+    setParticipantsEvent(event);
+    setParticipantsPage(1);
+    setIsParticipantsModalOpen(true);
+    getParticipators({ id: event._id, page: 1, limit: 10 });
+  };
+
+  const handleParticipantsPageChange = (page: number) => {
+    if (!participantsEvent) return;
+    setParticipantsPage(page);
+    getParticipators({ id: participantsEvent._id, page, limit: 10 });
   };
 
   const openEditModal = (event: EventType) => {
@@ -220,13 +273,22 @@ export default function Event() {
                     </div>
 
                     <div className="flex items-center gap-2 text-[16px] text-[#912DAD]">
-                      <span>
+                      <span
+                        onClick={() => openParticipantsModal(event)}
+                        className="cursor-pointer hover:text-[#B630F4] transition-colors"
+                      >
                         Participants:{" "}
                         {Array.isArray(event?.participant)
                           ? event.participant.length
                           : typeof event?.participant === "number"
                             ? event.participant
                             : 0}
+                      </span>
+                      <span
+                        onClick={() => openParticipantsModal(event)}
+                        className="cursor-pointer text-purple-400 hover:text-purple-300 transition-colors underline"
+                      >
+                        View
                       </span>
                     </div>
                   </div>
@@ -335,6 +397,113 @@ export default function Event() {
             >
               Send
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Participants Modal */}
+      {isParticipantsModalOpen && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-black border-2 border-[#6100FF] rounded-2xl p-6 w-full max-w-md relative">
+            <button
+              onClick={() => setIsParticipantsModalOpen(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+            >
+              <X size={24} />
+            </button>
+
+            <h2 className="text-xl font-semibold text-white text-center mb-1">
+              Participants
+            </h2>
+            <p className="text-gray-400 text-center text-sm mb-6 truncate">
+              {participantsEvent?.title}
+            </p>
+
+            {isParticipatorsLoading || isParticipatorsFetching ? (
+              <div className="text-center text-gray-400 py-10">
+                Loading participants...
+              </div>
+            ) : participators.length > 0 ? (
+              <div className="space-y-3 max-h-[50vh] overflow-y-auto pr-1">
+                {participators.map((p: Participator) => (
+                  <div
+                    key={p._id}
+                    className="flex items-center gap-3 bg-[#242428] border border-gray-600 rounded-lg p-3"
+                  >
+                    <div className="relative shrink-0">
+                      <img
+                        src={
+                          p.image
+                            ? `${IMAGE_BASE_URL}/${p.image}`
+                            : `${IMAGE_BASE_URL}/User_Default_Image.jpg`
+                        }
+                        alt={p.name}
+                        className="w-12 h-12 rounded-full object-cover"
+                      />
+                      <span
+                        className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-[#242428] ${
+                          p.isOnline ? "bg-green-500" : "bg-gray-500"
+                        }`}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-white font-medium truncate">
+                        {p.name}
+                      </p>
+                      <p className="text-gray-400 text-sm truncate">
+                        @{p.username}
+                      </p>
+                      <p className="text-gray-500 text-xs truncate">
+                        {p.email}
+                      </p>
+                    </div>
+                    <span
+                      className={`text-xs font-medium shrink-0 ${
+                        p.isOnline ? "text-green-400" : "text-gray-500"
+                      }`}
+                    >
+                      {p.isOnline ? "Online" : "Offline"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 py-10">
+                No participants yet.
+              </div>
+            )}
+
+            {participatorsPagination &&
+              participatorsPagination.totalPage > 1 && (
+                <div className="flex items-center justify-between mt-6">
+                  <button
+                    onClick={() =>
+                      handleParticipantsPageChange(
+                        participatorsPagination.prevPage,
+                      )
+                    }
+                    disabled={!participatorsPagination.prevPage}
+                    className="px-3 py-1.5 bg-gray-800 text-gray-300 rounded-lg text-sm hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-gray-400 text-sm">
+                    Page {participatorsPagination.currentPage} of{" "}
+                    {participatorsPagination.totalPage}
+                  </span>
+                  <button
+                    onClick={() =>
+                      handleParticipantsPageChange(
+                        participatorsPagination.nextPage,
+                      )
+                    }
+                    disabled={!participatorsPagination.nextPage}
+                    className="px-3 py-1.5 bg-gray-800 text-gray-300 rounded-lg text-sm hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
           </div>
         </div>
       )}
