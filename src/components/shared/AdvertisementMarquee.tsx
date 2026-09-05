@@ -130,9 +130,7 @@ export default function AdvertisementMarquee({
           }
         }
         .ad-marquee-track {
-          animation-name: ad-marquee-rtl;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
+          animation: marquee 20s linear infinite;
         }
       `}</style>
     </>
