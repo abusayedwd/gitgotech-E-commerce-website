@@ -719,7 +719,9 @@ export default function CheckoutPage() {
                   const price = isEventOrder
                     ? item.product?.product_price ?? 0
                     : item.priceFromCart?.amount ?? item.product?.product_price ?? 0;
-                  const imgSrc = `${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product?.product_images?.[0]}`;
+                  const imgSrc = item.product?.product_images?.[0]
+                    ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product.product_images[0]}`
+                    : "/images/jacket.png";
 
                   return (
                     <div
@@ -734,7 +736,7 @@ export default function CheckoutPage() {
                           className="w-full h-full object-cover"
                           onError={(e) => {
                             (e.target as HTMLImageElement).src =
-                              "/placeholder-product.png";
+                              "/images/jacket.png";
                           }}
                         />
                       </div>
