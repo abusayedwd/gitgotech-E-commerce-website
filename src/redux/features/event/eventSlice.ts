@@ -31,6 +31,13 @@ const eventSlice = apiSlice.injectEndpoints({
       query: (id) => `/event/get/${id}`,
     }),
 
+    // Get Event Participators (with pagination)
+    getEventParticipators: builder.query({
+      query: ({ id, page = 1, limit = 10 }) =>
+        `/event/member/get/${id}?page=${page}&limit=${limit}`,
+      providesTags: ["Events"],
+    }),
+
     ///size data get event
     getProductEventWishesSize: builder.query({
       query: (data) => ({
@@ -108,5 +115,7 @@ export const {
   useEventProductSizeAddEditMutation,
   useGetProductEventWishesSizeQuery,
   useLazyGetProductEventWishesSizeQuery,
+  useGetEventParticipatorsQuery,
+  useLazyGetEventParticipatorsQuery,
   useAddEventMemberMutation,
 } = eventSlice;
