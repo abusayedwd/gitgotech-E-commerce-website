@@ -739,15 +739,12 @@ export default function CheckoutPage() {
                   const price = isEventOrder
                     ? item.product?.product_price ?? 0
                     : item.priceFromCart?.amount ?? item.product?.product_price ?? 0;
-<<<<<<< HEAD
                   const originalPrice = item.product?.product_price ?? 0;
                   const hasItemDiscount =
                     !isEventOrder && isDiscountActive(item.product?.discount);
                   const itemDiscountPercentage = getActiveDiscountPercentage(
                     item.product?.discount,
                   );
-=======
->>>>>>> e4f9e45c0c614c23836c3e3fb3576514c8c4cde7
                   const imgSrc = item.product?.product_images?.[0]
                     ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product.product_images[0]}`
                     : "/images/jacket.png";
