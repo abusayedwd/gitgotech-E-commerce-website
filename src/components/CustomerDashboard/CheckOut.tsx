@@ -23,6 +23,11 @@ import {
   productWeightToKg,
 } from "@/lib/deliveryPricing";
 import { parsePlatformSettings } from "@/lib/platformSettings";
+import {
+  applyProductDiscount,
+  getActiveDiscountPercentage,
+  isDiscountActive,
+} from "@/lib/productDiscount";
 
 const DEFAULT_PRODUCT_WEIGHT = { unit: "gram", amount: 100 };
 
@@ -259,6 +264,21 @@ export default function CheckoutPage() {
       return sum + price * item.quantity;
     }, 0);
   }, [displayItems]);
+
+  // Total saved from per-product discounts (not the coupon discount).
+  // Only counts discounts that are currently active (on and within date range).
+  const productSavings = useMemo(() => {
+    if (isEventOrder) return 0;
+    return displayItems.reduce((sum: number, item: any) => {
+      const originalPrice = item.product?.product_price ?? 0;
+      if (!isDiscountActive(item.product?.discount)) return sum;
+      const discountedPrice = applyProductDiscount(
+        originalPrice,
+        item.product?.discount,
+      );
+      return sum + (originalPrice - discountedPrice) * item.quantity;
+    }, 0);
+  }, [displayItems, isEventOrder]);
 
   // Distance/weight-based delivery fee — only for "delivery" orders.
   // Pick-up skips the map entirely and stays free.
@@ -719,6 +739,12 @@ export default function CheckoutPage() {
                   const price = isEventOrder
                     ? item.product?.product_price ?? 0
                     : item.priceFromCart?.amount ?? item.product?.product_price ?? 0;
+                  const originalPrice = item.product?.product_price ?? 0;
+                  const hasItemDiscount =
+                    !isEventOrder && isDiscountActive(item.product?.discount);
+                  const itemDiscountPercentage = getActiveDiscountPercentage(
+                    item.product?.discount,
+                  );
                   const imgSrc = item.product?.product_images?.[0]
                     ? `${process.env.NEXT_PUBLIC_IMAGE_URL}/${item.product.product_images[0]}`
                     : "/images/jacket.png";
@@ -755,12 +781,24 @@ export default function CheckoutPage() {
                             {item.product.showroom.showroom_name}
                           </p>
                         )}
+                        {hasItemDiscount && (
+                          <p className="text-xs text-green-400 font-medium mt-0.5">
+                            -{itemDiscountPercentage}% off
+                          </p>
+                        )}
                       </div>
 
                       {/* Line total */}
-                      <p className="text-sm font-semibold">
-                        ₵{(price * item.quantity).toFixed(2)}
-                      </p>
+                      <div className="text-right">
+                        {hasItemDiscount && (
+                          <p className="text-xs text-gray-500 line-through">
+                            ₵{(originalPrice * item.quantity).toFixed(2)}
+                          </p>
+                        )}
+                        <p className="text-sm font-semibold">
+                          ₵{(price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                   );
                 })
@@ -775,6 +813,15 @@ export default function CheckoutPage() {
                 <span className="text-gray-400">Subtotal</span>
                 <span className="font-medium">₵{subtotal.toFixed(2)}</span>
               </div>
+
+              {productSavings > 0 && (
+                <div className="flex justify-between text-sm text-green-400">
+                  <span>Product discount</span>
+                  <span className="font-medium">
+                    -₵{productSavings.toFixed(2)}
+                  </span>
+                </div>
+              )}
 
               {deliveryMethod === "delivery" ? (
                 <>

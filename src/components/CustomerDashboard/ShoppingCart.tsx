@@ -534,6 +534,7 @@ import {
   productWeightToKg,
 } from "@/lib/deliveryPricing";
 import { parsePlatformSettings } from "@/lib/platformSettings";
+import { isDiscountActive, applyProductDiscount } from "@/lib/productDiscount";
 import {
   useDeleteSaveListMutation,
   useGetWishlistAndCartQuery,
@@ -648,17 +649,10 @@ export default function ShoppingCart() {
     }
   }, [cartItems.length]);
 
-  // Get discounted price
+  // Get discounted price (only when the discount is currently active)
   const getDiscountedPrice = (product: any) => {
     const originalPrice = product?.product_price || 0;
-    const discount = product?.discount;
-
-    if (discount?.isValid && discount?.percentage) {
-      const discountAmount = (originalPrice * discount.percentage) / 100;
-      return originalPrice - discountAmount;
-    }
-
-    return originalPrice;
+    return applyProductDiscount(originalPrice, product?.discount);
   };
 
   const handleRemoveFromCart = async (id: string) => {
@@ -757,6 +751,15 @@ export default function ShoppingCart() {
       const quantity = quantities[item._id] || item.quantity || 1;
       const discountedPrice = getDiscountedPrice(item.product);
       return total + discountedPrice * quantity;
+    }, 0);
+  };
+
+  const calculateTotalSavings = () => {
+    return selectedCartItems.reduce((total: number, item: any) => {
+      const quantity = quantities[item._id] || item.quantity || 1;
+      const originalPrice = item.product?.product_price || 0;
+      const discountedPrice = getDiscountedPrice(item.product);
+      return total + (originalPrice - discountedPrice) * quantity;
     }, 0);
   };
 
@@ -902,9 +905,7 @@ export default function ShoppingCart() {
                     const quantity = quantities[item._id] || 1;
                     const discountedPrice = getDiscountedPrice(product);
                     const subtotal = discountedPrice * quantity;
-                    const hasDiscount =
-                      product?.discount?.isValid &&
-                      product?.discount?.percentage;
+                    const hasDiscount = isDiscountActive(product?.discount);
                     const isChecked = !!selectedItems[item._id];
 
                     return (
@@ -1150,6 +1151,14 @@ export default function ShoppingCart() {
                   ₵{calculateSubtotal().toFixed(2)}
                 </span>
               </div>
+              {calculateTotalSavings() > 0 && (
+                <div className="flex justify-between text-sm text-green-400">
+                  <span>Product discount</span>
+                  <span className="font-medium">
+                    -₵{calculateTotalSavings().toFixed(2)}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between text-sm">
                 <span className="text-gray-400">Delivery (est.)</span>
                 <span className="font-medium">

@@ -7,6 +7,7 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useGetProductsByCategoryQuery } from "@/redux/features/home/homeSlice";
 import styles from "@/customComponent/Discount.module.css";
 import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import { getActiveDiscountPercentage } from "@/lib/productDiscount";
 
 export default function CategoryPageClient() {
   const router = useRouter();
@@ -60,7 +61,7 @@ export default function CategoryPageClient() {
         {!isLoading && !isError && products.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {products.map((product: any) => {
-              const discount = product.discount?.percentage || 0;
+              const discount = getActiveDiscountPercentage(product.discount);
               const imageUrl = product.product_images?.[0]
                 ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
                 : "/images/jacket.png";

@@ -5,6 +5,7 @@ import Link from "next/link";
 import styles from "./../../customComponent/Discount.module.css"
 import BackButton from "@/customComponent/BackButton";
 import ProductImageSlider from "@/components/shared/ProductImageSlider";
+import { getActiveDiscountPercentage } from "@/lib/productDiscount";
 
 export default function NewArrivals({ 
   searchQuery, 
@@ -31,7 +32,7 @@ export default function NewArrivals({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {products.map((product) => {
-              const discount = product.discount?.percentage || 0;
+              const discount = getActiveDiscountPercentage(product.discount);
 
               return (
                 <Link

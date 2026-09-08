@@ -130,6 +130,7 @@ import { useRouter } from "next/navigation";
 import { FaArrowLeft } from 'react-icons/fa';
 import styles from "./../../customComponent/Discount.module.css"
 import ProductImageSlider from "@/components/shared/ProductImageSlider";
+import { getActiveDiscountPercentage } from "@/lib/productDiscount";
 
 export default function AllHotdealsProduct({ 
   searchQuery, 
@@ -144,7 +145,7 @@ export default function AllHotdealsProduct({
 
   // ─── Get max discount from all products ───────────────────────
   const maxDiscount = products.length > 0
-    ? Math.max(...products.map((p) => p.discount?.percentage || 0))
+    ? Math.max(...products.map((p) => getActiveDiscountPercentage(p.discount)))
     : 0;
 
   return (
@@ -201,7 +202,7 @@ export default function AllHotdealsProduct({
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {products.map((product) => {
-              const discount = product.discount?.percentage || 0;
+              const discount = getActiveDiscountPercentage(product.discount);
 
               return (
                 <Link

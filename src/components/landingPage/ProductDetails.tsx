@@ -13,6 +13,7 @@ import { showApiErrorToast } from '@/lib/apiErrorToast';
 import { useEventProductAddMutation, useGetEventsForProductAddQuery } from '@/redux/features/event/eventSlice';
 import { useAuth } from '@/hooks/useAuth';
 import { addToGuestCart } from '@/lib/guestCart';
+import { isDiscountActive, getActiveDiscountPercentage, applyProductDiscount } from '@/lib/productDiscount';
 
 interface ProductDetailsProps {
   productId?: string | null;
@@ -183,6 +184,25 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
   };
 
   const productPrice = Number(product.product_price ?? product.price ?? 0);
+  const hasDiscount = isDiscountActive(product.discount);
+  const discountPercentage = getActiveDiscountPercentage(product.discount);
+  const discountedPrice = applyProductDiscount(productPrice, product.discount);
+
+  const formatDiscountDate = (value?: string | null) => {
+    if (!value) return "";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+  const hasConfiguredDiscount = Boolean(
+    product.discount?.isValid && Number(product.discount?.percentage) > 0,
+  );
+  const discountStart = formatDiscountDate(product.discount?.startDate);
+  const discountEnd = formatDiscountDate(product.discount?.endDate);
 
   const stockItems = Array.isArray(product.product_stocks)
     ? product.product_stocks
@@ -1076,23 +1096,34 @@ const sizeData = [
             {/* Price & Stock Status */}
             <div className="bg-gray-800/50 rounded-lg p-4">
               <div className="flex items-center space-x-3 mb-2">
-                {product.discount?.percentage && (
+                {hasDiscount && (
                   <span className="text-l line-through text-gray-500">
-                    ₵
-                    {formatPrice(
-                      productPrice * (1 + Number(product.discount.percentage) / 100),
-                    )}
+                    ₵{formatPrice(productPrice)}
                   </span>
                 )}
                 <span className="text-4xl font-semibold text-[#6100FF]">
-                  ₵{formatPrice(productPrice)}
+                  ₵{formatPrice(discountedPrice)}
                 </span>
+                {hasDiscount && (
+                  <span className="text-sm font-semibold text-green-400 bg-green-900/20 px-2 py-1 rounded">
+                    -{discountPercentage}% off
+                  </span>
+                )}
               </div>
               <div className="">
-                <span className="text-sm text-gray-400">
-                  Valid till December 30,2025
-                </span>
-                <br />
+                {hasConfiguredDiscount && (discountStart || discountEnd) && (
+                  <>
+                    <span className="text-sm text-gray-400">
+                      {hasDiscount ? "Offer valid" : "Offer starts"}
+                      {discountStart && discountEnd
+                        ? `: ${discountStart} – ${discountEnd}`
+                        : discountEnd
+                          ? ` till ${discountEnd}`
+                          : ` from ${discountStart}`}
+                    </span>
+                    <br />
+                  </>
+                )}
                 <span className="text-sm text-gray-400">
                   Weight: {product.product_weight?.amount || 100}{" "}
                   {product.product_weight?.unit || "gram"}
@@ -1226,7 +1257,7 @@ const sizeData = [
               <div className="flex items-center justify-center space-x-2">
                 <ShoppingCart className="w-5 h-5" />
                 <span>
-                  Add to Cart - ₵{formatPrice(productPrice * quantity)}
+                  Add to Cart - ₵{formatPrice(discountedPrice * quantity)}
                 </span>
               </div>
             </button>

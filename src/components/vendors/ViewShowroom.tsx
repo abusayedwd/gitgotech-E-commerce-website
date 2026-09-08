@@ -1,6 +1,7 @@
 "use client";
 import DeleteModal from "@/components/shared/DeleteModal";
 import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
+import { getActiveDiscountPercentage } from "@/lib/productDiscount";
 import {
   useGetHomeCategoriesQuery,
   useGetShowroomProductQuery,
@@ -270,7 +271,7 @@ export default function ViewShowroomPage() {
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {products.map((product: any) => {
-                const discount = product.discount?.percentage || 0;
+                const discount = getActiveDiscountPercentage(product.discount);
                 const imageUrl = product.product_images?.[0]
                   ? `${IMAGE_BASE_URL}/${product.product_images[0]}`
                   : "/images/jacket.png";
