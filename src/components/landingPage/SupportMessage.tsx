@@ -10,6 +10,7 @@ import {
   useSendSupportMessageMutation,
 } from '@/redux/features/support/supportMessageSlice';
 import { useSupportModal } from '@/context/SupportModalContext';
+import { useSocket } from '@/components/providers/SocketProvider';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
@@ -122,11 +123,32 @@ export default function SupportMessage() {
   } = useGetSupportMessagesQuery(
     { ticketId: ticketId || '', page, limit: PAGE_SIZE },
     {
+      // History is loaded once per page via REST; new messages arrive live
+      // over the socket below, so no polling is needed.
       skip: !ticketId,
-      // Only poll on the latest page — older pages are immutable history.
-      pollingInterval: onLatestPage ? 5000 : 0,
     },
   );
+
+  // Live updates — the backend pushes both sides of the conversation over
+  // the socket, so new messages just get appended (dedup by _id) instead of
+  // re-polling the REST endpoint.
+  const { socket } = useSocket();
+  useEffect(() => {
+    if (!socket || !ticketId) return;
+    const handleMessage = (message: any) => {
+      if (String(message?.ticketId) !== String(ticketId)) return;
+      if (!message?._id) return;
+      setMessageMap((prev) =>
+        prev[message._id] ? prev : { ...prev, [message._id]: message },
+      );
+    };
+    socket.on('ticket_receive_message', handleMessage);
+    socket.on('ticket_send_message', handleMessage);
+    return () => {
+      socket.off('ticket_receive_message', handleMessage);
+      socket.off('ticket_send_message', handleMessage);
+    };
+  }, [socket, ticketId]);
 
   useEffect(() => {
     if (!chatMessages) return;
