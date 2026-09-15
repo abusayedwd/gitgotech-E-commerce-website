@@ -244,7 +244,7 @@
 "use client";
 
 import { useState, FormEvent, useEffect } from 'react';
-import { User, Lock, Mail, Eye, EyeOff, UserCircle, Phone } from 'lucide-react';
+import { User, Lock, Mail, Eye, EyeOff, UserCircle, Phone, Upload, CreditCard } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRegisterUserMutation } from '@/redux/features/auth/authSlice';
@@ -271,6 +271,11 @@ export default function SignUpPage() {
     confirmPassword: ''
   });
 
+  // Vendor-only KYC uploads — required by the backend when role = vendor.
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [nidFrontFile, setNidFrontFile] = useState<File | null>(null);
+  const [nidBackFile, setNidBackFile] = useState<File | null>(null);
+
   const [errors, setErrors] = useState({
     name: '',
     username: '',
@@ -278,6 +283,9 @@ export default function SignUpPage() {
     phone: '',
     password: '',
     confirmPassword: '',
+    image: '',
+    nidFront: '',
+    nidBack: '',
     terms: ''
   });
 
@@ -290,6 +298,9 @@ export default function SignUpPage() {
       phone: '',
       password: '',
       confirmPassword: '',
+      image: '',
+      nidFront: '',
+      nidBack: '',
       terms: ''
     };
 
@@ -339,6 +350,22 @@ export default function SignUpPage() {
       isValid = false;
     }
 
+    // Vendor KYC uploads — required only for vendor sign-up
+    if (userType === 'vendor') {
+      if (!imageFile) {
+        newErrors.image = 'Profile image is required';
+        isValid = false;
+      }
+      if (!nidFrontFile) {
+        newErrors.nidFront = 'NID front image is required';
+        isValid = false;
+      }
+      if (!nidBackFile) {
+        newErrors.nidBack = 'NID back image is required';
+        isValid = false;
+      }
+    }
+
     // Terms validation
     if (!agreeTerms) {
       newErrors.terms = 'You must agree to the terms and privacy policy';
@@ -359,13 +386,23 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (validateForm()) {
-      // console.log('Sign Up:', { ...formData, userType });
-      // console.log(pathName)
+    if (!validateForm()) return;
+
+    const submitData = new FormData();
+    submitData.append('name', formData.name);
+    submitData.append('username', formData.username);
+    submitData.append('email', formData.email);
+    submitData.append('phone', formData.phone);
+    submitData.append('password', formData.password);
+    submitData.append('role', userType);
+    if (userType === 'vendor') {
+      if (imageFile) submitData.append('image', imageFile);
+      if (nidFrontFile) submitData.append('nidFront', nidFrontFile);
+      if (nidBackFile) submitData.append('nidBack', nidBackFile);
     }
 
     try {
-      const res = await signUpUser({ ...formData, role: userType }).unwrap();
+      const res = await signUpUser(submitData).unwrap();
       // console.log(res)
       if (res?.status === 200 || res?.success) {
         const token = res?.token || res?.data?.token || '';
@@ -559,6 +596,92 @@ export default function SignUpPage() {
               </div>
               {errors.phone && <p className="text-red-400 text-xs mt-1 ml-1">{errors.phone}</p>}
             </div>
+
+            {/* Vendor KYC uploads */}
+            {userType === 'vendor' && (
+              <div className="space-y-4">
+                {/* Profile Image */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">Profile Image</label>
+                  <label
+                    className={`flex items-center gap-3 w-full bg-gray-800/50 border rounded-xl px-4 py-3 cursor-pointer transition-all ${
+                      errors.image
+                        ? 'border-red-500'
+                        : 'border-gray-700 hover:border-purple-500'
+                    }`}
+                  >
+                    <Upload className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                    <span className="text-sm text-gray-300 truncate">
+                      {imageFile ? imageFile.name : 'Upload your profile image'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        setImageFile(e.target.files?.[0] || null);
+                        if (errors.image) setErrors((prev) => ({ ...prev, image: '' }));
+                      }}
+                    />
+                  </label>
+                  {errors.image && <p className="text-red-400 text-xs mt-1 ml-1">{errors.image}</p>}
+                </div>
+
+                {/* NID Front */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">NID Front Side</label>
+                  <label
+                    className={`flex items-center gap-3 w-full bg-gray-800/50 border rounded-xl px-4 py-3 cursor-pointer transition-all ${
+                      errors.nidFront
+                        ? 'border-red-500'
+                        : 'border-gray-700 hover:border-purple-500'
+                    }`}
+                  >
+                    <CreditCard className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                    <span className="text-sm text-gray-300 truncate">
+                      {nidFrontFile ? nidFrontFile.name : 'Upload NID front image'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        setNidFrontFile(e.target.files?.[0] || null);
+                        if (errors.nidFront) setErrors((prev) => ({ ...prev, nidFront: '' }));
+                      }}
+                    />
+                  </label>
+                  {errors.nidFront && <p className="text-red-400 text-xs mt-1 ml-1">{errors.nidFront}</p>}
+                </div>
+
+                {/* NID Back */}
+                <div>
+                  <label className="block text-white text-sm font-medium mb-2">NID Back Side</label>
+                  <label
+                    className={`flex items-center gap-3 w-full bg-gray-800/50 border rounded-xl px-4 py-3 cursor-pointer transition-all ${
+                      errors.nidBack
+                        ? 'border-red-500'
+                        : 'border-gray-700 hover:border-purple-500'
+                    }`}
+                  >
+                    <CreditCard className="w-5 h-5 text-purple-400 flex-shrink-0" />
+                    <span className="text-sm text-gray-300 truncate">
+                      {nidBackFile ? nidBackFile.name : 'Upload NID back image'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        setNidBackFile(e.target.files?.[0] || null);
+                        if (errors.nidBack) setErrors((prev) => ({ ...prev, nidBack: '' }));
+                      }}
+                    />
+                  </label>
+                  {errors.nidBack && <p className="text-red-400 text-xs mt-1 ml-1">{errors.nidBack}</p>}
+                </div>
+              </div>
+            )}
 
             {/* Create Password */}
             <div>
