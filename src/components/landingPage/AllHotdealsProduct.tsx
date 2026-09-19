@@ -28,7 +28,7 @@
 //               <FaArrowLeft className='text-black' />
 //             </div>
 //           </button>
-//           <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Hot Deals</h1>
+//           <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">Hot Deals</h1>
 //         </div>
 
 //         <Image
@@ -42,7 +42,7 @@
 //         {/* Products Grid */}
 //         {products.length === 0 ? (
 //           <div className="flex items-center justify-center py-20">
-//             <p className="text-gray-400 text-lg">No products found.</p>
+//             <p className="text-gray-400 light:text-gray-500 text-lg">No products found.</p>
 //           </div>
 //         ) : (
 //           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -149,7 +149,7 @@ export default function AllHotdealsProduct({
     : 0;
 
   return (
-    <div className="bg-black py-6 mt-28 sm:py-8 md:py-10 px-2 sm:px-4">
+    <div className="bg-black light:bg-white py-6 mt-28 sm:py-8 md:py-10 px-2 sm:px-4">
       <div className="container mx-auto">
         {/* Header */}
         <div className="container mx-auto mt-24 mb-2 flex items-center gap-4">
@@ -158,7 +158,7 @@ export default function AllHotdealsProduct({
               <FaArrowLeft className='text-black' />
             </div>
           </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Hot Deals</h1>
+          <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">Hot Deals</h1>
         </div>
 
         {/* ─── Banner with dynamic discount overlay ─────────────── */}
@@ -197,7 +197,7 @@ export default function AllHotdealsProduct({
         {/* Products Grid */}
         {products.length === 0 ? (
           <div className="flex items-center justify-center py-20">
-            <p className="text-gray-400 text-lg">No products found.</p>
+            <p className="text-gray-400 light:text-gray-500 text-lg">No products found.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
@@ -208,7 +208,7 @@ export default function AllHotdealsProduct({
                 <Link
                   key={product._id}
                   href={`/product/${product._id}`}
-                  className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow block"
+                  className="bg-[#1B1B1F] light:bg-white light:border light:border-gray-200 rounded-lg overflow-hidden group hover:shadow-xl transition-shadow block"
                 >
                   <ProductImageSlider
                     images={product.product_images}
@@ -229,7 +229,7 @@ export default function AllHotdealsProduct({
                   {/* Product Info */}
                   <div className="p-3 sm:p-4">
                     <div className='flex items-center justify-between'>
-                      <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
+                      <div className="text-white light:text-gray-900 text-base sm:text-lg font-bold mb-1 sm:mb-2">
                         ₵{product.product_price?.toFixed(2)}
                       </div>
                       {/* Rating */}
@@ -240,20 +240,20 @@ export default function AllHotdealsProduct({
                             className={`w-3 sm:w-4 h-3 sm:h-4 ${
                               index < Math.floor(product.review_rating || 0)
                                 ? 'fill-yellow-400 text-yellow-400'
-                                : 'fill-gray-600 text-gray-600'
+                                : 'fill-gray-600 text-gray-600 light:fill-gray-300 light:text-gray-300'
                             }`}
                           />
                         ))}
-                        <span className="text-gray-400 text-[10px] sm:text-xs ml-1 sm:ml-2">
+                        <span className="text-gray-400 light:text-gray-500 text-[10px] sm:text-xs ml-1 sm:ml-2">
                           {product.review_count || 0} Reviews
                         </span>
                       </div>
                     </div>
 
-                    <h3 className="text-white font-medium text-sm sm:text-base mb-1 line-clamp-1">
+                    <h3 className="text-white light:text-gray-900 font-medium text-sm sm:text-base mb-1 line-clamp-1">
                       {product.product_name}
                     </h3>
-                    <p className="text-gray-400 text-xs sm:text-sm">
+                    <p className="text-gray-400 light:text-gray-500 text-xs sm:text-sm">
                       {product.product_category}
                     </p>
                   </div>

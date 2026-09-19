@@ -1,4 +1,5 @@
 import Providers from "@/redux/Providers";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import ToastProvider from "@/components/ToastProvider";
 import { FilterProvider } from "@/context/FilterContext";
 import { SupportModalProvider } from "@/context/SupportModalContext";
@@ -80,28 +81,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cormorantGaramond.variable}>
+    <html lang="en" className={cormorantGaramond.variable} suppressHydrationWarning>
+      <head>
+        {/* Apply the saved theme before paint so returning light-mode users
+            don't see a flash of the default dark look. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem('theme')==='light'){document.documentElement.classList.add('light');}}catch(e){}`,
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${cormorantGaramond.variable} antialiased`}
         suppressHydrationWarning>
-        <Providers>
-          <ToastErrorGuard />
-          <FcmTokenSync />
-          <TokenExpiredModal />
-          <SupportModalProvider>
-            <PrivacyTermsModalProvider>
-              <Suspense fallback={null}>
-                <FilterProvider>
-                  <SocketProvider>
-                    <ConditionalLayout>{children}</ConditionalLayout>
-                  </SocketProvider>
-                </FilterProvider>
-              </Suspense>
-              <PrivacyTermsModal />
-            </PrivacyTermsModalProvider>
-          </SupportModalProvider>
-        </Providers>
-        <ToastProvider />
+        <ThemeProvider>
+          <Providers>
+            <ToastErrorGuard />
+            <FcmTokenSync />
+            <TokenExpiredModal />
+            <SupportModalProvider>
+              <PrivacyTermsModalProvider>
+                <Suspense fallback={null}>
+                  <FilterProvider>
+                    <SocketProvider>
+                      <ConditionalLayout>{children}</ConditionalLayout>
+                    </SocketProvider>
+                  </FilterProvider>
+                </Suspense>
+                <PrivacyTermsModal />
+              </PrivacyTermsModalProvider>
+            </SupportModalProvider>
+          </Providers>
+          <ToastProvider />
+        </ThemeProvider>
         <JsonLd data={organizationJsonLd()} />
       </body>
     </html>

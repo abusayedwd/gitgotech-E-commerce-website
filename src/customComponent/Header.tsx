@@ -5,7 +5,7 @@ import { ChevronRight, Flame, Star, TrendingUp, Zap, Clock } from 'lucide-react'
 // Reusable Custom Header Component
 export const SectionHeader = ({  
   title = "Hot Deals",  
-  textsize = "md:text-[32px] text-[24px] text-white",
+  textsize = "md:text-[32px] text-[24px] text-white light:text-gray-900",
   font = "font-cormorant" 
 }) => {
   return (

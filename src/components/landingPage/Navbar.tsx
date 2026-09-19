@@ -3,7 +3,8 @@
 import { useGetWishlistAndCartQuery } from "@/redux/features/home/homeSlice";
 import { GUEST_CART_EVENT, getGuestCartCount } from "@/lib/guestCart";
 import SearchModal from "@/components/landingPage/SearchModal";
-import { Menu, Search, X } from "lucide-react";
+import { useTheme } from "@/components/providers/ThemeProvider";
+import { Menu, Moon, Search, Sun, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -11,6 +12,7 @@ import { useEffect, useState } from "react";
 import { RiCoupon4Line } from "react-icons/ri";
 
 export default function Navbar() {
+  const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -75,8 +77,8 @@ export default function Navbar() {
   const profileRoute = userRole === "vendor" ? "/v-profile" : "/profile";
 
   return (
-    <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black text-white fixed pb-1.5 top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg">
-      <div className="container  mx-auto border px-3 py-1 sm:px-4 rounded-[50] border-gray-700  flex items-center justify-between">
+    <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-[#f4eefc] light:to-white text-white light:text-gray-900 fixed pb-1.5 top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg">
+      <div className="container  mx-auto border px-3 py-1 sm:px-4 rounded-[50] border-gray-700 light:border-gray-300  flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center flex-shrink-0">
           <div className="relative">
@@ -97,11 +99,27 @@ export default function Navbar() {
             type="button"
             onClick={() => setIsSearchOpen(true)}
             aria-label="Open search"
-            className="p-2 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group"
+            className="p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-full transition-colors relative group"
           >
-            <Search className="w-6 h-6 text-white" />
+            <Search className="w-6 h-6 text-white light:text-gray-700" />
             <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
               Search
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-full transition-colors relative group"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-6 h-6 text-white" />
+            ) : (
+              <Moon className="w-6 h-6 text-gray-700" />
+            )}
+            <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
+              {theme === "dark" ? "Light mode" : "Dark mode"}
             </span>
           </button>
 
@@ -113,7 +131,7 @@ export default function Navbar() {
                 className={`${
                   isActive("/vendors")
                     ? "text-purple-500 font-medium text-[20px]"
-                    : "text-[20px] text-white hover:text-white text-2xl "
+                    : "text-[20px] text-white light:text-gray-800 hover:text-white light:hover:text-black text-2xl "
                 } transition-colors  font-cormorant  `}
               >
                 Vendors
@@ -123,7 +141,7 @@ export default function Navbar() {
                 className={`${
                   isActive("/showroom")
                     ? "text-purple-500 font-medium text-[20px]"
-                    : "text-[20px] text-white hover:text-white text-2xl "
+                    : "text-[20px] text-white light:text-gray-800 hover:text-white light:hover:text-black text-2xl "
                 } transition-colors   font-cormorant  `}
               >
                 Showrooms
@@ -326,9 +344,22 @@ export default function Navbar() {
               setIsMenuOpen(false);
             }}
             aria-label="Open search"
-            className="p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-lg transition-colors"
           >
-            <Search className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+            <Search className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 light:text-gray-600" />
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle theme"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-lg transition-colors"
+          >
+            {theme === "dark" ? (
+              <Sun className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+            ) : (
+              <Moon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600" />
+            )}
           </button>
 
           {/* Cart Icon - Visible to customers and guests */}
@@ -356,12 +387,12 @@ export default function Navbar() {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-lg transition-colors"
           >
             {isMenuOpen ? (
-              <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 light:text-gray-600" />
             ) : (
-              <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+              <Menu className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 light:text-gray-600" />
             )}
           </button>
         </div>
@@ -373,7 +404,7 @@ export default function Navbar() {
           isMenuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
         }`}
       >
-        <div className="container mx-auto pt-3 sm:pt-4 pb-2 space-y-2 sm:space-y-3 border-t border-gray-800 mt-3 sm:mt-4 px-3 sm:px-4">
+        <div className="container mx-auto pt-3 sm:pt-4 pb-2 space-y-2 sm:space-y-3 border-t border-gray-800 light:border-gray-200 mt-3 sm:mt-4 px-3 sm:px-4">
           {/* Mobile Navigation Links - Visible to customers and guests */}
           {showCustomerLinks && (
             <>
@@ -383,7 +414,7 @@ export default function Navbar() {
                 className={`block ${
                   isActive("/vendors")
                     ? "text-purple-500 font-medium"
-                    : "text-gray-400 hover:text-white"
+                    : "text-gray-400 light:text-gray-600 hover:text-white light:hover:text-black"
                 } transition-colors py-2 text-sm sm:text-base`}
               >
                 Vendors
@@ -394,7 +425,7 @@ export default function Navbar() {
                 className={`block ${
                   isActive("/showroom")
                     ? "text-purple-500 font-medium"
-                    : "text-gray-400 hover:text-white"
+                    : "text-gray-400 light:text-gray-600 hover:text-white light:hover:text-black"
                 } transition-colors py-2 text-sm sm:text-base`}
               >
                 Showroom
@@ -406,7 +437,7 @@ export default function Navbar() {
                   className={`block ${
                     isActive("/coupon")
                       ? "text-purple-500 font-medium"
-                      : "text-gray-400 hover:text-white"
+                      : "text-gray-400 light:text-gray-600 hover:text-white light:hover:text-black"
                   } transition-colors py-2 text-sm sm:text-base`}
                 >
                   coupon

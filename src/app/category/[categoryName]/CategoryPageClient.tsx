@@ -20,7 +20,7 @@ export default function CategoryPageClient() {
   const products = data?.data?.data || [];
 
   return (
-    <div className="bg-black min-h-screen pt-20 md:pt-28 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4">
+    <div className="bg-black light:bg-white min-h-screen pt-20 md:pt-28 pb-6 sm:pb-8 md:pb-10 px-2 sm:px-4">
       <div className="container mx-auto">
         <div className="mb-4 sm:mb-6 flex items-center gap-4">
           <button
@@ -31,14 +31,14 @@ export default function CategoryPageClient() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant capitalize">
+          <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant capitalize">
             {decodedCategory}
           </h1>
         </div>
 
         {isLoading && (
           <div className="flex items-center justify-center py-20">
-            <p className="text-gray-400 text-lg">Loading products...</p>
+            <p className="text-gray-400 light:text-gray-500 text-lg">Loading products...</p>
           </div>
         )}
 
@@ -52,7 +52,7 @@ export default function CategoryPageClient() {
 
         {!isLoading && !isError && products.length === 0 && (
           <div className="flex items-center justify-center py-20">
-            <p className="text-gray-400 text-lg">
+            <p className="text-gray-400 light:text-gray-500 text-lg">
               No products found in this category.
             </p>
           </div>
@@ -70,7 +70,7 @@ export default function CategoryPageClient() {
                 <Link
                   key={product._id}
                   href={`/product/${product._id}`}
-                  className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow block"
+                  className="bg-[#1B1B1F] light:bg-white light:border light:border-gray-200 rounded-lg overflow-hidden group hover:shadow-xl transition-shadow block"
                 >
                   <div className="relative aspect-square overflow-hidden">
                     <img
@@ -91,7 +91,7 @@ export default function CategoryPageClient() {
 
                   <div className="p-3 sm:p-4">
                     <div className="flex items-center justify-between">
-                      <div className="text-white text-base sm:text-lg font-bold mb-1 sm:mb-2">
+                      <div className="text-white light:text-gray-900 text-base sm:text-lg font-bold mb-1 sm:mb-2">
                         ₵{product.product_price?.toFixed(2)}
                       </div>
                       <div className="flex items-center mb-1 sm:mb-2">
@@ -101,20 +101,20 @@ export default function CategoryPageClient() {
                             className={`w-3 sm:w-4 h-3 sm:h-4 ${
                               index < Math.floor(product.review_rating || 0)
                                 ? "fill-yellow-400 text-yellow-400"
-                                : "fill-gray-600 text-gray-600"
+                                : "fill-gray-600 text-gray-600 light:fill-gray-300 light:text-gray-300"
                             }`}
                           />
                         ))}
-                        <span className="text-gray-400 text-[10px] sm:text-xs ml-1 sm:ml-2">
+                        <span className="text-gray-400 light:text-gray-500 text-[10px] sm:text-xs ml-1 sm:ml-2">
                           {product.review_count || 0} Reviews
                         </span>
                       </div>
                     </div>
 
-                    <h3 className="text-white font-medium text-sm sm:text-base mb-1 line-clamp-1">
+                    <h3 className="text-white light:text-gray-900 font-medium text-sm sm:text-base mb-1 line-clamp-1">
                       {product.product_name}
                     </h3>
-                    <p className="text-gray-400 text-xs sm:text-sm capitalize">
+                    <p className="text-gray-400 light:text-gray-500 text-xs sm:text-sm capitalize">
                       {product.product_category}
                     </p>
                   </div>

@@ -15,7 +15,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="overflow-x-hidden max-w-full mt-38 bg-linear-to-r from-gray-950 via-purple-900/20 to-black">
+    <div className="overflow-x-hidden max-w-full mt-38 bg-linear-to-r from-gray-950 via-purple-900/20 to-black light:from-white light:via-purple-50 light:to-white">
       <AdvertisementMarquee section={AD_SECTION_BELOW_HEADER} />
       <BannerSection />
       <CategoryMarquee />

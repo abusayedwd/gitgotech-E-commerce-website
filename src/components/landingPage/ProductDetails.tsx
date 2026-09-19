@@ -150,7 +150,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 flex items-center justify-center">
         <div className="text-purple-400 text-xl">
           Loading product details...
         </div>
@@ -160,7 +160,7 @@ export default function ProductDetails({ productId }: ProductDetailsProps) {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 flex items-center justify-center">
         <div className="text-red-400 text-xl">Product not found</div>
       </div>
     );
@@ -820,7 +820,7 @@ const sizeData = [
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white mt-20">
+    <div className="min-h-screen bg-gradient-to-r from-gray-950 via-purple-900/15 to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 mt-20">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="container mx-auto mb-4 flex items-center gap-4">
@@ -844,7 +844,7 @@ const sizeData = [
               </svg>
             </div>
           </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             Product Details
           </h1>
         </div>
@@ -1030,7 +1030,7 @@ const sizeData = [
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-4 h-4 ${i < Math.floor(product.review_rating || product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "fill-gray-600 text-gray-600"}`}
+                      className={`w-4 h-4 ${i < Math.floor(product.review_rating || product.rating || 0) ? "fill-yellow-400 text-yellow-400" : "fill-gray-600 text-gray-600 light:fill-gray-300 light:text-gray-300"}`}
                     />
                   ))}
                 </div>
@@ -1046,7 +1046,7 @@ const sizeData = [
             </div>
 
             {/* Seller Info */}
-            <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
+            <div className="bg-gray-800/50 light:bg-gray-50 border border-[#6100FF] rounded-lg p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
@@ -1056,7 +1056,7 @@ const sizeData = [
                   </div>
                   <div className="flex-1">
                     <p className="font-medium">{vendorName}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-gray-400 light:text-gray-500">
                       Trusted seller with quality products
                     </p>
                   </div>
@@ -1094,7 +1094,7 @@ const sizeData = [
             </div>
 
             {/* Price & Stock Status */}
-            <div className="bg-gray-800/50 rounded-lg p-4">
+            <div className="bg-gray-800/50 light:bg-gray-50 rounded-lg p-4">
               <div className="flex items-center space-x-3 mb-2">
                 {hasDiscount && (
                   <span className="text-l line-through text-gray-500">
@@ -1113,7 +1113,7 @@ const sizeData = [
               <div className="">
                 {hasConfiguredDiscount && (discountStart || discountEnd) && (
                   <>
-                    <span className="text-sm text-gray-400">
+                    <span className="text-sm text-gray-400 light:text-gray-500">
                       {hasDiscount ? "Offer valid" : "Offer starts"}
                       {discountStart && discountEnd
                         ? `: ${discountStart} – ${discountEnd}`
@@ -1124,7 +1124,7 @@ const sizeData = [
                     <br />
                   </>
                 )}
-                <span className="text-sm text-gray-400">
+                <span className="text-sm text-gray-400 light:text-gray-500">
                   Weight: {product.product_weight?.amount || 100}{" "}
                   {product.product_weight?.unit || "gram"}
                 </span>
@@ -1173,17 +1173,17 @@ const sizeData = [
             )}
 
             {/* Description */}
-            <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
+            <div className="bg-gray-800/50 light:bg-gray-50 border border-[#6100FF] rounded-lg p-4">
               <h3 className="font-medium font-cormorant text-2xl mb-2">
                 Description
               </h3>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-400 light:text-gray-500">
                 {product.product_description || product.description}
               </p>
             </div>
 
             {/* Size Selection */}
-            <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
+            <div className="bg-gray-800/50 light:bg-gray-50 border border-[#6100FF] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="font-medium font-cormorant text-2xl">
                   Select Size
@@ -1212,8 +1212,8 @@ const sizeData = [
                         selectedSize === stockItem.size
                           ? "bg-purple-600 border-purple-600 text-white"
                           : stockItem.stock === 0
-                            ? "bg-gray-900 border-gray-700 text-gray-500 cursor-not-allowed"
-                            : "bg-gray-800 border-[#6100FF] hover:bg-gray-700 text-gray-300"
+                            ? "bg-gray-900 light:bg-gray-100 border-gray-700 light:border-gray-300 text-gray-500 cursor-not-allowed"
+                            : "bg-gray-800 light:bg-white border-[#6100FF] hover:bg-gray-700 light:hover:bg-gray-100 text-gray-300 light:text-gray-700"
                       }`}
                     >
                       {stockItem.size}
@@ -1226,14 +1226,14 @@ const sizeData = [
             </div>
 
             {/* Quantity Selection */}
-            <div className="bg-gray-800/50 border border-[#6100FF] rounded-lg p-4">
+            <div className="bg-gray-800/50 light:bg-gray-50 border border-[#6100FF] rounded-lg p-4">
               <h3 className="font-medium mb-3 font-cormorant text-2xl">
                 Quantity
               </h3>
               <div className="flex items-center space-x-4">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors"
+                  className="w-10 h-10 bg-gray-700 light:bg-gray-200 hover:bg-gray-600 light:hover:bg-gray-300 rounded-md flex items-center justify-center transition-colors"
                 >
                   <Minus className="w-4 h-4" />
                 </button>
@@ -1242,7 +1242,7 @@ const sizeData = [
                 </span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="w-10 h-10 bg-gray-700 hover:bg-gray-600 rounded-md flex items-center justify-center transition-colors"
+                  className="w-10 h-10 bg-gray-700 light:bg-gray-200 hover:bg-gray-600 light:hover:bg-gray-300 rounded-md flex items-center justify-center transition-colors"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -1267,7 +1267,7 @@ const sizeData = [
               <Link
                 href={vendorId ? `/messaging?vendorId=${vendorId}` : "#"}
               >
-                <button className="bg-gray-800/50 cursor-pointer border w-full border-[#6100FF] hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
+                <button className="bg-gray-800/50 light:bg-gray-50 cursor-pointer border w-full border-[#6100FF] hover:bg-gray-700 light:hover:bg-gray-100 text-white light:text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2">
                   <MessageCircle className="w-4 h-4" />
                   <span>Chat</span>
                 </button>
@@ -1275,7 +1275,7 @@ const sizeData = [
 
               <button
                 onClick={() => setShowSizeGuide(true)}
-                className="bg-gray-800/50 border border-[#6100FF] hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
+                className="bg-gray-800/50 light:bg-gray-50 border border-[#6100FF] hover:bg-gray-700 light:hover:bg-gray-100 text-white light:text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2"
               >
                 <Ruler className="w-4 h-4" />
                 <span>Size Guide</span>
