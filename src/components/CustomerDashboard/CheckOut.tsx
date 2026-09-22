@@ -423,7 +423,7 @@ export default function CheckoutPage() {
       // amount = product subtotal only (before tax, delivery, tip, discount)
       // Backend will use this with coupon to calculate final total
       const pricePayload = {
-        unit: "usd",
+        unit: "ghs",
         amount: subtotal, // Product price only (subtotal)
         tax: tax,
         tip,
@@ -472,7 +472,7 @@ export default function CheckoutPage() {
       // console.log("Order payload:", orderData);
 
       const res = await orderSubmitted(orderData).unwrap();
-      // console.log(res);
+      console.log(res);
       toast.success("Order placed successfully!");
       setTimeout(() => router.push("/customer-dashboard"), 2000);
     } catch (error: any) {
