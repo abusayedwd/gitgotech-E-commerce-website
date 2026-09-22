@@ -4,6 +4,7 @@ import BannerSection from "@/components/landingPage/Banner";
 import CategoryMarquee from "@/components/landingPage/CategoryMarquee";
 import SimpleFAQ from "@/components/landingPage/FaQuestion";
 import HotDealsSection from "@/components/landingPage/HotDeals";
+import PopupCarousel from "@/components/landingPage/PopupCarousel";
 import TopRated from "@/components/landingPage/TopRated";
 import AdvertisementMarquee from "@/components/shared/AdvertisementMarquee";
 import AdvertisementSpotlight from "@/components/shared/AdvertisementSpotlight";
@@ -16,6 +17,7 @@ import {
 export default function Home() {
   return (
     <div className="overflow-x-hidden max-w-full mt-38 bg-linear-to-r from-gray-950 via-purple-900/20 to-black light:from-white light:via-purple-50 light:to-white">
+      <PopupCarousel />
       <AdvertisementMarquee section={AD_SECTION_BELOW_HEADER} />
       <BannerSection />
       <CategoryMarquee />
