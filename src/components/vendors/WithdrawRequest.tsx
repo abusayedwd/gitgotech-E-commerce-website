@@ -180,13 +180,13 @@ export default function WithdrawRequest() {
   const getStatusStyle = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-900/30 text-yellow-400 border-yellow-500/30";
+        return "bg-yellow-900/30 text-yellow-400 border-yellow-500/30 light:bg-yellow-50 light:text-yellow-700 light:border-yellow-300";
       case "approved":
-        return "bg-green-900/30 text-green-400 border-green-500/30";
+        return "bg-green-900/30 text-green-400 border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300";
       case "rejected":
-        return "bg-red-900/30 text-red-400 border-red-500/30";
+        return "bg-red-900/30 text-red-400 border-red-500/30 light:bg-red-50 light:text-red-700 light:border-red-300";
       default:
-        return "bg-gray-900/30 text-gray-400 border-gray-500/30";
+        return "bg-gray-900/30 text-gray-400 border-gray-500/30 light:bg-gray-50 light:text-gray-700 light:border-gray-300";
     }
   };
 
@@ -210,7 +210,7 @@ export default function WithdrawRequest() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r md:mt-20 mt-12 from-black via-[#110a2b] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r md:mt-20 mt-12 from-black via-[#110a2b] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       {/* Header */}
       <div className="container mx-auto flex items-center gap-4">
         <button
@@ -221,17 +221,17 @@ export default function WithdrawRequest() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
           Withdraw Request
         </h1>
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Balance Display */}
-        <div className="bg-gradient-to-br from-purple-900/30 to-indigo-900/30 border border-purple-500/30 rounded-xl p-4">
+        <div className="bg-gradient-to-br from-purple-900/30 to-indigo-900/30 light:from-purple-50 light:to-white border border-purple-500/30 light:border-purple-200 rounded-xl p-4">
           <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-400">Available Balance</span>
-            <span className="text-xl font-bold text-white">
+            <span className="text-sm text-gray-400 light:text-gray-500">Available Balance</span>
+            <span className="text-xl font-bold text-white light:text-gray-900">
               ₵
               {balance.toLocaleString("en-US", {
                 minimumFractionDigits: 2,
@@ -243,16 +243,16 @@ export default function WithdrawRequest() {
 
         {/* Platform withdraw fee — role-based */}
         {withdrawFeeInfo && (
-          <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30 rounded-xl p-4">
+          <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 light:from-purple-50 light:to-white border border-purple-500/30 light:border-purple-200 rounded-xl p-4">
             <h3 className="text-sm font-semibold text-purple-300 mb-1">
               Platform Withdraw Fee
             </h3>
-            <p className="text-xs text-gray-400 mb-3">
+            <p className="text-xs text-gray-400 light:text-gray-500 mb-3">
               Review your platform fee before submitting a withdrawal request.
             </p>
-            <div className="rounded-lg bg-black/30 border border-purple-500/20 px-4 py-3 inline-flex flex-col">
-              <p className="text-xs text-gray-400">{withdrawFeeInfo.label}</p>
-              <p className="text-2xl font-bold text-white">
+            <div className="rounded-lg bg-black/30 light:bg-purple-50 border border-purple-500/20 light:border-purple-200 px-4 py-3 inline-flex flex-col">
+              <p className="text-xs text-gray-400 light:text-gray-500">{withdrawFeeInfo.label}</p>
+              <p className="text-2xl font-bold text-white light:text-gray-900">
                 {withdrawFeeInfo.percentage}%
               </p>
             </div>
@@ -266,7 +266,7 @@ export default function WithdrawRequest() {
             className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
               activeTab === "request"
                 ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
-                : "bg-gray-800/50 text-gray-400 hover:text-white"
+                : "bg-gray-800/50 light:bg-gray-100 text-gray-400 light:text-gray-600 hover:text-white light:hover:text-gray-900"
             }`}
           >
             New Request
@@ -276,7 +276,7 @@ export default function WithdrawRequest() {
             className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all ${
               activeTab === "history"
                 ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
-                : "bg-gray-800/50 text-gray-400 hover:text-white"
+                : "bg-gray-800/50 light:bg-gray-100 text-gray-400 light:text-gray-600 hover:text-white light:hover:text-gray-900"
             }`}
           >
             History
@@ -288,7 +288,7 @@ export default function WithdrawRequest() {
           <div className="space-y-6">
             {/* Amount Input */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-700">
                 Enter Amount
               </label>
               <input
@@ -296,7 +296,7 @@ export default function WithdrawRequest() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="Enter Amount"
-                className="w-full bg-[#242428] border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-[#242428] light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 min="0"
                 step="0.01"
               />
@@ -304,12 +304,12 @@ export default function WithdrawRequest() {
 
             {/* Card Selection */}
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-300">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-700">
                 Select Card
               </label>
               <div className="space-y-3">
                 {cards.length === 0 ? (
-                  <div className="text-center text-gray-400 py-8">
+                  <div className="text-center text-gray-400 light:text-gray-500 py-8">
                     No cards added yet. Please add a card first.
                   </div>
                 ) : (
@@ -320,7 +320,7 @@ export default function WithdrawRequest() {
                       className={`p-4 rounded-xl border cursor-pointer transition-all ${
                         selectedCardId === card._id
                           ? "bg-[#09090B] border-purple-500/50 ring-1 ring-purple-500/40 rounded-2xl shadow-[0_0_12px_rgba(34,211,238,0.35)]"
-                          : "border-gray-700 bg-[#1B1B1F] hover:border-gray-600"
+                          : "border-gray-700 light:border-gray-300 bg-[#1B1B1F] light:bg-white hover:border-gray-600 light:hover:border-gray-400"
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -331,17 +331,17 @@ export default function WithdrawRequest() {
                         />
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-white font-medium">
+                            <span className="text-white light:text-gray-900 font-medium">
                               **** **** **** {card.last4}
                             </span>
-                            <span className="text-xs text-gray-400 bg-gray-700 px-2 py-0.5 rounded">
+                            <span className="text-xs text-gray-400 light:text-gray-600 bg-gray-700 light:bg-gray-200 px-2 py-0.5 rounded">
                               {card.cardType}
                             </span>
                           </div>
-                          <div className="text-xs text-gray-400">
+                          <div className="text-xs text-gray-400 light:text-gray-500">
                             {card.bankName}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-xs text-gray-500 light:text-gray-400">
                             {card.cardHolderName || card.accountName}
                           </div>
                         </div>
@@ -360,7 +360,7 @@ export default function WithdrawRequest() {
             {/* Add Card Button */}
             <button
               onClick={() => router.push("/v-profile/wallet/payment-method")}
-              className="w-full flex items-center cursor-pointer justify-center gap-2 px-4 py-3 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl bg-gray-800 hover:bg-gray-700 rounded-xl transition"
+              className="w-full flex items-center cursor-pointer justify-center gap-2 px-4 py-3 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 light:border-purple-200 rounded-2xl bg-gray-800 light:bg-gray-100 hover:bg-gray-700 light:hover:bg-gray-200 rounded-xl transition"
             >
               <Plus className="w-5 h-5 text-purple-400" />
               <span>Add Card</span>
@@ -377,7 +377,7 @@ export default function WithdrawRequest() {
             </button>
 
             {/* Info Box */}
-            <div className="bg-gray-800/50 border border-purple-500/30 rounded-xl p-4 text-sm text-gray-300">
+            <div className="bg-gray-800/50 light:bg-purple-50 border border-purple-500/30 light:border-purple-200 rounded-xl p-4 text-sm text-gray-300 light:text-gray-700">
               Our payment cycle runs every Friday. If you need your payment
               earlier, our support team is here to help—just reach out!
             </div>
@@ -386,13 +386,13 @@ export default function WithdrawRequest() {
 
         {/* History Tab */}
         {activeTab === "history" && (
-          <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] rounded-2xl p-6">
-            <h3 className="text-lg font-semibold mb-4 text-gray-300">
+          <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 light:from-purple-50 light:to-white border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] light:border-purple-300 rounded-2xl p-6">
+            <h3 className="text-lg font-semibold mb-4 text-gray-300 light:text-gray-700">
               Withdraw History
             </h3>
 
             {withdrawRequests.length === 0 ? (
-              <div className="text-center text-gray-400 py-8">
+              <div className="text-center text-gray-400 light:text-gray-500 py-8">
                 No withdrawal requests found
               </div>
             ) : (
@@ -400,7 +400,7 @@ export default function WithdrawRequest() {
                 {withdrawRequests.map((request) => (
                   <div
                     key={request._id}
-                    className="bg-[#1B1B1F] border border-gray-700 rounded-xl p-4 hover:border-purple-500/30 transition-colors"
+                    className="bg-[#1B1B1F] light:bg-white border border-gray-700 light:border-gray-200 rounded-xl p-4 hover:border-purple-500/30 transition-colors"
                   >
                     {/* Header */}
                     <div className="flex items-center justify-between mb-3">
@@ -411,11 +411,11 @@ export default function WithdrawRequest() {
                           {getStatusIcon(request.status)}
                           <span className="capitalize">{request.status}</span>
                         </div>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-500 light:text-gray-400">
                           {formatDate(request.createdAt)}
                         </span>
                       </div>
-                      <div className="text-lg font-bold text-white">
+                      <div className="text-lg font-bold text-white light:text-gray-900">
                         ₵
                         {request.amount.toLocaleString("en-US", {
                           minimumFractionDigits: 2,
@@ -426,37 +426,37 @@ export default function WithdrawRequest() {
                     {/* Details */}
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
-                        <span className="text-gray-500">Bank:</span>
-                        <p className="text-white">{request.bankName}</p>
+                        <span className="text-gray-500 light:text-gray-400">Bank:</span>
+                        <p className="text-white light:text-gray-900">{request.bankName}</p>
                       </div>
                       <div>
-                        <span className="text-gray-500">Account:</span>
-                        <p className="text-white">{request.accountName}</p>
+                        <span className="text-gray-500 light:text-gray-400">Account:</span>
+                        <p className="text-white light:text-gray-900">{request.accountName}</p>
                       </div>
                       <div>
-                        <span className="text-gray-500">Account No:</span>
-                        <p className="text-white">{request.accountNumber}</p>
+                        <span className="text-gray-500 light:text-gray-400">Account No:</span>
+                        <p className="text-white light:text-gray-900">{request.accountNumber}</p>
                       </div>
                       <div>
-                        <span className="text-gray-500">Bank Code:</span>
-                        <p className="text-white">{request.bankCode}</p>
+                        <span className="text-gray-500 light:text-gray-400">Bank Code:</span>
+                        <p className="text-white light:text-gray-900">{request.bankCode}</p>
                       </div>
                       <div>
-                        <span className="text-gray-500">Platform Fee:</span>
+                        <span className="text-gray-500 light:text-gray-400">Platform Fee:</span>
                         <p className="text-yellow-400">₵{request.platformFee}</p>
                       </div>
                       <div>
-                        <span className="text-gray-500">Country:</span>
-                        <p className="text-white">{request.country}</p>
+                        <span className="text-gray-500 light:text-gray-400">Country:</span>
+                        <p className="text-white light:text-gray-900">{request.country}</p>
                       </div>
                     </div>
 
                     {/* More Info */}
                     {request.moreInfo &&
                       request.moreInfo !== "Nothing to say" && (
-                        <div className="mt-3 pt-3 border-t border-gray-700">
+                        <div className="mt-3 pt-3 border-t border-gray-700 light:border-gray-200">
                           <span className="text-xs text-gray-500">Note:</span>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-gray-400 light:text-gray-500">
                             {request.moreInfo}
                           </p>
                         </div>
@@ -472,7 +472,7 @@ export default function WithdrawRequest() {
                 <button
                   onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
-                  className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                  className="w-8 h-8 flex items-center justify-center bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 rounded-lg transition-colors disabled:opacity-50"
                 >
                   ←
                 </button>
@@ -498,7 +498,7 @@ export default function WithdrawRequest() {
                     className={`w-8 h-8 rounded-lg transition-colors text-sm ${
                       page === currentPage
                         ? "bg-purple-600 text-white"
-                        : "bg-gray-800 hover:bg-gray-700 text-gray-400"
+                        : "bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 text-gray-400 light:text-gray-600"
                     }`}
                   >
                     {page}
@@ -509,7 +509,7 @@ export default function WithdrawRequest() {
                     handlePageChange(Math.min(meta.totalPages, currentPage + 1))
                   }
                   disabled={currentPage === meta.totalPages}
-                  className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+                  className="w-8 h-8 flex items-center justify-center bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 rounded-lg transition-colors disabled:opacity-50"
                 >
                   →
                 </button>

@@ -31,15 +31,15 @@ export default function VendorsPage() {
   };
 
   return (
-    <div className="mt-16 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen py-8 sm:py-10 md:py-12 px-2 sm:px-4">
+    <div className="mt-16 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white min-h-screen py-8 sm:py-10 md:py-12 px-2 sm:px-4">
       <div className="container mx-auto">
         <FooterPageBack className="mb-6 sm:mb-8" />
         {/* Header Section */}
         <div className="text-center mb-8 sm:mb-10 md:mb-12">
-          <h1 className="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cormorant mb-2 sm:mb-3 md:mb-4">
+          <h1 className="text-white light:text-gray-900 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cormorant mb-2 sm:mb-3 md:mb-4">
             Meet our Vendors
           </h1>
-          <p className="text-gray-400 text-xs sm:text-sm md:text-base mb-4 sm:mb-6 md:mb-8">
+          <p className="text-gray-400 light:text-gray-500 text-xs sm:text-sm md:text-base mb-4 sm:mb-6 md:mb-8">
             Discover Talented Designers creating worldwide Fashions
           </p>
 
@@ -54,7 +54,7 @@ export default function VendorsPage() {
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="Find your perfect tailor, design, or outfit"
-                  className="w-full border border-[#414149] bg-transparent text-white rounded-lg pl-10 pr-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500"
+                  className="w-full border border-[#414149] light:border-gray-300 bg-transparent text-white light:text-gray-900 rounded-lg pl-10 pr-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500 light:placeholder:text-gray-400"
                 />
               </div>
               <button
@@ -69,12 +69,12 @@ export default function VendorsPage() {
 
         {/* All Vendors Section */}
         <div className="mb-6 sm:mb-8">
-          <h2 className="text-white text-xl font-cormorant sm:text-2xl font-semibold mb-4 sm:mb-6 px-2">
+          <h2 className="text-white light:text-gray-900 text-xl font-cormorant sm:text-2xl font-semibold mb-4 sm:mb-6 px-2">
             All Vendors
           </h2>
 
           {vendors.length === 0 ? (
-            <p className="text-gray-400 text-center py-16">No vendors found.</p>
+            <p className="text-gray-400 light:text-gray-500 text-center py-16">No vendors found.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {vendors.map((vendor: any) => {
@@ -82,7 +82,7 @@ export default function VendorsPage() {
                 return (
                   <div
                     key={vendor._id}
-                    className="bg-[#1B1B1F] backdrop-blur-sm rounded-lg sm:rounded-xl overflow-hidden group hover:bg-gray-800 transition-all"
+                    className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm rounded-lg sm:rounded-xl overflow-hidden group hover:bg-gray-800 light:hover:bg-gray-50 transition-all"
                   >
                     {/* Vendor Image */}
                     <div className="aspect-square overflow-hidden bg-[#2a2a2e]">
@@ -114,10 +114,10 @@ export default function VendorsPage() {
 
                     {/* Vendor Info */}
                     <div className="p-3 sm:p-4 md:p-5">
-                      <h3 className="text-white font-semibold text-base sm:text-lg mb-1">
+                      <h3 className="text-white light:text-gray-900 font-semibold text-base sm:text-lg mb-1">
                         {vendor.name}
                       </h3>
-                      <p className="text-gray-500 text-xs mb-3">
+                      <p className="text-gray-500 light:text-gray-400 text-xs mb-3">
                         @{vendor.username}
                       </p>
 

@@ -129,7 +129,7 @@ function DataTable({
 
 export default function PrivacyPolicyPage() {
   return (
-    <main className="mx-auto max-w-[860px] px-4 pb-20 pt-12 font-sans text-base leading-7 text-[#1a1a2e] sm:px-6">
+    <main className="mx-auto max-w-[860px] bg-white px-4 pb-20 pt-12 font-sans text-base leading-7 text-[#1a1a2e] sm:px-6">
       {/* ═══ HEADER ═══ */}
       <header className="mb-9 border-b-[3px] border-[#0a2e6e] pb-6">
         <p className="text-[28px] font-extrabold tracking-tight text-[#0a2e6e]">

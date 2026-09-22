@@ -115,7 +115,7 @@ export default function Wallett() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r md:mt-20 mt-12 from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r md:mt-20 mt-12 from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       {/* Header */}
       <div className="container mx-auto flex items-center gap-4 py-2">
         <button
@@ -125,7 +125,7 @@ export default function Wallett() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
           My Wallet
         </h1>
       </div>
@@ -193,7 +193,7 @@ export default function Wallett() {
           {userRole === "customer" && (
             <button
               onClick={() => setIsPaymentModalOpen(true)}
-              className="flex-1 flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] rounded-xl transition hover:bg-[#3a2f52]">
+              className="flex-1 flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] light:bg-purple-50 rounded-xl transition hover:bg-[#3a2f52] light:hover:bg-purple-100">
               <img src="/images/add-money.png" alt="" />
               <span>Add Money</span>
             </button>
@@ -201,7 +201,7 @@ export default function Wallett() {
 
           <button
             onClick={() => router.push("/v-profile/wallet/payment-method")}
-            className="flex-1 flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] rounded-xl transition hover:bg-[#3a2f52]">
+            className="flex-1 flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] light:bg-purple-50 rounded-xl transition hover:bg-[#3a2f52] light:hover:bg-purple-100">
             <img src="/images/method.png" alt="" />
             <span>Payment Method</span>
           </button>
@@ -215,15 +215,15 @@ export default function Wallett() {
         </div>
 
         {/* Recent History */}
-        <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] rounded-2xl p-6">
-          <h3 className="text-lg font-semibold mb-4 text-gray-300">
+        <div className="bg-gradient-to-br from-gray-900/50 to-gray-800/50 light:from-white light:to-purple-50/40 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] rounded-2xl p-6">
+          <h3 className="text-lg font-semibold mb-4 text-gray-300 light:text-gray-700">
             Recent History
           </h3>
 
           {isLoading ? (
-            <div className="text-center text-gray-400 py-8">Loading...</div>
+            <div className="text-center text-gray-400 light:text-gray-500 py-8">Loading...</div>
           ) : transactions.length === 0 ? (
-            <div className="text-center text-gray-400 py-8">
+            <div className="text-center text-gray-400 light:text-gray-500 py-8">
               No transactions found
             </div>
           ) : (
@@ -231,13 +231,13 @@ export default function Wallett() {
               {transactions.map((tx) => (
                 <div
                   key={tx._id}
-                  className="flex items-center justify-between py-3 border-b border-gray-800/50 last:border-0">
+                  className="flex items-center justify-between py-3 border-b border-gray-800/50 light:border-gray-200 last:border-0">
                   <div>
-                    <p className="font-medium text-white">
+                    <p className="font-medium text-white light:text-gray-900">
                       {tx.description ||
                         `${tx.type === "CREDIT" ? "Order payment" : "Withdraw"}`}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 light:text-gray-400">
                       {formatDate(tx.createdAt)}
                     </p>
                     <p

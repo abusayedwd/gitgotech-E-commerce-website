@@ -11,6 +11,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiCoupon4Line } from "react-icons/ri";
 
+const ICON_BTN =
+  "p-1 rounded-full transition-colors relative group light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 hover:bg-gray-800 light:hover:bg-purple-50 light:hover:ring-purple-200";
+
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -77,7 +80,7 @@ export default function Navbar() {
   const profileRoute = userRole === "vendor" ? "/v-profile" : "/profile";
 
   return (
-    <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-[#f4eefc] light:to-white text-white light:text-gray-900 fixed pb-1.5 top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg">
+    <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-[#f4eefc] light:to-white text-white light:text-gray-900 fixed pb-1.5 top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg light:shadow-[0_2px_12px_rgba(97,0,255,0.08)]">
       <div className="container  mx-auto border px-3 py-1 sm:px-4 rounded-[50] border-gray-700 light:border-gray-300  flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center flex-shrink-0">
@@ -87,7 +90,7 @@ export default function Navbar() {
               alt="Logo"
               fill
               className="object-contain"
-              priority  
+              priority
             /> */}
             <img className="h-16 w-full" src="/images/logo.png" alt="" />
           </div>
@@ -99,7 +102,7 @@ export default function Navbar() {
             type="button"
             onClick={() => setIsSearchOpen(true)}
             aria-label="Open search"
-            className="p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-full transition-colors relative group"
+            className={`p-2 ${ICON_BTN}`}
           >
             <Search className="w-6 h-6 text-white light:text-gray-700" />
             <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
@@ -111,7 +114,7 @@ export default function Navbar() {
             type="button"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-full transition-colors relative group"
+            className={`p-2 ${ICON_BTN}`}
           >
             {theme === "dark" ? (
               <Sun className="w-6 h-6 text-white" />
@@ -153,8 +156,8 @@ export default function Navbar() {
           {isHydrated && !isLoggedIn && (
             <Link href="/shopping-cart">
               <button
-                className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                  isActive("/shopping-cart") ? "bg-purple-600/40" : ""
+                className={`${ICON_BTN} cursor-pointer ${
+                  isActive("/shopping-cart") ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                 }`}
               >
                 <Image
@@ -182,17 +185,11 @@ export default function Navbar() {
 
                  <Link href="/coupon">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                        isActive("/coupon") ? "bg-purple-600/40" : ""
+                      className={`${ICON_BTN} cursor-pointer ${
+                        isActive("/coupon") ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                       }`}
                     >
-                      {/* <Image
-                        src="/images/love.png"
-                        alt="coupon"
-                        width={40}
-                        height={30}
-                      /> */}
-                      <RiCoupon4Line />
+                      <RiCoupon4Line className="w-6 h-6 p-0.5 text-white light:text-gray-700" />
                       <span className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-full mt-2 whitespace-nowrap rounded-md bg-gray-900 border border-purple-500/30 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50">
                         Coupon
                       </span>
@@ -201,8 +198,8 @@ export default function Navbar() {
 
                   <Link href="/custom-orders">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                        isActive("/custom-orders") ? "bg-purple-600/40" : ""
+                      className={`${ICON_BTN} cursor-pointer ${
+                        isActive("/custom-orders") ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                       }`}
                     >
                       <Image
@@ -218,8 +215,8 @@ export default function Navbar() {
                   </Link>
                   <Link href="/wishlist">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                        isActive("/wishlist") ? "bg-purple-600/40" : ""
+                      className={`${ICON_BTN} cursor-pointer ${
+                        isActive("/wishlist") ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                       }`}
                     >
                       <Image
@@ -236,8 +233,8 @@ export default function Navbar() {
 
                   <Link href="/shopping-cart">
                     <button
-                      className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                        isActive("/shopping-cart") ? "bg-purple-600/40" : ""
+                      className={`${ICON_BTN} cursor-pointer ${
+                        isActive("/shopping-cart") ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                       }`}
                     >
                       <Image
@@ -261,8 +258,8 @@ export default function Navbar() {
 
               <Link href="/messaging">
                 <button
-                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                    isActive("/messaging") ? "bg-purple-600/40" : ""
+                  className={`${ICON_BTN} cursor-pointer ${
+                    isActive("/messaging") ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                   }`}
                 >
                   <Image
@@ -279,8 +276,8 @@ export default function Navbar() {
 
               <Link href={profileRoute}>
                 <button
-                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                    isActive(profileRoute) ? "bg-purple-600/40" : ""
+                  className={`${ICON_BTN} cursor-pointer ${
+                    isActive(profileRoute) ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                   }`}
                 >
                   <Image
@@ -297,8 +294,8 @@ export default function Navbar() {
 
               <Link href="/notification">
                 <button
-                  className={`p-1 hover:bg-gray-800 cursor-pointer rounded-full transition-colors relative group ${
-                    isActive("/notification") ? "bg-purple-600/40" : ""
+                  className={`${ICON_BTN} cursor-pointer ${
+                    isActive("/notification") ? "bg-purple-600/40 light:bg-purple-200 light:ring-2 light:ring-purple-400" : ""
                   }`}
                 >
                   <Image
@@ -317,7 +314,7 @@ export default function Navbar() {
                 <button
                   className={` text-white px-5 xl:px-6 font-poppins  py-2 cursor-pointer rounded-3xl font-medium transition-colors text-sm xl:text-base ${
                     isActive(dashboardRoute)
-                      ? "bg-purple-600/40 ring-2 ring-purple-400"
+                      ? "bg-purple-600/40 ring-2 ring-purple-400 light:bg-purple-600 light:text-white light:ring-purple-300"
                       : "bg-[#6100FF]"
                   }`}
                 >
@@ -344,7 +341,7 @@ export default function Navbar() {
               setIsMenuOpen(false);
             }}
             aria-label="Open search"
-            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-lg transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 cursor-pointer rounded-full transition-colors"
           >
             <Search className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 light:text-gray-600" />
           </button>
@@ -353,7 +350,7 @@ export default function Navbar() {
             type="button"
             onClick={toggleTheme}
             aria-label="Toggle theme"
-            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-lg transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 cursor-pointer rounded-full transition-colors"
           >
             {theme === "dark" ? (
               <Sun className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
@@ -366,9 +363,9 @@ export default function Navbar() {
           {showCustomerLinks && (
             <Link href="/shopping-cart">
               <button
-                className={`p-1.5 sm:p-2 hover:bg-gray-800 cursor-pointer rounded-lg transition-colors relative ${
+                className={`p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 cursor-pointer rounded-full transition-colors relative ${
                   isActive("/shopping-cart")
-                    ? "bg-purple-600/20 ring-2 ring-purple-500"
+                    ? "bg-purple-600/20 ring-2 ring-purple-500 light:bg-purple-200 light:ring-purple-400"
                     : ""
                 }`}
               >
@@ -387,7 +384,7 @@ export default function Navbar() {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-gray-100 cursor-pointer rounded-lg transition-colors"
+            className="p-1.5 sm:p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 cursor-pointer rounded-full transition-colors"
           >
             {isMenuOpen ? (
               <X className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 light:text-gray-600" />
@@ -455,9 +452,9 @@ export default function Navbar() {
                 {userRole === "customer" && (
                   <Link href="/coupon">
                     <button
-                      className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                      className={`p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 rounded-full transition-colors ${
                         isActive("/coupon")
-                          ? "bg-purple-600/20 ring-2 ring-purple-500"
+                          ? "bg-purple-600/20 ring-2 ring-purple-500 light:bg-purple-200 light:ring-purple-400"
                           : ""
                       }`}
                     >
@@ -484,9 +481,9 @@ export default function Navbar() {
                 {userRole === "customer" && (
                   <Link href="/custom-orders">
                     <button
-                      className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                      className={`p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 rounded-full transition-colors ${
                         isActive("/custom-orders")
-                          ? "bg-purple-600/20 ring-2 ring-purple-500"
+                          ? "bg-purple-600/20 ring-2 ring-purple-500 light:bg-purple-200 light:ring-purple-400"
                           : ""
                       }`}
                     >
@@ -503,9 +500,9 @@ export default function Navbar() {
                 {userRole === "customer" && (
                   <Link href="/wishlist">
                     <button
-                      className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                      className={`p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 rounded-full transition-colors ${
                         isActive("/wishlist")
-                          ? "bg-purple-600/20 ring-2 ring-purple-500"
+                          ? "bg-purple-600/20 ring-2 ring-purple-500 light:bg-purple-200 light:ring-purple-400"
                           : ""
                       }`}
                     >
@@ -522,9 +519,9 @@ export default function Navbar() {
                 {/* Common icons for both */}
                 <Link href="/messaging">
                   <button
-                    className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                    className={`p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 rounded-full transition-colors ${
                       isActive("/messaging")
-                        ? "bg-purple-600/20 ring-2 ring-purple-500"
+                        ? "bg-purple-600/20 ring-2 ring-purple-500 light:bg-purple-200 light:ring-purple-400"
                         : ""
                     }`}
                   >
@@ -539,9 +536,9 @@ export default function Navbar() {
 
                 <Link href={profileRoute}>
                   <button
-                    className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                    className={`p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 rounded-full transition-colors ${
                       isActive(profileRoute)
-                        ? "bg-purple-600/20 ring-2 ring-purple-500"
+                        ? "bg-purple-600/20 ring-2 ring-purple-500 light:bg-purple-200 light:ring-purple-400"
                         : ""
                     }`}
                   >
@@ -556,9 +553,9 @@ export default function Navbar() {
 
                 <Link href="/notification">
                   <button
-                    className={`p-2 hover:bg-gray-800 rounded-lg transition-colors ${
+                    className={`p-2 hover:bg-gray-800 light:hover:bg-purple-50 light:bg-white light:shadow-[0_1px_4px_rgba(97,0,255,0.12)] light:ring-1 light:ring-purple-100 rounded-full transition-colors ${
                       isActive("/notification")
-                        ? "bg-purple-600/20 ring-2 ring-purple-500"
+                        ? "bg-purple-600/20 ring-2 ring-purple-500 light:bg-purple-200 light:ring-purple-400"
                         : ""
                     }`}
                   >
@@ -577,7 +574,7 @@ export default function Navbar() {
                 <button
                   className={`w-full cursor-pointer text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl font-medium transition-colors text-sm sm:text-base ${
                     isActive(dashboardRoute)
-                      ? "bg-purple-600/20 ring-2 ring-purple-400"
+                      ? "bg-purple-600/20 ring-2 ring-purple-400 light:bg-purple-600 light:text-white light:ring-purple-300"
                       : "bg-[#6100FF]"
                   }`}
                 >

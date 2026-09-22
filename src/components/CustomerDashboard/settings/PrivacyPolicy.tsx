@@ -11,7 +11,7 @@ export default function PrivacyPolicyPage() {
   // console.log(privacyInfo);
 
   return (
-    <div className="min-h-screen md:mt-24 mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen md:mt-24 mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="container   mx-auto flex items-center gap-4">
@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             Privacy Policy
           </h1>
         </div>
@@ -31,7 +31,7 @@ export default function PrivacyPolicyPage() {
         {/* Last Updated */}
         {privacyInfo?.updatedAt && (
           <div className="my-6">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 light:text-gray-500">
               Last Updated:{" "}
               {new Date(privacyInfo.updatedAt).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -43,21 +43,21 @@ export default function PrivacyPolicyPage() {
         )}
 
         {/* Content Card */}
-        <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 border-2 border-blue-500/50 rounded-3xl p-6 md:p-10 backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 light:from-purple-50 light:to-white border-2 border-blue-500/50 light:border-blue-300 rounded-3xl p-6 md:p-10 backdrop-blur-sm">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="ml-3 text-gray-400">
+              <span className="ml-3 text-gray-400 light:text-gray-500">
                 Loading privacy policy...
               </span>
             </div>
           ) : (
-            <div className="space-y-6 text-sm text-gray-400 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
-              <p className="text-gray-300 whitespace-pre-wrap">
+            <div className="space-y-6 text-sm text-gray-400 light:text-gray-600 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
+              <p className="text-gray-300 light:text-gray-700 whitespace-pre-wrap">
                 {/* {privacyInfo?.value ||
                   "No privacy policy content available."} */}
                 <div
-                className="prose prose-invert max-w-none text-gray-300"
+                className="prose prose-invert light:prose-slate max-w-none text-gray-300 light:text-gray-700"
                 dangerouslySetInnerHTML={{ __html: privacyInfo?.value || 'No privacy policy content available.' }}
               />
               </p>

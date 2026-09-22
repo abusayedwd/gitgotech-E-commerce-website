@@ -67,13 +67,13 @@ export default function DashboardHome() {
   const getStatusStyle = (status: string) => {
     switch (status?.toLowerCase()) {
       case "completed":
-        return "bg-green-900/30 text-green-400 border-green-500/30";
+        return "bg-green-900/30 text-green-400 border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300";
       case "processing":
-        return "bg-blue-900/30 text-blue-400 border-blue-500/30";
+        return "bg-blue-900/30 text-blue-400 border-blue-500/30 light:bg-blue-50 light:text-blue-700 light:border-blue-300";
       case "cancelled":
-        return "bg-red-900/30 text-red-400 border-red-500/30";
+        return "bg-red-900/30 text-red-400 border-red-500/30 light:bg-red-50 light:text-red-700 light:border-red-300";
       default:
-        return "bg-yellow-900/30 text-yellow-500 border-yellow-500/30";
+        return "bg-yellow-900/30 text-yellow-500 border-yellow-500/30 light:bg-yellow-50 light:text-yellow-700 light:border-yellow-300";
     }
   };
 
@@ -84,8 +84,8 @@ export default function DashboardHome() {
         {stats.map((stat, index) => (
           <div
             key={index}
-            className={`bg-gradient-to-tl from-[#100b1f] via-[#170f2e] to-black 
-              border border-l-[#912DAD] border-l-4 md:border-l-6 
+            className={`bg-gradient-to-tl from-[#100b1f] via-[#170f2e] to-black light:from-white light:via-purple-50 light:to-white
+              border border-l-[#912DAD] border-l-4 md:border-l-6
               ${stat.borderColor} rounded-xl md:rounded-2xl p-4 md:p-6 
               hover:shadow-lg hover:shadow-purple-500/10 
               h-28 sm:h-32 md:h-36 transition-all`}
@@ -116,7 +116,7 @@ export default function DashboardHome() {
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-gradient-to-l from-[#070722] to-[#0a183f] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-xl md:rounded-2xl p-4 md:p-6">
+      <div className="bg-gradient-to-l from-[#070722] to-[#0a183f] light:from-white light:to-purple-50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 light:border-purple-200 rounded-xl md:rounded-2xl p-4 md:p-6">
         <div className="flex justify-between items-center mb-4 md:mb-6">
           <h2 className="text-xl md:text-2xl font-semibold font-cormorant">
             Recent Orders
@@ -130,7 +130,7 @@ export default function DashboardHome() {
         </div>
 
         {recentOrders.length === 0 ? (
-          <p className="text-center text-gray-500 py-6 text-sm">
+          <p className="text-center text-gray-500 light:text-gray-400 py-6 text-sm">
             No recent orders found.
           </p>
         ) : (
@@ -140,7 +140,7 @@ export default function DashboardHome() {
               {recentOrders.map((order: any, index: number) => (
                 <div
                   key={order._id ?? index}
-                  className="bg-purple-900/10 border border-gray-800/30 rounded-lg p-4 hover:bg-purple-900/20 transition-colors"
+                  className="bg-purple-900/10 light:bg-purple-50 border border-gray-800/30 light:border-gray-200 rounded-lg p-4 hover:bg-purple-900/20 light:hover:bg-purple-100 transition-colors"
                 >
                   <div className="flex justify-between items-start mb-3">
                     <div>
@@ -149,7 +149,7 @@ export default function DashboardHome() {
                         {order.trackingNumber ??
                           order._id?.slice(-6).toUpperCase()}
                       </div>
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-gray-400 light:text-gray-500">
                         {formatDate(order.createdAt)}
                       </div>
                     </div>
@@ -182,20 +182,20 @@ export default function DashboardHome() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-700/50">
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <tr className="border-b border-gray-700/50 light:border-gray-200">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Order ID
                     </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Date & Time
                     </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Customer
                     </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Order Status
                     </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Action
                     </th>
                   </tr>
@@ -204,14 +204,14 @@ export default function DashboardHome() {
                   {recentOrders.map((order: any, index: number) => (
                     <tr
                       key={order._id ?? index}
-                      className="border-b border-gray-800/30 hover:bg-purple-900/10 transition-colors"
+                      className="border-b border-gray-800/30 light:border-gray-200 hover:bg-purple-900/10 light:hover:bg-purple-50 transition-colors"
                     >
                       <td className="py-3 px-4 text-sm">
                         #
                         {order.trackingNumber ??
                           order._id?.slice(-6).toUpperCase()}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-400">
+                      <td className="py-3 px-4 text-sm text-gray-400 light:text-gray-500">
                         {formatDate(order.createdAt)}
                       </td>
                       <td className="py-3 px-4 text-sm">
@@ -246,7 +246,7 @@ export default function DashboardHome() {
       </div>
 
       {/* Recent Uploaded Products */}
-      <div className="bg-gradient-to-l from-[#070722] to-[#0a183f] shadow-[0_0_12px_rgba(34,211,238,0.35)] border border-purple-500/30 rounded-xl md:rounded-2xl p-4 md:p-6">
+      <div className="bg-gradient-to-l from-[#070722] to-[#0a183f] light:from-white light:to-purple-50 shadow-[0_0_12px_rgba(34,211,238,0.35)] border border-purple-500/30 light:border-purple-200 rounded-xl md:rounded-2xl p-4 md:p-6">
         <div className="flex justify-between items-center mb-4 md:mb-6">
           <h2 className="text-xl md:text-2xl font-semibold font-cormorant">
             Recent Uploaded Products
@@ -260,7 +260,7 @@ export default function DashboardHome() {
         </div>
 
         {recentProducts.length === 0 ? (
-          <p className="text-center text-gray-500 py-6 text-sm">
+          <p className="text-center text-gray-500 light:text-gray-400 py-6 text-sm">
             No recent products found.
           </p>
         ) : (
@@ -270,7 +270,7 @@ export default function DashboardHome() {
               {recentProducts.map((product: any, index: number) => (
                 <div
                   key={product._id ?? index}
-                  className="bg-purple-900/10 border border-gray-800/30 rounded-lg p-4 hover:bg-purple-900/20 transition-colors"
+                  className="bg-purple-900/10 light:bg-purple-50 border border-gray-800/30 light:border-gray-200 rounded-lg p-4 hover:bg-purple-900/20 light:hover:bg-purple-100 transition-colors"
                 >
                   <div className="flex items-center gap-3 mb-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-amber-700 to-amber-900 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
@@ -288,13 +288,13 @@ export default function DashboardHome() {
                       <div className="text-sm font-medium mb-1">
                         {product.product_name}
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-gray-400 light:text-gray-500">
                         ₵{product.product_price}
                       </div>
                     </div>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 rounded-full text-xs font-medium">
+                    <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300 rounded-full text-xs font-medium">
                       {product.isDeleted ? "Deleted" : "In Stock"}
                     </span>
                     <button
@@ -316,17 +316,17 @@ export default function DashboardHome() {
             <div className="hidden md:block overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-700/50">
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <tr className="border-b border-gray-700/50 light:border-gray-200">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Product
                     </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Price
                     </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                       Action
                     </th>
                   </tr>
@@ -335,7 +335,7 @@ export default function DashboardHome() {
                   {recentProducts.map((product: any, index: number) => (
                     <tr
                       key={product._id ?? index}
-                      className="border-b border-gray-800/30 hover:bg-purple-900/10 transition-colors"
+                      className="border-b border-gray-800/30 light:border-gray-200 hover:bg-purple-900/10 light:hover:bg-purple-50 transition-colors"
                     >
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
@@ -359,7 +359,7 @@ export default function DashboardHome() {
                         ₵{product.product_price}
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 rounded-full text-xs font-medium">
+                        <span className="px-3 py-1 bg-purple-900/30 text-purple-400 border border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300 rounded-full text-xs font-medium">
                           {product.isDeleted ? "Deleted" : "In Stock"}
                         </span>
                       </td>

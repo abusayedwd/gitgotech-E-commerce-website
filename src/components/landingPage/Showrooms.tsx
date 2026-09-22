@@ -35,14 +35,14 @@ export default function ShowroomsPage() {
   );
 
   return (
-    <div className=" mt-20 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen py-12 px-4">
+    <div className=" mt-20 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white min-h-screen py-12 px-4">
       <div className="container mx-auto">
         {/* Header Section */}
         <div className="text-center mb-8">
-          <h1 className="text-white text-3xl md:text-4xl font-cormorant mb-3">
+          <h1 className="text-white light:text-gray-900 text-3xl md:text-4xl font-cormorant mb-3">
             Discover Our Showrooms
           </h1>
-          <p className="text-gray-400 text-sm md:text-base font-poppins max-w-3xl mx-auto mb-8">
+          <p className="text-gray-400 light:text-gray-500 text-sm md:text-base font-poppins max-w-3xl mx-auto mb-8">
             Explore our curated showrooms across the city. Each venue showcases
             the finest designs and craftsmanship, giving you a world of
             luxurious choices all within arm's reach.
@@ -58,7 +58,7 @@ export default function ShowroomsPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Find your perfect tailor, design, or outfit"
-                  className="w-full backdrop-blur-sm border border-gray-700 text-white rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500 text-sm"
+                  className="w-full backdrop-blur-sm border border-gray-700 light:border-gray-300 text-white light:text-gray-900 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500 light:placeholder:text-gray-400 text-sm"
                 />
               </div>
               <button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
@@ -71,7 +71,7 @@ export default function ShowroomsPage() {
         {/* All Showroom Section */}
         <div>
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-            <h2 className="text-white font-cormorant text-xl md:text-2xl font-semibold">
+            <h2 className="text-white light:text-gray-900 font-cormorant text-xl md:text-2xl font-semibold">
               All Showroom
             </h2>
             <div className="flex items-center gap-4">
@@ -111,7 +111,7 @@ export default function ShowroomsPage() {
           {!isLoading && !error && filteredShowrooms.length === 0 && (
             <div className="text-center py-20">
               <Store className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg">No showrooms found.</p>
+              <p className="text-gray-400 light:text-gray-500 text-lg">No showrooms found.</p>
             </div>
           )}
 
@@ -120,7 +120,7 @@ export default function ShowroomsPage() {
             {filteredShowrooms.map((showroom: any) => (
               <div
                 key={showroom._id}
-                className="bg-[#1B1B1F] backdrop-blur-sm h-[380px] rounded-xl overflow-hidden group hover:bg-gray-800/50 transition-all border border-gray-700/50"
+                className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm h-[380px] rounded-xl overflow-hidden group hover:bg-gray-800/50 light:hover:bg-gray-50 transition-all border border-gray-700/50 light:border-gray-200"
               >
                 {/* Showroom Image with Logo Overlay */}
                 <div className="relative h-[210px] overflow-hidden">
@@ -134,10 +134,10 @@ export default function ShowroomsPage() {
 
                 {/* Showroom Info */}
                 <div className="p-4 flex flex-col h-[170px]">
-                  <h3 className="text-white font-semibold text-base mb-1">
+                  <h3 className="text-white light:text-gray-900 font-semibold text-base mb-1">
                     {showroom.showroom_name}
                   </h3>
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                  <p className="text-gray-400 light:text-gray-500 text-sm mb-4 line-clamp-2">
                     <FaLocationDot className="inline-block w-4 h-4 mr-1 mb-0.5 text-gray-400" />
                     {showroom.showroom_address}
                   </p>

@@ -193,15 +193,15 @@ function driverInitials(name?: string) {
 function getSettlementStatusStyle(status?: string) {
   const value = (status || "").toUpperCase();
   if (value === "HELD") {
-    return "bg-amber-900/30 text-amber-300 border border-amber-500/30";
+    return "bg-amber-900/30 text-amber-300 border border-amber-500/30 light:bg-amber-50 light:text-amber-700 light:border-amber-300";
   }
   if (value === "AVAILABLE" || value === "RELEASED") {
-    return "bg-blue-900/30 text-blue-300 border border-blue-500/30";
+    return "bg-blue-900/30 text-blue-300 border border-blue-500/30 light:bg-blue-50 light:text-blue-700 light:border-blue-300";
   }
   if (value === "PAID" || value === "SETTLED") {
-    return "bg-green-900/30 text-green-300 border border-green-500/30";
+    return "bg-green-900/30 text-green-300 border border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300";
   }
-  return "bg-gray-900/30 text-gray-300 border border-gray-500/30";
+  return "bg-gray-900/30 text-gray-300 border border-gray-500/30 light:bg-gray-50 light:text-gray-700 light:border-gray-300";
 }
 
 function sortTrackingEvents(events: TrackingEvent[]) {
@@ -234,8 +234,8 @@ function DetailRow({
   if (value === undefined || value === null || value === "") return null;
   return (
     <div className="flex justify-between items-start gap-4">
-      <span className="text-gray-400 text-sm shrink-0">{label}</span>
-      <span className="text-white font-medium text-sm text-right break-all">
+      <span className="text-gray-400 light:text-gray-500 text-sm shrink-0">{label}</span>
+      <span className="text-white light:text-gray-900 font-medium text-sm text-right break-all">
         {value}
       </span>
     </div>
@@ -252,8 +252,8 @@ function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <div className="bg-gradient-to-tr from-[#05011a] via-[#090322] to-[#05011a] border border-gray-800 rounded-2xl p-6">
-      <h2 className="text-lg font-semibold mb-5 border-b border-gray-700/50 pb-3 flex items-center gap-2">
+    <div className="bg-gradient-to-tr from-[#05011a] via-[#090322] to-[#05011a] light:from-white light:via-purple-50/40 light:to-white border border-gray-800 light:border-gray-200 rounded-2xl p-6">
+      <h2 className="text-lg font-semibold mb-5 border-b border-gray-700/50 light:border-gray-200 pb-3 flex items-center gap-2 light:text-gray-900">
         {icon}
         {title}
       </h2>
@@ -279,14 +279,14 @@ function DriverBlock({ driver }: { driver: OrderDriver }) {
             }}
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-sm font-semibold text-purple-200">
+          <div className="w-12 h-12 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-sm font-semibold text-purple-200 light:text-purple-700">
             {driverInitials(name)}
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-white font-medium truncate">{name}</p>
+          <p className="text-white light:text-gray-900 font-medium truncate">{name}</p>
           {driver.email && (
-            <p className="text-xs text-gray-400 truncate">{driver.email}</p>
+            <p className="text-xs text-gray-400 light:text-gray-500 truncate">{driver.email}</p>
           )}
         </div>
       </div>
@@ -301,7 +301,7 @@ function DriverBlock({ driver }: { driver: OrderDriver }) {
 
 function AddressBlock({ info }: { info?: ContactInfo }) {
   if (!info) {
-    return <p className="text-sm text-gray-500">No address on this order.</p>;
+    return <p className="text-sm text-gray-500 light:text-gray-400">No address on this order.</p>;
   }
 
   const location = [info.address, info.state, info.country, info.zipcode]
@@ -333,7 +333,7 @@ function SettlementBlock({
       />
       {settlement.status && (
         <div className="flex justify-between items-center gap-4">
-          <span className="text-gray-400 text-sm">Status</span>
+          <span className="text-gray-400 light:text-gray-500 text-sm">Status</span>
           <span
             className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getSettlementStatusStyle(settlement.status)}`}
           >
@@ -360,7 +360,7 @@ function TrackingBlock({ events }: { events: TrackingEvent[] }) {
       : sorted.slice(-TRACKING_PREVIEW_COUNT);
 
   if (sorted.length === 0) {
-    return <p className="text-sm text-gray-500">No tracking updates yet.</p>;
+    return <p className="text-sm text-gray-500 light:text-gray-400">No tracking updates yet.</p>;
   }
 
   return (
@@ -390,13 +390,13 @@ function TrackingBlock({ events }: { events: TrackingEvent[] }) {
                     {event.status}
                   </span>
                   {event.createdAt && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 light:text-gray-400">
                       {formatDate(event.createdAt)}
                     </span>
                   )}
                 </div>
                 {event.message && (
-                  <p className="text-sm text-gray-300 mt-1">{event.message}</p>
+                  <p className="text-sm text-gray-300 light:text-gray-700 mt-1">{event.message}</p>
                 )}
               </div>
             </li>
@@ -407,7 +407,7 @@ function TrackingBlock({ events }: { events: TrackingEvent[] }) {
         <button
           type="button"
           onClick={() => setExpanded((open) => !open)}
-          className="mt-4 text-sm text-purple-300 hover:text-purple-200 font-medium"
+          className="mt-4 text-sm text-purple-300 light:text-purple-600 hover:text-purple-200 light:hover:text-purple-700 font-medium"
         >
           {expanded ? "See less" : "See more"}
         </button>
@@ -438,8 +438,8 @@ function StatusTimeline({
               isCurrent
                 ? getOrderStatusStyle(step)
                 : reached
-                  ? "bg-green-950/40 text-green-300 border-green-500/20"
-                  : "bg-gray-900/40 text-gray-500 border-gray-700/50"
+                  ? "bg-green-950/40 text-green-300 border-green-500/20 light:bg-green-50 light:text-green-700 light:border-green-300"
+                  : "bg-gray-900/40 text-gray-500 border-gray-700/50 light:bg-gray-50 light:text-gray-700 light:border-gray-300"
             }`}
           >
             {step}
@@ -491,7 +491,7 @@ export default function OrderDetailsPage() {
 
   if (!orderId) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0f] light:bg-white flex items-center justify-center">
         <div className="text-red-400 text-xl">Missing order id</div>
       </div>
     );
@@ -499,7 +499,7 @@ export default function OrderDetailsPage() {
 
   if (!showroomId || isLoading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0f] light:bg-white flex items-center justify-center">
         <div className="text-purple-400 text-xl">
           {!showroomId
             ? "Select a showroom to load this order."
@@ -511,7 +511,7 @@ export default function OrderDetailsPage() {
 
   if (error || !order) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a0a0f] light:bg-white flex items-center justify-center">
         <div className="text-red-400 text-xl">
           {getApiMessage(error, "Failed to load order details")}
         </div>
@@ -569,7 +569,7 @@ export default function OrderDetailsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] p-4 md:p-8">
+    <div className="min-h-screen bg-[#0a0a0f] light:bg-white p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -581,10 +581,10 @@ export default function OrderDetailsPage() {
               <ArrowLeft className="w-5 h-5 text-purple-400" />
             </button>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-200 font-cormorant">
+              <h1 className="text-2xl font-semibold text-gray-200 light:text-gray-800 font-cormorant">
                 Order Details
               </h1>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-500 light:text-gray-400 mt-0.5">
                 #{order._id.slice(-8)}
                 {order.createdAt ? ` · ${formatDate(order.createdAt)}` : ""}
               </p>
@@ -592,7 +592,7 @@ export default function OrderDetailsPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-900/60 text-slate-200 border border-slate-500/30 capitalize">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-900/60 light:bg-slate-200 text-slate-200 light:text-slate-700 border border-slate-500/30 capitalize">
               {deliveryType}
             </span>
             <span
@@ -611,9 +611,9 @@ export default function OrderDetailsPage() {
             />
             {nextAction ? (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-gray-400 light:text-gray-500">
                   Mark this {deliveryType} order as{" "}
-                  <span className="text-white font-medium">
+                  <span className="text-white light:text-gray-900 font-medium">
                     {nextAction.label}
                   </span>
                   .
@@ -628,7 +628,7 @@ export default function OrderDetailsPage() {
                 </button>
               </div>
             ) : (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-400 light:text-gray-500">
                 {getVendorOrderIdleCopy(order.orderStatus, deliveryType)}
               </p>
             )}
@@ -665,10 +665,10 @@ export default function OrderDetailsPage() {
                     return (
                       <div
                         key={item._id}
-                        className="rounded-xl border border-gray-800/80 bg-black/20 p-4"
+                        className="rounded-xl border border-gray-800/80 light:border-gray-200 bg-black/20 light:bg-gray-50 p-4"
                       >
                         <div className="flex items-start gap-4">
-                          <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-800 flex items-center justify-center shrink-0">
+                          <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-800 light:bg-gray-100 flex items-center justify-center shrink-0">
                             <img
                               src={buildImageUrl(image, "/images/jacket.png")}
                               alt={name}
@@ -679,11 +679,11 @@ export default function OrderDetailsPage() {
                             />
                           </div>
                           <div className="min-w-0 flex-1">
-                            <p className="font-semibold text-white truncate">
+                            <p className="font-semibold text-white light:text-gray-900 truncate">
                               {name}
                             </p>
                             {item.productSnapshot?.category && (
-                              <p className="text-xs text-gray-400 mt-0.5">
+                              <p className="text-xs text-gray-400 light:text-gray-500 mt-0.5">
                                 {item.productSnapshot.category}
                               </p>
                             )}
@@ -694,10 +694,10 @@ export default function OrderDetailsPage() {
                                     key={line._id || `${line.type}-${index}`}
                                     className="flex items-center justify-between text-sm gap-3"
                                   >
-                                    <span className="text-gray-300">
+                                    <span className="text-gray-300 light:text-gray-700">
                                       Size {line.type} · Qty {line.quantity}
                                     </span>
-                                    <span className="text-white font-medium">
+                                    <span className="text-white light:text-gray-900 font-medium">
                                       {formatMoney(
                                         line.pricing?.totalPaidPrice ??
                                           (line.pricing?.paidUnitPrice || 0) *
@@ -708,7 +708,7 @@ export default function OrderDetailsPage() {
                                   </div>
                                 ))
                               ) : (
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-gray-500 light:text-gray-400">
                                   No size details
                                 </p>
                               )}
@@ -720,7 +720,7 @@ export default function OrderDetailsPage() {
                   })}
                 </div>
               ) : (
-                <div className="text-gray-500 text-center py-8">
+                <div className="text-gray-500 light:text-gray-400 text-center py-8">
                   No product info available
                 </div>
               )}
@@ -762,17 +762,17 @@ export default function OrderDetailsPage() {
                     key={row.label}
                     className="flex justify-between items-center"
                   >
-                    <span className="text-gray-400 text-sm">{row.label}</span>
+                    <span className="text-gray-400 light:text-gray-500 text-sm">{row.label}</span>
                     <span
-                      className={`font-medium text-sm ${row.negative ? "text-green-400" : "text-white"}`}
+                      className={`font-medium text-sm ${row.negative ? "text-green-400" : "text-white light:text-gray-900"}`}
                     >
                       {row.negative ? "-" : ""}
                       {formatMoney(row.value, unit)}
                     </span>
                   </div>
                 ))}
-                <div className="flex justify-between items-center pt-3 border-t border-gray-700/50">
-                  <span className="text-gray-300 font-medium">Grand total</span>
+                <div className="flex justify-between items-center pt-3 border-t border-gray-700/50 light:border-gray-200">
+                  <span className="text-gray-300 light:text-gray-700 font-medium">Grand total</span>
                   <span className="text-white font-semibold text-lg">
                     {formatMoney(grandTotal, unit)}
                   </span>

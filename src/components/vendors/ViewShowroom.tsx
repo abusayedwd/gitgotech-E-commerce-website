@@ -97,7 +97,7 @@ export default function ViewShowroomPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       {/* Loading State */}
       {isLoadingShowrooms && (
         <div className="flex justify-center items-center py-20">
@@ -129,7 +129,7 @@ export default function ViewShowroomPage() {
                 </svg>
               </div>
             </button>
-            <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+            <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">
               Showroom Details
             </h1>
           </div>
@@ -139,7 +139,7 @@ export default function ViewShowroomPage() {
             <select
               value={id}
               onChange={(e) => setId(e.target.value)}
-              className="bg-[#1B1B1F] border border-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="bg-[#1B1B1F] light:bg-white border border-gray-700 light:border-gray-300 text-white light:text-gray-900 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="">Select Showroom</option>
               {showrooms.map((showroom: any) => (
@@ -172,11 +172,11 @@ export default function ViewShowroomPage() {
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Logo */}
         <div className="text-center">
-          <h2 className="text-lg font-semibold mb-4 text-gray-300">
+          <h2 className="text-lg font-semibold mb-4 text-gray-300 light:text-gray-700">
             Business Logo
           </h2>
           <div className="flex justify-center">
-            <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 border-2 border-purple-500/30">
+            <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 light:bg-gray-100 border-2 border-purple-500/30">
               <img
                 src={`${url}/${details?.logo}`}
                 alt="Business Logo"
@@ -187,8 +187,8 @@ export default function ViewShowroomPage() {
         </div>
 
         {/* Information */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-gray-300 mb-6">
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-6">
             Showroom's Information
           </h2>
           <div className="space-y-4">
@@ -213,8 +213,8 @@ export default function ViewShowroomPage() {
         </div>
 
         {/* Schedule */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-gray-300 mb-6">
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-6">
             Showroom Hours
           </h2>
           <div className="space-y-3">
@@ -223,11 +223,11 @@ export default function ViewShowroomPage() {
               return (
                 <div
                   key={slot._id}
-                  className="flex justify-between items-center py-2 border-b border-gray-800/50 last:border-0"
+                  className="flex justify-between items-center py-2 border-b border-gray-800/50 light:border-gray-200 last:border-0"
                 >
-                  <span className="text-white font-medium">{slot.day}</span>
+                  <span className="text-white light:text-gray-900 font-medium">{slot.day}</span>
                   <span
-                    className={`text-sm ${closed ? "text-red-400" : "text-gray-400"}`}
+                    className={`text-sm ${closed ? "text-red-400" : "text-gray-400 light:text-gray-500"}`}
                   >
                     {closed
                       ? "Closed"
@@ -242,7 +242,7 @@ export default function ViewShowroomPage() {
         {/* Products Section */}
         <div className="mt-8">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-            <h2 className="text-white font-cormorant text-xl md:text-2xl font-semibold">
+            <h2 className="text-white light:text-gray-900 font-cormorant text-xl md:text-2xl font-semibold">
               Showroom Products ({totalProducts})
             </h2>
 
@@ -250,7 +250,7 @@ export default function ViewShowroomPage() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-[#1B1B1F] border border-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="bg-[#1B1B1F] light:bg-white border border-gray-700 light:border-gray-300 text-white light:text-gray-900 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="">All Categories</option>
               {categories.map((category: any) => (
@@ -262,9 +262,9 @@ export default function ViewShowroomPage() {
           </div>
 
           {products.length === 0 ? (
-            <div className="text-center py-20 bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border border-purple-500/30 rounded-2xl backdrop-blur-sm">
+            <div className="text-center py-20 bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl backdrop-blur-sm">
               <Store className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <p className="text-gray-400 text-lg">
+              <p className="text-gray-400 light:text-gray-500 text-lg">
                 No products found in this showroom.
               </p>
             </div>
@@ -280,7 +280,7 @@ export default function ViewShowroomPage() {
                   <Link
                     key={product._id}
                     href={`/product/${product._id}`}
-                    className="bg-[#1B1B1F] rounded-lg overflow-hidden group hover:shadow-xl transition-shadow border border-gray-700/50 block"
+                    className="bg-[#1B1B1F] light:bg-white rounded-lg overflow-hidden group hover:shadow-xl transition-shadow border border-gray-700/50 light:border-gray-200 block"
                   >
                     {/* Product Image */}
                     <div className="relative aspect-square overflow-hidden">
@@ -304,7 +304,7 @@ export default function ViewShowroomPage() {
                     {/* Product Info */}
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="text-white text-lg font-bold">
+                        <div className="text-white light:text-gray-900 text-lg font-bold">
                           ₵{product.product_price?.toFixed(2)}
                         </div>
                         {/* Rating */}
@@ -320,23 +320,23 @@ export default function ViewShowroomPage() {
                                 }`}
                               />
                             ))}
-                            <span className="text-gray-400 text-xs ml-1">
+                            <span className="text-gray-400 light:text-gray-500 text-xs ml-1">
                               ({product.review_count || 0})
                             </span>
                           </div>
                         )}
                       </div>
 
-                      <h3 className="text-white font-medium text-sm mb-1 line-clamp-1">
+                      <h3 className="text-white light:text-gray-900 font-medium text-sm mb-1 line-clamp-1">
                         {product.product_name}
                       </h3>
-                      <p className="text-gray-400 text-xs mb-2">
+                      <p className="text-gray-400 light:text-gray-500 text-xs mb-2">
                         {product.product_category}
                       </p>
 
                       {/* Stock Info */}
                       {product.product_stocks && (
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs text-gray-500 light:text-gray-400">
                           Total Stock:{" "}
                           {product.product_stocks.reduce(
                             (acc: number, s: any) => acc + s.stock,
@@ -368,9 +368,9 @@ export default function ViewShowroomPage() {
 
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between items-center py-3 border-b border-gray-800/50 last:border-0">
-      <span className="text-white font-medium">{label}</span>
-      <span className="text-gray-400 text-sm">{value}</span>
+    <div className="flex justify-between items-center py-3 border-b border-gray-800/50 light:border-gray-200 last:border-0">
+      <span className="text-white light:text-gray-900 font-medium">{label}</span>
+      <span className="text-gray-400 light:text-gray-500 text-sm">{value}</span>
     </div>
   );
 }

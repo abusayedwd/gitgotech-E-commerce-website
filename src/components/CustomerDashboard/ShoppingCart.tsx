@@ -208,7 +208,7 @@
 //   };
 
 //   return (
-//     <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+//     <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
 //       {/* Back Button */}
 //       <div className="container mx-auto flex items-center gap-4">
 //         <button
@@ -264,7 +264,7 @@
 //                       >
 //                         {/* Product */}
 //                         <div className="md:col-span-4 flex items-center gap-4">
-//                           <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
+//                           <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 light:bg-gray-100 flex-shrink-0">
 //                             <img
 //                               src={imageUrl}
 //                               alt={product?.product_name}
@@ -293,7 +293,7 @@
 //                                   [item._id]: e.target.value,
 //                                 }));
 //                               }}
-//                               className="bg-[#2E2E34] text-white px-3 py-2 rounded-lg text-sm border border-purple-500/30 focus:outline-none focus:border-purple-500"
+//                               className="bg-[#2E2E34] light:bg-white text-white light:text-gray-900 px-3 py-2 rounded-lg text-sm border border-purple-500/30 light:border-gray-300 focus:outline-none focus:border-purple-500"
 //                             >
 //                               {product.product_stocks.map((stock: any) => (
 //                                 <option key={stock._id} value={stock.size}>
@@ -317,11 +317,11 @@
 
 //                         {/* Quantity */}
 //                         <div className="md:col-span-2 flex justify-start md:justify-center">
-//                           <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-2">
+//                           <div className="flex items-center gap-3 bg-[#2E2E34] light:bg-gray-100 rounded-3xl px-3 py-2">
 //                             <button
 //                               onClick={() => handleDecrement(item)}
 //                               disabled={!isInStock || quantity <= 1}
-//                               className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+//                               className="w-6 h-6 rounded-full bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
 //                             >
 //                               <Minus className="w-3 h-3" />
 //                             </button>
@@ -331,7 +331,7 @@
 //                             <button
 //                               onClick={() => handleIncrement(item)}
 //                               disabled={!isInStock || quantity >= totalStock}
-//                               className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+//                               className="w-6 h-6 rounded-full bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
 //                             >
 //                               <Plus className="w-3 h-3" />
 //                             </button>
@@ -426,7 +426,7 @@
 //                 <span className="font-medium">$20.00</span>
 //               </div>
 //               <div className="flex justify-between text-sm">
-//                 <span className="text-gray-400">Tax (10%)</span>
+//                 <span className="text-gray-400 light:text-gray-500">Tax (10%)</span>
 //                 <span className="font-medium">
 //                   ${(calculateSubtotal() * 0.1).toFixed(2)}
 //                 </span>
@@ -440,7 +440,7 @@
 //                   ${tipAmount}
 //                 </button>
 //               </div>
-//               <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
+//               <div className="flex justify-between text-lg font-bold border-t border-gray-700 light:border-gray-200 pt-3">
 //                 <span>Total</span>
 //                 <span className="text-purple-400">
 //                   ${calculateTotal().toFixed(2)}
@@ -814,7 +814,7 @@ export default function ShoppingCart() {
   };
 
   return (
-    <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto flex items-center gap-4">
         <button
@@ -825,7 +825,7 @@ export default function ShoppingCart() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant hidden md:block">
           My Cart
         </h1>
       </div>
@@ -835,7 +835,7 @@ export default function ShoppingCart() {
         <h1 className="flex items-center justify-center text-3xl md:text-4xl font-bold mb-3">
           <SectionHeader title="My Shopping Cart"></SectionHeader>
         </h1>
-        <p className="text-gray-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
+        <p className="text-gray-400 light:text-gray-500 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
           Review your selected items before completing your order.
         </p>
       </div>
@@ -844,7 +844,7 @@ export default function ShoppingCart() {
       <div className="container mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="bg-gradient-to-br from-purple-900/10 to-gray-900/50 border-[#B8B8B8] border rounded-2xl p-4 md:p-6">
+          <div className="bg-gradient-to-br from-purple-900/10 to-gray-900/50 light:from-purple-50 light:to-white border-[#B8B8B8] light:border-gray-300 border rounded-2xl p-4 md:p-6">
             {/* Loading State */}
             {isLoading && (
               <div className="flex justify-center py-20">
@@ -879,13 +879,13 @@ export default function ShoppingCart() {
                               </h3>
                               {typeof group.showroom?.location === "string" &&
                                 group.showroom.location && (
-                                  <p className="text-xs text-gray-400">
+                                  <p className="text-xs text-gray-400 light:text-gray-500">
                                     {group.showroom.location}
                                   </p>
                                 )}
                             </div>
                           </div>
-                          <span className="text-xs font-medium px-3 py-1 rounded-full bg-purple-600/20 text-purple-300 whitespace-nowrap">
+                          <span className="text-xs font-medium px-3 py-1 rounded-full bg-purple-600/20 text-purple-300 whitespace-nowrap light:bg-purple-100 light:text-purple-700">
                             {group.items.length}{" "}
                             {group.items.length === 1 ? "item" : "items"} in
                             cart
@@ -938,7 +938,7 @@ export default function ShoppingCart() {
 
                         {/* Product */}
                         <div className="md:col-span-3 flex items-center gap-4">
-                          <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
+                          <div className="w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gray-800 light:bg-gray-100 flex-shrink-0">
                             <img
                               src={imageUrl}
                               alt={product?.product_name}
@@ -964,7 +964,7 @@ export default function ShoppingCart() {
                                   </span>
                                 </>
                               ) : (
-                                <p className="text-xs text-gray-400">
+                                <p className="text-xs text-gray-400 light:text-gray-500">
                                   ₵{(product?.product_price || 0).toFixed(2)}
                                 </p>
                               )}
@@ -1000,7 +1000,7 @@ export default function ShoppingCart() {
                                   }));
                                 }
                               }}
-                              className="bg-[#2E2E34] text-white px-3 py-2 rounded-lg text-sm border border-purple-500/30 focus:outline-none focus:border-purple-500"
+                              className="bg-[#2E2E34] light:bg-white text-white light:text-gray-900 px-3 py-2 rounded-lg text-sm border border-purple-500/30 light:border-gray-300 focus:outline-none focus:border-purple-500"
                             >
                               {product.product_stocks.map((stock: any) => (
                                 <option key={stock._id} value={stock.size}>
@@ -1009,7 +1009,7 @@ export default function ShoppingCart() {
                               ))}
                             </select>
                           ) : (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-gray-400 light:text-gray-500">
                               No sizes available
                             </span>
                           )}
@@ -1038,11 +1038,11 @@ export default function ShoppingCart() {
 
                         {/* Quantity */}
                         <div className="md:col-span-2 flex justify-start md:justify-center">
-                          <div className="flex items-center gap-3 bg-[#2E2E34] rounded-3xl px-3 py-2">
+                          <div className="flex items-center gap-3 bg-[#2E2E34] light:bg-gray-100 rounded-3xl px-3 py-2">
                             <button
                               onClick={() => handleDecrement(item)}
                               disabled={!isInStock || quantity <= 1}
-                              className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                              className="w-6 h-6 rounded-full bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                             >
                               <Minus className="w-3 h-3" />
                             </button>
@@ -1052,7 +1052,7 @@ export default function ShoppingCart() {
                             <button
                               onClick={() => handleIncrement(item)}
                               disabled={!isInStock || quantity >= sizeStock}
-                              className="w-6 h-6 rounded-full bg-gray-800 hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                              className="w-6 h-6 rounded-full bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
                             >
                               <Plus className="w-3 h-3" />
                             </button>
@@ -1123,7 +1123,7 @@ export default function ShoppingCart() {
 
         {/* Cart Total */}
         <div className="lg:col-span-1">
-          <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl p-6 sticky top-8">
+          <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 light:from-purple-50 light:to-white border border-gray-800 light:border-gray-200 rounded-2xl p-6 sticky top-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold">Cart Total</h2>
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
@@ -1146,7 +1146,7 @@ export default function ShoppingCart() {
             {/* Price Breakdown */}
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Subtotal</span>
+                <span className="text-gray-400 light:text-gray-500">Subtotal</span>
                 <span className="font-medium">
                   ₵{calculateSubtotal().toFixed(2)}
                 </span>
@@ -1160,18 +1160,18 @@ export default function ShoppingCart() {
                 </div>
               )}
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Delivery (est.)</span>
+                <span className="text-gray-400 light:text-gray-500">Delivery (est.)</span>
                 <span className="font-medium">
                   ₵{estimatedDeliveryCharge.toFixed(2)}
                 </span>
               </div>
               {/* <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Tax (10%)</span>
+                <span className="text-gray-400 light:text-gray-500">Tax (10%)</span>
                 <span className="font-medium">
                   ₵{(calculateSubtotal() * 0.1).toFixed(2)}
                 </span>
               </div> */}
-              <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
+              <div className="flex justify-between text-lg font-bold border-t border-gray-700 light:border-gray-200 pt-3">
                 <span>Total</span>
                 <span className="text-purple-400">
                   ₵{calculateTotal().toFixed(2)}
@@ -1194,7 +1194,7 @@ export default function ShoppingCart() {
               className={`w-full py-3 rounded-full font-semibold transition-all duration-300 transform ${
                 selectedCartItems.length > 0 && !isSelectionOutOfStock
                   ? "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 hover:scale-105 cursor-pointer"
-                  : "bg-gray-600 cursor-not-allowed opacity-50"
+                  : "bg-gray-600 light:bg-gray-300 cursor-not-allowed opacity-50"
               }`}
             >
               {isSelectionOutOfStock

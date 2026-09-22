@@ -1105,7 +1105,7 @@ const sizeData = [
                   ₵{formatPrice(discountedPrice)}
                 </span>
                 {hasDiscount && (
-                  <span className="text-sm font-semibold text-green-400 bg-green-900/20 px-2 py-1 rounded">
+                  <span className="text-sm font-semibold text-green-400 light:text-green-700 bg-green-900/20 light:bg-green-100 px-2 py-1 rounded">
                     -{discountPercentage}% off
                   </span>
                 )}
@@ -1133,16 +1133,16 @@ const sizeData = [
 
             {/* Mix Design Available */}
             {(product.isMixable || product.isCustom) && (
-              <div className="bg-purple-900/20 border border-[#6100FF] rounded-lg p-4">
+              <div className="bg-purple-900/20 light:bg-purple-50 border border-[#6100FF] light:border-purple-300 rounded-lg p-4">
                 <div className="flex items-center space-x-2 mb-2">
                   <Info className="w-5 h-5 text-purple-400" />
-                  <h3 className="font-medium font-cormorant text-2xl text-purple-300">
+                  <h3 className="font-medium font-cormorant text-2xl text-purple-300 light:text-purple-700">
                     {product.isMixable
                       ? "Mix Design Available"
                       : "Custom Design Available"}
                   </h3>
                 </div>
-                <p className="text-sm text-gray-300 mb-4">
+                <p className="text-sm text-gray-300 light:text-gray-700 mb-4">
                   {product.isMixable
                     ? "Explore all designs from this showroom and mix elements from different products to create your own unique style. style."
                     : "This product can be customized according to your preferences."}
@@ -1188,7 +1188,7 @@ const sizeData = [
                 <h3 className="font-medium font-cormorant text-2xl">
                   Select Size
                 </h3>
-                <span className="text-sm text-purple-300 bg-purple-900/30 border border-purple-500/40 px-3 py-1 rounded-full">
+                <span className="text-sm text-purple-300 light:text-purple-700 bg-purple-900/30 light:bg-purple-50 border border-purple-500/40 light:border-purple-300 px-3 py-1 rounded-full">
                   Total available:{" "}
                   {stockItems.reduce(
                     (sum: number, s: { stock: number }) =>
@@ -1284,11 +1284,11 @@ const sizeData = [
 
             {/* Custom Design Feature - Show only if product.isCustom is true */}
             {product.isCustom && (
-              <div className="bg-purple-900/20 border border-purple-600 rounded-lg p-4">
-                <h3 className="font-medium mb-2 text-purple-300">
+              <div className="bg-purple-900/20 light:bg-purple-50 border border-purple-600 light:border-purple-300 rounded-lg p-4">
+                <h3 className="font-medium mb-2 text-purple-300 light:text-purple-700">
                   Custom Design Feature
                 </h3>
-                <p className="text-sm text-gray-300 mb-4">
+                <p className="text-sm text-gray-300 light:text-gray-700 mb-4">
                   This design supports custom mix-mixing! You can combine
                   elements from different products to create your unique style.
                 </p>

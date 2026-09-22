@@ -163,14 +163,14 @@ const DeliveryRequest = () => {
   }, [error]);
 
   return (
-    <div className="container mx-auto mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6 min-h-screen">
+    <div className="container mx-auto mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6 min-h-screen">
       {/* Header */}
       <BackButton title="Request Delivery" className="text-[24px]" />
       <div className="text-center mt-12">
         <h1 className="text-3xl font-bold font-cormorant">
           Request A Delivery
         </h1>
-        <p className="text-gray-400 mt-1">
+        <p className="text-gray-400 light:text-gray-500 mt-1">
           View the history of the requested delivery
         </p>
       </div>
@@ -188,7 +188,7 @@ const DeliveryRequest = () => {
       {isLoading && (
         <div className="flex items-center justify-center py-20">
           <Loader className="w-8 h-8 animate-spin text-purple-500" />
-          <span className="ml-3 text-gray-400">
+          <span className="ml-3 text-gray-400 light:text-gray-500">
             Loading delivery requests...
           </span>
         </div>
@@ -206,10 +206,10 @@ const DeliveryRequest = () => {
 
       {/* Empty State */}
       {!isLoading && !error && deliveries.length === 0 && (
-        <div className="bg-gray-900 rounded-lg p-12 text-center">
+        <div className="bg-gray-900 light:bg-white light:border light:border-gray-200 rounded-lg p-12 text-center">
           <Package className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <p className="text-gray-400 text-lg">No delivery requests found</p>
-          <p className="text-gray-500 text-sm mt-2">
+          <p className="text-gray-400 light:text-gray-500 text-lg">No delivery requests found</p>
+          <p className="text-gray-500 light:text-gray-400 text-sm mt-2">
             Create a new request to get started
           </p>
         </div>
@@ -221,12 +221,12 @@ const DeliveryRequest = () => {
           {deliveries.map((delivery) => (
             <div
               key={delivery._id}
-              className="bg-gray-900 rounded-lg p-4 border border-gray-800 hover:border-purple-500 transition-colors cursor-pointer"
+              className="bg-gray-900 light:bg-white rounded-lg p-4 border border-gray-800 light:border-gray-200 hover:border-purple-500 transition-colors cursor-pointer"
               onClick={() => handleViewDetails(delivery)}
             >
               <div className="flex items-start space-x-4">
                 {/* Product Image */}
-                <div className="w-20 h-20 bg-gray-800 rounded-md flex items-center justify-center overflow-hidden">
+                <div className="w-20 h-20 bg-gray-800 light:bg-gray-100 rounded-md flex items-center justify-center overflow-hidden">
                   {delivery.images && delivery.images.length > 0 ? (
                     <img
                       src={`/images/${delivery.images[0]}`}
@@ -249,7 +249,7 @@ const DeliveryRequest = () => {
                       <h3 className="font-semibold">
                         {delivery.deliveryAddress.name}
                       </h3>
-                      <div className="flex items-center space-x-2 text-sm text-gray-400 mt-1">
+                      <div className="flex items-center space-x-2 text-sm text-gray-400 light:text-gray-500 mt-1">
                         <MapPin className="w-4 h-4" />
                         <span className="truncate max-w-xs">
                           {delivery.deliveryAddress.location}
@@ -274,14 +274,14 @@ const DeliveryRequest = () => {
                       <span className="text-sm">
                         ₵{getTotalPrice(delivery.price).toFixed(2)}
                       </span>
-                      <span className="text-sm text-gray-400">
+                      <span className="text-sm text-gray-400 light:text-gray-500">
                         Items: {delivery.numberOfItems}
                       </span>
                     </div>
 
                     {/* Date */}
                     <div className="text-right">
-                      <div className="text-xs text-gray-400">
+                      <div className="text-xs text-gray-400 light:text-gray-500">
                         {formatDate(delivery.createdAt)}
                       </div>
                       <div className="flex items-center space-x-1 mt-1 text-purple-400 text-xs">

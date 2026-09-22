@@ -485,14 +485,14 @@ export default function InvitationCard() {
 
   if (eventLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-black via-[#0f0924] to-black">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white">
         <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen py-8 px-4 bg-gradient-to-r from-black via-[#0f0924] to-black">
+    <div className="min-h-screen py-8 px-4 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white">
       <div className="max-w-7xl md:mt-24 mx-auto">
         {/* Back Button */}
         <button
@@ -516,7 +516,7 @@ export default function InvitationCard() {
           <span className="font-medium">Back</span>
         </button>
 
-        <h1 className="text-3xl md:text-4xl font-bold text-center text-white mb-8 font-cormorant">
+        <h1 className="text-3xl md:text-4xl font-bold text-center text-white light:text-gray-900 mb-8 font-cormorant">
           Send Event Invitation
         </h1>
 
@@ -586,7 +586,7 @@ export default function InvitationCard() {
           </div>
 
           {/* Right: Form */}
-          <div className="bg-gradient-to-br from-[#2C233E] to-[#1a1525] border-2 border-purple-500/30 rounded-xl p-6 shadow-2xl">
+          <div className="bg-gradient-to-br from-[#2C233E] to-[#1a1525] light:from-purple-50 light:to-white border-2 border-purple-500/30 light:border-purple-200 rounded-xl p-6 shadow-2xl">
             <h3 className="text-2xl font-semibold text-purple-400 mb-6 font-cormorant flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -608,7 +608,7 @@ export default function InvitationCard() {
             {/* Member Details */}
             <div className="space-y-4 mb-6">
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-1">
+                <label className="block text-sm font-semibold text-gray-300 light:text-gray-700 mb-2 flex items-center gap-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 text-purple-400"
@@ -629,13 +629,13 @@ export default function InvitationCard() {
                   type="text"
                   value={memberDetails.name}
                   onChange={(e) => handleMemberChange("name", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-800/80 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-800/80 light:bg-white border-2 border-gray-600 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   placeholder="Enter member name"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-300 mb-2 flex items-center gap-1">
+                <label className="block text-sm font-semibold text-gray-300 light:text-gray-700 mb-2 flex items-center gap-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-4 w-4 text-purple-400"
@@ -656,7 +656,7 @@ export default function InvitationCard() {
                   type="email"
                   value={memberDetails.email}
                   onChange={(e) => handleMemberChange("email", e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-800/80 border-2 border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 bg-gray-800/80 light:bg-white border-2 border-gray-600 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   placeholder="Enter member email"
                 />
               </div>
@@ -664,7 +664,7 @@ export default function InvitationCard() {
 
             {/* Event Info */}
             {sourceEvent && (
-              <div className="mb-6 p-4 bg-gradient-to-br from-gray-800/80 to-gray-900/80 rounded-lg border border-purple-500/20">
+              <div className="mb-6 p-4 bg-gradient-to-br from-gray-800/80 to-gray-900/80 light:from-purple-50 light:to-white rounded-lg border border-purple-500/20">
                 <h4 className="text-sm font-bold text-purple-400 mb-3 flex items-center gap-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -682,7 +682,7 @@ export default function InvitationCard() {
                   </svg>
                   Event Information
                 </h4>
-                <div className="text-sm text-gray-300 space-y-2">
+                <div className="text-sm text-gray-300 light:text-gray-700 space-y-2">
                   <p className="flex items-start gap-2">
                     <span className="font-semibold text-purple-300 min-w-[70px]">Title:</span>
                     <span className="flex-1">{sourceEvent.title}</span>

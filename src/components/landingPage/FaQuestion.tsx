@@ -64,7 +64,7 @@ export default function SimpleFAQ() {
           <h1 className='flex items-center justify-center'> 
           <SectionHeader title='Frequently Asked Questions'></SectionHeader>
           </h1>
-          <p className="text-xl text-gray-400">Shopping, delivery, returns, and selling on Sleeknit</p>
+          <p className="text-xl text-gray-400 light:text-gray-500">Shopping, delivery, returns, and selling on Sleeknit</p>
         </div>
 
         {/* FAQ Accordion */}
@@ -72,21 +72,21 @@ export default function SimpleFAQ() {
           {faqData.map((faq, index) => (
             <div
               key={index}
-              className="  rounded-lg shadow-md overflow-hidden bg-gradient-to-l from-[#231c2e] to-[#22121e] text-white"
+              className="  rounded-lg shadow-md overflow-hidden bg-gradient-to-l from-[#231c2e] to-[#22121e] light:from-purple-50 light:to-white text-white light:text-gray-900"
             >
               <button
                 className="w-full px-6 py-5 text-left flex justify-between items-center transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onClick={() => toggleFAQ(index)}
               >
-                <span className="text-lg font-medium text-white">{faq.question}</span>
+                <span className="text-lg font-medium text-white light:text-gray-900">{faq.question}</span>
                 <span className=" font-bold text-xl ml-4">
                   {openIndex === index ? '−' : '+'}
                 </span>
               </button>
               
               {openIndex === index && (
-                <div className="px-6 pb-5 pt-2 border-t border-gray-700">
-                  <p className="text-white leading-relaxed">{faq.answer}</p>
+                <div className="px-6 pb-5 pt-2 border-t border-gray-700 light:border-gray-200">
+                  <p className="text-white light:text-gray-800 leading-relaxed">{faq.answer}</p>
                 </div>
               )}
             </div>

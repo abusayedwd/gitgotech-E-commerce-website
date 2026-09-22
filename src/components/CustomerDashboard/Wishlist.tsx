@@ -58,7 +58,7 @@
 //       {/* Header */}
 //       <div className="max-w-6xl mx-auto mb-8 text-center">
 //         <h1 className="text-3xl md:text-4xl font-bold mb-3">My Wishlist</h1>
-//         <p className="text-gray-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
+//         <p className="text-gray-400 light:text-gray-500 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
 //           Save the products you love and revisit them anytime. Your wishlist helps you keep track of outfits, fabrics, and custom designs you may want to order later. Add them to your cart whenever you're ready.
 //         </p>
 //       </div>
@@ -77,14 +77,14 @@
 //         <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden">
 //           {/* Table Header - Desktop */}
 //           <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-800 bg-gray-900/50">
-//             <div className="col-span-5 text-sm font-medium text-gray-400">PRODUCT</div>
-//             <div className="col-span-2 text-sm font-medium text-gray-400 text-center">PRICE</div>
-//             <div className="col-span-3 text-sm font-medium text-gray-400 text-center">STOCK STATUS</div>
+//             <div className="col-span-5 text-sm font-medium text-gray-400 light:text-gray-500">PRODUCT</div>
+//             <div className="col-span-2 text-sm font-medium text-gray-400 light:text-gray-500 text-center">PRICE</div>
+//             <div className="col-span-3 text-sm font-medium text-gray-400 light:text-gray-500 text-center">STOCK STATUS</div>
 //             <div className="col-span-2 text-sm font-medium text-gray-400 text-center"></div>
 //           </div>
 
 //           {/* Wishlist Items */}
-//           <div className="divide-y divide-gray-800">
+//           <div className="divide-y divide-gray-800 light:divide-gray-200">
 //             {wishlistItems.length > 0 ? (
 //               wishlistItems.map((item) => (
 //                 <div 
@@ -93,7 +93,7 @@
 //                 >
 //                   {/* Product */}
 //                   <div className="md:col-span-5 flex items-center gap-4">
-//                     <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
+//                     <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-gray-800 light:bg-gray-100 flex-shrink-0">
 //                       <img 
 //                         src={item.image}
 //                         alt={item.name}
@@ -132,7 +132,7 @@
 //                       className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
 //                         item.status === 'In Stock'
 //                           ? 'bg-purple-600 hover:bg-purple-700 text-white transform hover:scale-105'
-//                           : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+//                           : 'bg-gray-700 light:bg-gray-200 text-gray-400 light:text-gray-500 cursor-not-allowed'
 //                       }`}
 //                     >
 //                       Add to Cart
@@ -246,7 +246,7 @@ export default function WishlistPage() {
     };
 
     return (
-        <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+        <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
             {/* Back Button */}
             <div className="container mx-auto flex items-center gap-4">
                 <button onClick={() => router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
@@ -254,13 +254,13 @@ export default function WishlistPage() {
                         <FaArrowLeft className='text-black' />
                     </div>
                 </button>
-                <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">Wish list</h1>
+                <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant hidden md:block">Wish list</h1>
             </div>
 
             {/* Header */}
             <div className="max-w-6xl mx-auto mb-8 text-center">
                 <h1 className="text-3xl md:text-4xl font-cormorant font-semibold mb-3">My Wishlist</h1>
-                <p className="text-gray-400 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
+                <p className="text-gray-400 light:text-gray-500 text-xs md:text-sm max-w-2xl mx-auto leading-relaxed">
                     Save the products you love and revisit them anytime. Your wishlist helps you keep track of outfits, fabrics, and custom designs you may want to order later. Add them to your cart whenever you're ready.
                 </p>
             </div>
@@ -274,17 +274,17 @@ export default function WishlistPage() {
 
             {/* Wishlist Table */}
             <div className="max-w-6xl mx-auto">
-                <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl overflow-hidden backdrop-blur-sm">
+                <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 light:from-purple-50 light:to-white border border-gray-800 light:border-gray-200 rounded-2xl overflow-hidden backdrop-blur-sm">
                     {/* Table Header - Desktop */}
-                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-800">
-                        <div className="col-span-5 text-sm font-medium text-gray-400">PRODUCT</div>
-                        <div className="col-span-2 text-sm font-medium text-gray-400 text-center">PRICE</div>
-                        <div className="col-span-3 text-sm font-medium text-gray-400 text-center">STOCK STATUS</div>
+                    <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b border-gray-800 light:border-gray-200">
+                        <div className="col-span-5 text-sm font-medium text-gray-400 light:text-gray-500">PRODUCT</div>
+                        <div className="col-span-2 text-sm font-medium text-gray-400 light:text-gray-500 text-center">PRICE</div>
+                        <div className="col-span-3 text-sm font-medium text-gray-400 light:text-gray-500 text-center">STOCK STATUS</div>
                         <div className="col-span-2 text-sm font-medium text-gray-400 text-center"></div>
                     </div>
 
                     {/* Wishlist Items */}
-                    <div className="divide-y divide-gray-800">
+                    <div className="divide-y divide-gray-800 light:divide-gray-200">
                         {wishlistItems.length > 0 ? (
                             wishlistItems.map((item: any) => {
                                 const product = item.product;
@@ -299,7 +299,7 @@ export default function WishlistPage() {
                                     >
                                         {/* Product */}
                                         <div className="md:col-span-5 flex items-center gap-4">
-                                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-gray-800 flex-shrink-0">
+                                            <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden bg-gray-800 light:bg-gray-100 flex-shrink-0">
                                                 <img
                                                     src={imageUrl}
                                                     alt={product.product_name}
@@ -308,24 +308,24 @@ export default function WishlistPage() {
                                             </div>
                                             <div>
                                                 <h3 className="font-semibold text-base md:text-lg">{product.product_name}</h3>
-                                                <p className="text-sm text-gray-400 md:hidden mt-1">₵{product.product_price?.toFixed(2)}</p>
-                                                <p className="text-xs text-gray-500 hidden md:block">{product.product_category}</p>
+                                                <p className="text-sm text-gray-400 light:text-gray-500 md:hidden mt-1">₵{product.product_price?.toFixed(2)}</p>
+                                                <p className="text-xs text-gray-500 light:text-gray-400 hidden md:block">{product.product_category}</p>
                                             </div>
                                         </div>
 
                                         {/* Price */}
                                         <div className="md:col-span-2 hidden md:block text-center">
-                                            <span className="text-base font-semibold">₵{product.product_price?.toFixed(2)}</span>
+                                            <span className="text-base font-semibold light:text-gray-900">₵{product.product_price?.toFixed(2)}</span>
                                         </div>
 
                                         {/* Stock Status */}
                                         <div className="md:col-span-3 flex md:justify-center">
                                             {isInStock ? (
-                                                <span className="px-4 py-2 bg-purple-600/20 text-purple-400 rounded-full text-sm font-medium">
+                                                <span className="px-4 py-2 bg-purple-600/20 text-purple-400 rounded-full text-sm font-medium light:bg-purple-100 light:text-purple-700">
                                                     In Stock ({totalStock})
                                                 </span>
                                             ) : (
-                                                <span className="px-4 py-2 bg-red-600/20 text-red-400 rounded-full text-sm font-medium">
+                                                <span className="px-4 py-2 bg-red-600/20 text-red-400 rounded-full text-sm font-medium light:bg-red-100 light:text-red-700">
                                                     Out of Stock
                                                 </span>
                                             )}
@@ -339,7 +339,7 @@ export default function WishlistPage() {
                                                 className={`flex-1 md:flex-none px-4 md:px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
                                                     isInStock
                                                         ? 'bg-purple-600 hover:bg-purple-700 text-white transform hover:scale-105'
-                                                        : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                                                        : 'bg-gray-700 light:bg-gray-200 text-gray-400 light:text-gray-500 cursor-not-allowed'
                                                 }`}
                                             >
                                                 Add to Cart
@@ -362,7 +362,7 @@ export default function WishlistPage() {
                                         <Heart className="w-10 h-10 text-purple-400" />
                                     </div>
                                     <h3 className="text-xl font-semibold mb-2">Your wishlist is empty</h3>
-                                    <p className="text-gray-400 text-sm mb-4">Start adding products you love!</p>
+                                    <p className="text-gray-400 light:text-gray-500 text-sm mb-4">Start adding products you love!</p>
                                     <button
                                         onClick={() => router.push('/')}
                                         className="px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium transition-colors"
@@ -381,17 +381,17 @@ export default function WishlistPage() {
                         <button
                             onClick={() => setPage(pagination.currentPage - 1)}
                             disabled={pagination.currentPage === 1}
-                            className="px-4 py-2 bg-purple-600/20 text-purple-400 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-600/30 transition-colors"
+                            className="px-4 py-2 bg-purple-600/20 text-purple-400 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-600/30 transition-colors light:bg-purple-100 light:text-purple-700"
                         >
                             Previous
                         </button>
-                        <span className="px-4 py-2 text-gray-400">
+                        <span className="px-4 py-2 text-gray-400 light:text-gray-500">
                             Page {pagination.currentPage} of {pagination.totalPage}
                         </span>
                         <button
                             onClick={() => setPage(pagination.currentPage + 1)}
                             disabled={pagination.currentPage === pagination.totalPage}
-                            className="px-4 py-2 bg-purple-600/20 text-purple-400 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-600/30 transition-colors"
+                            className="px-4 py-2 bg-purple-600/20 text-purple-400 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-purple-600/30 transition-colors light:bg-purple-100 light:text-purple-700"
                         >
                             Next
                         </button>

@@ -12,14 +12,14 @@ import { FaArrowLeft } from "react-icons/fa";
 const statusColor = (status: string) => {
   switch (status?.toUpperCase()) {
     case "PENDING":
-      return "text-yellow-400 bg-yellow-500/10 border-yellow-500/30";
+      return "text-yellow-400 bg-yellow-500/10 border-yellow-500/30 light:bg-yellow-50 light:text-yellow-700 light:border-yellow-300";
     case "DISMISSED":
-      return "text-gray-400 bg-gray-500/10 border-gray-500/30";
+      return "text-gray-400 bg-gray-500/10 border-gray-500/30 light:bg-gray-50 light:text-gray-700 light:border-gray-300";
     case "RESOLVED":
     case "APPROVED":
-      return "text-green-400 bg-green-500/10 border-green-500/30";
+      return "text-green-400 bg-green-500/10 border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300";
     default:
-      return "text-purple-400 bg-purple-500/10 border-purple-500/30";
+      return "text-purple-400 bg-purple-500/10 border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300";
   }
 };
 
@@ -48,7 +48,7 @@ export default function MyReportsPage() {
     });
 
   return (
-    <div className="min-h-screen mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen mt-16 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <button
@@ -59,7 +59,7 @@ export default function MyReportsPage() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             My Reports
           </h1>
         </div>
@@ -69,7 +69,7 @@ export default function MyReportsPage() {
             <div className="w-10 h-10 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : reports.length === 0 ? (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-gray-400 light:text-gray-500">
             <Flag className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>No reports submitted yet</p>
           </div>
@@ -80,17 +80,17 @@ export default function MyReportsPage() {
                 key={report._id}
                 type="button"
                 onClick={() => setSelectedReportId(report._id)}
-                className="w-full text-left bg-[#1B1B1F] border border-gray-700/50 rounded-xl p-4 hover:border-purple-500/40 transition-colors"
+                className="w-full text-left bg-[#1B1B1F] light:bg-white border border-gray-700/50 light:border-gray-200 rounded-xl p-4 hover:border-purple-500/40 transition-colors"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="font-medium text-white capitalize">
+                    <p className="font-medium text-white light:text-gray-900 capitalize">
                       {report.targetType?.toLowerCase()} report
                     </p>
-                    <p className="text-sm text-gray-400 truncate mt-1">
+                    <p className="text-sm text-gray-400 light:text-gray-500 truncate mt-1">
                       {report.reason}
                     </p>
-                    <p className="text-xs text-gray-500 mt-2">
+                    <p className="text-xs text-gray-500 light:text-gray-400 mt-2">
                       {formatDate(report.createdAt)}
                     </p>
                   </div>
@@ -111,18 +111,18 @@ export default function MyReportsPage() {
               type="button"
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
-              className="px-4 py-2 bg-gray-800 rounded-lg disabled:opacity-40"
+              className="px-4 py-2 bg-gray-800 light:bg-gray-200 rounded-lg disabled:opacity-40"
             >
               Prev
             </button>
-            <span className="px-4 py-2 text-gray-400">
+            <span className="px-4 py-2 text-gray-400 light:text-gray-500">
               {page} / {meta.totalPages}
             </span>
             <button
               type="button"
               disabled={page >= meta.totalPages}
               onClick={() => setPage((p) => p + 1)}
-              className="px-4 py-2 bg-gray-800 rounded-lg disabled:opacity-40"
+              className="px-4 py-2 bg-gray-800 light:bg-gray-200 rounded-lg disabled:opacity-40"
             >
               Next
             </button>

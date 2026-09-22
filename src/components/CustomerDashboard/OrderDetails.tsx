@@ -193,8 +193,8 @@ function productsFromReturn(returnData: any): OrderProduct[] {
 function InfoRow({ label, value }: { label: string; value?: ReactNode }) {
   if (value === undefined || value === null || value === "") return null;
   return (
-    <p className="text-sm text-gray-300">
-      <span className="text-gray-500">{label}:</span> {value}
+    <p className="text-sm text-gray-300 light:text-gray-700">
+      <span className="text-gray-500 light:text-gray-400">{label}:</span> {value}
     </p>
   );
 }
@@ -219,7 +219,7 @@ function AddressCard({
     .join(", ");
 
   return (
-    <div className="bg-gray-900 rounded-lg p-4 border border-purple-500/40">
+    <div className="bg-gray-900 light:bg-white rounded-lg p-4 border border-purple-500/40 light:border-purple-300">
       <h3 className="text-lg font-semibold mb-3">{title}</h3>
       <div className="space-y-2">
         <InfoRow label="Name" value={info.name} />
@@ -245,7 +245,7 @@ function TrackingCard({ events }: { events: TrackingEvent[] }) {
   if (!sorted.length) return null;
 
   return (
-    <div className="bg-gray-900 rounded-lg p-4 border border-purple-500/40">
+    <div className="bg-gray-900 light:bg-white rounded-lg p-4 border border-purple-500/40 light:border-purple-300">
       <h3 className="text-lg font-semibold mb-4">Order tracking</h3>
       <ol>
         {visible.map((event, index) => {
@@ -261,7 +261,7 @@ function TrackingCard({ events }: { events: TrackingEvent[] }) {
                     isLast ? "bg-purple-400" : "bg-green-400/80"
                   }`}
                 />
-                {!isLast && <span className="w-px flex-1 bg-gray-700 my-1" />}
+                {!isLast && <span className="w-px flex-1 bg-gray-700 light:bg-gray-300 my-1" />}
               </div>
               <div className={`min-w-0 flex-1 ${isLast ? "" : "pb-4"}`}>
                 <div className="flex flex-wrap items-center gap-2">
@@ -271,13 +271,13 @@ function TrackingCard({ events }: { events: TrackingEvent[] }) {
                     {formatStatusLabel(event.status)}
                   </span>
                   {event.createdAt && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 light:text-gray-400">
                       {formatDate(event.createdAt)}
                     </span>
                   )}
                 </div>
                 {event.message && (
-                  <p className="text-sm text-gray-300 mt-1">{event.message}</p>
+                  <p className="text-sm text-gray-300 light:text-gray-700 mt-1">{event.message}</p>
                 )}
               </div>
             </li>
@@ -475,14 +475,14 @@ const OrderDetails = () => {
     (isMainOrderDetailsLoading || isReturnOrderDetailsLoading)
   ) {
     return (
-      <div className="min-h-screen mt-20 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6 flex items-center justify-center">
+      <div className="min-h-screen mt-20 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6 flex items-center justify-center">
         <div className="text-purple-400 text-xl">Loading order details...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen mt-20 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen mt-20 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6">
       <div className="flex items-center justify-between mb-8">
         <BackButton title="View Details" className="text-[24px]" />
       </div>
@@ -490,14 +490,14 @@ const OrderDetails = () => {
       <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
         <div>
           <h2 className="text-2xl font-bold">{showroomName}</h2>
-          <p className="text-sm text-gray-400 mt-1">
+          <p className="text-sm text-gray-400 light:text-gray-500 mt-1">
             {totalQuantity} item{totalQuantity === 1 ? "" : "s"} in this order
             {mainOrder?._id ? ` · #${mainOrder._id.slice(-8)}` : ""}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {mainOrder?.deliveryType && (
-            <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-800 text-slate-200 capitalize">
+            <span className="px-3 py-1 rounded-full text-xs font-medium bg-slate-800 light:bg-slate-200 text-slate-200 light:text-slate-700 capitalize">
               {deliveryType}
             </span>
           )}
@@ -544,7 +544,7 @@ const OrderDetails = () => {
               return (
                 <div
                   key={p._id || idx}
-                  className="bg-gray-900 rounded-lg p-4 border border-purple-500/40"
+                  className="bg-gray-900 light:bg-white rounded-lg p-4 border border-purple-500/40 light:border-purple-300"
                 >
                   <div className="flex items-start gap-4">
                     <img
@@ -556,9 +556,9 @@ const OrderDetails = () => {
                       }}
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold truncate">{name}</p>
+                      <p className="font-semibold truncate light:text-gray-900">{name}</p>
                       {p.productSnapshot?.category && (
-                        <p className="text-xs text-gray-400 mt-0.5">
+                        <p className="text-xs text-gray-400 light:text-gray-500 mt-0.5">
                           {p.productSnapshot.category}
                         </p>
                       )}
@@ -569,11 +569,11 @@ const OrderDetails = () => {
                               key={line._id || `${line.type}-${sIdx}`}
                               className="flex items-center justify-between gap-3 text-sm"
                             >
-                              <span className="text-gray-400">
+                              <span className="text-gray-400 light:text-gray-500">
                                 Size {line.type || line.size || "M"} · Qty{" "}
                                 {line.quantity || 1}
                               </span>
-                              <span className="text-white font-medium">
+                              <span className="text-white light:text-gray-900 font-medium">
                                 {formatMoney(
                                   line.pricing?.totalPaidPrice ??
                                     (line.pricing?.paidUnitPrice || 0) *
@@ -584,7 +584,7 @@ const OrderDetails = () => {
                             </div>
                           ))
                         ) : (
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-500 light:text-gray-400">
                             No size details
                           </span>
                         )}
@@ -595,7 +595,7 @@ const OrderDetails = () => {
               );
             })
           ) : (
-            <div className="text-gray-400">No product info available</div>
+            <div className="text-gray-400 light:text-gray-500">No product info available</div>
           )}
         </div>
 
@@ -607,7 +607,7 @@ const OrderDetails = () => {
           )}
 
           {priceInfo && (
-            <div className="relative rounded-2xl overflow-hidden border border-purple-500/40 bg-gradient-to-br from-gray-900 via-purple-950/20 to-gray-900">
+            <div className="relative rounded-2xl overflow-hidden border border-purple-500/40 light:border-purple-300 bg-gradient-to-br from-gray-900 via-purple-950/20 to-gray-900 light:from-purple-50 light:via-white light:to-purple-50">
               <div className="px-5 py-4 border-b border-purple-500/20 bg-purple-900/10">
                 <h3 className="text-sm font-semibold tracking-widest uppercase text-purple-300">
                   Price breakdown
@@ -619,9 +619,9 @@ const OrderDetails = () => {
                     key={row.label}
                     className="flex items-center justify-between"
                   >
-                    <span className="text-sm text-gray-400">{row.label}</span>
+                    <span className="text-sm text-gray-400 light:text-gray-500">{row.label}</span>
                     <span
-                      className={`text-sm font-medium tabular-nums ${row.negative ? "text-green-400" : "text-gray-200"}`}
+                      className={`text-sm font-medium tabular-nums ${row.negative ? "text-green-400" : "text-gray-200 light:text-gray-700"}`}
                     >
                       {row.negative ? "-" : ""}
                       {formatMoney(row.value, unit)}
@@ -633,7 +633,7 @@ const OrderDetails = () => {
                 <span className="text-sm font-semibold text-purple-300 tracking-wide uppercase">
                   Total
                 </span>
-                <span className="text-xl font-bold text-white tabular-nums">
+                <span className="text-xl font-bold text-white light:text-gray-900 tabular-nums">
                   {formatMoney(grandTotal, unit)}
                 </span>
               </div>
@@ -641,7 +641,7 @@ const OrderDetails = () => {
           )}
 
           {deliveryType === "delivery" && assignedDriver && (
-            <div className="bg-gray-900 rounded-lg p-4 border border-purple-500/40">
+            <div className="bg-gray-900 light:bg-white rounded-lg p-4 border border-purple-500/40 light:border-purple-300">
               <h3 className="text-lg font-semibold mb-3">Driver</h3>
               <div className="flex items-center gap-3">
                 {buildImageUrl(assignedDriver.image) ? (
@@ -651,16 +651,16 @@ const OrderDetails = () => {
                     className="w-12 h-12 rounded-full object-cover border border-purple-500/30"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-sm font-semibold text-purple-200">
+                  <div className="w-12 h-12 rounded-full bg-purple-600/20 border border-purple-500/30 flex items-center justify-center text-sm font-semibold text-purple-200 light:text-purple-700">
                     {driverInitials(assignedDriver.name)}
                   </div>
                 )}
                 <div className="min-w-0">
-                  <p className="font-medium truncate">
+                  <p className="font-medium truncate light:text-gray-900">
                     {assignedDriver.name || "Assigned driver"}
                   </p>
                   {assignedDriver.email && (
-                    <p className="text-sm text-gray-400 truncate">
+                    <p className="text-sm text-gray-400 light:text-gray-500 truncate">
                       {assignedDriver.email}
                     </p>
                   )}
@@ -680,13 +680,13 @@ const OrderDetails = () => {
           )}
 
           {returnData?.clientReason && (
-            <div className="bg-gray-900 rounded-lg p-4 border border-purple-500/40">
+            <div className="bg-gray-900 light:bg-white rounded-lg p-4 border border-purple-500/40 light:border-purple-300">
               <h3 className="text-lg font-semibold mb-3">Return reason</h3>
-              <p className="text-sm text-gray-300">{returnData.clientReason}</p>
+              <p className="text-sm text-gray-300 light:text-gray-700">{returnData.clientReason}</p>
               {returnData.vendorReason && (
                 <div className="mt-3 pt-3 border-t border-purple-500/30">
                   <p className="text-purple-400 text-xs mb-1">Vendor response</p>
-                  <p className="text-sm text-gray-300">
+                  <p className="text-sm text-gray-300 light:text-gray-700">
                     {returnData.vendorReason}
                   </p>
                 </div>

@@ -12,7 +12,7 @@ export default function OrderCompletedPage() {
   ];
 
   return (
-    <div className="mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white flex items-center justify-center p-4">
+    <div className="mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 flex items-center justify-center p-4">
       <div className="container mx-auto">
         {/* Success Animation Container */}
         <div className="flex flex-col items-center mb-8">
@@ -29,16 +29,16 @@ export default function OrderCompletedPage() {
           <h1 className="text-3xl font-cormorant md:text-4xl font-bold text-center mb-3 bg-gradient-to-r from-[#6100FF] to-[#E19E75] bg-clip-text text-transparent">
             Thank you For Your Payment
           </h1>
-          <p className="text-gray-400 text-sm text-center">
+          <p className="text-gray-400 light:text-gray-500 text-sm text-center">
             Your Order is Now being Prepared
           </p>
         </div>
 
         {/* Order Details Card */}
-        <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-purple-500/30 rounded-2xl p-6 backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 light:from-purple-50 light:to-white border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 backdrop-blur-sm">
           {/* Order Number */}
           <div className="mb-6">
-            <p className="text-white font-medium">
+            <p className="text-white light:text-gray-900 font-medium">
               Order Number: <span className="text-purple-400">{orderNumber}</span>
             </p>
           </div>
@@ -46,12 +46,12 @@ export default function OrderCompletedPage() {
           {/* Order Items */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="text-gray-400 text-sm">{orderItems.length} Item(s)</span>
+              <span className="text-gray-400 light:text-gray-500 text-sm">{orderItems.length} Item(s)</span>
               <div className="flex -space-x-3">
                 {orderItems.map((item) => (
-                  <div 
-                    key={item.id} 
-                    className="w-14 h-14 rounded-lg overflow-hidden border-2 border-gray-900 bg-gray-800"
+                  <div
+                    key={item.id}
+                    className="w-14 h-14 rounded-lg overflow-hidden border-2 border-gray-900 light:border-white bg-gray-800 light:bg-gray-100"
                   >
                     <img 
                       src={item.image} 

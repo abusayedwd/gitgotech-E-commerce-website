@@ -47,7 +47,7 @@ export default function VendorShowroomsClient() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex justify-center items-center">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white flex justify-center items-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
       </div>
     );
@@ -55,10 +55,10 @@ export default function VendorShowroomsClient() {
 
   if (!vendorId) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex justify-center items-center">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white flex justify-center items-center">
         <div className="text-center">
           <Store className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h1 className="text-white text-2xl font-cormorant mb-2">
+          <h1 className="text-white light:text-gray-900 text-2xl font-cormorant mb-2">
             Vendor Not Found
           </h1>
           <Link
@@ -73,7 +73,7 @@ export default function VendorShowroomsClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8 pt-24">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8 pt-24">
       <div className="container mx-auto max-w-6xl">
         {/* Back Button */}
         <div className="mb-6">
@@ -88,7 +88,7 @@ export default function VendorShowroomsClient() {
         </div>
 
         {/* Vendor Profile Header */}
-        <div className="bg-[#1B1B1F] backdrop-blur-sm rounded-2xl border border-gray-700/50 p-6 md:p-8 mb-8">
+        <div className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm rounded-2xl border border-gray-700/50 light:border-gray-200 p-6 md:p-8 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Vendor Image/Avatar */}
             <div className="flex-shrink-0">
@@ -108,9 +108,9 @@ export default function VendorShowroomsClient() {
                 />
               ) : null}
               <div
-                className={`w-32 h-32 rounded-full bg-[#2a2a2e] border-4 border-purple-500/30 flex items-center justify-center ${vendorProfile?.image ? "hidden" : "flex"}`}
+                className={`w-32 h-32 rounded-full bg-[#2a2a2e] light:bg-gray-100 border-4 border-purple-500/30 flex items-center justify-center ${vendorProfile?.image ? "hidden" : "flex"}`}
               >
-                <span className="text-5xl font-cormorant text-gray-400">
+                <span className="text-5xl font-cormorant text-gray-400 light:text-gray-500">
                   {vendorProfile?.name?.charAt(0).toUpperCase()}
                 </span>
               </div>
@@ -131,13 +131,13 @@ export default function VendorShowroomsClient() {
                   Report Vendor
                 </button>
               </div>
-              <p className="text-gray-400 text-lg mb-4">
+              <p className="text-gray-400 light:text-gray-500 text-lg mb-4">
                 @{vendorProfile?.username}
               </p>
 
               <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-4">
                 {/* Email */}
-                <div className="flex items-center gap-2 text-gray-400">
+                <div className="flex items-center gap-2 text-gray-400 light:text-gray-500">
                   <Mail className="w-5 h-5" />
                   <span>{vendorProfile?.email}</span>
                 </div>
@@ -165,7 +165,7 @@ export default function VendorShowroomsClient() {
                   <p className="text-2xl font-bold text-purple-400">
                     {showrooms.length}
                   </p>
-                  <p className="text-gray-500">Showrooms</p>
+                  <p className="text-gray-500 light:text-gray-400">Showrooms</p>
                 </div>
 
                 {/* <div className="text-center">
@@ -183,7 +183,7 @@ export default function VendorShowroomsClient() {
                       vendorProfile?.createdAt || Date.now(),
                     ).getFullYear()}
                   </p>
-                  <p className="text-gray-500">Since</p>
+                  <p className="text-gray-500 light:text-gray-400">Since</p>
                 </div>
               </div>
             </div>
@@ -192,22 +192,22 @@ export default function VendorShowroomsClient() {
 
         {/* Showrooms Section Header */}
         <div className="mb-6">
-          <h2 className="text-2xl font-cormorant font-semibold text-white">
+          <h2 className="text-2xl font-cormorant font-semibold text-white light:text-gray-900">
             {vendorProfile?.name}'s Showrooms
           </h2>
-          <p className="text-gray-400 text-sm mt-1">
+          <p className="text-gray-400 light:text-gray-500 text-sm mt-1">
             {showrooms.length} Showroom{showrooms.length !== 1 ? "s" : ""}
           </p>
         </div>
 
         {/* Showrooms Grid */}
         {showrooms.length === 0 ? (
-          <div className="text-center py-20 bg-[#1B1B1F] rounded-2xl border border-gray-700/50">
+          <div className="text-center py-20 bg-[#1B1B1F] light:bg-white rounded-2xl border border-gray-700/50 light:border-gray-200">
             <Store className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h2 className="text-white text-xl font-semibold mb-2">
+            <h2 className="text-white light:text-gray-900 text-xl font-semibold mb-2">
               No Showrooms Yet
             </h2>
-            <p className="text-gray-400">
+            <p className="text-gray-400 light:text-gray-500">
               This vendor hasn't created any showrooms
             </p>
           </div>
@@ -221,7 +221,7 @@ export default function VendorShowroomsClient() {
                     `/showroom/view-showroom?showroomId=${showroom._id}&vendorId=${vendorId}`,
                   )
                 }
-                className="bg-[#1B1B1F] backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 transition-all cursor-pointer group"
+                className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 light:border-gray-200 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 transition-all cursor-pointer group"
               >
                 {/* Showroom Image */}
                 <div className="relative h-48 overflow-hidden">
@@ -248,17 +248,17 @@ export default function VendorShowroomsClient() {
 
                 {/* Showroom Info */}
                 <div className="p-4">
-                  <h3 className="text-white font-semibold text-lg mb-2 line-clamp-1">
+                  <h3 className="text-white light:text-gray-900 font-semibold text-lg mb-2 line-clamp-1">
                     {showroom.showroom_name}
                   </h3>
 
-                  <div className="flex items-start gap-2 text-gray-400 text-sm mb-4">
+                  <div className="flex items-start gap-2 text-gray-400 light:text-gray-500 text-sm mb-4">
                     <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <p className="line-clamp-2">{showroom.showroom_address}</p>
                   </div>
 
                   {/* Created Date */}
-                  <p className="text-gray-500 text-xs mb-4">
+                  <p className="text-gray-500 light:text-gray-400 text-xs mb-4">
                     Created:{" "}
                     {new Date(showroom.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -268,7 +268,7 @@ export default function VendorShowroomsClient() {
                   </p>
 
                   {/* View Products Button */}
-                  <button className="w-full bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 hover:text-purple-300 py-2 rounded-lg text-sm font-medium transition-colors">
+                  <button className="w-full bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 hover:text-purple-300 py-2 rounded-lg text-sm font-medium transition-colors light:bg-purple-100 light:text-purple-700 light:hover:bg-purple-200">
                     View Products
                   </button>
                 </div>

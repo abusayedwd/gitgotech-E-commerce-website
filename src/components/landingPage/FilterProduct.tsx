@@ -91,7 +91,7 @@ const FashionSearchNav = () => {
 
   return (
     <div
-      className={`fixed mt-2 inset-x-0 top-[4.5rem] sm:top-[5rem] z-50 overflow-hidden bg-gradient-to-r from-black via-[#0f0924] to-black text-white shadow-lg transition-transform duration-300 ease-in-out ${
+      className={`fixed mt-2 inset-x-0 top-[4.5rem] sm:top-[5rem] z-50 overflow-hidden bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 shadow-lg transition-transform duration-300 ease-in-out ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
@@ -130,7 +130,7 @@ const FashionSearchNav = () => {
                   className={`${
                     activeTab === category._id
                       ? tabColors[index % tabColors.length]
-                      : "border border-gray-700 bg-[#080715]"
+                      : "border border-gray-700 light:border-gray-300 bg-[#080715] light:bg-white light:text-gray-700"
                   } px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap hover:opacity-90 transition-all flex-shrink-0`}
                 >
                   {category.name}

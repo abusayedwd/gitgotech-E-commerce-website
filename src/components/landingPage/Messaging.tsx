@@ -441,14 +441,14 @@ const MessagesPage = () => {
 
   // ─── JSX ──────────────────────────────────────────────────────
   return (
-    <div className="mt-24 flex h-[calc(100dvh-6rem)] min-h-[calc(100dvh-6rem)] flex-row bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-2 md:p-4">
+    <div className="mt-24 flex h-[calc(100dvh-6rem)] min-h-[calc(100dvh-6rem)] flex-row bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 light:from-white light:via-purple-50 light:to-white p-2 md:p-4">
 
       {/* Socket status badge */}
       <div className="fixed top-24 right-4 z-50">
         <div className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 ${
           isSocketConnected
-            ? 'bg-green-600/20 text-green-400 border border-green-500/30'
-            : 'bg-red-600/20 text-red-400 border border-red-500/30'
+            ? 'bg-green-600/20 text-green-400 border border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300'
+            : 'bg-red-600/20 text-red-400 border border-red-500/30 light:bg-red-50 light:text-red-700 light:border-red-300'
         }`}>
           <div className={`w-2 h-2 rounded-full ${isSocketConnected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
           {isSocketConnected ? 'Connected' : 'Disconnected'}
@@ -459,12 +459,12 @@ const MessagesPage = () => {
       <div className={`
         ${showSidebar ? 'flex' : 'hidden'}
         h-full min-h-0 w-full shrink-0 flex-col md:mr-4 md:w-80
-        bg-gray-900/80 backdrop-blur-sm rounded-xl
+        bg-gray-900/80 light:bg-white backdrop-blur-sm rounded-xl
         p-3 md:p-4
-        border border-gray-700/50
+        border border-gray-700/50 light:border-gray-200
       `}>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-white">Messages</h2>
+          <h2 className="text-xl font-bold text-white light:text-gray-900">Messages</h2>
           <div className="bg-purple-600 text-white text-xs font-semibold px-2 py-1 rounded-full">
             {sidebarTab === 'chats' ? chatUsers.length : blockedUsers.length}
           </div>
@@ -477,7 +477,7 @@ const MessagesPage = () => {
             className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
               sidebarTab === 'chats'
                 ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white'
+                : 'bg-gray-800 light:bg-gray-100 text-gray-400 light:text-gray-600 hover:text-white light:hover:text-gray-900'
             }`}
           >
             Chats
@@ -488,7 +488,7 @@ const MessagesPage = () => {
             className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
               sidebarTab === 'blocked'
                 ? 'bg-purple-600 text-white'
-                : 'bg-gray-800 text-gray-400 hover:text-white'
+                : 'bg-gray-800 light:bg-gray-100 text-gray-400 light:text-gray-600 hover:text-white light:hover:text-gray-900'
             }`}
           >
             Blocked
@@ -504,7 +504,7 @@ const MessagesPage = () => {
               Loading chats...
             </div>
           ) : chatUsers.length === 0 ? (
-            <div className="text-center text-gray-400 py-8">No conversations yet</div>
+            <div className="text-center text-gray-400 light:text-gray-500 py-8">No conversations yet</div>
           ) : (
             chatUsers.map((chat) => {
               const otherUser = getOtherParticipant(chat);
@@ -515,7 +515,7 @@ const MessagesPage = () => {
                   className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-200 ${
                     selectedChatId === chat._id
                       ? 'bg-purple-600/20 border border-purple-500/50 shadow-lg shadow-purple-500/10'
-                      : 'hover:bg-gray-800/50 border border-transparent'
+                      : 'hover:bg-gray-800/50 light:hover:bg-gray-100 border border-transparent'
                   }`}
                 >
                   <div className="relative mr-3">
@@ -527,7 +527,7 @@ const MessagesPage = () => {
                     <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 bg-gray-500" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-white">{otherUser.name}</div>
+                    <div className="font-semibold text-white light:text-gray-900">{otherUser.name}</div>
                     {chat.lastMessage && (
                       <div className="text-xs text-gray-400 truncate">
                         {chat.lastMessage.length > 35 ? chat.lastMessage.substring(0, 35) + '...' : chat.lastMessage}
@@ -551,7 +551,7 @@ const MessagesPage = () => {
                 value={blockSearch}
                 onChange={(e) => setBlockSearch(e.target.value)}
                 placeholder="Search blocked users..."
-                className="w-full px-3 py-2 mb-2 bg-gray-800/50 border border-gray-700 rounded-lg text-white text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full px-3 py-2 mb-2 bg-gray-800/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 text-sm placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               {blockedListLoading ? (
                 <div className="flex items-center justify-center py-8 text-gray-400 gap-2">
@@ -559,7 +559,7 @@ const MessagesPage = () => {
                   Loading blocked list...
                 </div>
               ) : blockedUsers.length === 0 ? (
-                <div className="text-center text-gray-400 py-8">No blocked users</div>
+                <div className="text-center text-gray-400 light:text-gray-500 py-8">No blocked users</div>
               ) : (
                 blockedUsers.map((entry) => {
                   const user = entry.blockedUser;
@@ -567,7 +567,7 @@ const MessagesPage = () => {
                   return (
                     <div
                       key={entry._id}
-                      className="flex items-center p-3 rounded-lg bg-gray-800/40 border border-gray-700/50"
+                      className="flex items-center p-3 rounded-lg bg-gray-800/40 light:bg-gray-50 border border-gray-700/50 light:border-gray-200"
                     >
                       <img
                         src={getUserImage(user.image)}
@@ -575,7 +575,7 @@ const MessagesPage = () => {
                         className="w-12 h-12 rounded-full border-2 border-gray-700 mr-3 flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-white truncate">{user.name}</div>
+                        <div className="font-semibold text-white light:text-gray-900 truncate">{user.name}</div>
                         {user.role && (
                           <div className="text-xs text-purple-300 capitalize">{user.role}</div>
                         )}
@@ -587,7 +587,7 @@ const MessagesPage = () => {
                         type="button"
                         onClick={() => handleUnblockUser(user._id)}
                         disabled={isUnblocking}
-                        className="ml-2 px-3 py-1.5 text-xs font-medium bg-green-600/20 text-green-400 border border-green-500/30 rounded-lg hover:bg-green-600/30 disabled:opacity-50"
+                        className="ml-2 px-3 py-1.5 text-xs font-medium bg-green-600/20 text-green-400 border border-green-500/30 rounded-lg hover:bg-green-600/30 disabled:opacity-50 light:bg-green-50 light:text-green-700 light:border-green-300"
                       >
                         Unblock
                       </button>
@@ -603,11 +603,11 @@ const MessagesPage = () => {
       {/* ── Main Chat ── */}
       <div className={`
         ${!showSidebar || selectedChatId ? 'flex' : 'hidden md:flex'}
-        h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-gray-900/80 backdrop-blur-sm rounded-xl
-        border border-gray-700/50 p-3 md:p-4
+        h-full min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-gray-900/80 light:bg-white backdrop-blur-sm rounded-xl
+        border border-gray-700/50 light:border-gray-200 p-3 md:p-4
       `}>
         {!selectedChatId ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+          <div className="flex flex-col items-center justify-center h-full text-gray-400 light:text-gray-500">
             <svg className="w-20 h-20 mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
@@ -617,9 +617,9 @@ const MessagesPage = () => {
         ) : (
           <>
             {/* Header */}
-            <div className="flex items-center mb-4 pb-3 border-b border-gray-700/50">
-              <button onClick={handleBackToUsers} className="md:hidden mr-2 p-2 hover:bg-gray-800 rounded-lg transition-colors">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex items-center mb-4 pb-3 border-b border-gray-700/50 light:border-gray-200">
+              <button onClick={handleBackToUsers} className="md:hidden mr-2 p-2 hover:bg-gray-800 light:hover:bg-gray-100 rounded-lg transition-colors">
+                <svg className="w-5 h-5 text-white light:text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
               </button>
@@ -632,7 +632,7 @@ const MessagesPage = () => {
                 <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 bg-gray-500" />
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-semibold text-white">{currentOtherUser?.name}</div>
+                <div className="font-semibold text-white light:text-gray-900">{currentOtherUser?.name}</div>
                 {isCurrentUserBlocked && (
                   <div className="text-xs text-red-400">Blocked</div>
                 )}
@@ -644,7 +644,7 @@ const MessagesPage = () => {
                     type="button"
                     onClick={() => handleUnblockUser(selectedReceiverId)}
                     disabled={isUnblocking}
-                    className="px-3 py-1.5 text-sm font-medium bg-green-600/20 text-green-400 border border-green-500/30 rounded-lg hover:bg-green-600/30 disabled:opacity-50"
+                    className="px-3 py-1.5 text-sm font-medium bg-green-600/20 text-green-400 border border-green-500/30 rounded-lg hover:bg-green-600/30 disabled:opacity-50 light:bg-green-50 light:text-green-700 light:border-green-300"
                   >
                     Unblock
                   </button>
@@ -653,14 +653,14 @@ const MessagesPage = () => {
                   <button
                     type="button"
                     onClick={() => setShowReportModal(true)}
-                    className="px-3 py-1.5 text-sm font-medium bg-orange-600/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-600/30"
+                    className="px-3 py-1.5 text-sm font-medium bg-orange-600/20 text-orange-400 border border-orange-500/30 rounded-lg hover:bg-orange-600/30 light:bg-orange-50 light:text-orange-700 light:border-orange-300"
                   >
                     Report
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowBlockModal(true)}
-                    className="px-3 py-1.5 text-sm font-medium bg-red-600/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-600/30"
+                    className="px-3 py-1.5 text-sm font-medium bg-red-600/20 text-red-400 border border-red-500/30 rounded-lg hover:bg-red-600/30 light:bg-red-50 light:text-red-700 light:border-red-300"
                   >
                     Block
                   </button>
@@ -673,12 +673,12 @@ const MessagesPage = () => {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto mb-4 px-1 custom-scrollbar">
               {messagesLoading ? (
-                <div className="flex flex-col items-center justify-center h-full text-gray-400 gap-3">
+                <div className="flex flex-col items-center justify-center h-full text-gray-400 light:text-gray-500 gap-3">
                   <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
                   <span>Loading messages...</span>
                 </div>
               ) : messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                <div className="flex flex-col items-center justify-center h-full text-gray-400 light:text-gray-500">
                   <svg className="w-16 h-16 mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
@@ -693,9 +693,9 @@ const MessagesPage = () => {
             </div>
 
             {/* Input area */}
-            <div className="border-t border-gray-700/50 pt-4">
+            <div className="border-t border-gray-700/50 light:border-gray-200 pt-4">
               {selectedFile && (
-                <div className="mb-3 flex items-center bg-gray-800/50 border border-gray-700 rounded-lg p-3 text-sm text-white">
+                <div className="mb-3 flex items-center bg-gray-800/50 light:bg-gray-100 border border-gray-700 light:border-gray-300 rounded-lg p-3 text-sm text-white light:text-gray-900">
                   <div className="bg-purple-600/20 p-2 rounded-lg mr-3">
                     <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -728,7 +728,7 @@ const MessagesPage = () => {
                   }}
                   placeholder="Type a message..."
                   disabled={isSending || isUploading}
-                  className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all disabled:opacity-50"
+                  className="flex-1 px-4 py-3 bg-gray-800/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all disabled:opacity-50"
                 />
 
                 <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*,.pdf,.doc,.docx" className="hidden" />
@@ -737,7 +737,7 @@ const MessagesPage = () => {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isSending || isUploading}
-                  className="p-3 bg-gray-800 hover:bg-gray-700 rounded-xl text-gray-400 hover:text-purple-400 transition-all border border-gray-700 disabled:opacity-50"
+                  className="p-3 bg-gray-800 light:bg-gray-100 hover:bg-gray-700 light:hover:bg-gray-200 rounded-xl text-gray-400 light:text-gray-600 hover:text-purple-400 transition-all border border-gray-700 light:border-gray-300 disabled:opacity-50"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -766,7 +766,7 @@ const MessagesPage = () => {
                     disabled={!newMessage.trim() || isSending}
                     className={`p-3 rounded-xl transition-all ${
                       !newMessage.trim() || isSending
-                        ? 'bg-gray-800 text-gray-600 cursor-not-allowed border border-gray-700'
+                        ? 'bg-gray-800 light:bg-gray-100 text-gray-600 light:text-gray-400 cursor-not-allowed border border-gray-700 light:border-gray-300'
                         : 'bg-purple-600 hover:bg-purple-700 text-white shadow-lg shadow-purple-500/30'
                     }`}
                   >

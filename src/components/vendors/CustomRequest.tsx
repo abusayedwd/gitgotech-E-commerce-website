@@ -186,36 +186,36 @@ export default function CustomRequest() {
   const getStatusStyle = (status: string) => {
     const styles: { [key: string]: string } = {
       "Vendor Accepted":
-        "bg-green-900/30 text-green-400 border border-green-500/30",
-      "Vendor Rejected": "bg-red-900/30 text-red-400 border border-red-500/30",
+        "bg-green-900/30 text-green-400 border border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300",
+      "Vendor Rejected": "bg-red-900/30 text-red-400 border border-red-500/30 light:bg-red-50 light:text-red-700 light:border-red-300",
       "Customer Accepted":
-        "bg-blue-900/30 text-blue-400 border border-blue-500/30",
+        "bg-blue-900/30 text-blue-400 border border-blue-500/30 light:bg-blue-50 light:text-blue-700 light:border-blue-300",
       "Customer Rejected":
-        "bg-orange-900/30 text-orange-400 border border-orange-500/30",
-      Paid: "bg-purple-900/30 text-purple-400 border border-purple-500/30",
+        "bg-orange-900/30 text-orange-400 border border-orange-500/30 light:bg-orange-50 light:text-orange-700 light:border-orange-300",
+      Paid: "bg-purple-900/30 text-purple-400 border border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300",
       "Driver Accepted":
-        "bg-cyan-900/30 text-cyan-400 border border-cyan-500/30",
+        "bg-cyan-900/30 text-cyan-400 border border-cyan-500/30 light:bg-cyan-50 light:text-cyan-700 light:border-cyan-300",
       "Picked Up":
-        "bg-indigo-900/30 text-indigo-400 border border-indigo-500/30",
-      Delivered: "bg-green-900/30 text-green-400 border border-green-500/30",
-      Pending: "bg-gray-900/30 text-gray-400 border border-gray-500/30",
+        "bg-indigo-900/30 text-indigo-400 border border-indigo-500/30 light:bg-indigo-50 light:text-indigo-700 light:border-indigo-300",
+      Delivered: "bg-green-900/30 text-green-400 border border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300",
+      Pending: "bg-gray-900/30 text-gray-400 border border-gray-500/30 light:bg-gray-50 light:text-gray-700 light:border-gray-300",
       "Order Placed":
-        "bg-amber-900/30 text-amber-300 border border-amber-500/30",
+        "bg-amber-900/30 text-amber-300 border border-amber-500/30 light:bg-amber-50 light:text-amber-700 light:border-amber-300",
       Processing:
-        "bg-purple-900/30 text-purple-300 border border-purple-500/30",
+        "bg-purple-900/30 text-purple-300 border border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300",
       "Ready for Pickup":
-        "bg-teal-900/30 text-teal-300 border border-teal-500/30",
+        "bg-teal-900/30 text-teal-300 border border-teal-500/30 light:bg-teal-50 light:text-teal-700 light:border-teal-300",
     };
     return (
-      styles[status] || "bg-gray-900/30 text-gray-400 border border-gray-500/30"
+      styles[status] || "bg-gray-900/30 text-gray-400 border border-gray-500/30 light:bg-gray-50 light:text-gray-700 light:border-gray-300"
     );
   };
 
   return (
-    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 rounded-xl md:rounded-2xl p-4 md:p-8">
+    <div className="bg-gradient-to-tr from-[#05011a] via-[#0f0536] to-[#07021d] light:from-white light:via-purple-50 light:to-white border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 light:border-purple-200 rounded-xl md:rounded-2xl p-4 md:p-8">
       {/* Header */}
       <div className="mb-4 md:mb-6">
-        <h2 className="text-xl md:text-2xl font-bold font-cormorant mb-4 md:mb-6 text-white">
+        <h2 className="text-xl md:text-2xl font-bold font-cormorant mb-4 md:mb-6 text-white light:text-gray-900">
           Custom Orders
         </h2>
 
@@ -224,7 +224,7 @@ export default function CustomRequest() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 light:bg-white border border-cyan-500/50 light:border-cyan-600/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white light:text-gray-900 backdrop-blur-sm"
           >
             <option>Filter</option>
             {CUSTOM_ORDER_FILTERS.map((filter) => (
@@ -237,7 +237,7 @@ export default function CustomRequest() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
+              className="w-full px-4 py-2 pl-10 bg-gray-800/50 light:bg-white border border-cyan-500/50 light:border-cyan-600/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white light:text-gray-900 placeholder-gray-400 backdrop-blur-sm"
             />
             <svg
               className="absolute left-3 top-2.5 w-4 h-4 text-gray-400"
@@ -259,23 +259,23 @@ export default function CustomRequest() {
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-3 mb-4">
         {isLoading ? (
-          <div className="text-center text-gray-400 py-8">Loading...</div>
+          <div className="text-center text-gray-400 light:text-gray-500 py-8">Loading...</div>
         ) : filteredOrders.length === 0 ? (
-          <div className="text-center text-gray-400 py-8">
+          <div className="text-center text-gray-400 light:text-gray-500 py-8">
             No custom orders found
           </div>
         ) : (
           filteredOrders.map((order) => (
             <div
               key={order._id}
-              className="bg-gray-800/20 border border-gray-700/30 rounded-lg p-4 hover:bg-gray-800/30 transition-colors"
+              className="bg-gray-800/20 light:bg-gray-50 border border-gray-700/30 light:border-gray-200 rounded-lg p-4 hover:bg-gray-800/30 light:hover:bg-gray-100 transition-colors"
             >
               <div className="flex justify-between items-start mb-3">
                 <div>
-                  <div className="text-sm font-medium text-white mb-1">
+                  <div className="text-sm font-medium text-white light:text-gray-900 mb-1">
                     #{order._id.slice(-8)}
                   </div>
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-400 light:text-gray-500">
                     {new Date(order.createdAt).toLocaleString()}
                   </div>
                 </div>
@@ -294,7 +294,7 @@ export default function CustomRequest() {
                         handleListStatusChange(order, e.target.value)
                       }
                       disabled={updatingStatusOrderId === order._id}
-                      className="max-w-[11rem] text-xs bg-gray-800/80 border border-cyan-500/40 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-cyan-500 disabled:opacity-50"
+                      className="max-w-[11rem] text-xs bg-gray-800/80 light:bg-white border border-cyan-500/40 light:border-cyan-600/40 rounded-lg px-2 py-1.5 text-white light:text-gray-900 focus:outline-none focus:border-cyan-500 disabled:opacity-50"
                     >
                       {getVendorCustomOrderStatusSelectOptions(
                         order.orderStatus,
@@ -307,8 +307,8 @@ export default function CustomRequest() {
                   )}
                 </div>
               </div>
-              <div className="flex flex-col gap-2 pt-2 border-t border-gray-700/30">
-                <span className="text-sm text-white">
+              <div className="flex flex-col gap-2 pt-2 border-t border-gray-700/30 light:border-gray-200">
+                <span className="text-sm text-white light:text-gray-900">
                   {order.customer?.name}
                 </span>
                 <div className="flex flex-wrap gap-2 justify-end">
@@ -346,23 +346,23 @@ export default function CustomRequest() {
       <div className="hidden md:block overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-400">
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+            <tr className="border-b border-gray-400 light:border-gray-300">
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                 Order
               </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                 Date & Time
               </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                 Customer
               </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                 Status
               </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                 View
               </th>
-              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">
+              <th className="text-left py-3 px-4 text-xs font-medium text-gray-400 light:text-gray-500 uppercase tracking-wider">
                 Action
               </th>
             </tr>
@@ -376,7 +376,7 @@ export default function CustomRequest() {
               </tr>
             ) : filteredOrders.length === 0 ? (
               <tr>
-                <td colSpan={6} className="py-8 text-center text-gray-400">
+                <td colSpan={6} className="py-8 text-center text-gray-400 light:text-gray-500">
                   No custom orders found
                 </td>
               </tr>
@@ -384,15 +384,15 @@ export default function CustomRequest() {
               filteredOrders.map((order) => (
                 <tr
                   key={order._id}
-                  className="border-b border-gray-800/30 hover:bg-gray-800/20 transition-colors"
+                  className="border-b border-gray-800/30 light:border-gray-200 hover:bg-gray-800/20 light:hover:bg-gray-50 transition-colors"
                 >
-                  <td className="py-3 px-4 text-sm text-white">
+                  <td className="py-3 px-4 text-sm text-white light:text-gray-900">
                     #{order._id.slice(-8)}
                   </td>
-                  <td className="py-3 px-4 text-sm text-gray-400">
+                  <td className="py-3 px-4 text-sm text-gray-400 light:text-gray-500">
                     {new Date(order.createdAt).toLocaleString()}
                   </td>
-                  <td className="py-3 px-4 text-sm text-white">
+                  <td className="py-3 px-4 text-sm text-white light:text-gray-900">
                     {order.customer?.name}
                   </td>
                   <td className="py-3 px-4">
@@ -411,7 +411,7 @@ export default function CustomRequest() {
                             handleListStatusChange(order, e.target.value)
                           }
                           disabled={updatingStatusOrderId === order._id}
-                          className="text-xs bg-gray-800/80 border border-cyan-500/40 rounded-lg px-2 py-1.5 text-white focus:outline-none focus:border-cyan-500 disabled:opacity-50"
+                          className="text-xs bg-gray-800/80 light:bg-white border border-cyan-500/40 light:border-cyan-600/40 rounded-lg px-2 py-1.5 text-white light:text-gray-900 focus:outline-none focus:border-cyan-500 disabled:opacity-50"
                         >
                           {getVendorCustomOrderStatusSelectOptions(
                             order.orderStatus,
@@ -490,7 +490,7 @@ export default function CustomRequest() {
               className={`w-7 h-7 md:w-8 md:h-8 shrink-0 flex items-center justify-center rounded-lg transition-colors text-xs md:text-sm ${
                 currentPage === page
                   ? "bg-purple-600"
-                  : "bg-gray-800 hover:bg-gray-700"
+                  : "bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300"
               }`}
             >
               {page}

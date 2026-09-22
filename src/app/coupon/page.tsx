@@ -99,11 +99,11 @@ function UsageBar({ used, total }: { used: number; total: number }) {
     pct >= 80 ? "bg-red-400" : pct >= 50 ? "bg-amber-400" : "bg-emerald-400";
   return (
     <div className="mt-1 w-full">
-      <div className="flex justify-between text-[11px] text-gray-500 mb-1">
+      <div className="flex justify-between text-[11px] text-gray-500 light:text-gray-400 mb-1">
         <span>{used} used</span>
         <span>{total} total</span>
       </div>
-      <div className="h-1.5 w-full rounded-full bg-gray-800 overflow-hidden">
+      <div className="h-1.5 w-full rounded-full bg-gray-800 light:bg-gray-200 overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${color}`}
           style={{ width: `${pct}%` }}
@@ -134,8 +134,8 @@ function CouponCard({ coupon, onTakeCoupon, isTaking }: { coupon: Coupon; onTake
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border bg-gray-900/50 p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${
-        expired ? "border-gray-700 opacity-70" : "border-gray-700 hover:border-purple-500"
+      className={`group relative overflow-hidden rounded-2xl border bg-gray-900/50 light:bg-white p-5 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 ${
+        expired ? "border-gray-700 light:border-gray-200 opacity-70" : "border-gray-700 light:border-gray-200 hover:border-purple-500"
       }`}
     >
       {/* dashed left border decoration */}
@@ -147,10 +147,10 @@ function CouponCard({ coupon, onTakeCoupon, isTaking }: { coupon: Coupon; onTake
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 flex-wrap">
             <div>
-              <h3 className="text-sm font-bold text-white capitalize tracking-wide">
+              <h3 className="text-sm font-bold text-white light:text-gray-900 capitalize tracking-wide">
                 {coupon.couponName}
               </h3>
-              <p className="mt-0.5 font-mono text-[11px] text-gray-400 select-all">
+              <p className="mt-0.5 font-mono text-[11px] text-gray-400 light:text-gray-500 select-all">
                 #{coupon._id.slice(-8).toUpperCase()}
               </p>
             </div>
@@ -158,14 +158,14 @@ function CouponCard({ coupon, onTakeCoupon, isTaking }: { coupon: Coupon; onTake
           </div>
 
           {/* Date range */}
-          <div className="mt-3 flex items-center gap-3 text-xs text-gray-400">
+          <div className="mt-3 flex items-center gap-3 text-xs text-gray-400 light:text-gray-500">
             <span className="flex items-center gap-1">
               <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {formatDate(coupon.startAt)}
             </span>
-            <span className="text-gray-600">→</span>
+            <span className="text-gray-600 light:text-gray-400">→</span>
             <span className={expired ? "text-red-400 font-semibold" : ""}>
               {formatDate(coupon.expiresAt)}
             </span>
@@ -178,19 +178,19 @@ function CouponCard({ coupon, onTakeCoupon, isTaking }: { coupon: Coupon; onTake
 
           {/* Footer row */}
           <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-400">
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-400 light:text-gray-500">
               <svg className="w-3.5 h-3.5 text-purple-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
               </svg>
               {remaining} remaining
             </span>
             {coupon.minAmount !== null && (
-              <span className="text-[11px] text-gray-500">
+              <span className="text-[11px] text-gray-500 light:text-gray-400">
                 Min: ₵{coupon.minAmount}
               </span>
             )}
             {coupon.maxAmount !== null && (
-              <span className="text-[11px] text-gray-500">
+              <span className="text-[11px] text-gray-500 light:text-gray-400">
                 Max: ₵{coupon.maxAmount}
               </span>
             )}
@@ -236,12 +236,12 @@ function StatsCard({
   color: string;
 }) {
   return (
-    <div className="rounded-2xl border border-gray-700 bg-gray-900/50 p-4 shadow-sm">
+    <div className="rounded-2xl border border-gray-700 light:border-gray-200 bg-gray-900/50 light:bg-white p-4 shadow-sm">
       <div className={`mb-3 inline-flex h-9 w-9 items-center justify-center rounded-xl ${color}`}>
         {icon}
       </div>
-      <p className="text-2xl font-black text-white">{value}</p>
-      <p className="mt-0.5 text-xs font-medium text-gray-400">{label}</p>
+      <p className="text-2xl font-black text-white light:text-gray-900">{value}</p>
+      <p className="mt-0.5 text-xs font-medium text-gray-400 light:text-gray-500">{label}</p>
     </div>
   );
 }
@@ -254,8 +254,8 @@ function MyCouponCard({ myCoupon }: { myCoupon: MyCoupon }) {
 
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl border bg-gray-900/50 p-5 shadow-sm transition-all duration-300 ${
-        myCoupon.isUsed ? "border-gray-700 opacity-60" : "border-gray-700 hover:border-purple-500 hover:shadow-md"
+      className={`group relative overflow-hidden rounded-2xl border bg-gray-900/50 light:bg-white p-5 shadow-sm transition-all duration-300 ${
+        myCoupon.isUsed ? "border-gray-700 light:border-gray-200 opacity-60" : "border-gray-700 light:border-gray-200 hover:border-purple-500 hover:shadow-md"
       }`}
     >
       {/* Status indicator */}
@@ -269,10 +269,10 @@ function MyCouponCard({ myCoupon }: { myCoupon: MyCoupon }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2 flex-wrap">
             <div>
-              <h3 className="text-sm font-bold text-white capitalize tracking-wide">
+              <h3 className="text-sm font-bold text-white light:text-gray-900 capitalize tracking-wide">
                 {coupon.couponName}
               </h3>
-              <p className="mt-0.5 font-mono text-[11px] text-gray-400 select-all">
+              <p className="mt-0.5 font-mono text-[11px] text-gray-400 light:text-gray-500 select-all">
                 #{coupon._id.slice(-8).toUpperCase()}
               </p>
             </div>
@@ -287,14 +287,14 @@ function MyCouponCard({ myCoupon }: { myCoupon: MyCoupon }) {
           </div>
 
           {/* Date range */}
-          <div className="mt-3 flex items-center gap-3 text-xs text-gray-400">
+          <div className="mt-3 flex items-center gap-3 text-xs text-gray-400 light:text-gray-500">
             <span className="flex items-center gap-1">
               <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               {formatDate(coupon.startAt)}
             </span>
-            <span className="text-gray-600">→</span>
+            <span className="text-gray-600 light:text-gray-400">→</span>
             <span className={expired ? "text-red-400 font-semibold" : ""}>
               {formatDate(coupon.expiresAt)}
             </span>
@@ -302,11 +302,11 @@ function MyCouponCard({ myCoupon }: { myCoupon: MyCoupon }) {
 
           {/* Coupon Info */}
           <div className="mt-3 flex items-center justify-between gap-2 flex-wrap text-xs">
-            <span className="text-gray-400">
+            <span className="text-gray-400 light:text-gray-500">
               Taken: {formatDate(myCoupon.createdAt)}
             </span>
             {myCoupon.isUsed && myCoupon.usedAt && (
-              <span className="text-gray-500">
+              <span className="text-gray-500 light:text-gray-400">
                 Used: {formatDate(myCoupon.usedAt)}
               </span>
             )}
@@ -321,12 +321,12 @@ function MyCouponCard({ myCoupon }: { myCoupon: MyCoupon }) {
               {coupon.percentage}% OFF
             </span>
             {coupon.minAmount !== null && (
-              <span className="text-[11px] text-gray-500">
+              <span className="text-[11px] text-gray-500 light:text-gray-400">
                 Min: ₵{coupon.minAmount}
               </span>
             )}
             {coupon.maxAmount !== null && (
-              <span className="text-[11px] text-gray-500">
+              <span className="text-[11px] text-gray-500 light:text-gray-400">
                 Max: ₵{coupon.maxAmount}
               </span>
             )}
@@ -341,19 +341,19 @@ function MyCouponCard({ myCoupon }: { myCoupon: MyCoupon }) {
 
 function CouponSkeleton() {
   return (
-    <div className="relative overflow-hidden rounded-2xl border border-gray-700 bg-gray-900/50 p-5 shadow-sm">
+    <div className="relative overflow-hidden rounded-2xl border border-gray-700 light:border-gray-200 bg-gray-900/50 light:bg-white p-5 shadow-sm">
       <div className="absolute left-0 top-0 h-full w-1 bg-purple-600 rounded-l-2xl" />
       <div className="flex items-start gap-4 animate-pulse">
-        <div className="h-16 w-16 flex-shrink-0 rounded-xl bg-gray-800" />
+        <div className="h-16 w-16 flex-shrink-0 rounded-xl bg-gray-800 light:bg-gray-200" />
         <div className="flex-1 space-y-3">
           <div className="flex justify-between">
             <div className="space-y-1.5">
-              <div className="h-3.5 w-28 rounded-full bg-gray-800" />
-              <div className="h-2.5 w-20 rounded-full bg-gray-800" />
+              <div className="h-3.5 w-28 rounded-full bg-gray-800 light:bg-gray-200" />
+              <div className="h-2.5 w-20 rounded-full bg-gray-800 light:bg-gray-200" />
             </div>
-            <div className="h-6 w-16 rounded-full bg-gray-800" />
+            <div className="h-6 w-16 rounded-full bg-gray-800 light:bg-gray-200" />
           </div>
-          <div className="h-2.5 w-48 rounded-full bg-gray-800" />
+          <div className="h-2.5 w-48 rounded-full bg-gray-800 light:bg-gray-200" />
           <div className="h-1.5 w-full rounded-full bg-gray-800" />
         </div>
       </div>
@@ -412,23 +412,23 @@ export default function CouponsPage() {
   const totalUsed = coupons.reduce((sum, c) => sum + c.usedCount, 0);
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] mt-24 to-black font-sans">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] mt-24 to-black light:from-white light:via-purple-50 light:to-white font-sans">
       {/* ── Header ── */}
-      <div className="border-b border-gray-700 bg-gradient-to-r from-black via-[#0f0924] to-black px-6 py-5 shadow-sm">
+      <div className="border-b border-gray-700 light:border-gray-200 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white px-6 py-5 shadow-sm">
         <div className="mx-auto max-w-4xl flex items-center justify-between gap-4 flex-wrap">
           <div>
-            <h1 className="text-xl font-black text-white tracking-tight">Coupons</h1>
-            <p className="text-xs text-gray-400 mt-0.5">Manage discount codes &amp; promotions</p>
+            <h1 className="text-xl font-black text-white light:text-gray-900 tracking-tight">Coupons</h1>
+            <p className="text-xs text-gray-400 light:text-gray-500 mt-0.5">Manage discount codes &amp; promotions</p>
           </div>
           
           {/* Tabs */}
-          <div className="flex gap-2 rounded-xl border border-gray-700 bg-gray-900/50 p-1 shadow-sm">
+          <div className="flex gap-2 rounded-xl border border-gray-700 light:border-gray-200 bg-gray-900/50 light:bg-white p-1 shadow-sm">
             <button
               onClick={() => setActiveTab("all")}
               className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
                 activeTab === "all"
                   ? "bg-purple-600 text-white shadow-sm"
-                  : "text-gray-400 hover:bg-gray-800"
+                  : "text-gray-400 light:text-gray-500 hover:bg-gray-800 light:hover:bg-gray-100"
               }`}
             >
               All Coupons
@@ -438,7 +438,7 @@ export default function CouponsPage() {
               className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-all ${
                 activeTab === "my"
                   ? "bg-purple-600 text-white shadow-sm"
-                  : "text-gray-400 hover:bg-gray-800"
+                  : "text-gray-400 light:text-gray-500 hover:bg-gray-800 light:hover:bg-gray-100"
               }`}
             >
               My Coupons ({myMeta.total})
@@ -454,7 +454,7 @@ export default function CouponsPage() {
             <StatsCard
               label="Total Coupons"
               value={meta.total}
-              color="bg-purple-900/50 text-purple-400"
+              color="bg-purple-900/50 text-purple-400 light:bg-purple-100 light:text-purple-700"
               icon={
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
@@ -499,7 +499,7 @@ export default function CouponsPage() {
             <StatsCard
               label="My Coupons"
               value={myMeta.total}
-              color="bg-purple-900/50 text-purple-400"
+              color="bg-purple-900/50 text-purple-400 light:bg-purple-100 light:text-purple-700"
               icon={
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
@@ -541,13 +541,13 @@ export default function CouponsPage() {
               placeholder="Search coupons…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-xl border border-gray-700 bg-gray-900/50 py-2.5 pl-9 pr-4 text-sm text-white placeholder-gray-500 shadow-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
+              className="w-full rounded-xl border border-gray-700 light:border-gray-300 bg-gray-900/50 light:bg-white py-2.5 pl-9 pr-4 text-sm text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 shadow-sm outline-none transition focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30"
             />
           </div>
 
           {/* Status filter - Only show for "All Coupons" tab */}
           {activeTab === "all" && (
-            <div className="flex gap-1 rounded-xl border border-gray-700 bg-gray-900/50 p-1 shadow-sm">
+            <div className="flex gap-1 rounded-xl border border-gray-700 light:border-gray-200 bg-gray-900/50 light:bg-white p-1 shadow-sm">
               {(["all", "active", "expired"] as const).map((s) => (
                 <button
                   key={s}
@@ -555,7 +555,7 @@ export default function CouponsPage() {
                   className={`rounded-lg px-4 py-1.5 text-xs font-semibold capitalize transition-all ${
                     filterStatus === s
                       ? "bg-purple-600 text-white shadow-sm"
-                      : "text-gray-400 hover:bg-gray-800"
+                      : "text-gray-400 light:text-gray-500 hover:bg-gray-800 light:hover:bg-gray-100"
                   }`}
                 >
                   {s}
@@ -579,18 +579,18 @@ export default function CouponsPage() {
               <p className="text-sm font-semibold text-red-400">Failed to load coupons</p>
               <button
                 onClick={refetch}
-                className="mt-3 rounded-lg bg-red-900/50 px-4 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-900/70 transition"
+                className="mt-3 rounded-lg bg-red-900/50 px-4 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-900/70 transition light:bg-red-100 light:text-red-700"
               >
                 Try again
               </button>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-700 bg-gray-900/30 py-16 text-center">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-gray-700 light:border-gray-300 bg-gray-900/30 light:bg-gray-50 py-16 text-center">
               <svg className="mb-3 w-10 h-10 text-gray-600" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
               </svg>
-              <p className="text-sm font-semibold text-gray-400">No coupons found</p>
-              <p className="mt-1 text-xs text-gray-500">Try adjusting your search or filter</p>
+              <p className="text-sm font-semibold text-gray-400 light:text-gray-500">No coupons found</p>
+              <p className="mt-1 text-xs text-gray-500 light:text-gray-400">Try adjusting your search or filter</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -609,8 +609,8 @@ export default function CouponsPage() {
               <svg className="mb-3 w-10 h-10 text-gray-600" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 12V7a2 2 0 012-2z" />
               </svg>
-              <p className="text-sm font-semibold text-gray-400">No coupons yet</p>
-              <p className="mt-1 text-xs text-gray-500">Take coupons from the "All Coupons" tab</p>
+              <p className="text-sm font-semibold text-gray-400 light:text-gray-500">No coupons yet</p>
+              <p className="mt-1 text-xs text-gray-500 light:text-gray-400">Take coupons from the "All Coupons" tab</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -623,48 +623,48 @@ export default function CouponsPage() {
 
         {/* ── Pagination ── */}
         {activeTab === "all" ? (
-          <div className="flex items-center justify-between text-xs text-gray-400">
+          <div className="flex items-center justify-between text-xs text-gray-400 light:text-gray-500">
             <span>
-              Showing <span className="font-semibold text-white">{filtered.length}</span> of{" "}
-              <span className="font-semibold text-white">{meta.total}</span> coupons
+              Showing <span className="font-semibold text-white light:text-gray-900">{filtered.length}</span> of{" "}
+              <span className="font-semibold text-white light:text-gray-900">{meta.total}</span> coupons
             </span>
             <div className="flex items-center gap-1">
               <button
                 disabled={meta.page <= 1}
-                className="rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-1.5 text-xs font-medium text-gray-400 shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-gray-700 light:border-gray-300 bg-gray-900/50 light:bg-white px-3 py-1.5 text-xs font-medium text-gray-400 light:text-gray-600 shadow-sm transition hover:bg-gray-800 light:hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 ← Prev
               </button>
-              <span className="px-3 py-1.5 rounded-lg border border-purple-500 bg-purple-600/20 text-xs font-bold text-purple-400">
+              <span className="px-3 py-1.5 rounded-lg border border-purple-500 bg-purple-600/20 text-xs font-bold text-purple-400 light:bg-purple-50 light:text-purple-700 light:border-purple-300">
                 {meta.page}
               </span>
               <button
                 disabled={meta.page >= meta.totalPages}
-                className="rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-1.5 text-xs font-medium text-gray-400 shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-gray-700 light:border-gray-300 bg-gray-900/50 light:bg-white px-3 py-1.5 text-xs font-medium text-gray-400 light:text-gray-600 shadow-sm transition hover:bg-gray-800 light:hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next →
               </button>
             </div>
           </div>
         ) : (
-          <div className="flex items-center justify-between text-xs text-gray-400">
+          <div className="flex items-center justify-between text-xs text-gray-400 light:text-gray-500">
             <span>
-              Showing <span className="font-semibold text-white">{filteredMyCoupons.length}</span> of{" "}
-              <span className="font-semibold text-white">{myMeta.total}</span> coupons
+              Showing <span className="font-semibold text-white light:text-gray-900">{filteredMyCoupons.length}</span> of{" "}
+              <span className="font-semibold text-white light:text-gray-900">{myMeta.total}</span> coupons
             </span>
             <div className="flex items-center gap-1">
               <button
                 disabled={myMeta.page <= 1}
-                className="rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-1.5 text-xs font-medium text-gray-400 shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-gray-700 light:border-gray-300 bg-gray-900/50 light:bg-white px-3 py-1.5 text-xs font-medium text-gray-400 light:text-gray-600 shadow-sm transition hover:bg-gray-800 light:hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 ← Prev
               </button>
-              <span className="px-3 py-1.5 rounded-lg border border-purple-500 bg-purple-600/20 text-xs font-bold text-purple-400">
+              <span className="px-3 py-1.5 rounded-lg border border-purple-500 bg-purple-600/20 text-xs font-bold text-purple-400 light:bg-purple-50 light:text-purple-700 light:border-purple-300">
                 {myMeta.page}
               </span>
               <button
                 disabled={myMeta.page >= myMeta.totalPages}
-                className="rounded-lg border border-gray-700 bg-gray-900/50 px-3 py-1.5 text-xs font-medium text-gray-400 shadow-sm transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg border border-gray-700 light:border-gray-300 bg-gray-900/50 light:bg-white px-3 py-1.5 text-xs font-medium text-gray-400 light:text-gray-600 shadow-sm transition hover:bg-gray-800 light:hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Next →
               </button>

@@ -101,7 +101,7 @@ export default function MapPicker({ lat, lng, onChange }: Props) {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
           placeholder="Search location..."
-          className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+          className="flex-1 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-2.5 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
         />
         <button
           type="button"

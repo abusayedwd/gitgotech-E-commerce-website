@@ -151,24 +151,24 @@ export function getVendorOrderIdleCopy(
 export function getOrderStatusStyle(status: string): string {
   const styles: Record<string, string> = {
     [ORDER_STATUS.ORDER_PLACED]:
-      "bg-yellow-900/30 text-yellow-400 border border-yellow-500/30",
+      "bg-yellow-900/30 text-yellow-400 border border-yellow-500/30 light:bg-yellow-50 light:text-yellow-700 light:border-yellow-300",
     [ORDER_STATUS.PROCESSING]:
-      "bg-purple-900/30 text-purple-300 border border-purple-500/30",
+      "bg-purple-900/30 text-purple-300 border border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300",
     [ORDER_STATUS.READY_FOR_PICKUP]:
-      "bg-blue-900/30 text-blue-300 border border-blue-500/30",
+      "bg-blue-900/30 text-blue-300 border border-blue-500/30 light:bg-blue-50 light:text-blue-700 light:border-blue-300",
     [ORDER_STATUS.DRIVER_ACCEPTED]:
-      "bg-cyan-900/30 text-cyan-300 border border-cyan-500/30",
+      "bg-cyan-900/30 text-cyan-300 border border-cyan-500/30 light:bg-cyan-50 light:text-cyan-700 light:border-cyan-300",
     [ORDER_STATUS.PICKED_UP]:
-      "bg-indigo-900/30 text-indigo-300 border border-indigo-500/30",
+      "bg-indigo-900/30 text-indigo-300 border border-indigo-500/30 light:bg-indigo-50 light:text-indigo-700 light:border-indigo-300",
     [ORDER_STATUS.DELIVERED]:
-      "bg-green-900/30 text-green-300 border border-green-500/30",
+      "bg-green-900/30 text-green-300 border border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300",
     [ORDER_STATUS.PENDING]:
-      "bg-gray-900/30 text-gray-300 border border-gray-500/30",
+      "bg-gray-900/30 text-gray-300 border border-gray-500/30 light:bg-gray-50 light:text-gray-700 light:border-gray-300",
     [ORDER_STATUS.REJECTED]:
-      "bg-red-900/30 text-red-300 border border-red-500/30",
+      "bg-red-900/30 text-red-300 border border-red-500/30 light:bg-red-50 light:text-red-700 light:border-red-300",
   };
   return (
     styles[normalizeOrderStatus(status)] ||
-    "bg-gray-900/30 text-gray-300 border border-gray-500/30"
+    "bg-gray-900/30 text-gray-300 border border-gray-500/30 light:bg-gray-50 light:text-gray-700 light:border-gray-300"
   );
 }

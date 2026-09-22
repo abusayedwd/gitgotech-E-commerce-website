@@ -143,22 +143,22 @@ const handleSubmit = async (e: React.FormEvent) => {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black light:bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-lg mx-auto">
         {/* Main Card */}
-        <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 relative overflow-hidden">
+        <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] light:from-white light:to-purple-50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] light:border-purple-200 rounded-2xl p-8 relative overflow-hidden">
           
           
           {/* Content */}
           <div className="relative z-10">
-            <h1 className="text-[36px] font-cormorant font-bold text-white text-center mb-4">Verify your email</h1>
+            <h1 className="text-[36px] font-cormorant font-bold text-white light:text-gray-900 text-center mb-4">Verify your email</h1>
             
-            <p className="text-gray-400 text-center mb-6">
+            <p className="text-gray-400 light:text-gray-500 text-center mb-6">
               We've sent an email with an activation code to your
             </p>
             
             <p className="text-center mb-8">
-              <span className="text-gray-300">Email </span>
+              <span className="text-gray-300 light:text-gray-700">Email </span>
               <span className="text-purple-400 font-medium">{email}</span>
             </p>
             
@@ -175,7 +175,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={handleOtpPaste}
-                    className="w-14 h-14 text-center text-xl font-semibold border border-[#912DAD] rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    className="w-14 h-14 text-center text-xl font-semibold border border-[#912DAD] rounded-lg text-white light:text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     pattern="[0-9]"
                     inputMode="numeric"
                   />
@@ -215,7 +215,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                 >
                   {isResending ? "Sending…" : "Resend verification code"}
                 </button>
-                <p className="font-poppins text-xs text-gray-500 leading-relaxed">
+                <p className="font-poppins text-xs text-gray-500 light:text-gray-400 leading-relaxed">
                   <span className="text-[#EF0000]">Note</span>: If you do not
                   receive the email in your inbox, check your spam or junk
                   folder.
@@ -224,13 +224,13 @@ const handleSubmit = async (e: React.FormEvent) => {
             </form>
             
             {error && (
-              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm light:bg-red-50 light:text-red-700 light:border-red-300">
                 {error}
               </div>
             )}
-            
+
             {success && (
-              <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm">
+              <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm light:bg-green-50 light:text-green-700 light:border-green-300">
                 Email verified successfully! Redirecting to update password...
               </div>
             )}

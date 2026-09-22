@@ -41,7 +41,7 @@ export default function ProductDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#1a1040] to-[#0d0d2b] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#1a1040] to-[#0d0d2b] light:from-white light:via-purple-50 light:to-white flex items-center justify-center">
         <Loader2 size={32} className="animate-spin text-purple-500" />
       </div>
     );
@@ -49,7 +49,7 @@ export default function ProductDetails() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#1a1040] to-[#0d0d2b] flex items-center justify-center text-gray-400">
+      <div className="min-h-screen bg-gradient-to-br from-[#0f0c29] via-[#1a1040] to-[#0d0d2b] light:from-white light:via-purple-50 light:to-white flex items-center justify-center text-gray-400 light:text-gray-500">
         Product not found.
       </div>
     );
@@ -59,7 +59,7 @@ export default function ProductDetails() {
   const stocks = product.product_stocks || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 border-purple-600/30 shadow-[0_0_12px_rgba(34,211,238,0.35)]text-white font-sans relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 light:from-white light:via-purple-50 light:to-white border-purple-600/30 shadow-[0_0_12px_rgba(34,211,238,0.35)] text-white light:text-gray-900 font-sans relative overflow-hidden">
 
       {/* Background orbs */}
       <div className="fixed top-[-120px] right-[-80px] w-96 h-96 rounded-full bg-purple-600/20 blur-3xl pointer-events-none" />
@@ -69,7 +69,7 @@ export default function ProductDetails() {
       <header className="flex items-center justify-between px-7 py-4 border-b border-white/5 relative z-10">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 bg-white/8 border border-white/10 rounded-lg px-4 py-2 text-sm font-medium hover:bg-white/12 transition-colors"
+          className="flex items-center gap-2 bg-white/8 light:bg-gray-100 border border-white/10 light:border-gray-300 rounded-lg px-4 py-2 text-sm font-medium hover:bg-white/12 light:hover:bg-gray-200 transition-colors"
         >
           <ArrowLeft size={15} />
           Back
@@ -78,7 +78,7 @@ export default function ProductDetails() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-red-500/20 transition-colors"
+            className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg px-4 py-2 text-sm font-semibold hover:bg-red-500/20 transition-colors light:bg-red-50 light:text-red-700 light:border-red-300"
           >
             <Trash2 size={13} />
             Delete
@@ -98,7 +98,7 @@ export default function ProductDetails() {
 
         {/* Left: Images */}
         <div className="flex flex-col gap-3 w-48 flex-shrink-0">
-          <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-white/4 w-48 h-52">
+          <div className="relative rounded-2xl overflow-hidden border border-white/10 light:border-gray-200 bg-white/4 light:bg-gray-100 w-48 h-52">
             {product.isMixable && (
               <span className="absolute top-2 left-2 z-10 flex items-center gap-1 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-full">
                 <Shuffle size={9} />
@@ -112,7 +112,7 @@ export default function ProductDetails() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-500">No Image</div>
+              <div className="w-full h-full flex items-center justify-center text-gray-500 light:text-gray-400">No Image</div>
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-[#0f0c29]/50 to-transparent pointer-events-none" />
           </div>
@@ -127,7 +127,7 @@ export default function ProductDetails() {
                   className={`w-11 h-11 rounded-lg overflow-hidden border-2 transition-all ${
                     selectedImage === i
                       ? 'border-purple-500 shadow-md shadow-purple-500/40'
-                      : 'border-white/10 hover:border-white/30'
+                      : 'border-white/10 light:border-gray-300 hover:border-white/30 light:hover:border-gray-400'
                   }`}
                 >
                   <img src={`${baseUrl}/${src}`} alt="" className="w-full h-full object-cover" />
@@ -140,7 +140,7 @@ export default function ProductDetails() {
         {/* Right: Info */}
         <div className="flex-1 min-w-72 relative">
           {/* Name */}
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white via-white to-purple-300 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white via-white to-purple-300 light:from-gray-900 light:via-gray-900 light:to-purple-600 bg-clip-text text-transparent">
             {product.product_name}
           </h1>
 
@@ -150,7 +150,7 @@ export default function ProductDetails() {
               ₵{product.product_price?.toFixed(2)}
             </span>
             {product.discount?.isValid && (
-              <span className="text-sm bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full">
+              <span className="text-sm bg-green-500/20 text-green-400 px-2 py-0.5 rounded-full light:bg-green-100 light:text-green-700">
                 {product.discount.percentage}% OFF
               </span>
             )}
@@ -160,16 +160,16 @@ export default function ProductDetails() {
           <div className="flex flex-wrap items-center gap-4 mb-4">
             {product.product_category && (
               <div className="flex items-center gap-2">
-                <Tag size={14} className="text-gray-400" />
-                <span className="text-sm text-gray-400">Category: <span className="text-white capitalize">{product.product_category}</span></span>
+                <Tag size={14} className="text-gray-400 light:text-gray-500" />
+                <span className="text-sm text-gray-400 light:text-gray-500">Category: <span className="text-white light:text-gray-900 capitalize">{product.product_category}</span></span>
               </div>
             )}
             <div className="flex items-center gap-2">
-              <TrendingUp size={14} className="text-gray-400" />
-              <span className="text-sm text-gray-400">Sold: <span className="text-white">{product.sale_count ?? 0}</span></span>
+              <TrendingUp size={14} className="text-gray-400 light:text-gray-500" />
+              <span className="text-sm text-gray-400 light:text-gray-500">Sold: <span className="text-white light:text-gray-900">{product.sale_count ?? 0}</span></span>
             </div>
             {product.isPrivate && (
-              <span className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium px-2.5 py-1 rounded-full">
+              <span className="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium px-2.5 py-1 rounded-full light:bg-amber-50 light:text-amber-700 light:border-amber-300">
                 <Lock size={11} />
                 Private{product.privateReason ? `: ${product.privateReason}` : ''}
               </span>
@@ -177,38 +177,38 @@ export default function ProductDetails() {
           </div>
 
           {/* Description card */}
-          <div className="bg-white/4 border border-purple-500/20 rounded-2xl p-5 mb-4 backdrop-blur-sm">
-            <h3 className="text-sm font-semibold text-purple-200 mb-2">Description</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">{product.product_description}</p>
+          <div className="bg-white/4 light:bg-purple-50/40 border border-purple-500/20 light:border-purple-200 rounded-2xl p-5 mb-4 backdrop-blur-sm">
+            <h3 className="text-sm font-semibold text-purple-200 light:text-purple-700 mb-2">Description</h3>
+            <p className="text-sm text-gray-400 light:text-gray-500 leading-relaxed">{product.product_description}</p>
           </div>
 
           {/* Weight & Created Date */}
           <div className="flex flex-wrap gap-4 mb-4">
             {product.product_weight && (
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-gray-400 light:text-gray-500">
                 <Weight size={14} />
-                <span>Weight: <span className="text-white">{product.product_weight.amount} {product.product_weight.unit}</span></span>
+                <span>Weight: <span className="text-white light:text-gray-900">{product.product_weight.amount} {product.product_weight.unit}</span></span>
               </div>
             )}
             {product.createdAt && (
-              <div className="flex items-center gap-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-gray-400 light:text-gray-500">
                 <Calendar size={14} />
-                <span>Added: <span className="text-white">{new Date(product.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span></span>
+                <span>Added: <span className="text-white light:text-gray-900">{new Date(product.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span></span>
               </div>
             )}
           </div>
 
           {/* Discount Details */}
           {product.discount?.isValid && (
-            <div className="bg-green-500/5 border border-green-500/20 rounded-2xl p-4 mb-4 backdrop-blur-sm">
-              <h3 className="text-sm font-semibold text-green-300 mb-2">Discount Active</h3>
-              <div className="flex flex-wrap gap-4 text-sm text-gray-400">
-                <span>Percentage: <span className="text-green-400 font-semibold">{product.discount.percentage}%</span></span>
+            <div className="bg-green-500/5 light:bg-green-50 border border-green-500/20 light:border-green-300 rounded-2xl p-4 mb-4 backdrop-blur-sm">
+              <h3 className="text-sm font-semibold text-green-300 light:text-green-700 mb-2">Discount Active</h3>
+              <div className="flex flex-wrap gap-4 text-sm text-gray-400 light:text-gray-600">
+                <span>Percentage: <span className="text-green-400 light:text-green-700 font-semibold">{product.discount.percentage}%</span></span>
                 {product.discount.startDate && (
-                  <span>From: <span className="text-white">{new Date(product.discount.startDate).toLocaleDateString()}</span></span>
+                  <span>From: <span className="text-white light:text-gray-900">{new Date(product.discount.startDate).toLocaleDateString()}</span></span>
                 )}
                 {product.discount.endDate && (
-                  <span>To: <span className="text-white">{new Date(product.discount.endDate).toLocaleDateString()}</span></span>
+                  <span>To: <span className="text-white light:text-gray-900">{new Date(product.discount.endDate).toLocaleDateString()}</span></span>
                 )}
               </div>
             </div>
@@ -217,15 +217,15 @@ export default function ProductDetails() {
           {/* Mix Design tag */}
           {product.isMixable && (
             <div className="flex items-center gap-2 mb-4">
-              <Shuffle size={15} className="text-purple-400" />
-              <span className="text-sm font-semibold text-purple-400">Mix Design Available</span>
+              <Shuffle size={15} className="text-purple-400 light:text-purple-600" />
+              <span className="text-sm font-semibold text-purple-400 light:text-purple-700">Mix Design Available</span>
             </div>
           )}
 
           {/* Sizes & Stock card — informational only, no quantity/purchase for vendors */}
           {stocks.length > 0 && (
-            <div className="bg-white/4 border border-purple-500/20 rounded-2xl p-5 mb-4 backdrop-blur-sm">
-              <h3 className="text-sm font-semibold text-purple-200 mb-3">Sizes & Stock</h3>
+            <div className="bg-white/4 light:bg-purple-50/40 border border-purple-500/20 light:border-purple-200 rounded-2xl p-5 mb-4 backdrop-blur-sm">
+              <h3 className="text-sm font-semibold text-purple-200 light:text-purple-700 mb-3">Sizes & Stock</h3>
               <div className="flex flex-wrap gap-2">
                 {stocks.map((s: any) => (
                   <button
@@ -234,7 +234,7 @@ export default function ProductDetails() {
                     className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
                       selectedSize === s.size
                         ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white border border-purple-500 shadow-md shadow-purple-600/40'
-                        : 'bg-white/5 border border-white/10 text-gray-300 hover:border-white/25'
+                        : 'bg-white/5 light:bg-gray-100 border border-white/10 light:border-gray-300 text-gray-300 light:text-gray-700 hover:border-white/25 light:hover:border-gray-400'
                     }`}
                   >
                     {s.size} ({s.stock} in stock)

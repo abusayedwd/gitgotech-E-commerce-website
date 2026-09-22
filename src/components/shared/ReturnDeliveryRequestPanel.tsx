@@ -362,16 +362,16 @@ export default function ReturnDeliveryRequestPanel({
 
   return (
     <>
-      <div className="rounded-xl border border-purple-500/25 bg-gradient-to-br from-purple-950/30 to-black/30 p-4 space-y-4">
+      <div className="rounded-xl border border-purple-500/25 light:border-purple-200 bg-gradient-to-br from-purple-950/30 to-black/30 light:from-purple-50 light:to-white p-4 space-y-4">
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex items-center gap-2">
               <Truck className="w-4 h-4 text-purple-400" />
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-white light:text-gray-900">
                 Request delivery
               </p>
             </div>
-            <p className="text-sm text-gray-300 mt-1">
+            <p className="text-sm text-gray-300 light:text-gray-600 mt-1">
               {canCreate
                 ? "Request a driver for these eligible items. Confirm the drop-off address, then review the amount due."
                 : request.existingRequestId
@@ -380,24 +380,24 @@ export default function ReturnDeliveryRequestPanel({
             </p>
           </div>
           {request.payer && (
-            <span className="text-[11px] text-gray-400 shrink-0">
+            <span className="text-[11px] text-gray-400 light:text-gray-500 shrink-0">
               Payer: {formatStatusLabel(request.payer)}
             </span>
           )}
         </div>
 
         {canCreate && (
-          <div className="rounded-lg border border-gray-800 bg-black/30 px-3 py-2.5 space-y-1.5 text-xs text-gray-400">
+          <div className="rounded-lg border border-gray-800 light:border-gray-200 bg-black/30 light:bg-gray-50 px-3 py-2.5 space-y-1.5 text-xs text-gray-400 light:text-gray-500">
             <div className="flex justify-between gap-3">
               <span>Distance</span>
-              <span className="text-gray-200">
+              <span className="text-gray-200 light:text-gray-700">
                 ₵{settings.perKmDistancePrice}/km
                 {quote.km != null ? ` · ${quote.km} km` : " · estimate until route is ready"}
               </span>
             </div>
             <div className="flex justify-between gap-3">
               <span>Weight charge</span>
-              <span className="text-gray-200">
+              <span className="text-gray-200 light:text-gray-700">
                 Optional · ₵{settings.perKgWeightPrice}/kg
               </span>
             </div>
@@ -406,7 +406,7 @@ export default function ReturnDeliveryRequestPanel({
 
         {items.length > 0 && (
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400">
               Eligible items
             </p>
             {items.map((item, index) => {
@@ -415,9 +415,9 @@ export default function ReturnDeliveryRequestPanel({
               return (
                 <div
                   key={`${getReturnProductId(item.product) || item.orderProductId}-${index}`}
-                  className="flex items-center gap-3 rounded-lg border border-gray-800 bg-black/30 p-2.5"
+                  className="flex items-center gap-3 rounded-lg border border-gray-800 light:border-gray-200 bg-black/30 light:bg-gray-50 p-2.5"
                 >
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 shrink-0">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 light:bg-gray-200 shrink-0">
                     <img
                       src={buildImageUrl(image, "/images/jacket.png")}
                       alt={name}
@@ -428,14 +428,14 @@ export default function ReturnDeliveryRequestPanel({
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-white truncate">{name}</p>
-                    <p className="text-xs text-gray-400">
+                    <p className="text-sm text-white light:text-gray-900 truncate">{name}</p>
+                    <p className="text-xs text-gray-400 light:text-gray-500">
                       Size {item.sizeType || "—"} · Qty {item.quantity ?? 1}
                       {item.location ? ` · ${formatStatusLabel(item.location)}` : ""}
                     </p>
                   </div>
                   {item.itemStatus && (
-                    <span className="text-[11px] text-gray-400 shrink-0">
+                    <span className="text-[11px] text-gray-400 light:text-gray-500 shrink-0">
                       {formatStatusLabel(item.itemStatus)}
                     </span>
                   )}

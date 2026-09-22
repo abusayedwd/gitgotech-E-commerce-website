@@ -193,7 +193,7 @@ export default function EditProductPage() {
               </svg>
             </div>
           </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Edit Product</h1>
+          <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">Edit Product</h1>
         </div>
 
         <div className="flex gap-3">
@@ -221,7 +221,7 @@ export default function EditProductPage() {
       </div>
 
       {/* Form */}
-      <div className="bg-gradient-to-tr from-[#040113] via-[#0b0329] to-[#050116] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 rounded-2xl p-8">
+      <div className="bg-gradient-to-tr from-[#040113] via-[#0b0329] to-[#050116] light:from-white light:via-purple-50 light:to-white border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/40 light:border-purple-200 rounded-2xl p-8">
         <h2 className="text-lg font-semibold mb-6">Information</h2>
 
         {/* Product Name */}
@@ -232,7 +232,7 @@ export default function EditProductPage() {
             value={productName}
             onChange={(e) => setProductName(e.target.value)}
             placeholder="Type here"
-            className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
+            className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400"
           />
         </div>
 
@@ -244,7 +244,7 @@ export default function EditProductPage() {
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Type here"
             rows={4}
-            className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500 resize-none"
+            className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 resize-none"
           />
         </div>
 
@@ -257,7 +257,7 @@ export default function EditProductPage() {
               value={price}
               onChange={(e) => setPrice(e.target.value)}
               placeholder="Type here"
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
+              className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400"
             />
           </div>
           <div>
@@ -265,7 +265,7 @@ export default function EditProductPage() {
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+              className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900"
             >
               <option value="">Choose Category</option>
               <option value="clothing">Clothing</option>
@@ -285,7 +285,7 @@ export default function EditProductPage() {
               onChange={(e) => setWeightAmount(e.target.value)}
               placeholder="e.g. 1.5"
               step="0.1"
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
+              className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400"
             />
           </div>
           <div>
@@ -293,7 +293,7 @@ export default function EditProductPage() {
             <select
               value={weightUnit}
               onChange={(e) => setWeightUnit(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+              className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900"
             >
               <option value="kg">kg</option>
               <option value="g">g</option>
@@ -361,15 +361,15 @@ export default function EditProductPage() {
             />
             <label htmlFor="image-upload" className="cursor-pointer">
               <Upload className="mx-auto mb-3 text-gray-400" size={40} />
-              <p className="text-gray-400 text-sm">Click to upload or drag and drop</p>
-              <p className="text-gray-500 text-xs mt-1">PNG, JPG, GIF up to 10MB</p>
+              <p className="text-gray-400 light:text-gray-500 text-sm">Click to upload or drag and drop</p>
+              <p className="text-gray-500 light:text-gray-400 text-xs mt-1">PNG, JPG, GIF up to 10MB</p>
             </label>
           </div>
         </div>
 
         {/* Available Sizes with Stock */}
         <div className="mb-6">
-          <label className="block text-sm text-gray-400 mb-2">Available Sizes</label>
+          <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">Available Sizes</label>
           <div className="flex flex-wrap gap-3 mb-4">
             {availableSizes.map((size) => (
               <button
@@ -396,7 +396,7 @@ export default function EditProductPage() {
                     value={item.stock}
                     onChange={(e) => updateStock(item.size, parseInt(e.target.value) || 0)}
                     placeholder="0"
-                    className="w-full px-3 py-2 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500 text-sm"
+                    className="w-full px-3 py-2 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 text-sm"
                   />
                 </div>
               ))}
@@ -407,7 +407,7 @@ export default function EditProductPage() {
         {/* Product Discount */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <label className="block text-sm text-gray-400">Product Discount (optional)</label>
+            <label className="block text-sm text-gray-400 light:text-gray-500">Product Discount (optional)</label>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
@@ -429,7 +429,7 @@ export default function EditProductPage() {
                   value={discountPercent}
                   onChange={(e) => setDiscountPercent(e.target.value)}
                   placeholder="Enter discount percentage"
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white placeholder-gray-500"
+                  className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400"
                 />
               </div>
               <div>
@@ -438,7 +438,7 @@ export default function EditProductPage() {
                   type="date"
                   value={discountStartDate}
                   onChange={(e) => setDiscountStartDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+                  className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900"
                 />
               </div>
               <div>
@@ -447,7 +447,7 @@ export default function EditProductPage() {
                   type="date"
                   value={discountEndDate}
                   onChange={(e) => setDiscountEndDate(e.target.value)}
-                  className="w-full px-4 py-3 bg-gray-900/50 border border-gray-700 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white"
+                  className="w-full px-4 py-3 bg-gray-900/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg focus:outline-none focus:border-purple-500 transition-colors text-white light:text-gray-900"
                 />
               </div>
             </div>
@@ -466,7 +466,7 @@ export default function EditProductPage() {
                 className="sr-only peer"
               />
               <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 relative"></div>
-              <span className="text-sm text-gray-300">Mix Design Available</span>
+              <span className="text-sm text-gray-300 light:text-gray-700">Mix Design Available</span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -476,7 +476,7 @@ export default function EditProductPage() {
                 className="sr-only peer"
               />
               <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600 relative"></div>
-              <span className="text-sm text-gray-300">Custom Design Available</span>
+              <span className="text-sm text-gray-300 light:text-gray-700">Custom Design Available</span>
             </label>
           </div>
         </div>

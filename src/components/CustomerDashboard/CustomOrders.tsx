@@ -101,11 +101,11 @@ const StatusBadge = ({ status }: { status: OrderStatus }) => {
   const displayStatus = getDisplayStatus(status);
 
   const styles: any = {
-    Approved: "bg-blue-500/10 text-blue-400 border-blue-500/20",
-    Pending: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
-    Cancel: "bg-red-500/10 text-red-400 border-red-500/20",
-    Delivered: "bg-green-500/10 text-green-400 border-green-500/20",
-    Processing: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+    Approved: "bg-blue-500/10 text-blue-400 border-blue-500/20 light:bg-blue-50 light:text-blue-700 light:border-blue-300",
+    Pending: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20 light:bg-yellow-50 light:text-yellow-700 light:border-yellow-300",
+    Cancel: "bg-red-500/10 text-red-400 border-red-500/20 light:bg-red-50 light:text-red-700 light:border-red-300",
+    Delivered: "bg-green-500/10 text-green-400 border-green-500/20 light:bg-green-50 light:text-green-700 light:border-green-300",
+    Processing: "bg-orange-500/10 text-orange-400 border-orange-500/20 light:bg-orange-50 light:text-orange-700 light:border-orange-300",
   };
 
   return (
@@ -787,17 +787,17 @@ export default function CustomDesignManagement() {
   };
 
   return (
-    <div className="min-h-screen mt-16 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white">
+    <div className="min-h-screen mt-16 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900">
       {/* Background Gradient Effect */}
       <div className="fixed top-0 left-0 w-full h-96 bg-purple-900/10 blur-[120px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Header Section */}
         <div className="text-center mb-12 space-y-4">
-          <h1 className="text-3xl md:text-4xl font-serif text-gray-100">
+          <h1 className="text-3xl md:text-4xl font-serif text-gray-100 light:text-gray-900">
             Custom Design Management
           </h1>
-          <p className="text-gray-400 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
+          <p className="text-gray-400 light:text-gray-500 max-w-2xl mx-auto text-sm md:text-base leading-relaxed">
             Track the progress of your custom design requests in one place. Once
             your design is reviewed and approved, you will be able to complete
             the payment and proceed with the order seamlessly.
@@ -812,9 +812,9 @@ export default function CustomDesignManagement() {
         )}
 
         {/* Main Table Container */}
-        <div className="border border-blue-500/50 rounded-lg overflow-hidden bg-[#0f0f13]/80 backdrop-blur-sm shadow-2xl shadow-blue-900/10">
+        <div className="border border-blue-500/50 rounded-lg overflow-hidden bg-[#0f0f13]/80 light:bg-white light:border-blue-300 backdrop-blur-sm shadow-2xl shadow-blue-900/10">
           {/* Table Header */}
-          <div className="grid grid-cols-12 gap-4 p-4 border-b border-gray-800 bg-white/5 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+          <div className="grid grid-cols-12 gap-4 p-4 border-b border-gray-800 light:border-gray-200 bg-white/5 light:bg-gray-50 text-xs font-semibold text-gray-400 light:text-gray-500 uppercase tracking-wider">
             <div className="col-span-6 md:col-span-5">Product</div>
             <div className="col-span-3 md:col-span-2 text-center md:text-left">
               Price
@@ -826,16 +826,16 @@ export default function CustomDesignManagement() {
           </div>
 
           {/* Table Rows */}
-          <div className="divide-y divide-gray-800">
+          <div className="divide-y divide-gray-800 light:divide-gray-200">
             {designItems.length > 0 ? (
               designItems.map((item) => (
                 <div
                   key={item.id}
-                  className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-white/5 transition-colors duration-200"
+                  className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-white/5 light:hover:bg-gray-50 transition-colors duration-200"
                 >
                   {/* Product Info */}
                   <div className="col-span-6 md:col-span-5 flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-md overflow-hidden bg-gray-800 flex-shrink-0 border border-gray-700">
+                    <div className="w-16 h-16 rounded-md overflow-hidden bg-gray-800 light:bg-gray-100 flex-shrink-0 border border-gray-700 light:border-gray-200">
                       <img
                         src={`${url}/${item.imageUrl}`}
                         alt={item.productName}
@@ -846,12 +846,12 @@ export default function CustomDesignManagement() {
                       />
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-200">
+                      <h3 className="font-medium text-gray-200 light:text-gray-900">
                         {item.productName}
                       </h3>
                       <div className="flex items-center gap-1.5 mt-1">
                         <Circle className="w-2 h-2 fill-red-500 text-red-500" />
-                        <span className="text-xs text-gray-500 uppercase tracking-wide">
+                        <span className="text-xs text-gray-500 light:text-gray-400 uppercase tracking-wide">
                           {item.brand}
                         </span>
                       </div>
@@ -859,7 +859,7 @@ export default function CustomDesignManagement() {
                   </div>
 
                   {/* Price */}
-                  <div className="col-span-3 md:col-span-2 font-mono text-gray-300">
+                  <div className="col-span-3 md:col-span-2 font-mono text-gray-300 light:text-gray-700">
                     ${item.price}
                   </div>
 
@@ -893,7 +893,7 @@ export default function CustomDesignManagement() {
               ))
             ) : (
               <div className="p-12 text-center">
-                <p className="text-gray-400 text-lg">No custom orders found</p>
+                <p className="text-gray-400 light:text-gray-500 text-lg">No custom orders found</p>
               </div>
             )}
           </div>

@@ -222,14 +222,14 @@ export default function MyDashboard() {
   };
 
   return (
-    <div className="min-h-screen md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
   <Toaster position="top-right" />
       {/* Header */}
       <div className="container mx-auto mb-8 md:mb-12 text-center">
         <h1 className="text-3xl md:text-4xl font-bold mb-2 md:mb-3">
           My Dashboard
         </h1>
-        <p className="text-gray-400 text-sm md:text-base">
+        <p className="text-gray-400 light:text-gray-500 text-sm md:text-base">
           View all of your order history and keep track of your shopping.
         </p>
       </div>
@@ -254,7 +254,7 @@ export default function MyDashboard() {
             className={`px-8 py-2.5 rounded shadow-2xl text-sm font-medium transition-all ${
               activeTab === "orders"
                 ? "bg-purple-600 text-white"
-                : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                : "bg-gray-800 light:bg-gray-100 text-gray-400 light:text-gray-600 hover:bg-gray-700 light:hover:bg-gray-200"
             }`}
           >
             Orders
@@ -264,7 +264,7 @@ export default function MyDashboard() {
             className={`px-8 py-2.5 rounded shadow-2xl text-sm font-medium transition-all ${
               activeTab === "returns"
                 ? "bg-purple-600 text-white"
-                : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                : "bg-gray-800 light:bg-gray-100 text-gray-400 light:text-gray-600 hover:bg-gray-700 light:hover:bg-gray-200"
             }`}
           >
             Returns
@@ -277,7 +277,7 @@ export default function MyDashboard() {
         {(activeTab === "orders" ? orders : returns).map((order: Order) => (
           <div
             key={order.id}
-            className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 border border-gray-800 rounded-2xl p-4 md:p-6 hover:border-purple-500/30 transition-all duration-300"
+            className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 light:from-white light:to-purple-50/40 border border-gray-800 light:border-gray-200 rounded-2xl p-4 md:p-6 hover:border-purple-500/30 transition-all duration-300"
           >
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
               {/* Showroom + Products, or single product for returns */}
@@ -294,11 +294,11 @@ export default function MyDashboard() {
                         }}
                       />
                     )}
-                    <span className="text-gray-300 text-sm font-medium">
+                    <span className="text-gray-300 light:text-gray-700 text-sm font-medium">
                       {order.brand}
                     </span>
                     {order.trackingNumber && (
-                      <span className="text-gray-500 text-xs">
+                      <span className="text-gray-500 light:text-gray-400 text-xs">
                         · Tracking #{order.trackingNumber}
                       </span>
                     )}
@@ -306,7 +306,7 @@ export default function MyDashboard() {
                   <div className="space-y-3">
                     {order.products.map((p: any) => (
                       <div key={p._id} className="flex items-center gap-3">
-                        <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-gray-800 light:bg-gray-100">
                           <img
                             src={buildImageUrl(p.product?.product_images?.[0])}
                             alt={p.product?.product_name}
@@ -320,7 +320,7 @@ export default function MyDashboard() {
                           <p className="text-sm md:text-base font-medium truncate">
                             {p.product?.product_name}
                           </p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs text-gray-400 light:text-gray-500">
                             {(p.size || [])
                               .map((s: any) => `${s.type} × ${s.quantity}`)
                               .join(", ")}
@@ -333,7 +333,7 @@ export default function MyDashboard() {
               ) : (
                 <>
                   {/* Product Image */}
-                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800">
+                  <div className="w-20 h-20 md:w-24 md:h-24 rounded-xl overflow-hidden flex-shrink-0 bg-gray-800 light:bg-gray-100">
                     <img
                       src={`${url}/${order.image}`}
                       alt={order.productName}
@@ -351,13 +351,13 @@ export default function MyDashboard() {
                     </h3>
                     <div className="flex items-center gap-2 mb-2 md:mb-3">
                       <span className="text-purple-400 text-xs md:text-sm">👑</span>
-                      <span className="text-gray-400 text-xs md:text-sm">
+                      <span className="text-gray-400 light:text-gray-500 text-xs md:text-sm">
                         {order.brand}
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-3 md:gap-4 text-sm md:text-base">
-                      <span className="text-white">₵{order.price}</span>
-                      <span className="text-gray-400">Qty: {order.quantity}</span>
+                      <span className="text-white light:text-gray-900">₵{order.price}</span>
+                      <span className="text-gray-400 light:text-gray-500">Qty: {order.quantity}</span>
                     </div>
                   </div>
                 </>
@@ -380,10 +380,10 @@ export default function MyDashboard() {
 
                 {/* OTP & Total */}
                 <div className="text-right w-full md:w-auto">
-                  <div className="text-xs md:text-sm text-gray-400 mb-1">
+                  <div className="text-xs md:text-sm text-gray-400 light:text-gray-500 mb-1">
                     OTP: {order.otp}
                   </div>
-                  <div className="text-sm md:text-base font-semibold">
+                  <div className="text-sm md:text-base font-semibold light:text-gray-900">
                     Total: ₵{order.total?.toFixed(2)}
                   </div>
                 </div>
@@ -449,15 +449,15 @@ export default function MyDashboard() {
 
       {activeTab === "orders" &&
         (totalOrderPages > 1 || totalOrdersCount > ORDERS_PAGE_SIZE) && (
-        <div className="max-w-6xl mx-auto mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-300">
+        <div className="max-w-6xl mx-auto mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 text-sm text-gray-300 light:text-gray-600">
           <p>
             Page{" "}
-            <span className="text-white font-medium">
+            <span className="text-white light:text-gray-900 font-medium">
               {mainPagination?.currentPage ?? ordersPage}
             </span>{" "}
-            of <span className="text-white font-medium">{totalOrderPages}</span>
+            of <span className="text-white light:text-gray-900 font-medium">{totalOrderPages}</span>
             {totalOrdersCount > 0 && (
-              <span className="text-gray-500">
+              <span className="text-gray-500 light:text-gray-400">
                 {" "}
                 ({totalOrdersCount} orders)
               </span>
@@ -468,7 +468,7 @@ export default function MyDashboard() {
               type="button"
               disabled={ordersPage <= 1 || mainOrdersFetching}
               onClick={() => setOrdersPage((p) => Math.max(1, p - 1))}
-              className="px-4 py-2 rounded-lg bg-gray-800 text-white border border-gray-700 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-4 py-2 rounded-lg bg-gray-800 light:bg-gray-100 text-white light:text-gray-900 border border-gray-700 light:border-gray-300 hover:bg-gray-700 light:hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               Previous
             </button>

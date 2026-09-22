@@ -77,14 +77,14 @@ export default function AdvertisementMarquee({
       >
         <div className="container mx-auto overflow-hidden">
           <div className="flex items-center justify-between px-1 pb-1">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400 flex items-center gap-1.5">
+            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400 light:text-slate-500 flex items-center gap-1.5">
               <Megaphone className="w-3.5 h-3.5" />
               Sponsored
             </p>
             <button
               type="button"
               onClick={() => setPaused((value) => !value)}
-              className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-white/5"
+              className="p-1.5 rounded-md text-slate-400 light:text-slate-500 hover:text-white light:hover:text-gray-900 hover:bg-white/5 light:hover:bg-gray-100"
               aria-label={isPaused ? "Play advertisements" : "Pause advertisements"}
             >
               {paused ? <Play className="w-3.5 h-3.5" /> : <Pause className="w-3.5 h-3.5" />}

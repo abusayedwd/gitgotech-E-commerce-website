@@ -1,246 +1,3 @@
-// "use client";
-
-// import { useState } from 'react';
-// import { User, Lock, Mail, Eye, EyeOff, UserCircle } from 'lucide-react';
-// import Image from 'next/image';
-// import Link from 'next/link';
-
-// export default function SignUpPage() {
-//   const [showPassword, setShowPassword] = useState(false);
-//   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-//   const [userType, setUserType] = useState<'customer' | 'vendor'>('customer');
-//   const [agreeTerms, setAgreeTerms] = useState(false);
-
-//   const [formData, setFormData] = useState({
-//     name: '',
-//     username: '',
-//     email: '',
-//     password: '',
-//     confirmPassword: ''
-//   });
-
-//   const handleSubmit = () => {
-//     if (!agreeTerms) {
-//       alert('Please agree to the terms and privacy policy');
-//       return;
-//     }
-//     console.log('Sign Up:', { ...formData, userType });
-//   };
-
-//   return (
-//     <div className="min-h-screen mt-20 bg-black flex items-center justify-center p-4 py-8">
-//       {/* Animated gradient orbs */}
-//       <div className="absolute top-10 right-10 w-32 h-32 bg-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-//       <div className="absolute top-10 right-24 w-32 h-32 bg-purple-500 rounded-full blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '1s' }}></div>
-
-//       {/* Sign Up Card */}
-//       <div className="relative w-full max-w-lg">
-//         {/* Cyan border glow */}
-//         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/30 to-blue-500/30 rounded-3xl blur-sm"></div>
-
-//         <div className="relative bg-gradient-to-br from-gray-900 to-gray-950 rounded-3xl border border-cyan-500/30 p-8 shadow-2xl">
-//           {/* Logo and badges */}
-//           <div className="flex items-start justify-between mb-6">
-//             <div className="relative w-16 h-16">
-//               <Image
-//                 src="/images/logo.png"
-//                 alt="TeeKnit Logo"
-//                 fill
-//                 className="object-contain"
-//               />
-//             </div>
-
-//             <div className="flex gap-2">
-//               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-cyan-500/50">
-//                 G
-//               </div>
-//               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-purple-500/50">
-//                 M
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Header */}
-//           <div className="mb-6">
-//             <h1 className="text-2xl font-bold text-white mb-1">
-//               Create an account
-//             </h1>
-//             <p className="text-gray-400 text-sm">Create your account and get started</p>
-//           </div>
-
-//           {/* User Type Selection */}
-//           <div className="mb-6">
-//             <label className="block text-white text-sm font-medium mb-3">I am a</label>
-//             <div className="grid grid-cols-2 gap-3">
-//               <button
-//                 onClick={() => setUserType('customer')}
-//                 className={`py-3 px-4 rounded-xl font-medium transition-all ${
-//                   userType === 'customer'
-//                     ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30'
-//                     : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:border-gray-600'
-//                 }`}
-//               >
-//                 Customer
-//               </button>
-//               <button
-//                 onClick={() => setUserType('vendor')}
-//                 className={`py-3 px-4 rounded-xl font-medium transition-all ${
-//                   userType === 'vendor'
-//                     ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white shadow-lg shadow-purple-500/30'
-//                     : 'bg-gray-800/50 text-gray-400 border border-gray-700 hover:border-gray-600'
-//                 }`}
-//               >
-//                 Vendor
-//               </button>
-//             </div>
-//             {userType === 'vendor' && (
-//               <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-//                 <p className="text-yellow-400 text-xs">
-//                   Note: Vendor accounts require admin approval. You'll receive an email once your application is reviewed.
-//                 </p>
-//               </div>
-//             )}
-//           </div>
-
-//           {/* Form Fields */}
-//           <div className="space-y-4">
-//             {/* Name */}
-//             <div>
-//               <label className="block text-white text-sm font-medium mb-2">Name</label>
-//               <div className="relative">
-//                 <UserCircle className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-//                 <input
-//                   type="text"
-//                   value={formData.name}
-//                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-//                   placeholder="Enter Your Name"
-//                   className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Username */}
-//             <div>
-//               <label className="block text-white text-sm font-medium mb-2">User name</label>
-//               <div className="relative">
-//                 <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-//                 <input
-//                   type="text"
-//                   value={formData.username}
-//                   onChange={(e) => setFormData({...formData, username: e.target.value})}
-//                   placeholder="Enter a Unique User Name"
-//                   className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Email */}
-//             <div>
-//               <label className="block text-white text-sm font-medium mb-2">Email Address</label>
-//               <div className="relative">
-//                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-//                 <input
-//                   type="email"
-//                   value={formData.email}
-//                   onChange={(e) => setFormData({...formData, email: e.target.value})}
-//                   placeholder="Enter Your Email"
-//                   className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
-//                 />
-//               </div>
-//             </div>
-
-//             {/* Create Password */}
-//             <div>
-//               <label className="block text-white text-sm font-medium mb-2">Create Password</label>
-//               <div className="relative">
-//                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-//                 <input
-//                   type={showPassword ? 'text' : 'password'}
-//                   value={formData.password}
-//                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-//                   placeholder="• • • • • • • • •"
-//                   className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
-//                 />
-//                 <button
-//                   type="button"
-//                   onClick={() => setShowPassword(!showPassword)}
-//                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-//                 >
-//                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-//                 </button>
-//               </div>
-//             </div>
-
-//             {/* Confirm Password */}
-//             <div>
-//               <label className="block text-white text-sm font-medium mb-2">Confirm Password</label>
-//               <div className="relative">
-//                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
-//                 <input
-//                   type={showConfirmPassword ? 'text' : 'password'}
-//                   value={formData.confirmPassword}
-//                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-//                   placeholder="• • • • • • • • •"
-//                   className="w-full bg-gray-800/50 border border-gray-700 rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
-//                 />
-//                 <button
-//                   type="button"
-//                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-//                   className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-300"
-//                 >
-//                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-//                 </button>
-//               </div>
-//             </div>
-
-//             {/* Terms Checkbox */}
-//             <div className="flex items-start gap-3 pt-2">
-//               <input
-//                 type="checkbox"
-//                 id="terms"
-//                 checked={agreeTerms}
-//                 onChange={(e) => setAgreeTerms(e.target.checked)}
-//                 className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-800/50 text-purple-600 focus:ring-purple-500 focus:ring-2"
-//               />
-//               <label htmlFor="terms" className="text-sm text-gray-400">
-//                 I agree to TeeKnit's{' '}
-//                 <Link href="/terms" className="text-purple-400 hover:text-purple-300">
-//                   Terms of Use
-//                 </Link>
-//                 {' '}and{' '}
-//                 <Link href="/privacy" className="text-purple-400 hover:text-purple-300">
-//                   Privacy Policy
-//                 </Link>
-//               </label>
-//             </div>
-
-//             {/* Sign Up Button */}
-//             <button
-//               onClick={handleSubmit}
-//               className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 text-white font-semibold py-3.5 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-purple-500/30 mt-2"
-//             >
-//               Sign Up
-//             </button>
-
-//             {/* Sign In Link */}
-            // <div className="text-center pt-2">
-            //   <span className="text-gray-400 text-sm">Already have an account? </span>
-            //   <Link
-            //     href="/auth/login"
-            //     className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors"
-            //   >
-            //     Sign in
-            //   </Link>
-            // </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-
 "use client";
 
 import { useState, FormEvent, useEffect } from 'react';
@@ -455,13 +212,13 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen mt-20 bg-black flex items-center justify-center p-4 py-8">
+    <div className="min-h-screen mt-20 bg-black light:bg-white flex items-center justify-center p-4 py-8">
       {/* Sign Up Card */}
       <div className="relative w-full max-w-lg">
         {/* Cyan border glow */}
         <div className="absolute inset-0  bg-[#151579] rounded-3xl blur-sm"></div>
 
-        <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8">
+        <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] light:from-white light:to-purple-50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] light:border-purple-200 rounded-2xl p-8">
           {/* Logo placeholder */}
           <div className="flex items-start justify-between">
             <Image
@@ -475,22 +232,22 @@ export default function SignUpPage() {
 
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-[36px] font-cormorant font-bold text-white mb-1">
+            <h1 className="text-[36px] font-cormorant font-bold text-white light:text-gray-900 mb-1">
               Create an account
             </h1>
-            <p className="text-gray-400 font-poppins text-sm">Create your account and get started</p>
+            <p className="text-gray-400 light:text-gray-500 font-poppins text-sm">Create your account and get started</p>
           </div>
 
           {/* User Type Selection */}
           <div className="mb-6">
-            <label className="block text-white text-sm font-medium mb-3">I am a</label>
+            <label className="block text-white light:text-gray-800 text-sm font-medium mb-3">I am a</label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => setUserType('customer')}
                 className={`py-3 px-4 rounded-xl font-medium transition-all ${
                   userType === 'customer'
-                    ? 'bg-[#1A1523] text-white  border border-[#B630F4]'
-                    : 'bg-[#3c3c50] text-gray-400 border hover:border-gray-600'
+                    ? 'bg-[#1A1523] light:bg-purple-100 text-white light:text-gray-900  border border-[#B630F4]'
+                    : 'bg-[#3c3c50] light:bg-gray-100 text-gray-400 light:text-gray-500 border hover:border-gray-600'
                 }`}
               >
                 Customer
@@ -499,8 +256,8 @@ export default function SignUpPage() {
                 onClick={() => setUserType('vendor')}
                 className={`py-3 px-4 rounded-xl font-medium transition-all ${
                   userType === 'vendor'
-                    ? 'bg-[#1A1523] text-white  border border-[#B630F4]'
-                    : 'bg-[#3c3c50] text-gray-400 border hover:border-gray-600'
+                    ? 'bg-[#1A1523] light:bg-purple-100 text-white light:text-gray-900  border border-[#B630F4]'
+                    : 'bg-[#3c3c50] light:bg-gray-100 text-gray-400 light:text-gray-500 border hover:border-gray-600'
                 }`}
               >
                 Vendor
@@ -519,7 +276,7 @@ export default function SignUpPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
             <div>
-              <label className="block text-white text-sm font-medium mb-2">Name</label>
+              <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">Name</label>
               <div className="relative">
                 <UserCircle className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
@@ -527,10 +284,10 @@ export default function SignUpPage() {
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   placeholder="Enter Your Name"
-                  className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full bg-gray-800/50 light:bg-white border rounded-xl pl-12 pr-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
                     errors.name
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                      : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                      : 'border-gray-700 light:border-gray-300 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
               </div>
@@ -539,7 +296,7 @@ export default function SignUpPage() {
 
             {/* Username */}
             <div>
-              <label className="block text-white text-sm font-medium mb-2">User name</label>
+              <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">User name</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
@@ -547,10 +304,10 @@ export default function SignUpPage() {
                   value={formData.username}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   placeholder="Enter a Unique User Name"
-                  className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full bg-gray-800/50 light:bg-white border rounded-xl pl-12 pr-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
                     errors.username
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                      : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                      : 'border-gray-700 light:border-gray-300 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
               </div>
@@ -559,7 +316,7 @@ export default function SignUpPage() {
 
             {/* Email */}
             <div>
-              <label className="block text-white text-sm font-medium mb-2">Email Address</label>
+              <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
@@ -567,10 +324,10 @@ export default function SignUpPage() {
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="Enter Your Email"
-                  className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full bg-gray-800/50 light:bg-white border rounded-xl pl-12 pr-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
                     errors.email
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                      : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                      : 'border-gray-700 light:border-gray-300 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
               </div>
@@ -579,7 +336,7 @@ export default function SignUpPage() {
 
             {/* Phone Number */}
             <div>
-              <label className="block text-white text-sm font-medium mb-2">Phone Number</label>
+              <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">Phone Number</label>
               <div className="relative">
                 <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
@@ -587,10 +344,10 @@ export default function SignUpPage() {
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
                   placeholder="Enter Your Phone Number"
-                  className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full bg-gray-800/50 light:bg-white border rounded-xl pl-12 pr-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
                     errors.phone
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                      : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                      : 'border-gray-700 light:border-gray-300 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
               </div>
@@ -602,16 +359,16 @@ export default function SignUpPage() {
               <div className="space-y-4">
                 {/* Profile Image */}
                 <div>
-                  <label className="block text-white text-sm font-medium mb-2">Profile Image</label>
+                  <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">Profile Image</label>
                   <label
-                    className={`flex items-center gap-3 w-full bg-gray-800/50 border rounded-xl px-4 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 w-full bg-gray-800/50 light:bg-white border rounded-xl px-4 py-3 cursor-pointer transition-all ${
                       errors.image
                         ? 'border-red-500'
-                        : 'border-gray-700 hover:border-purple-500'
+                        : 'border-gray-700 light:border-gray-300 hover:border-purple-500'
                     }`}
                   >
                     <Upload className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span className="text-sm text-gray-300 truncate">
+                    <span className="text-sm text-gray-300 light:text-gray-600 truncate">
                       {imageFile ? imageFile.name : 'Upload your profile image'}
                     </span>
                     <input
@@ -629,16 +386,16 @@ export default function SignUpPage() {
 
                 {/* NID Front */}
                 <div>
-                  <label className="block text-white text-sm font-medium mb-2">NID Front Side</label>
+                  <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">NID Front Side</label>
                   <label
-                    className={`flex items-center gap-3 w-full bg-gray-800/50 border rounded-xl px-4 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 w-full bg-gray-800/50 light:bg-white border rounded-xl px-4 py-3 cursor-pointer transition-all ${
                       errors.nidFront
                         ? 'border-red-500'
-                        : 'border-gray-700 hover:border-purple-500'
+                        : 'border-gray-700 light:border-gray-300 hover:border-purple-500'
                     }`}
                   >
                     <CreditCard className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span className="text-sm text-gray-300 truncate">
+                    <span className="text-sm text-gray-300 light:text-gray-600 truncate">
                       {nidFrontFile ? nidFrontFile.name : 'Upload NID front image'}
                     </span>
                     <input
@@ -656,16 +413,16 @@ export default function SignUpPage() {
 
                 {/* NID Back */}
                 <div>
-                  <label className="block text-white text-sm font-medium mb-2">NID Back Side</label>
+                  <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">NID Back Side</label>
                   <label
-                    className={`flex items-center gap-3 w-full bg-gray-800/50 border rounded-xl px-4 py-3 cursor-pointer transition-all ${
+                    className={`flex items-center gap-3 w-full bg-gray-800/50 light:bg-white border rounded-xl px-4 py-3 cursor-pointer transition-all ${
                       errors.nidBack
                         ? 'border-red-500'
-                        : 'border-gray-700 hover:border-purple-500'
+                        : 'border-gray-700 light:border-gray-300 hover:border-purple-500'
                     }`}
                   >
                     <CreditCard className="w-5 h-5 text-purple-400 flex-shrink-0" />
-                    <span className="text-sm text-gray-300 truncate">
+                    <span className="text-sm text-gray-300 light:text-gray-600 truncate">
                       {nidBackFile ? nidBackFile.name : 'Upload NID back image'}
                     </span>
                     <input
@@ -685,7 +442,7 @@ export default function SignUpPage() {
 
             {/* Create Password */}
             <div>
-              <label className="block text-white text-sm font-medium mb-2">Create Password</label>
+              <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">Create Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
@@ -693,10 +450,10 @@ export default function SignUpPage() {
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   placeholder="• • • • • • • • •"
-                  className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full bg-gray-800/50 light:bg-white border rounded-xl pl-12 pr-12 py-3 text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
                     errors.password
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                      : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                      : 'border-gray-700 light:border-gray-300 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
                 <button
@@ -712,7 +469,7 @@ export default function SignUpPage() {
 
             {/* Confirm Password */}
             <div>
-              <label className="block text-white text-sm font-medium mb-2">Confirm Password</label>
+              <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">Confirm Password</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                 <input
@@ -720,10 +477,10 @@ export default function SignUpPage() {
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   placeholder="• • • • • • • • •"
-                  className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-12 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
+                  className={`w-full bg-gray-800/50 light:bg-white border rounded-xl pl-12 pr-12 py-3 text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
                     errors.confirmPassword
                       ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                      : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                      : 'border-gray-700 light:border-gray-300 focus:border-purple-500 focus:ring-purple-500/20'
                   }`}
                 />
                 <button
@@ -746,7 +503,7 @@ export default function SignUpPage() {
                 onChange={(e) => handleTermsChange(e.target.checked)}
                 className="mt-1 w-4 h-4 rounded border-gray-600 bg-gray-800/50 text-purple-600 focus:ring-purple-500 focus:ring-2"
               />
-              <label htmlFor="terms" className="text-sm text-gray-400">
+              <label htmlFor="terms" className="text-sm text-gray-400 light:text-gray-500">
                 I agree to SleeKnit's{' '}
                 <span
                   onClick={openTerms}
@@ -776,7 +533,7 @@ export default function SignUpPage() {
 
             {/* Sign In Link */}
             <div className="text-center pt-2">
-              <span className="text-gray-400 text-sm">Already have an account? </span>
+              <span className="text-gray-400 light:text-gray-500 text-sm">Already have an account? </span>
               <Link
                 href="/auth/login"
                 className="text-sm text-[#6100FF] hover:text-purple-300 font-medium transition-colors"

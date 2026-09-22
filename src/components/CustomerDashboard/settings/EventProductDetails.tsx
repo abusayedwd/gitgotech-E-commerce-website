@@ -101,7 +101,7 @@ export default function EventProductDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#130a36] to-black p-6">
+      <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#130a36] to-black light:from-white light:via-purple-50 light:to-white p-6">
         <div className="flex items-center justify-center py-20">
           <div className="text-purple-400 text-xl">Loading product details...</div>
         </div>
@@ -110,7 +110,7 @@ export default function EventProductDetails() {
   }
 
   return (
-    <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#130a36] to-black p-6">
+    <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#130a36] to-black light:from-white light:via-purple-50 light:to-white p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="container mx-auto flex items-center gap-4">
@@ -119,7 +119,7 @@ export default function EventProductDetails() {
               <FaArrowLeft className='text-black' />
             </div>
           </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">view details</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">view details</h1>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -142,7 +142,7 @@ export default function EventProductDetails() {
             {/* Product Title and Price */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h2 className="text-4xl font-bold font-cormorant text-white">{productData?.product_name || 'Product'}</h2>
+                <h2 className="text-4xl font-bold font-cormorant text-white light:text-gray-900">{productData?.product_name || 'Product'}</h2>
                 <button className="bg-[#BDDABC33] text-[#00AA33] px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                   In Stock
                 </button>
@@ -156,12 +156,12 @@ export default function EventProductDetails() {
                     </svg>
                   ))}
                 </div>
-                <span className="text-gray-400 text-sm">{productData?.review_count || 0} Reviews</span>
+                <span className="text-gray-400 light:text-gray-500 text-sm">{productData?.review_count || 0} Reviews</span>
               </div>
             </div>
 
             {/* Seller Info */}
-            <div className="border border-[#6100FF] rounded-xl p-4">
+            <div className="border border-[#6100FF] light:bg-purple-50 rounded-xl p-4">
               <div className="flex items-center gap-3">
                 <img
                   src={"/images/person.png"}
@@ -169,8 +169,8 @@ export default function EventProductDetails() {
                   className="w-12 h-12 rounded-full object-cover border-2 border-purple-400"
                 />
                 <div className="flex-1">
-                  <h3 className="text-white font-semibold">{vendorName}</h3>
-                  <p className="text-gray-400 text-sm">Seller</p>
+                  <h3 className="text-white light:text-gray-900 font-semibold">{vendorName}</h3>
+                  <p className="text-gray-400 light:text-gray-500 text-sm">Seller</p>
                 </div>
               </div>
             </div>
@@ -181,81 +181,26 @@ export default function EventProductDetails() {
                 ₵{productData?.product_price?.toFixed(2) || '0.00'}
               </div>
 
-              <div className="flex items-center gap-2 text-[#767676] text-sm">
+              <div className="flex items-center gap-2 text-[#767676] light:text-gray-500 text-sm">
                 <Calendar size={16} />
                 <span>Category: {productData?.product_category || 'N/A'}</span>
               </div>
             </div>
 
             {/* Description */}
-            <div className="border border-[#6100FF] p-2 rounded-xl overflow-hidden">
-              <h1 className='text-2xl ml-5 text-white font-medium font-cormorant'>Description</h1>
+            <div className="border border-[#6100FF] light:bg-purple-50 p-2 rounded-xl overflow-hidden">
+              <h1 className='text-2xl ml-5 text-white light:text-gray-900 font-medium font-cormorant'>Description</h1>
               <div className="p-6">
-                <p className="text-gray-300 leading-relaxed">
+                <p className="text-gray-300 light:text-gray-700 leading-relaxed">
                   {productData?.product_description || 'No description available'}
                 </p>
               </div>
             </div>
 
             {/* Size Selection for Creator - Submit Size API */}
-            {/* {isCreator && productData?.product_stocks && productData.product_stocks.length > 0 && (
-              <div className="border border-[#6100FF] p-4 rounded-xl">
-                <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
-                <div className="flex flex-wrap gap-3">
-                  {productData.product_stocks.map((stock: any, index: number) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedSize(stock.size)}
-                      className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                        selectedSize === stock.size
-                          ? 'bg-[#6100FF] text-white border-2 border-[#6100FF]'
-                          : 'bg-[#272238] text-gray-300 border-2 border-[#3d3648] hover:border-[#6100FF]'
-                      }`}
-                    >
-                      {stock.size}
-                    </button>
-                  ))}
-                </div>
-                {selectedSize && (
-                  <p className="text-purple-400 mt-3 text-sm">Selected Size: <span className="font-semibold text-white">{selectedSize}</span></p>
-                )}
-              </div>
-            )} */}
-
-            {/* Size Selection for Invited - No API Call, Just Checkout */}
-            {/* {isInvited && productData?.product_stocks && productData.product_stocks.length > 0 && (
-              <div className="border border-[#6100FF] p-4 rounded-xl">
-                <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
-                <div className="flex flex-wrap gap-3">
-                  {productData.product_stocks.map((stock: any, index: number) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedSize(stock.size)}
-                      className={`px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
-                        selectedSize === stock.size
-                          ? 'bg-[#6100FF] text-white border-2 border-[#6100FF]'
-                          : 'bg-[#272238] text-gray-300 border-2 border-[#3d3648] hover:border-[#6100FF]'
-                      }`}
-                    >
-                      {stock.size}
-                      {stock.stock === 0 && ' (Out)'}
-                      {stock.stock > 0 && ` (${stock.stock})`}
-                    </button>
-                  ))}
-                </div>
-                {selectedSize && (
-                  <div className="mt-3 flex items-center justify-between px-4 py-3 bg-[#242428] border border-purple-500 rounded-lg">
-                    <span className="text-gray-300 text-sm">Selected Size:</span>
-                    <span className="text-purple-400 font-semibold text-lg">{selectedSize}</span>
-                  </div>
-                )}
-              </div>
-            )} */}
-
-            {/* Size Selection for Creator - Submit Size API */}
 {isCreator && productData?.product_stocks && productData.product_stocks.length > 0 && (
-  <div className="border border-[#6100FF] p-4 rounded-xl">
-    <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
+  <div className="border border-[#6100FF] light:bg-purple-50 p-4 rounded-xl">
+    <h2 className="text-xl text-white light:text-gray-900 font-medium font-cormorant mb-4">Select Size</h2>
     <div className="flex flex-wrap gap-3">
       {productData.product_stocks.map((stock: any, index: number) => {
         const isOutOfStock = stock.stock === 0;
@@ -269,7 +214,7 @@ export default function EventProductDetails() {
                 ? 'bg-[#1a1a1a] text-gray-600 border-2 border-[#2a2a2a] cursor-not-allowed opacity-50'
                 : selectedSize === stock.size
                 ? 'bg-[#6100FF] text-white border-2 border-[#6100FF]'
-                : 'bg-[#272238] text-gray-300 border-2 border-[#3d3648] hover:border-[#6100FF]'
+                : 'bg-[#272238] light:bg-gray-100 text-gray-300 light:text-gray-700 border-2 border-[#3d3648] light:border-gray-300 hover:border-[#6100FF]'
             }`}
           >
             {stock.size}
@@ -282,7 +227,7 @@ export default function EventProductDetails() {
     </div>
     {selectedSize && (
       <p className="text-purple-400 mt-3 text-sm">
-        Selected Size: <span className="font-semibold text-white">{selectedSize}</span>
+        Selected Size: <span className="font-semibold text-white light:text-gray-900">{selectedSize}</span>
       </p>
     )}
   </div>
@@ -290,8 +235,8 @@ export default function EventProductDetails() {
 
 {/* Size Selection for Invited - No API Call, Just Checkout */}
 {isInvited && productData?.product_stocks && productData.product_stocks.length > 0 && (
-  <div className="border border-[#6100FF] p-4 rounded-xl">
-    <h2 className="text-xl text-white font-medium font-cormorant mb-4">Select Size</h2>
+  <div className="border border-[#6100FF] light:bg-purple-50 p-4 rounded-xl">
+    <h2 className="text-xl text-white light:text-gray-900 font-medium font-cormorant mb-4">Select Size</h2>
     <div className="flex flex-wrap gap-3">
       {productData.product_stocks.map((stock: any, index: number) => {
         const isOutOfStock = stock.stock === 0;
@@ -305,7 +250,7 @@ export default function EventProductDetails() {
                 ? 'bg-[#1a1a1a] text-gray-600 border-2 border-[#2a2a2a] cursor-not-allowed opacity-50'
                 : selectedSize === stock.size
                 ? 'bg-[#6100FF] text-white border-2 border-[#6100FF]'
-                : 'bg-[#272238] text-gray-300 border-2 border-[#3d3648] hover:border-[#6100FF]'
+                : 'bg-[#272238] light:bg-gray-100 text-gray-300 light:text-gray-700 border-2 border-[#3d3648] light:border-gray-300 hover:border-[#6100FF]'
             }`}
           >
             {stock.size}
@@ -317,8 +262,8 @@ export default function EventProductDetails() {
       })}
     </div>
     {selectedSize && (
-      <div className="mt-3 flex items-center justify-between px-4 py-3 bg-[#242428] border border-purple-500 rounded-lg">
-        <span className="text-gray-300 text-sm">Selected Size:</span>
+      <div className="mt-3 flex items-center justify-between px-4 py-3 bg-[#242428] light:bg-white border border-purple-500 light:border-purple-300 rounded-lg">
+        <span className="text-gray-300 light:text-gray-600 text-sm">Selected Size:</span>
         <span className="text-purple-400 font-semibold text-lg">{selectedSize}</span>
       </div>
     )}

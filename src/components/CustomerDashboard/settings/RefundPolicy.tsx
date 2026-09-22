@@ -11,7 +11,7 @@ export default function RefundPolicyPage() {
   const refundInfo = refundData?.data;
 
   return (
-    <div className="min-h-screen md:mt-24 mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen md:mt-24 mt-12 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6">
       <div className="max-w-4xl mx-auto">
         <div className="container mx-auto flex items-center gap-4">
           <button
@@ -23,14 +23,14 @@ export default function RefundPolicyPage() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             Refund Policy
           </h1>
         </div>
 
         {refundInfo?.updatedAt && (
           <div className="my-6">
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-gray-400 light:text-gray-500">
               Last Updated:{" "}
               {new Date(refundInfo.updatedAt).toLocaleDateString("en-US", {
                 year: "numeric",
@@ -41,11 +41,11 @@ export default function RefundPolicyPage() {
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 border-2 border-blue-500/50 rounded-3xl p-6 md:p-10 backdrop-blur-sm mt-6">
+        <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 light:from-purple-50 light:to-white border-2 border-blue-500/50 light:border-blue-300 rounded-3xl p-6 md:p-10 backdrop-blur-sm mt-6">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-              <span className="ml-3 text-gray-400">Loading refund policy...</span>
+              <span className="ml-3 text-gray-400 light:text-gray-500">Loading refund policy...</span>
             </div>
           ) : isError ? (
             <p className="text-red-400 text-center py-8">
@@ -54,7 +54,7 @@ export default function RefundPolicyPage() {
           ) : (
             <div className="overflow-y-auto pr-2 custom-scrollbar">
               <div
-                className="prose prose-invert max-w-none text-gray-300"
+                className="prose prose-invert light:prose-slate max-w-none text-gray-300 light:text-gray-700"
                 dangerouslySetInnerHTML={{
                   __html:
                     refundInfo?.value ||

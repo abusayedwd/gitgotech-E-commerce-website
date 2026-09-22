@@ -386,7 +386,7 @@ function LocationMapPicker({
 
 // ─── Shared input style ───────────────────────────────────────────────────────
 const inputClass =
-  "w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 transition-colors";
+  "w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-600 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-blue-500 transition-colors";
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function CustomDesignRequest() {
@@ -637,8 +637,8 @@ export default function CustomDesignRequest() {
 
   if (isHydrated && !isLoggedIn) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#140c2e] to-black flex items-center justify-center">
-        <div className="text-center text-white">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#140c2e] to-black light:from-white light:via-purple-50 light:to-white flex items-center justify-center">
+        <div className="text-center text-white light:text-gray-900">
           <p className="mb-4">Please sign in to start a custom design.</p>
           <button
             onClick={() => router.replace("/auth/login")}
@@ -652,7 +652,7 @@ export default function CustomDesignRequest() {
   }
 
   return (
-    <div className="md:min-h-[600px] mt-12 md:mt-24 bg-gradient-to-r from-black via-[#140c2e] to-black p-6">
+    <div className="md:min-h-[600px] mt-12 md:mt-24 bg-gradient-to-r from-black via-[#140c2e] to-black light:from-white light:via-purple-50 light:to-white p-6">
       {/* Header */}
       <div className="container mx-auto mt-4 mb-6 flex items-center gap-4">
         <button
@@ -675,7 +675,7 @@ export default function CustomDesignRequest() {
             </svg>
           </div>
         </button>
-        <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">
+        <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">
           Custom Design Request
         </h1>
       </div>
@@ -708,7 +708,7 @@ export default function CustomDesignRequest() {
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                   />
                 </svg>
-                <p className="text-sm text-gray-300">Uploading...</p>
+                <p className="text-sm text-gray-300 light:text-gray-600">Uploading...</p>
               </div>
             ) : selectedFile ? (
               <div className="text-center">
@@ -723,7 +723,7 @@ export default function CustomDesignRequest() {
                     clipRule="evenodd"
                   />
                 </svg>
-                <p className="text-sm text-white">{selectedFile.name}</p>
+                <p className="text-sm text-white light:text-gray-900">{selectedFile.name}</p>
               </div>
             ) : (
               <div className="text-center">
@@ -734,7 +734,7 @@ export default function CustomDesignRequest() {
                 >
                   <path d="M5.5 13a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 13H11V9.413l1.293 1.293a1 1 0 001.414-1.414l-3-3a1 1 0 00-1.414 0l-3 3a1 1 0 001.414 1.414L9 9.414V13H5.5z" />
                 </svg>
-                <p className="text-sm text-gray-300">Upload Design File</p>
+                <p className="text-sm text-gray-300 light:text-gray-600">Upload Design File</p>
               </div>
             )}
           </div>
@@ -749,28 +749,28 @@ export default function CustomDesignRequest() {
 
         {/* ── Notes ── */}
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-white light:text-gray-800 mb-2">
             Notes to Vendor
           </label>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Any specific requirements or preferences..."
-            className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+            className="w-full px-4 py-3 bg-gray-900 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
             rows={4}
           />
         </div>
 
         {/* ── Measurement Type ── */}
         <div>
-          <label className="block text-sm font-medium text-white mb-2">
+          <label className="block text-sm font-medium text-white light:text-gray-800 mb-2">
             Select Measurement Type
           </label>
           <div className="relative">
             <select
               value={selectedMeasurementType}
               onChange={(e) => setSelectedMeasurementType(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg text-white appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
+              className="w-full px-4 py-3 bg-gray-900 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer"
             >
               <option value="">Choose measurement type...</option>
               <option value="top">Top Measurements</option>
@@ -783,7 +783,7 @@ export default function CustomDesignRequest() {
 
         {/* ── Top Measurements ── */}
         {selectedMeasurementType === "top" && (
-          <div className="bg-[#2a2438] border-2 border-blue-500 rounded-xl p-6">
+          <div className="bg-[#2a2438] light:bg-purple-50 border-2 border-blue-500 light:border-blue-300 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-1">
               <svg
                 className="w-6 h-6 text-blue-400"
@@ -797,17 +797,17 @@ export default function CustomDesignRequest() {
                   clipRule="evenodd"
                 />
               </svg>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">
                 Top Measurements
               </h2>
             </div>
-            <p className="text-gray-400 text-sm mb-6">
+            <p className="text-gray-400 light:text-gray-500 text-sm mb-6">
               Provide measurements in Cm. Fill in only what you know.
             </p>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Chest (Cm)
                   </label>
                   <input
@@ -821,7 +821,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Shoulder Width (Cm)
                   </label>
                   <input
@@ -837,7 +837,7 @@ export default function CustomDesignRequest() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Arm Length (Cm)
                   </label>
                   <input
@@ -851,7 +851,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Inseam (Cm)
                   </label>
                   <input
@@ -867,7 +867,7 @@ export default function CustomDesignRequest() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Neck (Cm)
                   </label>
                   <input
@@ -881,7 +881,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Length (Cm)
                   </label>
                   <input
@@ -896,7 +896,7 @@ export default function CustomDesignRequest() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Additional Notes (Optional)
                 </label>
                 <textarea
@@ -915,7 +915,7 @@ export default function CustomDesignRequest() {
 
         {/* ── Trouser Measurements ── */}
         {selectedMeasurementType === "trouser" && (
-          <div className="bg-[#2a2438] border-2 border-blue-500 rounded-xl p-6">
+          <div className="bg-[#2a2438] light:bg-purple-50 border-2 border-blue-500 light:border-blue-300 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <svg
                 className="w-6 h-6 text-blue-400"
@@ -929,14 +929,14 @@ export default function CustomDesignRequest() {
                   clipRule="evenodd"
                 />
               </svg>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">
                 Trouser Measurements
               </h2>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Waist (Cm)
                   </label>
                   <input
@@ -950,7 +950,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Hips (Cm)
                   </label>
                   <input
@@ -966,7 +966,7 @@ export default function CustomDesignRequest() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Inseam (Cm)
                   </label>
                   <input
@@ -980,7 +980,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Outseam (Cm)
                   </label>
                   <input
@@ -996,7 +996,7 @@ export default function CustomDesignRequest() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Thigh (Cm)
                   </label>
                   <input
@@ -1010,7 +1010,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Knee (Cm)
                   </label>
                   <input
@@ -1025,7 +1025,7 @@ export default function CustomDesignRequest() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Ankle (Cm)
                 </label>
                 <input
@@ -1039,7 +1039,7 @@ export default function CustomDesignRequest() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Additional Notes (Optional)
                 </label>
                 <textarea
@@ -1058,7 +1058,7 @@ export default function CustomDesignRequest() {
 
         {/* ── Shorts Measurements ── */}
         {selectedMeasurementType === "shorts" && (
-          <div className="bg-[#2a2438] border-2 border-blue-500 rounded-xl p-6">
+          <div className="bg-[#2a2438] light:bg-purple-50 border-2 border-blue-500 light:border-blue-300 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <svg
                 className="w-6 h-6 text-blue-400"
@@ -1072,14 +1072,14 @@ export default function CustomDesignRequest() {
                   clipRule="evenodd"
                 />
               </svg>
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">
                 Shorts Measurements
               </h2>
             </div>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Waist (Cm)
                   </label>
                   <input
@@ -1093,7 +1093,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Hips (Cm)
                   </label>
                   <input
@@ -1109,7 +1109,7 @@ export default function CustomDesignRequest() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Inseam (Cm)
                   </label>
                   <input
@@ -1123,7 +1123,7 @@ export default function CustomDesignRequest() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-300 mb-2">
+                  <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                     Outseam (Cm)
                   </label>
                   <input
@@ -1138,7 +1138,7 @@ export default function CustomDesignRequest() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Thigh (Cm)
                 </label>
                 <input
@@ -1152,7 +1152,7 @@ export default function CustomDesignRequest() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Additional Notes (Optional)
                 </label>
                 <textarea
@@ -1170,15 +1170,15 @@ export default function CustomDesignRequest() {
         )}
 
         {/* ── Delivery Information ── */}
-        <div className="bg-[#1e1a2e] border border-purple-700/40 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-5">
+        <div className="bg-[#1e1a2e] light:bg-purple-50 border border-purple-700/40 light:border-purple-200 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-white light:text-gray-900 mb-5">
             Delivery Information
           </h2>
           <div className="space-y-4">
             {/* Name + Email */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Full Name
                 </label>
                 <input
@@ -1190,7 +1190,7 @@ export default function CustomDesignRequest() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Email
                 </label>
                 <input
@@ -1207,7 +1207,7 @@ export default function CustomDesignRequest() {
 
             {/* Address */}
             <div>
-              <label className="block text-sm text-gray-300 mb-2">
+              <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                 Address
               </label>
               <input
@@ -1224,7 +1224,7 @@ export default function CustomDesignRequest() {
 
             {/* ── MAP COMPONENT ── */}
             <div>
-              <label className="block text-sm text-gray-300 mb-2 flex items-center gap-1.5">
+              <label className="block text-sm text-gray-300 light:text-gray-700 mb-2 flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-purple-400" />
                 Delivery Location
               </label>
@@ -1239,8 +1239,8 @@ export default function CustomDesignRequest() {
                   <p className="text-xs text-green-400 font-medium mb-0.5">
                     Location Saved ✓
                   </p>
-                  <p className="text-sm text-white">{location.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">
+                  <p className="text-sm text-white light:text-gray-900">{location.name}</p>
+                  <p className="text-xs text-gray-500 light:text-gray-400 mt-0.5">
                     Coordinates: [
                     {location?.coordinates?.longitude?.toFixed(5) || "0.00000"},{" "}
                     {location?.coordinates?.latitude?.toFixed(5) || "0.00000"}]
@@ -1252,7 +1252,7 @@ export default function CustomDesignRequest() {
             {/* Country + State */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Country
                 </label>
                 <input
@@ -1266,7 +1266,7 @@ export default function CustomDesignRequest() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   State
                 </label>
                 <input
@@ -1284,7 +1284,7 @@ export default function CustomDesignRequest() {
             {/* Zip + Phone */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Zip Code
                 </label>
                 <input
@@ -1298,7 +1298,7 @@ export default function CustomDesignRequest() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-300 light:text-gray-700 mb-2">
                   Phone
                 </label>
                 <input

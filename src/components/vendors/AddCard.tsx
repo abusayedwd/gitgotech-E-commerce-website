@@ -70,7 +70,7 @@ export default function AddCardPage() {
   };
 
   return (
-    <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       {/* Header */}
       <div className="container mx-auto flex items-center gap-4">
         <button
@@ -81,18 +81,18 @@ export default function AddCardPage() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
           Add Card
         </h1>
       </div>
 
       <div className="max-w-4xl mx-auto">
         {/* Card Form Container */}
-        <div className="bg-gradient-to-r from-[#161420] via-[#2f2b41] to-[#161420] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#67469c] rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+        <div className="bg-gradient-to-r from-[#161420] via-[#2f2b41] to-[#161420] light:from-white light:via-purple-50 light:to-white border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#67469c] light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Bank Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
                 Bank Name
               </label>
               <input
@@ -100,13 +100,13 @@ export default function AddCardPage() {
                 value={bankName}
                 onChange={(e) => setBankName(e.target.value)}
                 placeholder="Enter bank name"
-                className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 border border-transparent"
+                className="w-full bg-[#242428] light:bg-white rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 border border-transparent light:border-gray-300"
               />
             </div>
 
             {/* Account Name */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
                 Account Name
               </label>
               <input
@@ -114,13 +114,13 @@ export default function AddCardPage() {
                 value={accountName}
                 onChange={(e) => setAccountName(e.target.value)}
                 placeholder="Enter account name"
-                className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 border border-transparent"
+                className="w-full bg-[#242428] light:bg-white rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 border border-transparent light:border-gray-300"
               />
             </div>
 
             {/* Account Number */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
                 Account Number
               </label>
               <div className="relative">
@@ -129,7 +129,7 @@ export default function AddCardPage() {
                   value={accountNumber}
                   onChange={handleAccountNumberChange}
                   placeholder="Enter account number"
-                  className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 border border-transparent"
+                  className="w-full bg-[#242428] light:bg-white rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 border border-transparent light:border-gray-300"
                   maxLength={27}
                 />
                 {/* Card Type Icons */}
@@ -146,7 +146,7 @@ export default function AddCardPage() {
 
             {/* Bank Code */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
                 Bank Code / Routing Number
               </label>
               <input
@@ -154,20 +154,20 @@ export default function AddCardPage() {
                 value={bankCode}
                 onChange={handleBankCodeChange}
                 placeholder="Enter bank code"
-                className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 border border-transparent"
+                className="w-full bg-[#242428] light:bg-white rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 border border-transparent light:border-gray-300"
                 maxLength={11}
               />
             </div>
 
             {/* Country */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
                 Country
               </label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 border border-transparent"
+                className="w-full bg-[#242428] light:bg-white rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 border border-transparent light:border-gray-300"
               >
                 <option value="">Select Country</option>
                 <option value="Bangladesh">Bangladesh</option>
@@ -183,7 +183,7 @@ export default function AddCardPage() {
 
             {/* More Info (Optional) */}
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
                 More Info <span className="text-gray-500">(Optional)</span>
               </label>
               <textarea
@@ -191,7 +191,7 @@ export default function AddCardPage() {
                 onChange={(e) => setMoreInfo(e.target.value)}
                 placeholder="Any additional information"
                 rows={3}
-                className="w-full bg-[#242428] rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 border border-transparent resize-none"
+                className="w-full bg-[#242428] light:bg-white rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 border border-transparent light:border-gray-300 resize-none"
               />
             </div>
 
@@ -208,14 +208,14 @@ export default function AddCardPage() {
         </div>
 
         {/* Info Box */}
-        <div className="mt-6 bg-gray-800/50 border border-purple-500/30 rounded-xl p-4 text-sm text-gray-300">
+        <div className="mt-6 bg-gray-800/50 light:bg-purple-50 border border-purple-500/30 light:border-purple-200 rounded-xl p-4 text-sm text-gray-300 light:text-gray-700">
           <div className="flex items-start gap-3">
             <Wallet className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
             <div>
-              <p className="font-medium text-white mb-1">
+              <p className="font-medium text-white light:text-gray-900 mb-1">
                 Secure Payment Information
               </p>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 light:text-gray-500">
                 Your card information is encrypted and stored securely. We never
                 share your card details with third parties.
               </p>

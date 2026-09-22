@@ -103,7 +103,7 @@ export default function CategoryMarquee() {
                 )}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
               </div>
-              <p className="text-white text-center mt-2 sm:mt-3 text-xs sm:text-sm md:text-base font-medium capitalize">
+              <p className="text-white light:text-gray-900 text-center mt-2 sm:mt-3 text-xs sm:text-sm md:text-base font-medium capitalize">
                 {category.name}
               </p>
             </div>

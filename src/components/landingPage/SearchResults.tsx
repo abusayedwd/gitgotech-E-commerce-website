@@ -71,7 +71,7 @@ export default function SearchResults({
       className={
         isModal
           ? "overflow-x-hidden max-w-full text-white px-3 sm:px-4 py-4"
-          : "min-h-screen overflow-x-hidden max-w-full bg-gradient-to-r from-black via-[#0f0924] to-black text-white pt-32 sm:pt-36 md:pt-40 px-4 pb-8"
+          : "min-h-screen overflow-x-hidden max-w-full bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 pt-32 sm:pt-36 md:pt-40 px-4 pb-8"
       }
     >
       <div className={isModal ? "w-full" : "container mx-auto"}>
@@ -196,7 +196,7 @@ function Section({
         <h2 className="text-xl md:text-2xl font-cormorant font-semibold text-white">
           {title}
         </h2>
-        <span className="text-xs bg-purple-600/20 text-purple-300 px-2 py-0.5 rounded-full">
+        <span className="text-xs bg-purple-600/20 text-purple-300 px-2 py-0.5 rounded-full light:bg-purple-100 light:text-purple-700">
           {count}
         </span>
       </div>
@@ -267,7 +267,7 @@ function ShowroomCard({
             {showroom.showroom_category.slice(0, 3).map((cat) => (
               <span
                 key={cat}
-                className="text-[10px] uppercase tracking-wide bg-purple-600/20 text-purple-300 px-1.5 py-0.5 rounded"
+                className="text-[10px] uppercase tracking-wide bg-purple-600/20 text-purple-300 px-1.5 py-0.5 rounded light:bg-purple-100 light:text-purple-700"
               >
                 {cat}
               </span>

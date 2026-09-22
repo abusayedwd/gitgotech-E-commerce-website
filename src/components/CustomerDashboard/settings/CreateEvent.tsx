@@ -52,7 +52,7 @@ export default function CreateEvent() {
   };
 
   return (
-    <div className="min-h-screen mt-12 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black to-black p-6">
+    <div className="min-h-screen mt-12 md:mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white p-6">
       {/* Header */}
       <div className="container mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
@@ -60,22 +60,22 @@ export default function CreateEvent() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Create Event</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">Create Event</h1>
         </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit}
-       className="max-w-lg bg-gradient-to-b from-[#0a2930] to-[#1d0d24] bg-opacity-50 border rounded-lg border-purple-400 mx-auto p-5 space-y-6">
+       className="max-w-lg bg-gradient-to-b from-[#0a2930] to-[#1d0d24] light:from-purple-50 light:to-white bg-opacity-50 border rounded-lg border-purple-400 light:border-purple-200 mx-auto p-5 space-y-6">
         {/* Title */}
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Title</label>
+          <label className="block text-sm font-medium text-white light:text-gray-800 mb-2">Title</label>
           <input
             type="text"
             name="title"
             value={formData.title}
             onChange={handleChange}
             placeholder="Type Here"
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
         </div>
@@ -83,24 +83,24 @@ export default function CreateEvent() {
         {/* Date and Time */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Event Date</label>
+            <label className="block text-sm font-medium text-white light:text-gray-800 mb-2">Event Date</label>
             <input
               type="date"
               name="date"
               value={formData.date}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-white mb-2">Time</label>
+            <label className="block text-sm font-medium text-white light:text-gray-800 mb-2">Time</label>
             <input
               type="time"
               name="time"
               value={formData.time}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
           </div>
@@ -108,21 +108,21 @@ export default function CreateEvent() {
 
         {/* Address */}
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Address</label>
+          <label className="block text-sm font-medium text-white light:text-gray-800 mb-2">Address</label>
           <input
             type="text"
             name="address"
             value={formData.address}
             onChange={handleChange}
             placeholder="Type Here"
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             required
           />
         </div>
 
         {/* Purchase Options */}
         <div>
-          <label className="block text-sm font-medium text-white mb-3">Who will purchase?</label>
+          <label className="block text-sm font-medium text-white light:text-gray-800 mb-3">Who will purchase?</label>
           <div className="space-y-3">
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -133,7 +133,7 @@ export default function CreateEvent() {
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 focus:ring-blue-500"
               />
-              <span className="text-white">I will purchase for everyone</span>
+              <span className="text-white light:text-gray-800">I will purchase for everyone</span>
             </label>
             <label className="flex items-center gap-3 cursor-pointer">
               <input
@@ -144,21 +144,21 @@ export default function CreateEvent() {
                 onChange={handleChange}
                 className="w-4 h-4 text-blue-600 bg-gray-800 border-gray-600 focus:ring-blue-500"
               />
-              <span className="text-white">Everyone will purchase for themselves</span>
+              <span className="text-white light:text-gray-800">Everyone will purchase for themselves</span>
             </label>
           </div>
         </div>
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium text-white mb-2">Description</label>
+          <label className="block text-sm font-medium text-white light:text-gray-800 mb-2">Description</label>
           <textarea
             name="description"
             value={formData.description}
             onChange={handleChange}
             placeholder="Type Here"
             rows={4}
-            className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            className="w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
           />
         </div>
 

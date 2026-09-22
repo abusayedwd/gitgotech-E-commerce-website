@@ -13,7 +13,7 @@ export default function CategoryFilter() {
         value={selectedCategory}
         onChange={(e) => setSelectedCategory(e.target.value)}
         disabled={isLoading}
-        className="bg-[#1B1B1F] backdrop-blur-sm border border-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer hover:border-purple-500 transition-colors disabled:opacity-50"
+        className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm border border-gray-700 light:border-gray-300 text-white light:text-gray-900 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 cursor-pointer hover:border-purple-500 transition-colors disabled:opacity-50"
       >
         <option value="">All Categories</option>
         {isLoading ? (

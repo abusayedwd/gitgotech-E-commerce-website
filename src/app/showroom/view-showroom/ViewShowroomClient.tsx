@@ -35,10 +35,10 @@ export default function ViewShowroomClient() {
 
   if (!showroom) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white flex items-center justify-center">
         <div className="text-center">
           <Store className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h1 className="text-white text-2xl font-cormorant mb-2">
+          <h1 className="text-white light:text-gray-900 text-2xl font-cormorant mb-2">
             Showroom Not Found
           </h1>
           <Link
@@ -53,19 +53,19 @@ export default function ViewShowroomClient() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black pt-20 md:pt-24">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white pt-20 md:pt-24">
       <div className="container mx-auto px-4 py-8">
         {/* Back Button */}
         <Link
           href="/showroom"
-          className="inline-flex items-center text-gray-400 hover:text-white mb-6 transition-colors"
+          className="inline-flex items-center text-gray-400 light:text-gray-500 hover:text-white light:hover:text-gray-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-5 h-5 mr-2" />
           Back to Showrooms
         </Link>
 
         {/* Showroom Header */}
-        <div className="bg-[#1B1B1F] backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 mb-8">
+        <div className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 light:border-gray-200 mb-8">
           <div className="relative h-48 md:h-64 overflow-hidden">
             <img
               src={`${IMAGE_BASE_URL}/${showroom.logo}`}
@@ -108,7 +108,7 @@ export default function ViewShowroomClient() {
         {/* Showroom Products with Category Filter */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
-            <h2 className="text-white font-cormorant text-2xl font-semibold">
+            <h2 className="text-white light:text-gray-900 font-cormorant text-2xl font-semibold">
               Products from {showroom.showroom_name}
             </h2>
 
@@ -116,7 +116,7 @@ export default function ViewShowroomClient() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="bg-[#1B1B1F] border border-gray-700 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="bg-[#1B1B1F] light:bg-white border border-gray-700 light:border-gray-300 text-white light:text-gray-900 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
             >
               <option value="">All Categories</option>
               {categories.map((category: any) => (

@@ -488,7 +488,7 @@ export default function CheckoutPage() {
   // ── Render ────────────────────────────────────────────────────────────────
   if (isHydrated && !isLoggedIn) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-950 via-purple-900/15 to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900">
         <div className="text-center">
           <p className="mb-4">Please sign in to proceed to checkout.</p>
           <button
@@ -503,7 +503,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black text-white p-4 md:p-8">
+    <div className="min-h-screen mt-24 bg-gradient-to-r from-gray-950 via-purple-900/15 to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       {/* Back Button */}
       <div className="container mx-auto flex items-center gap-4 mb-4">
         <button
@@ -514,7 +514,7 @@ export default function CheckoutPage() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant hidden md:block">
           Check Out
         </h1>
       </div>
@@ -524,7 +524,7 @@ export default function CheckoutPage() {
         <h1 className="text-3xl md:text-4xl font-bold font-cormorant mb-2">
           Checkout
         </h1>
-        <p className="text-gray-400 font-poppins text-sm">
+        <p className="text-gray-400 light:text-gray-500 font-poppins text-sm">
           One step away from your dream purchase.
         </p>
       </div>
@@ -568,7 +568,7 @@ export default function CheckoutPage() {
                   value={formData.fullName}
                   onChange={handleInputChange}
                   placeholder="Enter Name"
-                  className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
                 />
               </div>
 
@@ -584,7 +584,7 @@ export default function CheckoutPage() {
                       onChange={handleInputChange}
                       placeholder="Select from map below"
                       readOnly={!!selectedLocation}
-                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                      className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
                     />
                   </div>
 
@@ -610,7 +610,7 @@ export default function CheckoutPage() {
                           <span className="font-medium">Selected:</span>{" "}
                           {selectedLocation.name}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 light:text-gray-500">
                           Coordinates: [{selectedLocation.coordinates.longitude.toFixed(6)},{" "}
                           {selectedLocation.coordinates.latitude.toFixed(6)}]
                         </p>
@@ -637,8 +637,8 @@ export default function CheckoutPage() {
                   </div>
                 </>
               ) : (
-                <div className="p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg flex items-center gap-2 text-sm text-gray-300">
-                  <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                <div className="p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg flex items-center gap-2 text-sm text-gray-300 light:bg-purple-50 light:border-purple-200 light:text-gray-700">
+                  <MapPin className="w-4 h-4 text-purple-400 flex-shrink-0 light:text-purple-700" />
                   Pick-up order — no delivery location needed. Collect your order at the showroom.
                 </div>
               )}
@@ -652,7 +652,7 @@ export default function CheckoutPage() {
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
-                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors"
+                      className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500 transition-colors"
                     >
                       {[...CHECKOUT_COUNTRY_OPTIONS].map((c) => (
                         <option key={c} value={c}>
@@ -677,7 +677,7 @@ export default function CheckoutPage() {
                       value={formData.state}
                       onChange={handleInputChange}
                       placeholder="New York"
-                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                      className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
                     />
                   </div>
                   <div>
@@ -688,7 +688,7 @@ export default function CheckoutPage() {
                       value={formData.zipcode}
                       onChange={handleInputChange}
                       placeholder="10001"
-                      className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                      className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
                     />
                   </div>
                 </div>
@@ -704,7 +704,7 @@ export default function CheckoutPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     placeholder="email@example.com"
-                    className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
                 <div>
@@ -715,7 +715,7 @@ export default function CheckoutPage() {
                     value={formData.phone}
                     onChange={handleInputChange}
                     placeholder="+1 212 555 1234"
-                    className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors"
                   />
                 </div>
               </div>
@@ -725,7 +725,7 @@ export default function CheckoutPage() {
 
         {/* ── Right column – Order Summary ── */}
         <div className="lg:col-span-1">
-          <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl p-6 sticky top-8">
+          <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 light:from-purple-50 light:to-white border border-gray-800 light:border-gray-200 rounded-2xl p-6 sticky top-8">
             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
 
             {/* Order Items */}
@@ -752,7 +752,7 @@ export default function CheckoutPage() {
                   return (
                     <div
                       key={item._id}
-                      className="flex items-center gap-3 pb-3 border-b border-gray-700 last:border-b-0"
+                      className="flex items-center gap-3 pb-3 border-b border-gray-700 light:border-gray-200 last:border-b-0"
                     >
                       {/* Product Image */}
                       <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-800 flex-shrink-0">
@@ -772,7 +772,7 @@ export default function CheckoutPage() {
                         <p className="text-sm font-medium truncate">
                           {item.product?.product_name}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 light:text-gray-500">
                           Size: {isEventOrder ? item.size : item.selectedSize} | Qty:{" "}
                           {item.quantity}
                         </p>
@@ -803,14 +803,14 @@ export default function CheckoutPage() {
                   );
                 })
               ) : (
-                <p className="text-gray-400 text-sm">No items in cart</p>
+                <p className="text-gray-400 light:text-gray-500 text-sm">No items in cart</p>
               )}
             </div>
 
             {/* Price Breakdown */}
-            <div className="space-y-3 border-t border-gray-700 pt-4 mb-6">
+            <div className="space-y-3 border-t border-gray-700 light:border-gray-200 pt-4 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Subtotal</span>
+                <span className="text-gray-400 light:text-gray-500">Subtotal</span>
                 <span className="font-medium">₵{subtotal.toFixed(2)}</span>
               </div>
 
@@ -826,7 +826,7 @@ export default function CheckoutPage() {
               {deliveryMethod === "delivery" ? (
                 <>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">
+                    <span className="text-gray-400 light:text-gray-500">
                       Delivery (distance)
                       {distanceKm !== null && (
                         <span className="ml-1 text-xs text-purple-300/70">
@@ -837,7 +837,7 @@ export default function CheckoutPage() {
                     <span className="font-medium">₵{distanceDeliveryCharge.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">
+                    <span className="text-gray-400 light:text-gray-500">
                       Delivery (weight)
                       {totalWeightKg > 0 ? (
                         <span className="ml-1 text-xs text-purple-300/70">
@@ -849,20 +849,20 @@ export default function CheckoutPage() {
                     </span>
                     <span className="font-medium">₵{weightDeliveryCharge.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm border-b border-gray-700/60 pb-2">
+                  <div className="flex justify-between text-sm border-b border-gray-700/60 light:border-gray-200 pb-2">
                     <span className="text-gray-300 font-medium">Delivery total</span>
                     <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
                   </div>
                 </>
               ) : (
-                <div className="flex justify-between text-sm border-b border-gray-700/60 pb-2">
+                <div className="flex justify-between text-sm border-b border-gray-700/60 light:border-gray-200 pb-2">
                   <span className="text-gray-300 font-medium">Delivery</span>
                   <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
                 </div>
               )}
 
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">
+                <span className="text-gray-400 light:text-gray-500">
                   Tax ({platformSettings.taxPercentage}%)
                 </span>
                 <span className="font-medium">₵{tax.toFixed(2)}</span>
@@ -876,7 +876,7 @@ export default function CheckoutPage() {
               )}
 
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Tip</span>
+                <span className="text-gray-400 light:text-gray-500">Tip</span>
                 {deliveryMethod === "delivery" ? (
                   <button
                     onClick={() => setShowTipModal(true)}
@@ -889,7 +889,7 @@ export default function CheckoutPage() {
                 )}
               </div>
 
-              <div className="flex justify-between text-lg font-bold border-t border-gray-700 pt-3">
+              <div className="flex justify-between text-lg font-bold border-t border-gray-700 light:border-gray-200 pt-3">
                 <span>Total</span>
                 <span className="text-purple-400">₵{total.toFixed(2)}</span>
               </div>
@@ -955,7 +955,7 @@ export default function CheckoutPage() {
               disabled={isSubmitting || displayItems.length === 0}
               className={`w-full py-4 rounded-lg font-semibold transition-all duration-300 ${
                 isSubmitting || displayItems.length === 0
-                  ? "bg-gray-600 text-gray-400 cursor-not-allowed"
+                  ? "bg-gray-600 light:bg-gray-200 text-gray-400 light:text-gray-500 cursor-not-allowed"
                   : "bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white transform hover:scale-105"
               }`}
             >
@@ -986,7 +986,7 @@ export default function CheckoutPage() {
             
             {availableCoupons.length === 0 ? (
               <div className="text-center py-8">
-                <p className="text-gray-400 mb-4">No coupons available</p>
+                <p className="text-gray-400 light:text-gray-500 mb-4">No coupons available</p>
                 <button
                   onClick={() => {
                     setShowCouponModal(false);
@@ -1005,7 +1005,7 @@ export default function CheckoutPage() {
                 <select
                   value={selectedCouponName}
                   onChange={(e) => setSelectedCouponName(e.target.value)}
-                  className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-purple-500 transition-colors mb-4"
+                  className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500 transition-colors mb-4"
                 >
                   <option value="">Choose a coupon...</option>
                   {availableCoupons.map((mc: any) => (
@@ -1046,7 +1046,7 @@ export default function CheckoutPage() {
               <X className="w-6 h-6" />
             </button>
             <h2 className="text-2xl font-bold text-center mb-6">Add Tip</h2>
-            <p className="text-gray-400 text-sm text-center mb-6">
+            <p className="text-gray-400 light:text-gray-500 text-sm text-center mb-6">
               Show appreciation for your delivery person
             </p>
             <div className="grid grid-cols-4 gap-3 mb-6">
@@ -1057,7 +1057,7 @@ export default function CheckoutPage() {
                   className={`py-3 rounded-lg font-medium transition-colors ${
                     tipAmount === amount
                       ? "bg-purple-600 text-white"
-                      : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                      : "bg-gray-800 light:bg-gray-100 text-gray-400 light:text-gray-600 hover:bg-gray-700 light:hover:bg-gray-200"
                   }`}
                 >
                   ₵{amount}
@@ -1069,7 +1069,7 @@ export default function CheckoutPage() {
               value={tipAmount}
               onChange={(e) => setTipAmount(e.target.value)}
               placeholder="Custom amount"
-              className="w-full bg-purple-950/40 border border-purple-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors mb-4"
+              className="w-full bg-purple-950/40 light:bg-white border border-purple-500/30 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 transition-colors mb-4"
             />
             <button
               onClick={() => setShowTipModal(false)}

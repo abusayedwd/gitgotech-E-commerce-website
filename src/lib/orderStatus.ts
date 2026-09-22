@@ -94,16 +94,16 @@ export function statusBadgeClass(
 ) {
   const tone = getStatusTone(status);
   if (variant === "chip") {
-    if (tone === "success") return "bg-green-900/30 text-green-300 border border-green-500/30";
-    if (tone === "danger") return "bg-red-900/30 text-red-300 border border-red-500/30";
-    if (tone === "warning") return "bg-amber-900/30 text-amber-300 border border-amber-500/30";
-    if (tone === "info") return "bg-blue-900/30 text-blue-300 border border-blue-500/30";
-    return "bg-purple-900/30 text-purple-300 border border-purple-500/30";
+    if (tone === "success") return "bg-green-900/30 text-green-300 border border-green-500/30 light:bg-green-50 light:text-green-700 light:border-green-300";
+    if (tone === "danger") return "bg-red-900/30 text-red-300 border border-red-500/30 light:bg-red-50 light:text-red-700 light:border-red-300";
+    if (tone === "warning") return "bg-amber-900/30 text-amber-300 border border-amber-500/30 light:bg-amber-50 light:text-amber-700 light:border-amber-300";
+    if (tone === "info") return "bg-blue-900/30 text-blue-300 border border-blue-500/30 light:bg-blue-50 light:text-blue-700 light:border-blue-300";
+    return "bg-purple-900/30 text-purple-300 border border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300";
   }
 
-  if (tone === "success") return "bg-green-500/20 text-green-400";
-  if (tone === "danger") return "bg-red-500/20 text-red-400";
-  if (tone === "warning") return "bg-amber-500/20 text-amber-300";
-  if (tone === "info") return "bg-blue-500/20 text-blue-300";
-  return "bg-purple-500/20 text-purple-300";
+  if (tone === "success") return "bg-green-500/20 text-green-400 light:bg-green-100 light:text-green-700";
+  if (tone === "danger") return "bg-red-500/20 text-red-400 light:bg-red-100 light:text-red-700";
+  if (tone === "warning") return "bg-amber-500/20 text-amber-300 light:bg-amber-100 light:text-amber-700";
+  if (tone === "info") return "bg-blue-500/20 text-blue-300 light:bg-blue-100 light:text-blue-700";
+  return "bg-purple-500/20 text-purple-300 light:bg-purple-100 light:text-purple-700";
 }

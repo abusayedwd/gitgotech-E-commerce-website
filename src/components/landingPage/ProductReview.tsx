@@ -44,7 +44,7 @@ export default function ReviewsPage() {
   const loading = isLoading || isFetching;
 
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6">
       <div className="max-w-3xl mx-auto">
         <div className="container mx-auto flex mb-6 items-center gap-4">
           <button
@@ -56,13 +56,13 @@ export default function ReviewsPage() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             Product reviews
           </h1>
         </div>
 
         {!productId && (
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-400 light:text-gray-500 text-sm">
             No product selected. Open reviews from a product page.
           </p>
         )}
@@ -74,7 +74,7 @@ export default function ReviewsPage() {
         )}
 
         {productId && !loading && reviews.length === 0 && (
-          <p className="text-gray-400 text-sm">No product reviews yet.</p>
+          <p className="text-gray-400 light:text-gray-500 text-sm">No product reviews yet.</p>
         )}
 
         {productId && !loading && reviews.length > 0 && (
@@ -89,9 +89,9 @@ export default function ReviewsPage() {
               return (
                 <div
                   key={row._id}
-                  className="bg-gray-900 rounded-lg p-6 border border-gray-800"
+                  className="bg-gray-900 light:bg-white rounded-lg p-6 border border-gray-800 light:border-gray-200"
                 >
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-3">
+                  <p className="text-xs text-gray-500 light:text-gray-400 uppercase tracking-wide mb-3">
                     Product rating
                   </p>
                   <div className="flex gap-1 mb-4" aria-label={`${rating} out of 5 stars`}>
@@ -99,10 +99,10 @@ export default function ReviewsPage() {
                       <StarIcon key={star} filled={star <= rating} />
                     ))}
                   </div>
-                  <p className="text-xs text-gray-500 uppercase tracking-wide mb-2">
+                  <p className="text-xs text-gray-500 light:text-gray-400 uppercase tracking-wide mb-2">
                     Message
                   </p>
-                  <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+                  <p className="text-gray-300 light:text-gray-700 text-sm leading-relaxed whitespace-pre-wrap">
                     {message}
                   </p>
                 </div>

@@ -51,7 +51,7 @@ export default function ChangePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-[#120a2a] to-black flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-black via-[#120a2a] to-black light:from-white light:via-purple-50 light:to-white flex items-center justify-center p-6">
       <div className="w-full max-w-xl">
         {/* Header */}
         <div className="container mx-auto flex items-center gap-4 py-2">
@@ -63,13 +63,13 @@ export default function ChangePasswordPage() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             Change Password
           </h1>
         </div>
 
         {/* Card */}
-        <div className="relative rounded-2xl p-8 bg-gradient-to-br from-[#1b1233] to-[#0e0a1f] shadow-xl border border-purple-500/40">
+        <div className="relative rounded-2xl p-8 bg-gradient-to-br from-[#1b1233] to-[#0e0a1f] light:from-purple-50 light:to-white shadow-xl border border-purple-500/40 light:border-purple-200">
           {/* Inputs */}
           <div className="space-y-4">
             <PasswordInput
@@ -124,7 +124,7 @@ function PasswordInput({
 }) {
   return (
     <div>
-      <label className="block mb-2 text-sm text-gray-300">{label}</label>
+      <label className="block mb-2 text-sm text-gray-300 light:text-gray-700">{label}</label>
       <div className="relative">
         <Lock
           className="absolute left-3 top-1/2 -translate-y-1/2 text-purple-400"
@@ -135,7 +135,7 @@ function PasswordInput({
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="********"
-          className="w-full pl-10 pr-10 py-3 rounded-xl bg-black/40 text-white placeholder-gray-500 outline-none focus:ring-2 focus:ring-purple-600"
+          className="w-full pl-10 pr-10 py-3 rounded-xl bg-black/40 light:bg-white light:border light:border-gray-300 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 outline-none focus:ring-2 focus:ring-purple-600"
         />
         <button
           type="button"

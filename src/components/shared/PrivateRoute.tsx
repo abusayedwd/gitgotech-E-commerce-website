@@ -45,7 +45,7 @@ export default function PrivateRoute({
 
   if (!isHydrated) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-screen bg-black light:bg-white flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500" />
       </div>
     );
@@ -53,7 +53,7 @@ export default function PrivateRoute({
 
   if (!isLoggedIn) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center text-gray-300">
+      <div className="min-h-screen bg-black light:bg-white flex items-center justify-center text-gray-300 light:text-gray-600">
         <p className="text-sm">Redirecting to sign in…</p>
       </div>
     );

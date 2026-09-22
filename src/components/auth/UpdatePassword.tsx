@@ -81,28 +81,28 @@ export default function CreatePasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4">
+    <div className="min-h-screen bg-black light:bg-white flex items-center justify-center p-4">
       <div className="w-full max-w-lg mx-auto">
         {/* Main Card */}
-        <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] rounded-2xl p-8 relative overflow-hidden">
+        <div className=" bg-gradient-to-t from-[#241F30] to-[#161617] light:from-white light:to-purple-50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#856096] light:border-purple-200 rounded-2xl p-8 relative overflow-hidden">
           {/* Content */}
           <div className="relative z-10">
-            <h1 className="text-[36px] font-cormorant font-bold text-white text-center mb-4">Create new Password</h1>
+            <h1 className="text-[36px] font-cormorant font-bold text-white light:text-gray-900 text-center mb-4">Create new Password</h1>
 
-            <p className="text-gray-400 font-poppins text-center mb-6">
+            <p className="text-gray-400 light:text-gray-500 font-poppins text-center mb-6">
               Password must be Min 8 characters, include letters & numbers
             </p>
 
             {/* Password Fields */}
             <form onSubmit={handleSubmit}>
               <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-300 mb-2">Create Password</label>
+                <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">Create Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter your password"
                     required
                   />
@@ -128,13 +128,13 @@ export default function CreatePasswordPage() {
               </div>
 
               <div className="mb-8">
-                <label className="block text-sm font-medium text-gray-300 mb-2">Confirm Password</label>
+                <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">Confirm Password</label>
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                    className="w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     placeholder="Confirm your password"
                     required
                   />
@@ -185,13 +185,13 @@ export default function CreatePasswordPage() {
             </form>
 
             {error && (
-              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
+              <div className="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm light:bg-red-50 light:text-red-700 light:border-red-300">
                 {error}
               </div>
             )}
 
             {success && (
-              <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm">
+              <div className="mt-4 p-3 bg-green-500/10 border border-green-500/30 rounded-lg text-green-400 text-sm light:bg-green-50 light:text-green-700 light:border-green-300">
                 Password reset successfully! Redirecting to login...
               </div>
             )}
@@ -202,7 +202,7 @@ export default function CreatePasswordPage() {
         <div className="mt-4 text-center">
           <button
             onClick={() => router.back()}
-            className="text-sm text-gray-400 hover:text-gray-300 underline"
+            className="text-sm text-gray-400 light:text-gray-500 hover:text-gray-300 light:hover:text-gray-700 underline"
           >
             Go back
           </button>

@@ -61,14 +61,14 @@ function ShowroomSelector() {
 
   return (
     <div ref={ref} className="relative mb-4">
-      <p className="text-xs text-gray-500 uppercase tracking-wider mb-2 px-1">
+      <p className="text-xs text-gray-500 light:text-gray-400 uppercase tracking-wider mb-2 px-1">
         Showroom
       </p>
 
       {/* Trigger */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center gap-3 px-3 py-2.5 bg-gray-900/60 border border-gray-700 rounded-lg hover:border-purple-500/50 transition-all"
+        className="w-full flex items-center gap-3 px-3 py-2.5 bg-gray-900/60 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg hover:border-purple-500/50 transition-all"
       >
         {selected ? (
           <>
@@ -80,14 +80,14 @@ function ShowroomSelector() {
                 (e.target as HTMLImageElement).style.display = "none";
               }}
             />
-            <span className="text-white text-sm font-medium truncate flex-1 text-left">
+            <span className="text-white light:text-gray-900 text-sm font-medium truncate flex-1 text-left">
               {selected.name}
             </span>
           </>
         ) : (
           <>
             <Store size={16} className="text-gray-400 shrink-0" />
-            <span className="text-gray-400 text-sm flex-1 text-left">
+            <span className="text-gray-400 light:text-gray-500 text-sm flex-1 text-left">
               Select Showroom
             </span>
           </>
@@ -100,7 +100,7 @@ function ShowroomSelector() {
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-[#1e1e24] border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-[#1e1e24] light:bg-white border border-gray-700 light:border-gray-300 rounded-lg shadow-xl z-50 overflow-hidden">
           {showrooms.map((s: any) => (
             <button
               key={s._id}
@@ -114,7 +114,7 @@ function ShowroomSelector() {
                 );
                 setOpen(false);
               }}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-800 transition-colors ${
+              className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-gray-800 light:hover:bg-gray-100 transition-colors ${
                 selected?.id === s._id ? "bg-purple-900/30" : ""
               }`}
             >
@@ -127,7 +127,7 @@ function ShowroomSelector() {
                 }}
               />
               <div className="flex-1 text-left min-w-0">
-                <p className="text-white text-sm font-medium truncate">
+                <p className="text-white light:text-gray-900 text-sm font-medium truncate">
                   {s.showroom_name}
                 </p>
                 {!s.isApprove && (
@@ -195,20 +195,20 @@ export default function VendorDashboardShell({
 
   return (
     <PrivateRoute>
-    <div className="bg-gray-950 text-white min-h-screen pt-24">
+    <div className="bg-gray-950 light:bg-white text-white light:text-gray-900 min-h-screen pt-24">
       <div className="container mx-auto px-4">
         <div className="flex gap-6">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="lg:hidden fixed top-16 left-4 z-50 p-3 bg-[#2E2E34] rounded-lg border border-gray-800 hover:bg-gray-800 transition-colors"
+            className="lg:hidden fixed top-16 left-4 z-50 p-3 bg-[#2E2E34] light:bg-white rounded-lg border border-gray-800 light:border-gray-300 hover:bg-gray-800 light:hover:bg-gray-100 transition-colors"
           >
             {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
           {/* Sidebar - Desktop */}
           <div className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-28 bg-[#2E2E34] rounded-lg p-6 border border-gray-800">
+            <div className="sticky top-28 bg-[#2E2E34] light:bg-white rounded-lg p-6 border border-gray-800 light:border-gray-200">
               <ShowroomSelector />
               <div className="space-y-2">
                 {menuItems.map((item) => (
@@ -218,7 +218,7 @@ export default function VendorDashboardShell({
                     className={`w-full flex items-center gap-3 px-4 py-3 cursor-pointer rounded-lg transition-all ${
                       isMenuActive(item.path)
                         ? "bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white"
-                        : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                        : "text-gray-400 light:text-gray-600 hover:bg-gray-800 light:hover:bg-gray-100 hover:text-white light:hover:text-gray-900"
                     }`}
                   >
                     <item.icon size={20} />
@@ -236,7 +236,7 @@ export default function VendorDashboardShell({
                 className="lg:hidden fixed inset-0 bg-black/50 z-40 top-24"
                 onClick={() => setIsMobileMenuOpen(false)}
               />
-              <div className="lg:hidden fixed top-24 left-0 right-0 z-40 mx-4 mt-20 bg-[#2E2E34] rounded-lg p-6 border border-gray-800 shadow-2xl">
+              <div className="lg:hidden fixed top-24 left-0 right-0 z-40 mx-4 mt-20 bg-[#2E2E34] light:bg-white rounded-lg p-6 border border-gray-800 light:border-gray-200 shadow-2xl">
                 <ShowroomSelector />
                 <div className="space-y-2">
                   {menuItems.map((item) => (
@@ -246,7 +246,7 @@ export default function VendorDashboardShell({
                       className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                         isMenuActive(item.path)
                           ? "bg-gradient-to-l from-[#B630F4] to-[#2ACCED] text-white"
-                          : "text-gray-400 hover:bg-gray-800 hover:text-white"
+                          : "text-gray-400 light:text-gray-600 hover:bg-gray-800 light:hover:bg-gray-100 hover:text-white light:hover:text-gray-900"
                       }`}
                     >
                       <item.icon size={20} />

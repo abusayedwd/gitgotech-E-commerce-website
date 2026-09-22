@@ -215,8 +215,8 @@ function DetailRow({
   if (value === undefined || value === null || value === "") return null;
   return (
     <div className="flex justify-between items-start gap-4">
-      <span className="text-gray-400 text-sm shrink-0">{label}</span>
-      <span className="text-white font-medium text-sm text-right break-all">
+      <span className="text-gray-400 light:text-gray-500 text-sm shrink-0">{label}</span>
+      <span className="text-white light:text-gray-900 font-medium text-sm text-right break-all">
         {value}
       </span>
     </div>
@@ -233,8 +233,8 @@ function SectionCard({
   children: ReactNode;
 }) {
   return (
-    <div className="bg-gradient-to-tr from-[#05011a] via-[#090322] to-[#05011a] border border-gray-800 rounded-2xl p-6">
-      <h2 className="text-lg font-semibold mb-5 border-b border-gray-700/50 pb-3 flex items-center gap-2 text-white">
+    <div className="bg-gradient-to-tr from-[#05011a] via-[#090322] to-[#05011a] light:from-white light:via-purple-50/40 light:to-white border border-gray-800 light:border-gray-200 rounded-2xl p-6">
+      <h2 className="text-lg font-semibold mb-5 border-b border-gray-700/50 light:border-gray-200 pb-3 flex items-center gap-2 text-white light:text-gray-900">
         {icon}
         {title}
       </h2>
@@ -245,7 +245,7 @@ function SectionCard({
 
 function AddressBlock({ info }: { info?: ContactInfo }) {
   if (!info) {
-    return <p className="text-sm text-gray-500">No address on this return.</p>;
+    return <p className="text-sm text-gray-500 light:text-gray-400">No address on this return.</p>;
   }
 
   const location = [info.address, info.state, info.country, info.zipcode]
@@ -281,7 +281,7 @@ function TrackingBlock({ events }: { events: TrackingEvent[] }) {
     expanded || !canToggle ? sorted : sorted.slice(-TRACKING_PREVIEW_COUNT);
 
   if (sorted.length === 0) {
-    return <p className="text-sm text-gray-500">No tracking updates yet.</p>;
+    return <p className="text-sm text-gray-500 light:text-gray-400">No tracking updates yet.</p>;
   }
 
   return (
@@ -310,13 +310,13 @@ function TrackingBlock({ events }: { events: TrackingEvent[] }) {
                     {formatStatusLabel(event.status)}
                   </span>
                   {event.createdAt && (
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs text-gray-500 light:text-gray-400">
                       {formatDate(event.createdAt)}
                     </span>
                   )}
                 </div>
                 {event.message && (
-                  <p className="text-sm text-gray-300 mt-1">{event.message}</p>
+                  <p className="text-sm text-gray-300 light:text-gray-700 mt-1">{event.message}</p>
                 )}
               </div>
             </li>
@@ -327,7 +327,7 @@ function TrackingBlock({ events }: { events: TrackingEvent[] }) {
         <button
           type="button"
           onClick={() => setExpanded((open) => !open)}
-          className="mt-4 text-sm text-purple-300 hover:text-purple-200 font-medium"
+          className="mt-4 text-sm text-purple-300 light:text-purple-600 hover:text-purple-200 light:hover:text-purple-700 font-medium"
         >
           {expanded ? "See less" : "See more"}
         </button>
@@ -642,9 +642,9 @@ function ReturnItemCard({
     getReturnProductImage(item.product) || snapshot?.thumbnail;
 
   return (
-    <div className="rounded-xl border border-gray-800/80 bg-black/20 p-4 space-y-4">
+    <div className="rounded-xl border border-gray-800/80 light:border-gray-200 bg-black/20 light:bg-gray-50 p-4 space-y-4">
       <div className="flex items-start gap-4">
-        <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-800 flex items-center justify-center shrink-0">
+        <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-800 light:bg-gray-100 flex items-center justify-center shrink-0">
           <img
             src={buildImageUrl(image, "/images/jacket.png")}
             alt={name}
@@ -657,11 +657,11 @@ function ReturnItemCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="font-semibold text-white truncate">{name}</p>
+              <p className="font-semibold text-white light:text-gray-900 truncate">{name}</p>
               {snapshot?.category && (
-                <p className="text-xs text-gray-400 mt-0.5">{snapshot.category}</p>
+                <p className="text-xs text-gray-400 light:text-gray-500 mt-0.5">{snapshot.category}</p>
               )}
-              <p className="text-sm text-gray-300 mt-2">
+              <p className="text-sm text-gray-300 light:text-gray-700 mt-2">
                 Size {item.sizeType || "—"} · Qty {item.quantity ?? 1}
               </p>
             </div>
@@ -680,21 +680,21 @@ function ReturnItemCard({
 
       {item.customerReason && (
         <div>
-          <p className="text-xs text-gray-400 mb-1">Your reason</p>
-          <p className="text-sm text-gray-200">{item.customerReason}</p>
+          <p className="text-xs text-gray-400 light:text-gray-500 mb-1">Your reason</p>
+          <p className="text-sm text-gray-200 light:text-gray-700">{item.customerReason}</p>
         </div>
       )}
 
       {item.attachments && item.attachments.length > 0 && (
         <div>
-          <p className="text-xs text-gray-400 mb-2">Photos you uploaded</p>
+          <p className="text-xs text-gray-400 light:text-gray-500 mb-2">Photos you uploaded</p>
           <AttachmentGrid files={item.attachments} />
         </div>
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-        <div className="rounded-lg border border-gray-800 p-3 space-y-2">
-          <p className="text-xs uppercase tracking-wide text-gray-500">Refund</p>
+        <div className="rounded-lg border border-gray-800 light:border-gray-200 p-3 space-y-2">
+          <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400">Refund</p>
           <DetailRow
             label="Paid unit"
             value={formatMoney(item.refundLine?.paidUnitPrice, unit)}
@@ -708,14 +708,14 @@ function ReturnItemCard({
             value={item.refundConsumed ? "Yes" : "Not yet"}
           />
         </div>
-        <div className="rounded-lg border border-gray-800 p-3 space-y-2">
-          <p className="text-xs uppercase tracking-wide text-gray-500">
+        <div className="rounded-lg border border-gray-800 light:border-gray-200 p-3 space-y-2">
+          <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400">
             Refund hold
           </p>
           <DetailRow label="Amount" value={formatMoney(item.holdAmount, unit)} />
           {item.holdStatus && (
             <div className="flex justify-between items-center gap-3">
-              <span className="text-gray-400 text-sm">Status</span>
+              <span className="text-gray-400 light:text-gray-500 text-sm">Status</span>
               <span
                 className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${statusBadgeClass(item.holdStatus, "chip")}`}
               >
@@ -731,9 +731,9 @@ function ReturnItemCard({
       </div>
 
       {item.vendorReview && (
-        <div className="rounded-lg border border-gray-800 p-3 space-y-2">
+        <div className="rounded-lg border border-gray-800 light:border-gray-200 p-3 space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400">
               Vendor review
             </p>
             {item.vendorReview.decision && (
@@ -753,9 +753,9 @@ function ReturnItemCard({
       )}
 
       {item.inspection && (
-        <div className="rounded-lg border border-gray-800 p-3 space-y-2">
+        <div className="rounded-lg border border-gray-800 light:border-gray-200 p-3 space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400">
               Inspection
             </p>
             {item.inspection.result && (
@@ -795,7 +795,7 @@ export default function ReturnOrderDetails() {
 
   if (!returnId || returnId === "undefined") {
     return (
-      <div className="min-h-screen mt-20 bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen mt-20 bg-[#0a0a0f] light:bg-white flex items-center justify-center">
         <div className="text-red-400 text-xl">Missing return id</div>
       </div>
     );
@@ -803,7 +803,7 @@ export default function ReturnOrderDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen mt-20 bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen mt-20 bg-[#0a0a0f] light:bg-white flex items-center justify-center">
         <div className="text-purple-400 text-xl">Loading return details...</div>
       </div>
     );
@@ -811,7 +811,7 @@ export default function ReturnOrderDetails() {
 
   if (error || !returnData) {
     return (
-      <div className="min-h-screen mt-20 bg-[#0a0a0f] flex items-center justify-center">
+      <div className="min-h-screen mt-20 bg-[#0a0a0f] light:bg-white flex items-center justify-center">
         <div className="text-red-400 text-xl">
           {getApiMessage(error, "Failed to load return details")}
         </div>
@@ -826,7 +826,7 @@ export default function ReturnOrderDetails() {
   const originalProducts = returnData.order?.products || [];
 
   return (
-    <div className="min-h-screen mt-20 bg-[#0a0a0f] p-4 md:p-8">
+    <div className="min-h-screen mt-20 bg-[#0a0a0f] light:bg-white p-4 md:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -838,10 +838,10 @@ export default function ReturnOrderDetails() {
               <ArrowLeft className="w-5 h-5 text-purple-400" />
             </button>
             <div>
-              <h1 className="text-2xl font-semibold text-gray-200 font-cormorant">
+              <h1 className="text-2xl font-semibold text-gray-200 light:text-gray-800 font-cormorant">
                 Return Details
               </h1>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-gray-500 light:text-gray-400 mt-0.5">
                 #{returnData._id.slice(-8)}
                 {returnData.trackingNumber
                   ? ` · Tracking ${returnData.trackingNumber}`
@@ -912,7 +912,7 @@ export default function ReturnOrderDetails() {
                   })}
                 </div>
               ) : (
-                <p className="text-gray-500 text-center py-6">
+                <p className="text-gray-500 light:text-gray-400 text-center py-6">
                   No returned items on this request.
                 </p>
               )}
@@ -932,9 +932,9 @@ export default function ReturnOrderDetails() {
                     return (
                       <div
                         key={product._id || `${getProductId(product.product)}-${index}`}
-                        className="flex items-center gap-3 rounded-xl border border-gray-800/80 bg-black/20 p-3"
+                        className="flex items-center gap-3 rounded-xl border border-gray-800/80 light:border-gray-200 bg-black/20 light:bg-gray-50 p-3"
                       >
-                        <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-800 shrink-0">
+                        <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-800 light:bg-gray-100 shrink-0">
                           <img
                             src={buildImageUrl(image, "/images/jacket.png")}
                             alt={name}
@@ -945,15 +945,15 @@ export default function ReturnOrderDetails() {
                           />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-white truncate">
+                          <p className="text-sm font-medium text-white light:text-gray-900 truncate">
                             {name}
                           </p>
                           {product.productSnapshot?.category && (
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-gray-400 light:text-gray-500">
                               {product.productSnapshot.category}
                             </p>
                           )}
-                          <p className="text-xs text-gray-400 mt-1">
+                          <p className="text-xs text-gray-400 light:text-gray-500 mt-1">
                             {lines
                               .map((line) => `${line.type} × ${line.quantity}`)
                               .join(", ") || "—"}
@@ -1031,9 +1031,9 @@ export default function ReturnOrderDetails() {
                     value={formatMoney(price.deliveryCharge, unit)}
                   />
                 )}
-                <div className="flex justify-between items-center pt-3 border-t border-gray-700/50">
-                  <span className="text-gray-300 font-medium">Total</span>
-                  <span className="text-white font-semibold text-lg">
+                <div className="flex justify-between items-center pt-3 border-t border-gray-700/50 light:border-gray-200">
+                  <span className="text-gray-300 light:text-gray-700 font-medium">Total</span>
+                  <span className="text-white light:text-gray-900 font-semibold text-lg">
                     {formatMoney(total, unit)}
                   </span>
                 </div>

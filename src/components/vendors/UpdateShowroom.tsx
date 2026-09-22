@@ -164,7 +164,7 @@ export default function UpdateShowroom() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       {/* Header */}
       <div className="max-w-4xl flex items-center gap-2 mx-auto mt-8 md:mt-20">
         <button
@@ -178,17 +178,17 @@ export default function UpdateShowroom() {
             </svg>
           </div>
         </button>
-        <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Update Showroom</h1>
+        <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">Update Showroom</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto mt-6 space-y-8">
         {/* Logo */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-gray-300 mb-4">Business Logo</h2>
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-4">Business Logo</h2>
           <div className="flex flex-col items-center">
             {logoPreview ? (
               <div className="relative">
-                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 border-2 border-purple-500/50">
+                <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-800 light:bg-gray-100 border-2 border-purple-500/50">
                   <img src={logoPreview} alt="Logo" className="w-full h-full object-cover" />
                 </div>
                 <button
@@ -200,9 +200,9 @@ export default function UpdateShowroom() {
                 </button>
               </div>
             ) : (
-              <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-purple-500/50 rounded-full cursor-pointer bg-gray-900/50 hover:bg-gray-800/50 transition">
+              <label className="flex flex-col items-center justify-center w-32 h-32 border-2 border-dashed border-purple-500/50 rounded-full cursor-pointer bg-gray-900/50 light:bg-gray-100 hover:bg-gray-800/50 light:hover:bg-gray-200 transition">
                 <Upload className="w-8 h-8 text-purple-400 mb-2" />
-                <span className="text-xs text-gray-400">Upload</span>
+                <span className="text-xs text-gray-400 light:text-gray-500">Upload</span>
                 <input type="file" accept="image/*" onChange={handleLogoChange} className="hidden" />
               </label>
             )}
@@ -216,11 +216,11 @@ export default function UpdateShowroom() {
         </div>
 
         {/* Information */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-gray-300 mb-6">Showroom Information</h2>
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-6">Showroom Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label className="block text-gray-300 light:text-gray-600 text-sm font-medium mb-2">
                 Showroom Name <span className="text-red-400">*</span>
               </label>
               <input
@@ -229,21 +229,21 @@ export default function UpdateShowroom() {
                 onChange={(e) => setFormData((p) => ({ ...p, showroom_name: e.target.value }))}
                 placeholder="e.g., Premium Auto Gallery"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
             <div>
-              <label className="block text-gray-300 text-sm font-medium mb-2">Referral Code</label>
+              <label className="block text-gray-300 light:text-gray-600 text-sm font-medium mb-2">Referral Code</label>
               <input
                 type="text"
                 value={formData.referralCode}
                 onChange={(e) => setFormData((p) => ({ ...p, referralCode: e.target.value }))}
                 placeholder="e.g., REF12444"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
             <div className="md:col-span-2">
-              <label className="block text-gray-300 text-sm font-medium mb-2">
+              <label className="block text-gray-300 light:text-gray-600 text-sm font-medium mb-2">
                 Showroom Address <span className="text-red-400">*</span>
               </label>
               <input
@@ -252,16 +252,16 @@ export default function UpdateShowroom() {
                 onChange={(e) => setFormData((p) => ({ ...p, showroom_address: e.target.value }))}
                 placeholder="e.g., House 45, Road 12, Gulshan-1, Dhaka"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
         </div>
 
         {/* Categories */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-300">Categories</h2>
+            <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700">Categories</h2>
             <button
               type="button"
               onClick={addCategory}
@@ -278,7 +278,7 @@ export default function UpdateShowroom() {
                   value={cat}
                   onChange={(e) => handleCategoryChange(i, e.target.value)}
                   placeholder="e.g., Luxury Cars"
-                  className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="flex-1 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-2.5 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                 />
                 {categories.length > 1 && (
                   <button
@@ -295,9 +295,9 @@ export default function UpdateShowroom() {
         </div>
 
         {/* Location */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-gray-300">Location</h2>
+            <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700">Location</h2>
             <button
               type="button"
               onClick={() => setShowMap((v) => !v)}
@@ -310,25 +310,25 @@ export default function UpdateShowroom() {
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block text-gray-400 text-sm mb-1">Latitude</label>
+              <label className="block text-gray-400 light:text-gray-500 text-sm mb-1">Latitude</label>
               <input
                 type="number"
                 step="any"
                 value={location.lat || ''}
                 onChange={(e) => setLocation((p) => ({ ...p, lat: parseFloat(e.target.value) || 0 }))}
                 placeholder="e.g., 23.8103"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-2.5 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
             <div>
-              <label className="block text-gray-400 text-sm mb-1">Longitude</label>
+              <label className="block text-gray-400 light:text-gray-500 text-sm mb-1">Longitude</label>
               <input
                 type="number"
                 step="any"
                 value={location.lng || ''}
                 onChange={(e) => setLocation((p) => ({ ...p, lng: parseFloat(e.target.value) || 0 }))}
                 placeholder="e.g., 90.4125"
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-2.5 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
             </div>
           </div>
@@ -346,14 +346,14 @@ export default function UpdateShowroom() {
                 lng={location.lng || 90.4125}
                 onChange={(lat, lng) => setLocation({ lat, lng })}
               />
-              <p className="text-xs text-gray-500 mt-2">Click on map or search to set location</p>
+              <p className="text-xs text-gray-500 light:text-gray-400 mt-2">Click on map or search to set location</p>
             </>
           )}
         </div>
 
         {/* Documents */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-gray-300 mb-4">Documents (leave empty to keep existing)</h2>
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-4">Documents (leave empty to keep existing)</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FileInput label="NID Image" file={nidImage} onChange={(e) => handleFileChange(setNidImage, e)} />
             <FileInput label="Owner Image" file={ownerImage} onChange={(e) => handleFileChange(setOwnerImage, e)} />
@@ -361,13 +361,13 @@ export default function UpdateShowroom() {
         </div>
 
         {/* Schedule */}
-        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 border border-purple-500/30 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-gray-300 mb-6">Operating Hours</h2>
+        <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
+          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-6">Operating Hours</h2>
           <div className="space-y-4">
             {schedule.map((s, i) => (
               <div key={s.day} className="flex items-center gap-3 flex-wrap">
-                <span className="text-white font-medium w-24 shrink-0">{s.day}</span>
-                <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer shrink-0">
+                <span className="text-white light:text-gray-900 font-medium w-24 shrink-0">{s.day}</span>
+                <label className="flex items-center gap-2 text-sm text-gray-400 light:text-gray-500 cursor-pointer shrink-0">
                   <input
                     type="checkbox"
                     checked={s.isOpen}
@@ -382,14 +382,14 @@ export default function UpdateShowroom() {
                       type="time"
                       value={s.open}
                       onChange={(e) => handleScheduleChange(i, 'open', e.target.value)}
-                      className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                      className="bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-3 py-2 text-white light:text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                     />
-                    <span className="text-gray-500">—</span>
+                    <span className="text-gray-500 light:text-gray-400">—</span>
                     <input
                       type="time"
                       value={s.close}
                       onChange={(e) => handleScheduleChange(i, 'close', e.target.value)}
-                      className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+                      className="bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-3 py-2 text-white light:text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
                     />
                   </div>
                 ) : (
@@ -426,10 +426,10 @@ function FileInput({
 }) {
   return (
     <div>
-      <label className="block text-gray-300 text-sm font-medium mb-2">{label}</label>
-      <label className="flex items-center gap-3 cursor-pointer bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 hover:border-purple-500 transition">
+      <label className="block text-gray-300 light:text-gray-600 text-sm font-medium mb-2">{label}</label>
+      <label className="flex items-center gap-3 cursor-pointer bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg px-4 py-3 hover:border-purple-500 transition">
         <Upload className="w-4 h-4 text-purple-400 shrink-0" />
-        <span className="text-sm text-gray-400 truncate">
+        <span className="text-sm text-gray-400 light:text-gray-500 truncate">
           {file ? file.name : 'Choose file...'}
         </span>
         <input type="file" accept="image/*" onChange={onChange} className="hidden" />

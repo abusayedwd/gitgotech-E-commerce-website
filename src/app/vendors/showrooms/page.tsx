@@ -5,7 +5,7 @@ export default function VendorShowroomsPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex justify-center items-center">
+        <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white flex justify-center items-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
         </div>
       }

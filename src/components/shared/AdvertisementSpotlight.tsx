@@ -127,7 +127,7 @@ export default function AdvertisementSpotlight({
                   className={`h-1.5 rounded-full transition-all ${
                     i === index
                       ? "w-7 bg-gradient-to-r from-[#2ACCED] to-[#B630F4]"
-                      : "w-1.5 bg-white/25 hover:bg-white/40"
+                      : "w-1.5 bg-gray-400/40 light:bg-gray-400/60 hover:bg-gray-400/60 light:hover:bg-gray-500/60"
                   }`}
                 />
               ))}
@@ -176,12 +176,12 @@ function SpotlightCard({
 
   return (
     <div className={shaking ? "ad-spotlight-shake" : undefined}>
-    <article className="relative overflow-hidden rounded-2xl border border-purple-500/25 bg-gradient-to-r from-black via-[#0f0924] to-black shadow-[0_0_40px_rgba(97,0,255,0.12)]">
+    <article className="relative overflow-hidden rounded-2xl border border-purple-500/25 light:border-purple-200 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white shadow-[0_0_40px_rgba(97,0,255,0.12)]">
       <div className="absolute inset-0 bg-gradient-to-r from-[#6100FF]/10 via-transparent to-[#2ACCED]/10 pointer-events-none" />
 
       <div className="relative p-5 sm:p-6">
         <div className="flex items-center justify-between gap-3">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-400/30 bg-purple-500/10 px-2.5 py-1 text-[10px] font-semibold tracking-[0.16em] text-purple-200">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-400/30 bg-purple-500/10 px-2.5 py-1 text-[10px] font-semibold tracking-[0.16em] text-purple-200 light:text-purple-700">
             <Sparkles className="w-3 h-3 text-[#2ACCED]" />
             SPONSORED
           </span>
@@ -190,7 +190,7 @@ function SpotlightCard({
               <button
                 type="button"
                 onClick={onPrev}
-                className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-white/70 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-white/10 light:hover:bg-gray-100"
                 aria-label="Previous ad"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -198,7 +198,7 @@ function SpotlightCard({
               <button
                 type="button"
                 onClick={onNext}
-                className="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10"
+                className="p-1.5 rounded-lg text-white/70 light:text-gray-500 hover:text-white light:hover:text-gray-900 hover:bg-white/10 light:hover:bg-gray-100"
                 aria-label="Next ad"
               >
                 <ChevronRight className="w-5 h-5" />
@@ -221,12 +221,12 @@ function SpotlightCard({
           <div className="min-w-0 flex-1">
             <p className="text-sm text-[#2ACCED]">{ad.businessName}</p>
             {ad.promotionalHeadline && (
-              <h3 className="font-cormorant text-2xl sm:text-3xl font-semibold text-white mt-1 leading-snug">
+              <h3 className="font-cormorant text-2xl sm:text-3xl font-semibold text-white light:text-gray-900 mt-1 leading-snug">
                 {ad.promotionalHeadline}
               </h3>
             )}
             {ad.shortDescription && (
-              <p className="text-sm text-gray-400 mt-2 leading-relaxed line-clamp-3">
+              <p className="text-sm text-gray-400 light:text-gray-500 mt-2 leading-relaxed line-clamp-3">
                 {ad.shortDescription}
               </p>
             )}
@@ -255,7 +255,7 @@ function SpotlightCard({
                 <button
                   type="button"
                   onClick={onLearnMore}
-                  className="inline-flex items-center gap-1.5 text-sm text-gray-300 hover:text-white"
+                  className="inline-flex items-center gap-1.5 text-sm text-gray-300 light:text-gray-600 hover:text-white light:hover:text-gray-900"
                 >
                   <Info className="w-4 h-4 text-purple-300" />
                   Learn More
@@ -268,7 +268,7 @@ function SpotlightCard({
 
       {showControls && (
         <div
-          className="absolute bottom-0 left-0 right-0 h-1 bg-white/10"
+          className="absolute bottom-0 left-0 right-0 h-1 bg-white/10 light:bg-gray-200"
           aria-hidden
         >
           <div

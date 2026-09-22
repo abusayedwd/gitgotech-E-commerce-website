@@ -3,7 +3,7 @@ import { Suspense } from "react";
 
 export default function ApplyJobPage() {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black light:bg-white">
       {/* Application Form */}
       <div className="pb-12">
         <Suspense

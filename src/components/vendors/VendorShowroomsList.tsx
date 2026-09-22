@@ -27,14 +27,14 @@ export default function VendorShowroomsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black flex justify-center items-center">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white flex justify-center items-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8 pt-24">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8 pt-24">
       <div className="container mx-auto max-w-6xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
@@ -42,7 +42,7 @@ export default function VendorShowroomsPage() {
             <h1 className="text-3xl font-cormorant font-semibold mb-2">
               My Showrooms
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 light:text-gray-500 text-sm">
               Welcome, {vendorProfile?.name || "Vendor"} • {showrooms.length}{" "}
               Showroom{showrooms.length !== 1 ? "s" : ""}
             </p>
@@ -58,12 +58,12 @@ export default function VendorShowroomsPage() {
 
         {/* Showrooms Grid */}
         {showrooms.length === 0 ? (
-          <div className="text-center py-20 bg-[#1B1B1F] rounded-2xl border border-gray-700/50">
+          <div className="text-center py-20 bg-[#1B1B1F] light:bg-white rounded-2xl border border-gray-700/50 light:border-gray-200">
             <Store className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h2 className="text-white text-xl font-semibold mb-2">
+            <h2 className="text-white light:text-gray-900 text-xl font-semibold mb-2">
               No Showrooms Yet
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 light:text-gray-500 mb-6">
               Create your first showroom to start displaying products
             </p>
             <button
@@ -81,7 +81,7 @@ export default function VendorShowroomsPage() {
                 onClick={() =>
                   router.push(`/v-profile/view-showroom?id=${showroom._id}`)
                 }
-                className="bg-[#1B1B1F] backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 transition-all cursor-pointer group"
+                className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm rounded-xl overflow-hidden border border-gray-700/50 light:border-gray-200 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/10 transition-all cursor-pointer group"
               >
                 {/* Showroom Image */}
                 <div className="relative h-48 overflow-hidden">
@@ -108,17 +108,17 @@ export default function VendorShowroomsPage() {
 
                 {/* Showroom Info */}
                 <div className="p-4">
-                  <h3 className="text-white font-semibold text-lg mb-2 line-clamp-1">
+                  <h3 className="text-white light:text-gray-900 font-semibold text-lg mb-2 line-clamp-1">
                     {showroom.showroom_name}
                   </h3>
 
-                  <div className="flex items-start gap-2 text-gray-400 text-sm mb-4">
+                  <div className="flex items-start gap-2 text-gray-400 light:text-gray-500 text-sm mb-4">
                     <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
                     <p className="line-clamp-2">{showroom.showroom_address}</p>
                   </div>
 
                   {/* Created Date */}
-                  <p className="text-gray-500 text-xs mb-4">
+                  <p className="text-gray-500 light:text-gray-400 text-xs mb-4">
                     Created:{" "}
                     {new Date(showroom.createdAt).toLocaleDateString("en-US", {
                       year: "numeric",
@@ -128,7 +128,7 @@ export default function VendorShowroomsPage() {
                   </p>
 
                   {/* View Details Button */}
-                  <button className="w-full bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 hover:text-purple-300 py-2 rounded-lg text-sm font-medium transition-colors">
+                  <button className="w-full bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 hover:text-purple-300 py-2 rounded-lg text-sm font-medium transition-colors light:bg-purple-100 light:text-purple-700 light:hover:bg-purple-200">
                     View Details
                   </button>
                 </div>

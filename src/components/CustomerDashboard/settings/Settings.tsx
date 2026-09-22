@@ -48,7 +48,7 @@ export default function SettingsPage() {
     };
 
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#120a2a] to-black flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#120a2a] to-black light:from-white light:via-purple-50 light:to-white flex items-center justify-center px-4">
         <div className="w-full max-w-2xl">
            <div className="container pb-4 mx-auto flex items-center gap-4">
              <button onClick={()=> router.back()} className="flex items-center text-purple-400 hover:text-purple-300 transition-colors">
@@ -56,7 +56,7 @@ export default function SettingsPage() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">Settings</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">Settings</h1>
         </div>
 
           {/* Settings Card */}
@@ -169,10 +169,10 @@ function SettingButton({ icon, label, primary, danger, onClick }: { icon: ReactN
   const base = "flex items-center justify-center gap-3 w-full py-3 rounded-xl text-sm font-medium transition";
 
   const styles = danger
-    ? "bg-red-900/50 text-red-400 hover:bg-red-900/70"
+    ? "bg-red-900/50 light:bg-red-100 text-red-400 light:text-red-600 hover:bg-red-900/70 light:hover:bg-red-200"
     : primary
     ? "bg-[#6100FF] text-white hover:bg-purple-700"
-    : "bg-white/10 border border-gray-700 text-gray-200 hover:bg-white/10";
+    : "bg-white/10 light:bg-gray-100 border border-gray-700 light:border-gray-300 text-gray-200 light:text-gray-700 hover:bg-white/10 light:hover:bg-gray-200";
 
   return (
     <button className={`${base} ${styles}`} onClick={onClick}>

@@ -142,7 +142,7 @@ export default function ReturnPolicyPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6">
       <div className="max-w-4xl mx-auto">
         
         {/* Header */}
@@ -153,19 +153,19 @@ export default function ReturnPolicyPage() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-2xl font-semibold text-gray-300 font-cormorant">Return Policy</h1>
+          <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">Return Policy</h1>
         </div>
         
 
         {/* Content Card */}
-        <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 border-2 border-blue-500/50 rounded-3xl p-6 md:p-10 backdrop-blur-sm">
-          <div className="space-y-4 text-sm text-gray-400 leading-relaxed   overflow-y-auto pr-2 custom-scrollbar">
+        <div className="bg-gradient-to-br from-gray-800/40 to-purple-900/20 light:from-purple-50 light:to-white border-2 border-blue-500/50 light:border-blue-300 rounded-3xl p-6 md:p-10 backdrop-blur-sm">
+          <div className="space-y-4 text-sm text-gray-400 light:text-gray-600 leading-relaxed   overflow-y-auto pr-2 custom-scrollbar">
             {policyContent.map((section, index) => (
               <div key={index}>
                 {section.title && (
-                  <h3 className="text-white font-semibold mb-2">{section.title}</h3>
+                  <h3 className="text-white light:text-gray-900 font-semibold mb-2">{section.title}</h3>
                 )}
-                <p className="text-gray-400">{section.text}</p>
+                <p className="text-gray-400 light:text-gray-600">{section.text}</p>
               </div>
             ))}
           </div>

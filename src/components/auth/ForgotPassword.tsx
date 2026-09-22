@@ -69,10 +69,10 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black flex items-center justify-center p-4 py-8">
+    <div className="min-h-screen bg-black light:bg-white flex items-center justify-center p-4 py-8">
       {/* Forgot Password Card */}
       <div className="relative w-full max-w-lg">
-        <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#8645a5] rounded-2xl p-4">
+        <div className="relative bg-gradient-to-t from-[#241F30] to-[#161617] light:from-white light:to-purple-50 border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#8645a5] light:border-purple-200 rounded-2xl p-4">
           {/* Logo */}
           <div className="flex items-start justify-between">
             <Image
@@ -86,10 +86,10 @@ export default function ForgotPasswordPage() {
 
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-3xl font-cormorant font-bold text-white mb-2">
+            <h1 className="text-3xl font-cormorant font-bold text-white light:text-gray-900 mb-2">
               Forgot Password?
             </h1>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 light:text-gray-500 text-sm">
               Forgot your password? <br /> Enter your email to receive a secure reset link.
             </p>
           </div>
@@ -98,7 +98,7 @@ export default function ForgotPasswordPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Email Field */}
               <div>
-                <label className="block text-white text-sm font-medium mb-2">Email Address</label>
+                <label className="block text-white light:text-gray-800 text-sm font-medium mb-2">Email Address</label>
                 <div className="relative">
                   <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-purple-400" />
                   <input
@@ -106,10 +106,10 @@ export default function ForgotPasswordPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter Your Email"
-                    className={`w-full bg-gray-800/50 border rounded-xl pl-12 pr-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 transition-all ${
+                    className={`w-full bg-gray-800/50 light:bg-white border rounded-xl pl-12 pr-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
                       errors
                         ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20'
-                        : 'border-gray-700 focus:border-purple-500 focus:ring-purple-500/20'
+                        : 'border-gray-700 light:border-gray-300 focus:border-purple-500 focus:ring-purple-500/20'
                     }`}
                   />
                 </div>
@@ -150,8 +150,8 @@ export default function ForgotPasswordPage() {
 
               {/* Success Message */}
               <div>
-                <h2 className="text-xl font-bold text-white mb-2">Check Your Email</h2>
-                <p className="text-gray-400 text-sm">
+                <h2 className="text-xl font-bold text-white light:text-gray-900 mb-2">Check Your Email</h2>
+                <p className="text-gray-400 light:text-gray-500 text-sm">
                   We've sent a password reset link to <span className="text-purple-400">{email}</span>.
                   Please check your inbox and follow the instructions to reset your password.
                 </p>
@@ -161,14 +161,14 @@ export default function ForgotPasswordPage() {
               <div className="space-y-3">
                 <button
                   onClick={handleReset}
-                  className="w-full bg-gray-800/50 hover:bg-gray-700/50 text-white font-medium py-3 rounded-xl transition-colors"
+                  className="w-full bg-gray-800/50 light:bg-gray-100 hover:bg-gray-700/50 light:hover:bg-gray-200 text-white light:text-gray-900 font-medium py-3 rounded-xl transition-colors"
                 >
                   Reset Another Email
                 </button>
 
                 <button
                   onClick={() => window.location.href = '/auth/login'}
-                  className="w-full bg-transparent border border-gray-700 hover:border-gray-600 text-gray-400 hover:text-white font-medium py-3 rounded-xl transition-colors"
+                  className="w-full bg-transparent border border-gray-700 light:border-gray-300 hover:border-gray-600 text-gray-400 light:text-gray-600 hover:text-white light:hover:text-gray-900 font-medium py-3 rounded-xl transition-colors"
                 >
                   Back to Login
                 </button>
@@ -179,7 +179,7 @@ export default function ForgotPasswordPage() {
           {/* Back to Login Link */}
           {!isSubmitted && (
             <div className="text-center pt-4">
-              <span className="text-gray-400 text-sm">Remembered your password? </span>
+              <span className="text-gray-400 light:text-gray-500 text-sm">Remembered your password? </span>
               <span
                 onClick={() => window.location.href = '/auth/login'}
                 className="text-sm text-purple-400 hover:text-purple-300 font-medium transition-colors cursor-pointer"

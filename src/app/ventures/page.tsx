@@ -12,11 +12,11 @@ const ways = [
 
 export default function BrowseVenturesPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#0f0924] to-black text-white pt-28 pb-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 pt-28 pb-16 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-5xl">
         <FooterPageBack className="mb-6" />
         <h1 className="text-3xl md:text-4xl font-cormorant font-semibold mb-3">Browse ventures</h1>
-        <p className="text-gray-400 text-sm md:text-base max-w-2xl mb-10">
+        <p className="text-gray-400 light:text-gray-500 text-sm md:text-base max-w-2xl mb-10">
           Explore the main areas of the site—whether you are shopping, planning an event, or working with vendors.
         </p>
         <div className="grid gap-4 sm:grid-cols-2">
@@ -24,10 +24,10 @@ export default function BrowseVenturesPage() {
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-xl border border-gray-700/60 bg-gray-900/50 p-5 transition-colors hover:border-purple-500/50 hover:bg-gray-900/80"
+              className="rounded-xl border border-gray-700/60 light:border-gray-200 bg-gray-900/50 light:bg-white p-5 transition-colors hover:border-purple-500/50 hover:bg-gray-900/80 light:hover:bg-gray-50"
             >
-              <h2 className="text-lg font-semibold text-white mb-2">{item.title}</h2>
-              <p className="text-sm text-gray-400">{item.description}</p>
+              <h2 className="text-lg font-semibold text-white light:text-gray-900 mb-2">{item.title}</h2>
+              <p className="text-sm text-gray-400 light:text-gray-500">{item.description}</p>
               <span className="mt-3 inline-block text-sm text-purple-400">Open →</span>
             </Link>
           ))}

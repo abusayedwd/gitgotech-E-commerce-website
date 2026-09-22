@@ -29,7 +29,7 @@ export default function FooterPageBack({ className = '', showHomeLink = false }:
       {showHomeLink && (
         <Link
           href="/"
-          className="text-sm text-gray-400 hover:text-white transition-colors"
+          className="text-sm text-gray-400 light:text-gray-500 hover:text-white light:hover:text-gray-900 transition-colors"
         >
           Home
         </Link>

@@ -359,10 +359,10 @@ const DeliveryRequestFrom = () => {
   ];
 
   const inputClass =
-    "w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] transition-colors";
+    "w-full px-4 py-3 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] transition-colors";
 
   return (
-    <div className="min-h-screen mt-24 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-6">
+    <div className="min-h-screen mt-24 container mx-auto bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -380,7 +380,7 @@ const DeliveryRequestFrom = () => {
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
             {/* Product Information */}
-            <div className="rounded-lg p-4 border border-purple-500">
+            <div className="rounded-lg p-4 border border-purple-500 light:border-purple-300">
               <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
                 <h2 className="text-xl font-semibold py-2">
                   Product Information
@@ -389,7 +389,7 @@ const DeliveryRequestFrom = () => {
               <div className="space-y-4">
                 {/* Image Upload */}
                 <div className="flex items-center space-x-4">
-                  <div className="relative w-24 h-24 bg-gray-800 rounded-md overflow-hidden">
+                  <div className="relative w-24 h-24 bg-gray-800 light:bg-gray-100 rounded-md overflow-hidden">
                     {formData.productImagePreview ? (
                       <img
                         src={formData.productImagePreview}
@@ -424,7 +424,7 @@ const DeliveryRequestFrom = () => {
                       </button>
                     )}
                   </div>
-                  <label className="cursor-pointer bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-md flex items-center space-x-2">
+                  <label className="cursor-pointer bg-gray-800 light:bg-gray-100 hover:bg-gray-700 light:hover:bg-gray-200 px-4 py-2 rounded-md flex items-center space-x-2">
                     <Upload className="w-5 h-5" />
                     <span>Upload</span>
                     <input
@@ -465,7 +465,7 @@ const DeliveryRequestFrom = () => {
                     />
                   </div>
                 </div>
-                <div className="rounded-xl border border-dashed border-gray-700 bg-black/20 p-4 space-y-3">
+                <div className="rounded-xl border border-dashed border-gray-700 light:border-gray-300 bg-black/20 light:bg-gray-50 p-4 space-y-3">
                   <div className="flex items-start gap-2">
                     <Scale className="w-4 h-4 text-purple-400 mt-0.5 shrink-0" />
                     <div>
@@ -475,7 +475,7 @@ const DeliveryRequestFrom = () => {
                           Optional
                         </span>
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-xs text-gray-500 light:text-gray-400 mt-1">
                         Leave blank if you don&apos;t know it. Adding weight
                         includes ₵{settings.perKgWeightPrice}/kg in the
                         delivery fee so you can see the extra cost.
@@ -488,7 +488,7 @@ const DeliveryRequestFrom = () => {
                       name="totalWeight"
                       value={formData.totalWeight}
                       onChange={(e) => handleInputChange(e, "product")}
-                      className="flex-1 bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] text-white"
+                      className="flex-1 bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] text-white light:text-gray-900"
                       placeholder="Leave blank to skip"
                       step="0.1"
                       min="0"
@@ -497,7 +497,7 @@ const DeliveryRequestFrom = () => {
                       name="weightUnit"
                       value={formData.weightUnit}
                       onChange={(e) => handleInputChange(e, "product")}
-                      className="bg-gray-800 border border-gray-700 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] text-white"
+                      className="bg-gray-800 light:bg-white border border-gray-700 light:border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#2ACCED] text-white light:text-gray-900"
                     >
                       {weightUnits.map((unit) => (
                         <option key={unit.value} value={unit.value}>
@@ -517,7 +517,7 @@ const DeliveryRequestFrom = () => {
             </div>
 
             {/* Pickup Location */}
-            <div className="rounded-lg p-4 border border-purple-500">
+            <div className="rounded-lg p-4 border border-purple-500 light:border-purple-300">
               <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
                 <h2 className="text-xl font-semibold py-2">Pickup Location</h2>
               </div>
@@ -575,7 +575,7 @@ const DeliveryRequestFrom = () => {
                       type="text"
                       value={pickupLocation.location}
                       readOnly
-                      className={`${inputClass} bg-gray-700 cursor-not-allowed`}
+                      className={`${inputClass} bg-gray-700 light:bg-gray-100 cursor-not-allowed`}
                       placeholder="Select from map"
                     />
                   </div>
@@ -633,11 +633,11 @@ const DeliveryRequestFrom = () => {
                   />
                   {pickupMapLocation && (
                     <div className="mt-3 p-3 bg-[#2ACCED]/10 border border-[#2ACCED]/30 rounded-lg">
-                      <p className="text-xs text-gray-300">
+                      <p className="text-xs text-gray-300 light:text-gray-700">
                         <span className="font-medium">Selected Location:</span>{" "}
                         {pickupMapLocation.name}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-gray-400 light:text-gray-500 mt-1">
                         Coordinates: [
                         {pickupMapLocation.coordinates.longitude.toFixed(6)},{" "}
                         {pickupMapLocation.coordinates.latitude.toFixed(6)}]
@@ -649,7 +649,7 @@ const DeliveryRequestFrom = () => {
             </div>
 
             {/* Delivery Address */}
-            <div className="rounded-lg p-4 border border-purple-500">
+            <div className="rounded-lg p-4 border border-purple-500 light:border-purple-300">
               <div className="bg-gradient-to-r from-[#2ACCED] px-4 mb-2 to-[#B630F4] py-2">
                 <h2 className="text-xl font-semibold py-2">Delivery Address</h2>
               </div>
@@ -707,7 +707,7 @@ const DeliveryRequestFrom = () => {
                       type="text"
                       value={deliveryAddress.location}
                       readOnly
-                      className={`${inputClass} bg-gray-700 cursor-not-allowed`}
+                      className={`${inputClass} bg-gray-700 light:bg-gray-100 cursor-not-allowed`}
                       placeholder="Select from map"
                     />
                   </div>
@@ -771,11 +771,11 @@ const DeliveryRequestFrom = () => {
                   />
                   {deliveryMapLocation && (
                     <div className="mt-3 p-3 bg-[#2ACCED]/10 border border-[#2ACCED]/30 rounded-lg">
-                      <p className="text-xs text-gray-300">
+                      <p className="text-xs text-gray-300 light:text-gray-700">
                         <span className="font-medium">Selected Location:</span>{" "}
                         {deliveryMapLocation.name}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-gray-400 light:text-gray-500 mt-1">
                         Coordinates: [
                         {deliveryMapLocation.coordinates.longitude.toFixed(6)},{" "}
                         {deliveryMapLocation.coordinates.latitude.toFixed(6)}]
@@ -789,25 +789,25 @@ const DeliveryRequestFrom = () => {
 
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 border border-gray-800 rounded-2xl p-6 sticky top-8">
+            <div className="bg-gradient-to-br from-purple-900/20 to-gray-900/50 light:from-purple-50 light:to-white border border-gray-800 light:border-gray-200 rounded-2xl p-6 sticky top-8">
               <h2 className="text-xl font-bold mb-2">Amount to submit</h2>
-              <p className="text-xs text-gray-500 mb-6">
+              <p className="text-xs text-gray-500 light:text-gray-400 mb-6">
                 Delivery fee is calculated from distance
                 {quote.hasWeight ? " plus optional weight" : ""}. Tip is extra.
               </p>
 
               <div className="space-y-3 mb-6 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Category</span>
-                  <span className="text-white">{formData.category || "—"}</span>
+                  <span className="text-gray-400 light:text-gray-500">Category</span>
+                  <span className="text-white light:text-gray-900">{formData.category || "—"}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Items</span>
-                  <span className="text-white">{formData.numberOfItems}</span>
+                  <span className="text-gray-400 light:text-gray-500">Items</span>
+                  <span className="text-white light:text-gray-900">{formData.numberOfItems}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-400">Weight</span>
-                  <span className="text-white">
+                  <span className="text-gray-400 light:text-gray-500">Weight</span>
+                  <span className="text-white light:text-gray-900">
                     {quote.hasWeight
                       ? `${formData.totalWeight} ${formData.weightUnit}`
                       : "Not added"}
@@ -815,9 +815,9 @@ const DeliveryRequestFrom = () => {
                 </div>
               </div>
 
-              <div className="border-t border-gray-700 pt-4 space-y-3">
+              <div className="border-t border-gray-700 light:border-gray-200 pt-4 space-y-3">
                 <div className="flex items-start justify-between gap-3">
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-400 light:text-gray-500">
                     Distance
                     <span className="block text-xs text-purple-300/80 mt-0.5">
                       {quote.km != null
@@ -827,31 +827,31 @@ const DeliveryRequestFrom = () => {
                           : "Select pickup and drop-off to calculate"}
                     </span>
                   </span>
-                  <span className="text-sm text-white">
+                  <span className="text-sm text-white light:text-gray-900">
                     ₵{quote.distanceFee.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex items-start justify-between gap-3">
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-400 light:text-gray-500">
                     Weight
-                    <span className="block text-xs text-gray-500 mt-0.5">
+                    <span className="block text-xs text-gray-500 light:text-gray-400 mt-0.5">
                       {quote.hasWeight
                         ? `${quote.weightKg} kg · ₵${settings.perKgWeightPrice}/kg`
                         : `Optional · ₵${settings.perKgWeightPrice}/kg`}
                     </span>
                   </span>
-                  <span className="text-sm text-white">
+                  <span className="text-sm text-white light:text-gray-900">
                     ₵{quote.weightFee.toFixed(2)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-sm font-medium">
-                  <span className="text-gray-300">Delivery fee</span>
-                  <span className="text-white">
+                  <span className="text-gray-300 light:text-gray-700">Delivery fee</span>
+                  <span className="text-white light:text-gray-900">
                     ₵{quote.deliveryFee.toFixed(2)}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                     Driver tip
                   </label>
                   <input
@@ -864,8 +864,8 @@ const DeliveryRequestFrom = () => {
                     className={inputClass}
                   />
                 </div>
-                <div className="border-t border-gray-700 pt-3 flex items-center justify-between">
-                  <span className="text-lg font-semibold text-white">
+                <div className="border-t border-gray-700 light:border-gray-200 pt-3 flex items-center justify-between">
+                  <span className="text-lg font-semibold text-white light:text-gray-900">
                     Total to submit
                   </span>
                   <span className="text-lg font-semibold text-[#2ACCED]">

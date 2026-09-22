@@ -218,7 +218,7 @@ export default function VendorProfilePage() {
   };
 
   return (
-    <div className="space-y-6 pb-5 md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black min-h-screen">
+    <div className="space-y-6 pb-5 md:mt-24 mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 min-h-screen">
       {/* Header */}
       <div className="flex items-center container mx-auto justify-between pt-0 md:pt-4">
         <div className="container mx-auto flex items-center gap-4">
@@ -230,7 +230,7 @@ export default function VendorProfilePage() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             Profile Info
           </h1>
         </div>
@@ -258,7 +258,7 @@ export default function VendorProfilePage() {
 
       {/* Profile Picture Section */}
       <div className="flex flex-col items-center">
-        <h3 className="text-sm text-gray-400 mb-4">Profile Picture</h3>
+        <h3 className="text-sm text-gray-400 light:text-gray-500 mb-4">Profile Picture</h3>
         <div className="relative">
           <div className="w-32 h-32 rounded-full bg-gradient-to-br from-amber-600 to-amber-800 flex items-center justify-center overflow-hidden border-4 border-purple-500/30">
             {profile?.image ? (
@@ -297,22 +297,22 @@ export default function VendorProfilePage() {
       {/* Verification badges */}
       <div className="max-w-6xl mx-auto px-4 flex flex-wrap justify-center gap-2">
         {profile?.isVerified && (
-          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 light:bg-emerald-50 light:text-emerald-700 light:border-emerald-300">
             <BadgeCheck size={14} /> Verified
           </span>
         )}
         {profile?.topVendor && (
-          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30">
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 light:bg-amber-50 light:text-amber-700 light:border-amber-300">
             <Crown size={14} /> Top Vendor
           </span>
         )}
         {profile?.isDocumentUploaded && (
-          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 light:bg-purple-50 light:text-purple-700 light:border-purple-300">
             <FileCheck2 size={14} /> Documents Uploaded
           </span>
         )}
         {profile?.isPhoneVerified && (
-          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/30">
+          <span className="inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full bg-blue-500/15 text-blue-300 border border-blue-500/30 light:bg-blue-50 light:text-blue-700 light:border-blue-300">
             <PhoneIcon size={14} /> Phone Verified
           </span>
         )}
@@ -320,10 +320,10 @@ export default function VendorProfilePage() {
           <span
             className={`inline-flex items-center gap-1 text-xs px-3 py-1.5 rounded-full border capitalize ${
               profile.isRequest === "approve"
-                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
+                ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/30 light:bg-emerald-50 light:text-emerald-700 light:border-emerald-300"
                 : profile.isRequest === "pending"
-                  ? "bg-yellow-500/15 text-yellow-300 border-yellow-500/30"
-                  : "bg-red-500/15 text-red-300 border-red-500/30"
+                  ? "bg-yellow-500/15 text-yellow-300 border-yellow-500/30 light:bg-yellow-50 light:text-yellow-700 light:border-yellow-300"
+                  : "bg-red-500/15 text-red-300 border-red-500/30 light:bg-red-50 light:text-red-700 light:border-red-300"
             }`}
           >
             <ShieldCheck size={14} /> {profile.isRequest}
@@ -334,12 +334,12 @@ export default function VendorProfilePage() {
       {/* Balance card */}
       <div className="max-w-6xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gradient-to-r from-[#6100FF]/25 via-[#241F30] to-[#0f0924] border border-purple-500/40 rounded-2xl p-6 flex items-center justify-between">
+          <div className="bg-gradient-to-r from-[#6100FF]/25 via-[#241F30] to-[#0f0924] light:from-purple-50 light:via-white light:to-white border border-purple-500/40 light:border-purple-200 rounded-2xl p-6 flex items-center justify-between">
             <div>
               <p className="text-xs uppercase tracking-wider text-purple-300/80 mb-1">
                 Available balance
               </p>
-              <p className="text-3xl md:text-4xl font-bold text-white font-cormorant">
+              <p className="text-3xl md:text-4xl font-bold text-white light:text-gray-900 font-cormorant">
                 ₵
                 {Number(profile?.balance || 0).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -355,13 +355,13 @@ export default function VendorProfilePage() {
           <button
             type="button"
             onClick={() => setIsHoldsModalOpen(true)}
-            className="bg-gradient-to-r cursor-pointer from-amber-500/20 via-[#241F30] to-[#0f0924] border border-amber-500/40 rounded-2xl p-6 flex items-center justify-between text-left hover:border-amber-400/70 transition-colors"
+            className="bg-gradient-to-r cursor-pointer from-amber-500/20 via-[#241F30] to-[#0f0924] light:from-amber-50 light:via-white light:to-white border border-amber-500/40 light:border-amber-200 rounded-2xl p-6 flex items-center justify-between text-left hover:border-amber-400/70 transition-colors"
           >
             <div>
               <p className="text-xs uppercase tracking-wider text-amber-300/80 mb-1">
                 Held balance
               </p>
-              <p className="text-3xl md:text-4xl font-bold text-white font-cormorant">
+              <p className="text-3xl md:text-4xl font-bold text-white light:text-gray-900 font-cormorant">
                 ₵
                 {Number(profile?.heldBalance || 0).toLocaleString(undefined, {
                   minimumFractionDigits: 2,
@@ -383,9 +383,9 @@ export default function VendorProfilePage() {
       />
 
       {/* Personal Information */}
-      <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">
+      <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] light:from-white light:to-white max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 light:border-purple-200 rounded-2xl p-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold font-cormorant text-white">
+          <h2 className="text-xl font-semibold font-cormorant text-white light:text-gray-900">
             Personal Information
           </h2>
           <button
@@ -398,73 +398,73 @@ export default function VendorProfilePage() {
         </div>
 
         <div className="space-y-4">
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">User Name</span>
-            <span className="text-white">{profile?.username || "N/A"}</span>
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">User Name</span>
+            <span className="text-white light:text-gray-900">{profile?.username || "N/A"}</span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Name</span>
-            <span className="text-white">{profile?.name || "N/A"}</span>
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Name</span>
+            <span className="text-white light:text-gray-900">{profile?.name || "N/A"}</span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Email</span>
-            <span className="text-white">{profile?.email || "N/A"}</span>
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Email</span>
+            <span className="text-white light:text-gray-900">{profile?.email || "N/A"}</span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Phone Number</span>
-            <span className="text-white">{profile?.phone || "N/A"}</span>
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Phone Number</span>
+            <span className="text-white light:text-gray-900">{profile?.phone || "N/A"}</span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Gender</span>
-            <span className="text-white">
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Gender</span>
+            <span className="text-white light:text-gray-900">
               {profile?.gender || "Not specified"}
             </span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Address</span>
-            <span className="text-white">
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Address</span>
+            <span className="text-white light:text-gray-900">
               {profile?.address || "Not specified"}
             </span>
           </div>
           {profile?.bio && (
             <div className="py-3">
-              <span className="text-sm text-gray-400 block mb-2">Bio</span>
-              <p className="text-white text-sm leading-relaxed">
+              <span className="text-sm text-gray-400 light:text-gray-500 block mb-2">Bio</span>
+              <p className="text-white light:text-gray-900 text-sm leading-relaxed">
                 {profile.bio}
               </p>
             </div>
           )}
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Role</span>
-            <span className="text-white capitalize">
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Role</span>
+            <span className="text-white light:text-gray-900 capitalize">
               {profile?.role || "Vendor"}
             </span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Verification Status</span>
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Verification Status</span>
             <span
               className={`text-white ${profile?.isVerified ? "text-green-400" : "text-yellow-400"}`}
             >
               {profile?.isVerified ? "✓ Verified" : "Not Verified"}
             </span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">
               Preferred Contact Method
             </span>
-            <span className="text-white capitalize">
+            <span className="text-white light:text-gray-900 capitalize">
               {profile?.preference || "Not set"}
             </span>
           </div>
-          <div className="flex justify-between items-center py-3 border-b border-gray-700/30">
-            <span className="text-sm text-gray-400">Referral Code</span>
-            <span className="text-white">
+          <div className="flex justify-between items-center py-3 border-b border-gray-700/30 light:border-gray-200">
+            <span className="text-sm text-gray-400 light:text-gray-500">Referral Code</span>
+            <span className="text-white light:text-gray-900">
               {profile?.referralCode || "Not set"}
             </span>
           </div>
           <div className="flex justify-between items-center py-3">
-            <span className="text-sm text-gray-400">Joined</span>
-            <span className="text-white">
+            <span className="text-sm text-gray-400 light:text-gray-500">Joined</span>
+            <span className="text-white light:text-gray-900">
               {profile?.createdAt
                 ? new Date(profile.createdAt).toLocaleDateString(undefined, {
                     year: "numeric",
@@ -478,9 +478,9 @@ export default function VendorProfilePage() {
       </div>
 
       {/* KYC / Documents */}
-      <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">
+      <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] light:from-white light:to-white max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 light:border-purple-200 rounded-2xl p-8">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold font-cormorant text-white">
+          <h2 className="text-xl font-semibold font-cormorant text-white light:text-gray-900">
             KYC / Documents
           </h2>
           <button
@@ -493,13 +493,13 @@ export default function VendorProfilePage() {
         </div>
 
         <div className="flex justify-between items-center py-3 border-b border-gray-700/30 mb-4">
-          <span className="text-sm text-gray-400">NID Number</span>
-          <span className="text-white">{profile?.nidNo || "Not provided"}</span>
+          <span className="text-sm text-gray-400 light:text-gray-500">NID Number</span>
+          <span className="text-white light:text-gray-900">{profile?.nidNo || "Not provided"}</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm text-gray-400 mb-2">NID Front</p>
+            <p className="text-sm text-gray-400 light:text-gray-500 mb-2">NID Front</p>
             {profile?.nidFront ? (
               <img
                 src={`${url}/${profile.nidFront}`}
@@ -507,13 +507,13 @@ export default function VendorProfilePage() {
                 className="w-full h-40 object-cover rounded-lg border border-gray-700"
               />
             ) : (
-              <div className="w-full h-40 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-500 text-sm">
+              <div className="w-full h-40 rounded-lg border border-dashed border-gray-700 light:border-gray-300 flex items-center justify-center text-gray-500 light:text-gray-400 text-sm">
                 Not uploaded
               </div>
             )}
           </div>
           <div>
-            <p className="text-sm text-gray-400 mb-2">NID Back</p>
+            <p className="text-sm text-gray-400 light:text-gray-500 mb-2">NID Back</p>
             {profile?.nidBack ? (
               <img
                 src={`${url}/${profile.nidBack}`}
@@ -521,7 +521,7 @@ export default function VendorProfilePage() {
                 className="w-full h-40 object-cover rounded-lg border border-gray-700"
               />
             ) : (
-              <div className="w-full h-40 rounded-lg border border-dashed border-gray-700 flex items-center justify-center text-gray-500 text-sm">
+              <div className="w-full h-40 rounded-lg border border-dashed border-gray-700 light:border-gray-300 flex items-center justify-center text-gray-500 light:text-gray-400 text-sm">
                 Not uploaded
               </div>
             )}
@@ -530,14 +530,14 @@ export default function VendorProfilePage() {
       </div>
 
       {/* My Showrooms */}
-      <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 rounded-2xl p-8">
+      <div className="bg-gradient-to-b from-[#2C223C] to-[#18161C] light:from-white light:to-white max-w-6xl mx-auto border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-purple-500/30 light:border-purple-200 rounded-2xl p-8">
         <div className="flex justify-between items-center mb-6 flex-wrap gap-4">
-          <h2 className="text-xl font-semibold text-white font-cormorant">
+          <h2 className="text-xl font-semibold text-white light:text-gray-900 font-cormorant">
             My Showrooms
           </h2>
           <div className="flex items-center gap-2">
             <Link href={"/v-profile/showrooms"}>
-              <button className="px-4 py-2 bg-gray-700 text-white hover:bg-gray-600 rounded-lg transition-all shadow-lg flex items-center gap-2 text-sm">
+              <button className="px-4 py-2 bg-gray-700 light:bg-gray-200 text-white light:text-gray-900 hover:bg-gray-600 light:hover:bg-gray-300 rounded-lg transition-all shadow-lg flex items-center gap-2 text-sm">
                 View All
               </button>
             </Link>
@@ -554,7 +554,7 @@ export default function VendorProfilePage() {
           {showrooms.map((showroom: any) => (
             <div
               key={showroom._id}
-              className="bg-gray-900/50 border border-gray-800 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all"
+              className="bg-gray-900/50 light:bg-white border border-gray-800 light:border-gray-200 rounded-xl overflow-hidden hover:border-purple-500/50 transition-all"
             >
               <img
                 src={`${url}/${showroom?.logo}`}
@@ -562,7 +562,7 @@ export default function VendorProfilePage() {
                 alt={showroom.showroom_name}
               />
               <div className="p-4">
-                <h3 className="text-white font-semibold mb-1">
+                <h3 className="text-white light:text-gray-900 font-semibold mb-1">
                   {showroom.showroom_name}
                 </h3>
                 {!showroom.isApprove && (
@@ -570,7 +570,7 @@ export default function VendorProfilePage() {
                     Pending Approval
                   </p>
                 )}
-                <div className="flex items-center gap-1 text-gray-400 text-xs mb-4">
+                <div className="flex items-center gap-1 text-gray-400 light:text-gray-500 text-xs mb-4">
                   <MapPin size={14} />
                   <span className="truncate">{showroom.showroom_address}</span>
                 </div>
@@ -593,7 +593,7 @@ export default function VendorProfilePage() {
                     }
                     aria-label={`Delete ${showroom.showroom_name}`}
                     title="Delete showroom"
-                    className="p-2 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/30 hover:text-red-300 border border-red-500/30 transition-colors cursor-pointer"
+                    className="p-2 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/30 hover:text-red-300 border border-red-500/30 transition-colors cursor-pointer light:bg-red-50 light:text-red-700 light:border-red-300"
                   >
                     <Trash2 size={16} />
                   </button>
@@ -602,7 +602,7 @@ export default function VendorProfilePage() {
             </div>
           ))}
           {showrooms.length === 0 && (
-            <div className="col-span-full text-center py-8 text-gray-400">
+            <div className="col-span-full text-center py-8 text-gray-400 light:text-gray-500">
               No showrooms added yet
             </div>
           )}

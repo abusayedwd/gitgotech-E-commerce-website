@@ -59,13 +59,13 @@ export default function MyProducts() {
   });
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 border-purple-600/40 shadow-[0_0_12px_rgba(34,211,238,0.35)] border rounded-xl md:rounded-2xl p-4 md:p-8">
+    <div className="bg-gradient-to-br from-gray-900 via-purple-900/10 to-gray-900 light:from-white light:via-purple-50 light:to-white border-purple-600/40 light:border-purple-200 shadow-[0_0_12px_rgba(34,211,238,0.35)] border rounded-xl md:rounded-2xl p-4 md:p-8">
       <div className="mb-4 md:mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 md:mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-white">
+          <h2 className="text-xl md:text-2xl font-bold text-white light:text-gray-900">
             Products
             {productData?.pagination && (
-              <span className="ml-2 text-sm text-gray-400 font-normal">
+              <span className="ml-2 text-sm text-gray-400 light:text-gray-500 font-normal">
                 ({productData.pagination.totalData})
               </span>
             )}
@@ -83,7 +83,7 @@ export default function MyProducts() {
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
-            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white backdrop-blur-sm"
+            className="w-full sm:w-auto px-4 py-2 bg-gray-800/50 light:bg-white border border-cyan-500/50 light:border-cyan-600/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white light:text-gray-900 backdrop-blur-sm"
           >
             <option>Filter</option>
             <option>All Products</option>
@@ -96,7 +96,7 @@ export default function MyProducts() {
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 pl-10 bg-gray-800/50 border border-cyan-500/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white placeholder-gray-400 backdrop-blur-sm"
+              className="w-full px-4 py-2 pl-10 bg-gray-800/50 light:bg-white border border-cyan-500/50 light:border-cyan-600/50 rounded-lg focus:outline-none focus:border-cyan-500 transition-colors text-sm text-white light:text-gray-900 placeholder-gray-400 backdrop-blur-sm"
             />
             <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -107,17 +107,17 @@ export default function MyProducts() {
 
       {/* Loading */}
       {isLoading && (
-        <div className="text-center py-12 text-gray-400">Loading products...</div>
+        <div className="text-center py-12 text-gray-400 light:text-gray-500">Loading products...</div>
       )}
 
       {/* No showroom selected */}
       {!showroomId && !isLoading && (
-        <div className="text-center py-12 text-gray-400">Select a showroom from the sidebar to view products.</div>
+        <div className="text-center py-12 text-gray-400 light:text-gray-500">Select a showroom from the sidebar to view products.</div>
       )}
 
       {/* Empty state */}
       {showroomId && !isLoading && products.length === 0 && (
-        <div className="text-center py-12 text-gray-400">No products found.</div>
+        <div className="text-center py-12 text-gray-400 light:text-gray-500">No products found.</div>
       )}
 
       {/* Product Grid */}
@@ -125,10 +125,10 @@ export default function MyProducts() {
         {products.map((product: any) => (
           <div
             key={product._id}
-            className="bg-[#1B1B1F] border border-gray-800 rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all group"
+            className="bg-[#1B1B1F] light:bg-white border border-gray-800 light:border-gray-200 rounded-xl overflow-hidden hover:border-cyan-500/50 transition-all group"
           >
             {/* Product Image */}
-            <div className="relative bg-gray-800 aspect-square flex items-center justify-center overflow-hidden">
+            <div className="relative bg-gray-800 light:bg-gray-100 aspect-square flex items-center justify-center overflow-hidden">
               <img
                 src={product.product_images?.[0] ? `${baseUrl}/${product.product_images[0]}` : '/images/jacket.png'}
                 alt={product.product_name}
@@ -170,21 +170,21 @@ export default function MyProducts() {
             {/* Product Info */}
             <div className="p-3 md:p-4">
               <div className="flex items-center justify-between gap-2 mb-1">
-                <div className="text-base md:text-lg font-bold text-white">
+                <div className="text-base md:text-lg font-bold text-white light:text-gray-900">
                   ₵{product.product_price?.toFixed(2)}
                 </div>
                 {product.isMixable && (
-                  <span className="text-xs px-2 py-0.5 bg-purple-600/30 text-purple-300 rounded-full">
+                  <span className="text-xs px-2 py-0.5 bg-purple-600/30 text-purple-300 rounded-full light:bg-purple-100 light:text-purple-700">
                     Mixable
                   </span>
                 )}
               </div>
 
-              <h3 className="text-sm md:text-base font-semibold text-white mb-1 truncate">
+              <h3 className="text-sm md:text-base font-semibold text-white light:text-gray-900 mb-1 truncate">
                 {product.product_name}
               </h3>
 
-              <p className="text-xs text-gray-400 truncate">
+              <p className="text-xs text-gray-400 light:text-gray-500 truncate">
                 {product.showroom?.showroom_name}
               </p>
             </div>

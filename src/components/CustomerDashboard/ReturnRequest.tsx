@@ -404,7 +404,7 @@ export default function ReturnRequestForm() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-8 flex items-center justify-center">
         <div className="text-purple-400 text-xl">Loading order details...</div>
       </div>
     );
@@ -412,7 +412,7 @@ export default function ReturnRequestForm() {
 
   if (!orderId || !orderData) {
     return (
-      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-8 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-8 flex items-center justify-center">
         <div className="text-red-400 text-xl">Order not found</div>
       </div>
     );
@@ -426,7 +426,7 @@ export default function ReturnRequestForm() {
   );
 
   return (
-    <div className="bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       <div className="max-w-6xl mx-auto mt-16 md:mt-20">
         <BackButton title="Return Request" className="text-3xl" />
       </div>
@@ -434,7 +434,7 @@ export default function ReturnRequestForm() {
         <h1 className="text-3xl md:text-4xl font-cormorant font-bold mb-2">
           Return
         </h1>
-        <p className="text-gray-400 text-sm md:text-base">
+        <p className="text-gray-400 light:text-gray-500 text-sm md:text-base">
           Select items from this order and tell us why you are returning them.
         </p>
       </div>
@@ -460,7 +460,7 @@ export default function ReturnRequestForm() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Items to return</h3>
             {returnableLines.length === 0 ? (
-              <p className="text-gray-500">No returnable items on this order.</p>
+              <p className="text-gray-500 light:text-gray-400">No returnable items on this order.</p>
             ) : (
               <div className="space-y-4">
                 {returnableLines.map((line) => {
@@ -468,7 +468,7 @@ export default function ReturnRequestForm() {
                   return (
                     <div
                       key={line.key}
-                      className="rounded-xl border border-gray-700 bg-black/40 p-4 space-y-4"
+                      className="rounded-xl border border-gray-700 light:border-gray-300 bg-black/40 light:bg-gray-50 p-4 space-y-4"
                     >
                       <label className="flex items-start gap-3 cursor-pointer">
                         <input
@@ -485,8 +485,8 @@ export default function ReturnRequestForm() {
                           className="w-16 h-16 rounded-lg object-cover"
                         />
                         <div className="min-w-0">
-                          <p className="font-semibold">{line.name}</p>
-                          <p className="text-sm text-gray-400">
+                          <p className="font-semibold light:text-gray-900">{line.name}</p>
+                          <p className="text-sm text-gray-400 light:text-gray-500">
                             Size {line.sizeType} · Bought {line.maxQuantity}
                             {line.paidUnitPrice
                               ? ` · ${formatMoney(line.paidUnitPrice, unit)} each`
@@ -498,7 +498,7 @@ export default function ReturnRequestForm() {
                       {draft.selected && (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-7">
                           <div>
-                            <label className="block text-sm text-gray-400 mb-2">
+                            <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                               Quantity
                             </label>
                             <input
@@ -514,11 +514,11 @@ export default function ReturnRequestForm() {
                                   ),
                                 })
                               }
-                              className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                              className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm text-gray-400 mb-2">
+                            <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                               Photo
                             </label>
                             <label className="flex items-center gap-3 cursor-pointer">
@@ -552,7 +552,7 @@ export default function ReturnRequestForm() {
                                 updateDraft(line.key, { reason: e.target.value })
                               }
                               placeholder="Why are you returning this item?"
-                              className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[90px] resize-none"
+                              className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 placeholder-gray-500 focus:outline-none focus:border-purple-500 min-h-[90px] resize-none"
                             />
                           </div>
                         </div>
@@ -564,91 +564,91 @@ export default function ReturnRequestForm() {
             )}
           </div>
 
-          <div className="border border-gray-700 p-2 rounded-2xl">
+          <div className="border border-gray-700 light:border-gray-300 p-2 rounded-2xl">
             <div className="bg-gradient-to-r from-[#2ACCED] to-[#B630F4] py-2">
               <h3 className="py-3 p-6 text-[24px]">Pickup address</h3>
             </div>
             <div className="p-6">
               <div className="mb-4">
-                <label className="block text-sm text-gray-400 mb-2">
+                <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                   Full name
                 </label>
                 <input
                   type="text"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
               </div>
               <div className="mb-4">
-                <label className="block text-sm text-gray-400 mb-2">
+                <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                   Set location on map
                 </label>
                 <MapComponent onLocationSave={handleLocationSave} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                     Country
                   </label>
                   <input
                     type="text"
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
-                    className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                     State
                   </label>
                   <input
                     type="text"
                     value={state}
                     onChange={(e) => setState(e.target.value)}
-                    className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                     Zip code
                   </label>
                   <input
                     type="text"
                     value={zipCode}
                     onChange={(e) => setZipCode(e.target.value)}
-                    className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                     Email
                   </label>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                     Phone
                   </label>
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                    className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="border border-gray-700 p-6 rounded-2xl space-y-4">
+          <div className="border border-gray-700 light:border-gray-300 p-6 rounded-2xl space-y-4">
             <h3 className="text-lg font-semibold">Refund method</h3>
             <div className="flex flex-wrap gap-3">
               {(
@@ -665,7 +665,7 @@ export default function ReturnRequestForm() {
                   className={`px-4 py-2 rounded-full text-sm border ${
                     refundMethod === value
                       ? "bg-purple-600 border-purple-500 text-white"
-                      : "border-gray-600 text-gray-300"
+                      : "border-gray-600 light:border-gray-300 text-gray-300 light:text-gray-700"
                   }`}
                 >
                   {label}
@@ -680,14 +680,14 @@ export default function ReturnRequestForm() {
                   value={cardLast4}
                   onChange={(e) => setCardLast4(e.target.value.replace(/\D/g, ""))}
                   placeholder="Card number"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
                 <input
                   type="text"
                   value={cardBrand}
                   onChange={(e) => setCardBrand(e.target.value)}
                   placeholder="Brand (Visa)"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
               </div>
             )}
@@ -699,21 +699,21 @@ export default function ReturnRequestForm() {
                   value={mobileProvider}
                   onChange={(e) => setMobileProvider(e.target.value)}
                   placeholder="Provider (MTN)"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
                 <input
                   type="text"
                   value={accountName}
                   onChange={(e) => setAccountName(e.target.value)}
                   placeholder="Account name"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
                 <input
                   type="text"
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder="Account number"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
               </div>
             )}
@@ -725,28 +725,28 @@ export default function ReturnRequestForm() {
                   value={bankName}
                   onChange={(e) => setBankName(e.target.value)}
                   placeholder="Bank name"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
                 <input
                   type="text"
                   value={branchName}
                   onChange={(e) => setBranchName(e.target.value)}
                   placeholder="Branch name"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
                 <input
                   type="text"
                   value={routingNumber}
                   onChange={(e) => setRoutingNumber(e.target.value)}
                   placeholder="Routing number"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
                 <input
                   type="text"
                   value={accountNumber}
                   onChange={(e) => setAccountNumber(e.target.value)}
                   placeholder="Account number"
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
               </div>
             )}
@@ -754,15 +754,15 @@ export default function ReturnRequestForm() {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 border border-gray-800 rounded-2xl p-6 sticky top-24">
+          <div className="bg-gradient-to-br from-gray-900/50 to-purple-900/10 light:from-purple-50 light:to-white border border-gray-800 light:border-gray-200 rounded-2xl p-6 sticky top-24">
             <h3 className="text-xl font-bold mb-6">Return summary</h3>
-            <div className="mb-6 pb-6 border-b border-gray-700 space-y-3">
+            <div className="mb-6 pb-6 border-b border-gray-700 light:border-gray-200 space-y-3">
               {selectedLines.length === 0 ? (
-                <p className="text-sm text-gray-500">No items selected yet.</p>
+                <p className="text-sm text-gray-500 light:text-gray-400">No items selected yet.</p>
               ) : (
                 selectedLines.map((line) => (
                   <div key={line.key} className="flex justify-between gap-3 text-sm">
-                    <span className="text-gray-300">
+                    <span className="text-gray-300 light:text-gray-700">
                       {line.name} · {line.sizeType} × {drafts[line.key].quantity}
                     </span>
                     <span>
@@ -777,12 +777,12 @@ export default function ReturnRequestForm() {
             </div>
             <div className="space-y-3 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-400">Refund subtotal</span>
+                <span className="text-gray-400 light:text-gray-500">Refund subtotal</span>
                 <span>{formatMoney(refundSubtotal, unit)}</span>
               </div>
               {settings.refundDeductionPercentage > 0 && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400">
+                  <span className="text-gray-400 light:text-gray-500">
                     Platform deduction ({settings.refundDeductionPercentage}%)
                   </span>
                   <span className="text-red-400">
@@ -791,21 +791,21 @@ export default function ReturnRequestForm() {
                 </div>
               )}
               <div className="flex justify-between text-sm font-semibold">
-                <span className="text-gray-300">Estimated refund</span>
+                <span className="text-gray-300 light:text-gray-700">Estimated refund</span>
                 <span className="text-green-400">
                   {formatMoney(estimatedRefund, unit)}
                 </span>
               </div>
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="text-xs text-gray-500 light:text-gray-400 leading-relaxed">
                 Estimate only. Pickup charge and driver tip are paid separately
                 and are not deducted from this refund.
               </p>
-              <div className="flex justify-between text-sm pt-2 border-t border-gray-700">
-                <span className="text-gray-400">Pickup charge</span>
+              <div className="flex justify-between text-sm pt-2 border-t border-gray-700 light:border-gray-200">
+                <span className="text-gray-400 light:text-gray-500">Pickup charge</span>
                 <span>{formatMoney(deliveryCharge, unit)}</span>
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-2">
+                <label className="block text-sm text-gray-400 light:text-gray-500 mb-2">
                   Driver tip
                 </label>
                 <input
@@ -813,7 +813,7 @@ export default function ReturnRequestForm() {
                   min={0}
                   value={tip}
                   onChange={(e) => setTip(e.target.value)}
-                  className="w-full bg-black/50 border border-gray-700 rounded-xl p-3 text-white focus:outline-none focus:border-purple-500"
+                  className="w-full bg-black/50 light:bg-white border border-gray-700 light:border-gray-300 rounded-xl p-3 text-white light:text-gray-900 focus:outline-none focus:border-purple-500"
                 />
               </div>
             </div>

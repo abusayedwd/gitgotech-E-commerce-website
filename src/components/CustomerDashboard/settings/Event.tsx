@@ -177,7 +177,7 @@ export default function Event() {
   });
 
   return (
-    <div className="min-h-screen mt-12 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black">
+    <div className="min-h-screen mt-12 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white">
       {/* Header */}
       <div className="flex py-6 container mx-auto justify-between items-center mb-4">
         <div className="container mx-auto flex items-center gap-4">
@@ -189,7 +189,7 @@ export default function Event() {
               <FaArrowLeft className="text-black" />
             </div>
           </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
             Event
           </h1>
         </div>
@@ -204,7 +204,7 @@ export default function Event() {
 
       {/* Subheader */}
       <div className="text-center mb-8">
-        <p className="text-gray-400 max-w-2xl mx-auto">
+        <p className="text-gray-400 light:text-gray-500 max-w-2xl mx-auto">
           Plan matching outfits for your event with your selected tailor. Invite
           your friends, share the design, and let everyone order easily from the
           same vendor.
@@ -218,7 +218,7 @@ export default function Event() {
           className={`px-6 py-2 rounded-l-lg font-medium transition-all duration-200 ${
             activeTab === "created"
               ? "bg-[#6100FF] text-white"
-              : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+              : "bg-gray-800 light:bg-gray-100 text-gray-300 light:text-gray-700 hover:bg-gray-700 light:hover:bg-gray-200"
           }`}
         >
           Created
@@ -228,7 +228,7 @@ export default function Event() {
           className={`px-6 py-2 rounded-r-lg font-medium transition-all duration-200 ${
             activeTab === "invited"
               ? "bg-[#6100FF] text-white"
-              : "bg-[#4C455A] text-gray-300 hover:bg-gray-700"
+              : "bg-[#4C455A] light:bg-gray-100 text-gray-300 light:text-gray-700 hover:bg-gray-700 light:hover:bg-gray-200"
           }`}
         >
           Invitations
@@ -238,26 +238,26 @@ export default function Event() {
       {/* Events List */}
       <div className="max-w-4xl mx-auto space-y-6 pb-6 px-4">
         {isLoading ? (
-          <div className="text-center text-gray-400 py-10">
+          <div className="text-center text-gray-400 light:text-gray-500 py-10">
             Loading events...
           </div>
         ) : events.length > 0 ? (
           events.map((event) => (
             <div
               key={event._id}
-              className="bg-[#2C233E] border border-[#67676D] rounded-lg p-6 hover:border-purple-500 transition-all duration-200"
+              className="bg-[#2C233E] light:bg-purple-50 border border-[#67676D] light:border-purple-200 rounded-lg p-6 hover:border-purple-500 transition-all duration-200"
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
-                  <h3 className="text-2xl font-semibold font-cormorant text-white mb-2">
+                  <h3 className="text-2xl font-semibold font-cormorant text-white light:text-gray-900 mb-2">
                     {event.title}
                   </h3>
-                  <p className="text-gray-400 mb-4 font-poppins">
+                  <p className="text-gray-400 light:text-gray-500 mb-4 font-poppins">
                     {event.description}
                   </p>
 
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 font-poppins text-gray-300">
+                    <div className="flex items-center gap-2 font-poppins text-gray-300 light:text-gray-700">
                       <Calendar size={20} />
                       <span>
                         {new Date(event.eventDate).toLocaleString("en-US", {
@@ -267,7 +267,7 @@ export default function Event() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2 text-gray-300">
+                    <div className="flex items-center gap-2 text-gray-300 light:text-gray-700">
                       <MapPin size={20} />
                       <span>{event.address}</span>
                     </div>
@@ -296,7 +296,7 @@ export default function Event() {
 
                 <div className="flex flex-col gap-2 ml-4">
                   <div className="flex gap-3.5 items-center">
-                    <p className="bg-[#3D3648] px-4 py-1 rounded-full text-[#912DAD] text-sm">
+                    <p className="bg-[#3D3648] light:bg-purple-100 px-4 py-1 rounded-full text-[#912DAD] text-sm">
                       {event.purchaseOption === "creator"
                         ? "Buy Creator"
                         : "By Participants"}
@@ -334,7 +334,7 @@ export default function Event() {
             </div>
           ))
         ) : (
-          <div className="text-center text-gray-500 py-10">
+          <div className="text-center text-gray-500 light:text-gray-400 py-10">
             No events to display. Create your first event!
           </div>
         )}

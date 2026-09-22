@@ -104,7 +104,7 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
       <div className="container mx-auto flex items-center gap-4">
         <button
           onClick={() => router.back()}
@@ -114,7 +114,7 @@ export default function NotificationsPage() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant hidden md:block">
           Notification
         </h1>
       </div>
@@ -123,8 +123,8 @@ export default function NotificationsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex-1 text-center">
-            <h1 className="text-3xl font-semibold mb-2">Notifications</h1>
-            <p className="text-gray-400 text-sm">
+            <h1 className="text-3xl font-semibold mb-2 text-white light:text-gray-900">Notifications</h1>
+            <p className="text-gray-400 light:text-gray-500 text-sm">
               Get notified for everything, Never miss anything!
             </p>
           </div>
@@ -138,11 +138,11 @@ export default function NotificationsPage() {
         {/* Notifications List */}
         <div className="space-y-3">
           {isLoading ? (
-            <div className="text-center text-gray-400 py-12">
+            <div className="text-center text-gray-400 light:text-gray-500 py-12">
               Loading notifications...
             </div>
           ) : notifications.length === 0 ? (
-            <div className="text-center text-gray-400 py-12">
+            <div className="text-center text-gray-400 light:text-gray-500 py-12">
               <Bell className="w-16 h-16 mx-auto mb-4 opacity-50" />
               <p>No notifications yet</p>
             </div>
@@ -152,10 +152,10 @@ export default function NotificationsPage() {
               return (
                 <div
                   key={notification._id}
-                  className={`bg-[#251E2F] bg-opacity-50 backdrop-blur-sm border rounded-2xl p-4 hover:bg-opacity-70 transition-all duration-200 ${
+                  className={`bg-[#251E2F] light:bg-purple-50 bg-opacity-50 backdrop-blur-sm border rounded-2xl p-4 hover:bg-opacity-70 transition-all duration-200 ${
                     !notification.isReadable
                       ? "border-purple-500/50"
-                      : "border-gray-700"
+                      : "border-gray-700 light:border-gray-200"
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -168,10 +168,10 @@ export default function NotificationsPage() {
 
                     {/* Content */}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-white font-medium mb-1">
+                      <h3 className="text-white light:text-gray-900 font-medium mb-1">
                         {notification.msg}
                       </h3>
-                      <p className="text-gray-500 text-xs mt-1">
+                      <p className="text-gray-500 light:text-gray-400 text-xs mt-1">
                         {formatDate(notification.createdAt)}
                       </p>
                     </div>
@@ -193,7 +193,7 @@ export default function NotificationsPage() {
             <button
               onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
               disabled={currentPage === 1}
-              className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+              className="w-8 h-8 flex items-center justify-center bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 rounded-lg transition-colors disabled:opacity-50"
             >
               ←
             </button>
@@ -216,7 +216,7 @@ export default function NotificationsPage() {
                 className={`w-8 h-8 rounded-lg transition-colors text-sm ${
                   page === currentPage
                     ? "bg-purple-600 text-white"
-                    : "bg-gray-800 hover:bg-gray-700 text-gray-400"
+                    : "bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 text-gray-400 light:text-gray-600"
                 }`}
               >
                 {page}
@@ -227,7 +227,7 @@ export default function NotificationsPage() {
                 handlePageChange(Math.min(meta.totalPages, currentPage + 1))
               }
               disabled={currentPage === meta.totalPages}
-              className="w-8 h-8 flex items-center justify-center bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
+              className="w-8 h-8 flex items-center justify-center bg-gray-800 light:bg-gray-200 hover:bg-gray-700 light:hover:bg-gray-300 rounded-lg transition-colors disabled:opacity-50"
             >
               →
             </button>

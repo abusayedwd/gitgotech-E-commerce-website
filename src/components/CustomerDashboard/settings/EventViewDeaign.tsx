@@ -198,13 +198,13 @@ const ProductCard = ({
 
         <div className="flex items-center gap-1.5 mb-2">
           <ShoppingCart className="w-3 h-3 text-red-500" />
-          <span className="text-xs text-[#B8B8B8] truncate">{vendorName}</span>
+          <span className="text-xs text-[#B8B8B8] light:text-gray-500 truncate">{vendorName}</span>
         </div>
 
         {/* Size Selection for Invited Participator Events */}
         {isInvited && isParticipator && (
           <div className="mb-2">
-            <label className="block text-xs font-medium text-gray-300 mb-1">Select Size</label>
+            <label className="block text-xs font-medium text-gray-300 light:text-gray-700 mb-1">Select Size</label>
             <div className="relative">
               <button
                 onClick={toggleDropdown}
@@ -229,7 +229,7 @@ const ProductCard = ({
                       key={size}
                       onClick={() => handleSizeSelect(size)}
                       className={`w-full px-3 py-2 text-left text-sm hover:bg-purple-600/30 transition-colors ${
-                        selectedSize === size ? 'bg-purple-600/20 text-purple-400' : 'text-gray-300'
+                        selectedSize === size ? 'bg-purple-600/20 text-purple-400 light:bg-purple-100 light:text-purple-700' : 'text-gray-300'
                       }`}
                     >
                       {size}
@@ -252,7 +252,7 @@ const ProductCard = ({
         {/* Size + Quantity picker for the creator's own order — same as cart */}
         {!isInvited && stockItems.length > 0 && (
           <div className="mb-2" onClick={(e) => e.stopPropagation()}>
-            <label className="block text-xs font-medium text-gray-300 mb-1">
+            <label className="block text-xs font-medium text-gray-300 light:text-gray-700 mb-1">
               Size & Qty
             </label>
             <div className="flex flex-wrap gap-1.5 mb-2">
@@ -350,7 +350,7 @@ const ProductCard = ({
   );
 
   return (
-    <div className="text-white bg-[#1B1B1F] rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow">
+    <div className="text-white light:text-gray-900 bg-[#1B1B1F] light:bg-white rounded-lg overflow-hidden group cursor-pointer hover:shadow-xl transition-shadow light:border light:border-gray-200">
       {isInvited ? (
         <Link href={`/profile/event/details?id=${productData._id}&type=${type}&eventId=${eventId}&isOrdered=${product.isOrderd}`}>
           <div className="cursor-pointer">
@@ -463,7 +463,7 @@ export default function EventViewDeaign() {
   };
 
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black  text-white">
+    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white  text-white light:text-gray-900">
       {/* Header */}
       <div className="container mx-auto px-6 py-8">
         <div className="flex items-center justify-between mb-8">
@@ -474,7 +474,7 @@ export default function EventViewDeaign() {
             <FaArrowLeft className='text-black' />
           </div>
         </button>
-          <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant hidden md:block">View Design</h1>
+          <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant hidden md:block">View Design</h1>
         </div>
           <Link href={"/profile/event/add-design"}>
           <button className="flex items-center w-45 py-2 cursor-pointer px-4 gap-2 bg-gradient-to-l from-blue-600 to-cyan-600 text-white px-2  rounded-lg font-medium transition-colors">
@@ -496,7 +496,7 @@ export default function EventViewDeaign() {
           </div>
         ) : totalProducts === 0 ? (
           <div className="flex items-center justify-center py-20">
-            <div className="text-center text-gray-400">
+            <div className="text-center text-gray-400 light:text-gray-500">
               <ShoppingCart className="w-16 h-16 mx-auto mb-4" />
               <p className="text-xl">No products in this event yet</p>
             </div>
@@ -526,18 +526,18 @@ export default function EventViewDeaign() {
                           />
                         )}
                         <div>
-                          <h2 className="text-lg font-semibold">
+                          <h2 className="text-lg font-semibold text-white light:text-gray-900">
                             {group.showroom?.showroom_name || "Showroom"}
                           </h2>
                           {typeof group.showroom?.location === "string" &&
                             group.showroom.location && (
-                              <p className="text-xs text-gray-400">
+                              <p className="text-xs text-gray-400 light:text-gray-500">
                                 {group.showroom.location}
                               </p>
                             )}
                         </div>
                       </div>
-                      <span className="text-xs font-medium px-3 py-1 rounded-full bg-purple-600/20 text-purple-300 whitespace-nowrap">
+                      <span className="text-xs font-medium px-3 py-1 rounded-full bg-purple-600/20 text-purple-300 whitespace-nowrap light:bg-purple-100 light:text-purple-700">
                         {group.products.length}{" "}
                         {group.products.length === 1 ? "product" : "products"}
                       </span>
@@ -567,8 +567,8 @@ export default function EventViewDeaign() {
 
                     {/* Batch order same-showroom designs together, or one at a time */}
                     {!isInvited && selectedCount > 0 && (
-                      <div className="mt-4 flex items-center justify-between bg-purple-900/20 border border-purple-500/30 rounded-xl px-5 py-3">
-                        <span className="text-sm text-purple-200">
+                      <div className="mt-4 flex items-center justify-between bg-purple-900/20 light:bg-purple-50 border border-purple-500/30 rounded-xl px-5 py-3">
+                        <span className="text-sm text-purple-200 light:text-purple-700">
                           {selectedCount} design{selectedCount === 1 ? "" : "s"} selected
                           from {group.showroom?.showroom_name || "this showroom"}
                         </span>

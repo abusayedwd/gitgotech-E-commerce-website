@@ -25,17 +25,17 @@ export default function JobDetails() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+      <div className="min-h-screen bg-black light:bg-white text-white light:text-gray-900 flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-        <span className="ml-3 text-gray-400">Loading job details...</span>
+        <span className="ml-3 text-gray-400 light:text-gray-500">Loading job details...</span>
       </div>
     );
   }
 
   if (!job) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center text-gray-400">
+      <div className="min-h-screen bg-black light:bg-white text-white light:text-gray-900 flex items-center justify-center">
+        <div className="text-center text-gray-400 light:text-gray-500">
           <p>Job not found</p>
           <button onClick={() => router.push('/careers')} className="mt-4 px-6 py-2 bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors">
             Back to Jobs
@@ -46,7 +46,7 @@ export default function JobDetails() {
   }
 
   return (
-    <div className="min-h-screen  bg-black text-white">
+    <div className="min-h-screen  bg-black light:bg-white text-white light:text-gray-900">
 
       {/* ── Hero Banner ── */}
       <div className="relative w-full h-52 md:h-[400] overflow-hidden">
@@ -92,7 +92,7 @@ export default function JobDetails() {
         {/* Back link */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-gray-400 hover:text-white text-sm mb-6 transition-colors"
+          className="flex items-center gap-1.5 text-gray-400 light:text-gray-500 hover:text-white light:hover:text-gray-900 text-sm mb-6 transition-colors"
         >
           <ArrowLeft size={16} />
           Back to Jobs
@@ -104,7 +104,7 @@ export default function JobDetails() {
           <div className="flex-1 min-w-0">
             {/* Position Overview */}
             <Section title="Position Overview">
-              <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">
+              <p className="text-gray-400 light:text-gray-600 text-sm leading-relaxed whitespace-pre-wrap">
                 {job.description}
               </p>
             </Section>
@@ -114,7 +114,7 @@ export default function JobDetails() {
               <Section title="Key Responsibilities">
                 <ul className="space-y-1.5">
                   {job.responsibilities.map((item: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400 light:text-gray-600">
                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                       {item}
                     </li>
@@ -128,7 +128,7 @@ export default function JobDetails() {
               <Section title="Qualifications & Requirements">
                 <ul className="space-y-1.5">
                   {job.qualifications.map((item: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400">
+                    <li key={i} className="flex items-start gap-2 text-sm text-gray-400 light:text-gray-600">
                       <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-500 shrink-0" />
                       {item}
                     </li>
@@ -139,13 +139,13 @@ export default function JobDetails() {
 
             {/* Salary */}
             <Section title="Salary">
-              <p className="text-gray-400 text-sm">{job.salary}</p>
+              <p className="text-gray-400 light:text-gray-600 text-sm">{job.salary}</p>
             </Section>
 
             {/* Application Deadline */}
             {job.deadline && (
               <Section title="Application Deadline">
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 light:text-gray-600 text-sm">
                   {new Date(job.deadline).toLocaleDateString('en-US', {
                     year: 'numeric', month: 'short', day: 'numeric'
                   })}
@@ -156,18 +156,18 @@ export default function JobDetails() {
 
           {/* ── Right: See Similar Jobs ── */}
           <aside className="w-full md:w-72 shrink-0">
-            <h2 className="text-base font-semibold text-white mb-4">See Similar Jobs</h2>
+            <h2 className="text-base font-semibold text-white light:text-gray-900 mb-4">See Similar Jobs</h2>
             <div className="space-y-4">
               {similarJobs.length === 0 ? (
-                <p className="text-gray-500 text-sm">No similar jobs found.</p>
+                <p className="text-gray-500 light:text-gray-400 text-sm">No similar jobs found.</p>
               ) : (
                 similarJobs.map((sj: any) => (
                   <div key={sj._id}
-                    className="bg-[#111111] border border-gray-800 rounded-xl p-4 hover:border-purple-500/40 transition-all duration-300">
-                    <h3 className="text-sm font-semibold text-white mb-2 leading-snug" style={{ fontFamily: 'Georgia, serif' }}>
+                    className="bg-[#111111] light:bg-white border border-gray-800 light:border-gray-200 rounded-xl p-4 hover:border-purple-500/40 transition-all duration-300">
+                    <h3 className="text-sm font-semibold text-white light:text-gray-900 mb-2 leading-snug" style={{ fontFamily: 'Georgia, serif' }}>
                       {sj.title}
                     </h3>
-                    <div className="space-y-1 text-xs text-gray-400 mb-3">
+                    <div className="space-y-1 text-xs text-gray-400 light:text-gray-500 mb-3">
                       <div className="flex items-center gap-1.5">
                         <MapPin size={12} className="text-white" />
                         {sj.country}{sj.address ? ` ${sj.address}` : ''}
@@ -177,7 +177,7 @@ export default function JobDetails() {
                         {sj.jobType}
                       </div>
                     </div>
-                    <p className="text-xs text-gray-500 line-clamp-2 mb-3">{sj.description}</p>
+                    <p className="text-xs text-gray-500 light:text-gray-400 line-clamp-2 mb-3">{sj.description}</p>
                     <button
                       onClick={() => router.push(`/careers/job-details?id=${sj._id}`)}
                       className="w-full py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-xs font-medium transition-colors flex items-center justify-center gap-1">
@@ -199,8 +199,7 @@ export default function JobDetails() {
 /* ─── Helpers ─── */
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="mb-7">
-    <h2 className="text-base font-semibold text-black dark:text-white mb-3"
-      style={{ color: '#fff' }}>{title}</h2>
+    <h2 className="text-base font-semibold text-white light:text-gray-900 mb-3">{title}</h2>
     {children}
   </div>
 );

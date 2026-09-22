@@ -368,7 +368,7 @@ export default function JobApplicationForm() {
   };
 
   return (
-    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#050218] to-black p-4 md:p-8">
+    <div className="min-h-screen mt-20 bg-gradient-to-r from-black via-[#050218] to-black light:from-white light:via-purple-50 light:to-white p-4 md:p-8">
       <div className="container mx-auto flex items-center gap-4">
         <button
           onClick={() => router.back()}
@@ -378,7 +378,7 @@ export default function JobApplicationForm() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">
           Application Form
         </h1>
       </div>
@@ -388,10 +388,10 @@ export default function JobApplicationForm() {
           <div className="flex justify-center">
             <img className="h-44 w-44" src="/images/logo.png" alt="Logo" />
           </div>
-          <h1 className="text-4xl font-bold font-cormorant text-white mb-2">
+          <h1 className="text-4xl font-bold font-cormorant text-white light:text-gray-900 mb-2">
             Submit Your Application
           </h1>
-          <p className="text-gray-400">
+          <p className="text-gray-400 light:text-gray-500">
             Provide your important details to complete your job application.
           </p>
         </div>
@@ -403,20 +403,20 @@ export default function JobApplicationForm() {
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection("personal")}
             >
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">
                 Personal Info
               </h2>
               {openSections.personal ? (
-                <ChevronUp size={20} className="text-gray-400" />
+                <ChevronUp size={20} className="text-gray-400 light:text-gray-500" />
               ) : (
-                <ChevronDown size={20} className="text-gray-400" />
+                <ChevronDown size={20} className="text-gray-400 light:text-gray-500" />
               )}
             </div>
 
             {openSections.personal && (
               <div className="mt-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                     Full Name *
                   </label>
                   <input
@@ -424,37 +424,37 @@ export default function JobApplicationForm() {
                     name="fullName"
                     value={personalInfo.fullName}
                     onChange={handlePersonalInfoChange}
-                    className="w-full px-4 py-3 bg-[#242428] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-600 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="John Michael Smith"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                     Phone Number *
                   </label>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 bg-[#242428] border border-gray-600 rounded-l-lg px-3">
+                    <div className="flex items-center gap-2 bg-[#242428] light:bg-white border border-gray-600 light:border-gray-300 rounded-l-lg px-3">
                       <img
                         src="https://flagcdn.com/w20/gh.png"
                         alt="Ghana Flag"
                         className="w-5 h-5"
                       />
-                      <span className="text-gray-300">+233</span>
+                      <span className="text-gray-300 light:text-gray-700">+233</span>
                     </div>
                     <input
                       type="tel"
                       name="phoneNumber"
                       value={personalInfo.phoneNumber}
                       onChange={handlePersonalInfoChange}
-                      className="flex-1 px-4 py-3 bg-[#242428] border border-gray-600 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="flex-1 px-4 py-3 bg-[#242428] light:bg-white border border-gray-600 light:border-gray-300 rounded-r-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="24 123 4567"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                     Current Location *
                   </label>
                   <input
@@ -462,18 +462,18 @@ export default function JobApplicationForm() {
                     name="currentLocation"
                     value={personalInfo.currentLocation}
                     onChange={handlePersonalInfoChange}
-                    className="w-full px-4 py-3 bg-[#242428] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-600 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="Accra, Greater Accra, Ghana"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                     Upload Your CV/Resume *
                   </label>
-                  <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center">
+                  <div className="border-2 border-dashed border-gray-600 light:border-gray-300 rounded-lg p-4 text-center">
                     <Upload size={24} className="mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-400 mb-2">
+                    <p className="text-sm text-gray-400 light:text-gray-500 mb-2">
                       Drag & drop your file or click to browse
                     </p>
                     <input
@@ -497,7 +497,7 @@ export default function JobApplicationForm() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                     Tell us why you want to join our team *
                   </label>
                   <textarea
@@ -505,7 +505,7 @@ export default function JobApplicationForm() {
                     value={personalInfo.tellUsWhyYouWantToJoinOurTeam}
                     onChange={handlePersonalInfoChange}
                     rows={4}
-                    className="w-full px-4 py-3 bg-[#242428] border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-600 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                     placeholder="I am passionate about technology and innovation..."
                   />
                 </div>
@@ -519,13 +519,13 @@ export default function JobApplicationForm() {
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection("work")}
             >
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">
                 Work Experience
               </h2>
               {openSections.work ? (
-                <ChevronUp size={20} className="text-gray-400" />
+                <ChevronUp size={20} className="text-gray-400 light:text-gray-500" />
               ) : (
-                <ChevronDown size={20} className="text-gray-400" />
+                <ChevronDown size={20} className="text-gray-400 light:text-gray-500" />
               )}
             </div>
 
@@ -534,7 +534,7 @@ export default function JobApplicationForm() {
                 {workExperiences.map((exp, index) => (
                   <div key={exp.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-medium text-white">
+                      <h3 className="font-medium text-white light:text-gray-900">
                         Work Experience {index + 1}
                       </h3>
                       {workExperiences.length > 1 && (
@@ -550,7 +550,7 @@ export default function JobApplicationForm() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Job Title *
                         </label>
                         <input
@@ -563,13 +563,13 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Senior Software Engineer"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Company *
                         </label>
                         <input
@@ -582,23 +582,23 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Tech Solutions Inc"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Company Phone
                         </label>
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-2 bg-gray-600 border border-gray-500 rounded-l-lg px-3">
+                          <div className="flex items-center gap-2 bg-gray-600 light:bg-gray-100 border border-gray-500 light:border-gray-300 rounded-l-lg px-3">
                             <img
                               src="https://flagcdn.com/w20/gh.png"
                               alt="Ghana Flag"
                               className="w-5 h-5"
                             />
-                            <span className="text-gray-300">+233</span>
+                            <span className="text-gray-300 light:text-gray-700">+233</span>
                           </div>
                           <input
                             type="tel"
@@ -610,14 +610,14 @@ export default function JobApplicationForm() {
                                 e.target.value,
                               )
                             }
-                            className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="flex-1 px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-r-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             placeholder="24 123 4567"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Company Website
                         </label>
                         <div className="flex items-center gap-2">
@@ -632,14 +632,14 @@ export default function JobApplicationForm() {
                                 e.target.value,
                               )
                             }
-                            className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="flex-1 px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             placeholder="https://www.techsolutions.com"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Location
                         </label>
                         <input
@@ -652,7 +652,7 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Kumasi, Ghana"
                         />
                       </div>
@@ -671,7 +671,7 @@ export default function JobApplicationForm() {
                             }
                             className="w-4 h-4 text-purple-600 bg-gray-600 border-gray-500 rounded focus:ring-2 focus:ring-purple-500"
                           />
-                          <span className="text-gray-300">
+                          <span className="text-gray-300 light:text-gray-700">
                             I am Currently Working here
                           </span>
                         </label>
@@ -679,7 +679,7 @@ export default function JobApplicationForm() {
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                             From
                           </label>
                           <input
@@ -692,11 +692,11 @@ export default function JobApplicationForm() {
                                 e.target.value,
                               )
                             }
-                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                             To
                           </label>
                           <input
@@ -709,14 +709,14 @@ export default function JobApplicationForm() {
                                 e.target.value,
                               )
                             }
-                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             disabled={exp.isCurrentlyWorkHere}
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Role Description
                         </label>
                         <textarea
@@ -729,7 +729,7 @@ export default function JobApplicationForm() {
                             )
                           }
                           rows={3}
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Led a team of 5 developers..."
                         />
                       </div>
@@ -754,11 +754,11 @@ export default function JobApplicationForm() {
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection("education")}
             >
-              <h2 className="text-xl font-semibold text-white">Education</h2>
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">Education</h2>
               {openSections.education ? (
-                <ChevronUp size={20} className="text-gray-400" />
+                <ChevronUp size={20} className="text-gray-400 light:text-gray-500" />
               ) : (
-                <ChevronDown size={20} className="text-gray-400" />
+                <ChevronDown size={20} className="text-gray-400 light:text-gray-500" />
               )}
             </div>
 
@@ -767,7 +767,7 @@ export default function JobApplicationForm() {
                 {educations.map((edu, index) => (
                   <div key={edu.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-medium text-white">
+                      <h3 className="font-medium text-white light:text-gray-900">
                         Education {index + 1}
                       </h3>
                       {educations.length > 1 && (
@@ -783,7 +783,7 @@ export default function JobApplicationForm() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           School/University Name *
                         </label>
                         <input
@@ -796,13 +796,13 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Stanford University"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Degree *
                         </label>
                         <input
@@ -811,13 +811,13 @@ export default function JobApplicationForm() {
                           onChange={(e) =>
                             updateEducation(edu.id, "degree", e.target.value)
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Master of Science"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Field of Study
                         </label>
                         <input
@@ -830,14 +830,14 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Artificial Intelligence"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                             Phone
                           </label>
                           <input
@@ -846,12 +846,12 @@ export default function JobApplicationForm() {
                             onChange={(e) =>
                               updateEducation(edu.id, "phone", e.target.value)
                             }
-                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             placeholder="+233 24 123 4567"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                             Email
                           </label>
                           <input
@@ -860,14 +860,14 @@ export default function JobApplicationForm() {
                             onChange={(e) =>
                               updateEducation(edu.id, "email", e.target.value)
                             }
-                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             placeholder="university@example.com"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Overall Result/Grade
                         </label>
                         <input
@@ -880,14 +880,14 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="3.8 GPA"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                             Start Year
                           </label>
                           <input
@@ -900,12 +900,12 @@ export default function JobApplicationForm() {
                                 e.target.value,
                               )
                             }
-                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             placeholder="2015"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                          <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                             End Year
                           </label>
                           <input
@@ -914,7 +914,7 @@ export default function JobApplicationForm() {
                             onChange={(e) =>
                               updateEducation(edu.id, "endYear", e.target.value)
                             }
-                            className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             placeholder="2017"
                           />
                         </div>
@@ -940,13 +940,13 @@ export default function JobApplicationForm() {
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection("certifications")}
             >
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">
                 Certifications
               </h2>
               {openSections.certifications ? (
-                <ChevronUp size={20} className="text-gray-400" />
+                <ChevronUp size={20} className="text-gray-400 light:text-gray-500" />
               ) : (
-                <ChevronDown size={20} className="text-gray-400" />
+                <ChevronDown size={20} className="text-gray-400 light:text-gray-500" />
               )}
             </div>
 
@@ -955,7 +955,7 @@ export default function JobApplicationForm() {
                 {certifications.map((cert, index) => (
                   <div key={cert.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-medium text-white">
+                      <h3 className="font-medium text-white light:text-gray-900">
                         Certification {index + 1}
                       </h3>
                       {certifications.length > 1 && (
@@ -971,7 +971,7 @@ export default function JobApplicationForm() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Certificate Name *
                         </label>
                         <input
@@ -984,21 +984,21 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="AWS Certified Solutions Architect - Professional"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Upload Certificate File
                         </label>
-                        <div className="border-2 border-dashed border-gray-600 rounded-lg p-4 text-center">
+                        <div className="border-2 border-dashed border-gray-600 light:border-gray-300 rounded-lg p-4 text-center">
                           <Upload
                             size={24}
                             className="mx-auto text-gray-400 mb-2"
                           />
-                          <p className="text-sm text-gray-400 mb-2">
+                          <p className="text-sm text-gray-400 light:text-gray-500 mb-2">
                             Click to upload certificate image
                           </p>
                           <input
@@ -1043,11 +1043,11 @@ export default function JobApplicationForm() {
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection("skills")}
             >
-              <h2 className="text-xl font-semibold text-white">Skills</h2>
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">Skills</h2>
               {openSections.skills ? (
-                <ChevronUp size={20} className="text-gray-400" />
+                <ChevronUp size={20} className="text-gray-400 light:text-gray-500" />
               ) : (
-                <ChevronDown size={20} className="text-gray-400" />
+                <ChevronDown size={20} className="text-gray-400 light:text-gray-500" />
               )}
             </div>
 
@@ -1059,7 +1059,7 @@ export default function JobApplicationForm() {
                       type="text"
                       value={skill}
                       onChange={(e) => updateSkill(index, e.target.value)}
-                      className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="flex-1 px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="JavaScript"
                     />
                     {skills.length > 1 && (
@@ -1090,11 +1090,11 @@ export default function JobApplicationForm() {
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection("language")}
             >
-              <h2 className="text-xl font-semibold text-white">Languages</h2>
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">Languages</h2>
               {openSections.language ? (
-                <ChevronUp size={20} className="text-gray-400" />
+                <ChevronUp size={20} className="text-gray-400 light:text-gray-500" />
               ) : (
-                <ChevronDown size={20} className="text-gray-400" />
+                <ChevronDown size={20} className="text-gray-400 light:text-gray-500" />
               )}
             </div>
 
@@ -1106,7 +1106,7 @@ export default function JobApplicationForm() {
                       type="text"
                       value={language}
                       onChange={(e) => updateLanguage(index, e.target.value)}
-                      className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      className="flex-1 px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="English"
                     />
                     {languages.length > 1 && (
@@ -1137,11 +1137,11 @@ export default function JobApplicationForm() {
               className="flex items-center justify-between cursor-pointer"
               onClick={() => toggleSection("references")}
             >
-              <h2 className="text-xl font-semibold text-white">References</h2>
+              <h2 className="text-xl font-semibold text-white light:text-gray-900">References</h2>
               {openSections.references ? (
-                <ChevronUp size={20} className="text-gray-400" />
+                <ChevronUp size={20} className="text-gray-400 light:text-gray-500" />
               ) : (
-                <ChevronDown size={20} className="text-gray-400" />
+                <ChevronDown size={20} className="text-gray-400 light:text-gray-500" />
               )}
             </div>
 
@@ -1150,7 +1150,7 @@ export default function JobApplicationForm() {
                 {references.map((ref, index) => (
                   <div key={ref.id} className="rounded-lg p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-medium text-white">
+                      <h3 className="font-medium text-white light:text-gray-900">
                         Reference {index + 1}
                       </h3>
                       {references.length > 1 && (
@@ -1166,7 +1166,7 @@ export default function JobApplicationForm() {
 
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Name *
                         </label>
                         <input
@@ -1175,13 +1175,13 @@ export default function JobApplicationForm() {
                           onChange={(e) =>
                             updateReference(ref.id, "name", e.target.value)
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Sarah Johnson"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Company Name
                         </label>
                         <input
@@ -1194,13 +1194,13 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="Tech Solutions Inc"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Email
                         </label>
                         <input
@@ -1209,23 +1209,23 @@ export default function JobApplicationForm() {
                           onChange={(e) =>
                             updateReference(ref.id, "email", e.target.value)
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="sarah@example.com"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Contact Number
                         </label>
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-2 bg-[#242428] border border-gray-500 rounded-l-lg px-3">
+                          <div className="flex items-center gap-2 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-l-lg px-3">
                             <img
                               src="https://flagcdn.com/w20/gh.png"
                               alt="Ghana Flag"
                               className="w-5 h-5"
                             />
-                            <span className="text-gray-300">+233</span>
+                            <span className="text-gray-300 light:text-gray-700">+233</span>
                           </div>
                           <input
                             type="tel"
@@ -1237,14 +1237,14 @@ export default function JobApplicationForm() {
                                 e.target.value,
                               )
                             }
-                            className="flex-1 px-4 py-3 bg-[#242428] border border-gray-500 rounded-r-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="flex-1 px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-r-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                             placeholder="20 987 6543"
                           />
                         </div>
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-2">
+                        <label className="block text-sm font-medium text-gray-300 light:text-gray-700 mb-2">
                           Contact Email
                         </label>
                         <input
@@ -1257,7 +1257,7 @@ export default function JobApplicationForm() {
                               e.target.value,
                             )
                           }
-                          className="w-full px-4 py-3 bg-[#242428] border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          className="w-full px-4 py-3 bg-[#242428] light:bg-white border border-gray-500 light:border-gray-300 rounded-lg text-white light:text-gray-900 placeholder-gray-400 light:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
                           placeholder="sarah.johnson@techsolutions.com"
                         />
                       </div>

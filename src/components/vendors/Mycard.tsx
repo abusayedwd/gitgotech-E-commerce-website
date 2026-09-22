@@ -46,7 +46,7 @@ export default function MyCardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black text-white p-4 md:p-8">
+    <div className="min-h-screen bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white text-white light:text-gray-900 p-4 md:p-8">
 
       {/* Confirm Delete Popup */}
       {confirmId && (
@@ -90,14 +90,14 @@ export default function MyCardPage() {
             <FaArrowLeft className="text-black" />
           </div>
         </button>
-        <h1 className="text-[32px] font-semibold text-gray-300 font-cormorant">My Card</h1>
+        <h1 className="text-[32px] font-semibold text-gray-300 light:text-gray-700 font-cormorant">My Card</h1>
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Add Card Button */}
         <button
           onClick={() => router.push("/v-profile/wallet/payment-method/add-card")}
-          className="flex-1 w-full flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#5b2fa3] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] rounded-xl transition"
+          className="flex-1 w-full flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#5b2fa3] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] light:bg-purple-50 rounded-xl transition"
         >
           <img src="/images/card.png" alt="" />
           <span>Add Card</span>
@@ -105,29 +105,29 @@ export default function MyCardPage() {
 
         {/* Your Cards Section */}
         <div className="space-y-3">
-          <h2 className="text-[16px] font-medium font-poppins text-gray-300">Your Cards</h2>
+          <h2 className="text-[16px] font-medium font-poppins text-gray-300 light:text-gray-700">Your Cards</h2>
 
           {isLoading && (
-            <p className="text-gray-400 text-sm text-center py-4">Loading cards...</p>
+            <p className="text-gray-400 light:text-gray-500 text-sm text-center py-4">Loading cards...</p>
           )}
 
           {!isLoading && cards.length === 0 && (
-            <p className="text-gray-400 text-sm text-center py-4">No cards added yet.</p>
+            <p className="text-gray-400 light:text-gray-500 text-sm text-center py-4">No cards added yet.</p>
           )}
 
           {cards.map((card) => (
             <div
               key={card._id}
-              className="flex items-center justify-between p-4 bg-[#1B1B1F] border border-[#242428] rounded-xl hover:border-gray-600 transition"
+              className="flex items-center justify-between p-4 bg-[#1B1B1F] light:bg-white border border-[#242428] light:border-gray-200 rounded-xl hover:border-gray-600 transition"
             >
               <div className="flex items-center gap-3">
                 <img src="/images/Visa.png" alt="" />
                 <div>
-                  <span className="text-white font-medium">
+                  <span className="text-white light:text-gray-900 font-medium">
                     **** **** **** {getLast4(card.accountNumber)}
                   </span>
-                  <div className="text-xs text-gray-400">{card.bankName}</div>
-                  <div className="text-xs text-gray-500">{card.accountName}</div>
+                  <div className="text-xs text-gray-400 light:text-gray-500">{card.bankName}</div>
+                  <div className="text-xs text-gray-500 light:text-gray-400">{card.accountName}</div>
                 </div>
               </div>
               <button

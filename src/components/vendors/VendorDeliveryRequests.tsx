@@ -153,10 +153,10 @@ export default function VendorDeliveryRequests() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl md:text-3xl font-cormorant font-semibold text-white">
+        <h1 className="text-2xl md:text-3xl font-cormorant font-semibold text-white light:text-gray-900">
           Delivery Request
         </h1>
-        <p className="text-gray-400 text-sm mt-2">
+        <p className="text-gray-400 light:text-gray-500 text-sm mt-2">
           Delivery requests created for your showroom, including return recovery.
         </p>
       </div>
@@ -166,12 +166,12 @@ export default function VendorDeliveryRequests() {
           <div className="w-10 h-10 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
         </div>
       ) : isError ? (
-        <div className="text-center py-16 text-red-300 bg-[#2E2E34] rounded-xl border border-red-500/30">
+        <div className="text-center py-16 text-red-300 bg-[#2E2E34] light:bg-red-50 rounded-xl border border-red-500/30">
           <Truck className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>Failed to load delivery requests.</p>
         </div>
       ) : requests.length === 0 ? (
-        <div className="text-center py-16 text-gray-400 bg-[#2E2E34] rounded-xl border border-gray-800">
+        <div className="text-center py-16 text-gray-400 light:text-gray-500 bg-[#2E2E34] light:bg-gray-50 rounded-xl border border-gray-800 light:border-gray-200">
           <Truck className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>No delivery requests yet</p>
         </div>
@@ -188,10 +188,10 @@ export default function VendorDeliveryRequests() {
                 key={request._id}
                 type="button"
                 onClick={() => setSelected(request)}
-                className="w-full text-left cursor-pointer bg-[#2E2E34] border border-gray-800 rounded-xl p-4 hover:border-purple-500/40 transition-colors"
+                className="w-full text-left cursor-pointer bg-[#2E2E34] light:bg-white border border-gray-800 light:border-gray-200 rounded-xl p-4 hover:border-purple-500/40 transition-colors"
               >
                 <div className="flex items-start gap-3">
-                  <div className="w-14 h-14 rounded-lg bg-gray-800 border border-gray-700 flex items-center justify-center overflow-hidden shrink-0">
+                  <div className="w-14 h-14 rounded-lg bg-gray-800 light:bg-gray-100 border border-gray-700 light:border-gray-300 flex items-center justify-center overflow-hidden shrink-0">
                     {image ? (
                       <img
                         src={image}
@@ -208,17 +208,17 @@ export default function VendorDeliveryRequests() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="font-medium text-white truncate">
+                        <p className="font-medium text-white light:text-gray-900 truncate">
                           {request.deliveryAddress?.name ||
                             request.pickupLocation?.name ||
                             "Delivery request"}
                         </p>
-                        <p className="text-sm text-gray-400 truncate mt-1">
+                        <p className="text-sm text-gray-400 light:text-gray-500 truncate mt-1">
                           {request.deliveryAddress?.location ||
                             request.pickupLocation?.location ||
                             "No address"}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 light:text-gray-400 mt-1">
                           #{request.trackingNumber || request._id.slice(-8)} ·{" "}
                           {formatStatusLabel(request.purpose || request.category || request.type)} ·{" "}
                           {formatDate(request.createdAt)}
@@ -230,7 +230,7 @@ export default function VendorDeliveryRequests() {
                         {formatStatusLabel(request.status)}
                       </span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-xs text-gray-400">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-3 text-xs text-gray-400 light:text-gray-500">
                       <span>
                         {formatMoney(total, request.price?.currency)}
                       </span>

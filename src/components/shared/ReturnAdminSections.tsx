@@ -65,8 +65,8 @@ function Row({ label, value }: { label: string; value?: ReactNode }) {
   if (value === undefined || value === null || value === "") return null;
   return (
     <div className="flex justify-between items-start gap-4">
-      <span className="text-gray-400 text-sm shrink-0">{label}</span>
-      <span className="text-white font-medium text-sm text-right break-all">
+      <span className="text-gray-400 light:text-gray-500 text-sm shrink-0">{label}</span>
+      <span className="text-white light:text-gray-900 font-medium text-sm text-right break-all">
         {value}
       </span>
     </div>
@@ -129,15 +129,15 @@ export function ReturnReviewTrail({ item }: { item: ReturnAdminFields }) {
   if (steps.length < 2) return null;
 
   return (
-    <div className="rounded-lg border border-purple-500/20 bg-purple-950/20 p-3">
-      <p className="text-xs uppercase tracking-wide text-gray-500 mb-3">
+    <div className="rounded-lg border border-purple-500/20 bg-purple-950/20 light:bg-purple-50 p-3">
+      <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400 mb-3">
         Review path
       </p>
       <div className="flex flex-wrap items-center gap-2">
         {steps.map((step, index) => (
           <div key={`${step.label}-${index}`} className="flex items-center gap-2">
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-wide text-gray-500">
+              <p className="text-[10px] uppercase tracking-wide text-gray-500 light:text-gray-400">
                 {step.label}
               </p>
               <span
@@ -147,7 +147,7 @@ export function ReturnReviewTrail({ item }: { item: ReturnAdminFields }) {
               </span>
             </div>
             {index < steps.length - 1 && (
-              <span className="text-gray-600 pb-1">→</span>
+              <span className="text-gray-600 light:text-gray-400 pb-1">→</span>
             )}
           </div>
         ))}
@@ -162,9 +162,9 @@ export function ReturnAdminReviewCards({ item }: { item: ReturnAdminFields }) {
   return (
     <div className="space-y-3">
       {item.adminReview && (
-        <div className="rounded-lg border border-gray-800 p-3 space-y-2">
+        <div className="rounded-lg border border-gray-800 light:border-gray-200 p-3 space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs uppercase tracking-wide text-gray-500 inline-flex items-center gap-1.5">
+            <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400 inline-flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-purple-400" />
               Admin review
             </p>
@@ -182,9 +182,9 @@ export function ReturnAdminReviewCards({ item }: { item: ReturnAdminFields }) {
       )}
 
       {item.adminDecision && (
-        <div className="rounded-lg border border-purple-500/20 bg-purple-950/10 p-3 space-y-2">
+        <div className="rounded-lg border border-purple-500/20 bg-purple-950/10 light:bg-purple-50 p-3 space-y-2">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400">
               Admin decision
             </p>
             {item.adminDecision.decision && (
@@ -201,9 +201,9 @@ export function ReturnAdminReviewCards({ item }: { item: ReturnAdminFields }) {
       )}
 
       {item.productOwnership && (
-        <div className="rounded-lg border border-gray-800 p-3 space-y-1">
+        <div className="rounded-lg border border-gray-800 light:border-gray-200 p-3 space-y-1">
           <div className="flex items-center justify-between gap-3">
-            <p className="text-xs uppercase tracking-wide text-gray-500">
+            <p className="text-xs uppercase tracking-wide text-gray-500 light:text-gray-400">
               Product ownership
             </p>
             <span
@@ -213,7 +213,7 @@ export function ReturnAdminReviewCards({ item }: { item: ReturnAdminFields }) {
             </span>
           </div>
           {ownershipHint(item.productOwnership) && (
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-gray-300 light:text-gray-600">
               {ownershipHint(item.productOwnership)}
             </p>
           )}
