@@ -34,7 +34,10 @@ export default function LoginPage() {
       }).unwrap();
 
       const token = res?.token || res?.data?.token || res?.data?.accessToken;
-      const user = res?.data?.user || res?.user || res?.data;
+      const responseData = res?.data || {};
+      const user = responseData?.user || res?.user || {};
+      const access = responseData?.access;
+      const application = responseData?.application;
 
       // Treat the presence of a token as success — some backends don't return
       // a `success` flag. Fall back to res.success / res.status for backends
@@ -46,11 +49,17 @@ export default function LoginPage() {
 
         if (token) localStorage.setItem("token", token);
 
-        const role = user?.role || "customer";
+        const isApplicationVendor =
+          access === "APPLICATION_ONLY" || access === "FULL";
+        const role = user?.role || (isApplicationVendor ? "vendor" : "customer");
+        const effectiveAccess =
+          application?.status === "APPROVED" ? "FULL" : access;
         const userToStore = {
           ...(user || {}),
           isLoggedIn: true,
           role,
+          ...(effectiveAccess ? { access: effectiveAccess } : {}),
+          ...(application ? { application } : {}),
         };
         localStorage.setItem("user", JSON.stringify(userToStore));
 
@@ -61,7 +70,12 @@ export default function LoginPage() {
         window.dispatchEvent(new Event("authChanged"));
         // console.log("[Login] dispatched authChanged. user:", userToStore);
 
-        if (role === "vendor") {
+        if (
+          access === "APPLICATION_ONLY" &&
+          application?.status !== "APPROVED"
+        ) {
+          router.push("/account-application/status");
+        } else if (access === "FULL" || application?.status === "APPROVED" || role === "vendor") {
           router.push("/vendor-dashboard");
         } else {
           router.push("/");

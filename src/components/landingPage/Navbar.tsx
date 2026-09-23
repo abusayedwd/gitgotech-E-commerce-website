@@ -20,6 +20,7 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [accountAccess, setAccountAccess] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [guestCartCount, setGuestCartCount] = useState(0);
 
@@ -49,9 +50,11 @@ export default function Navbar() {
         const storedUser = JSON.parse(storedUserString);
         setIsLoggedIn(storedUser?.isLoggedIn || false);
         setUserRole(storedUser?.role || null);
+        setAccountAccess(storedUser?.access || null);
       } else {
         setIsLoggedIn(false);
         setUserRole(null);
+        setAccountAccess(null);
       }
       setIsHydrated(true);
     };
@@ -76,8 +79,17 @@ export default function Navbar() {
 
   // Dynamic routes based on user role
   const dashboardRoute =
-    userRole === "vendor" ? "/vendor-dashboard" : "/customer-dashboard";
-  const profileRoute = userRole === "vendor" ? "/v-profile" : "/profile";
+    accountAccess === "APPLICATION_ONLY"
+      ? "/account-application/status"
+      : userRole === "vendor"
+        ? "/vendor-dashboard"
+        : "/customer-dashboard";
+  const profileRoute =
+    accountAccess === "APPLICATION_ONLY"
+      ? "/account-application/status"
+      : userRole === "vendor"
+        ? "/v-profile"
+        : "/profile";
 
   return (
     <nav className=" bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-[#f4eefc] light:to-white text-white light:text-gray-900 fixed pb-1.5 top-0 left-0 right-0 z-[100] px-3 sm:px-4 md:px-6 md:pt-3  shadow-lg light:shadow-[0_2px_12px_rgba(97,0,255,0.08)]">

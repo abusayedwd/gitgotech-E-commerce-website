@@ -1,6 +1,7 @@
 "use client";
 
 import PrivateRoute from "@/components/shared/PrivateRoute";
+import { useAuth } from "@/hooks/useAuth";
 import url from "@/redux/api/baseUrl.js";
 import {
   selectShowroom,
@@ -152,7 +153,14 @@ export default function VendorDashboardShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { access, isHydrated } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isHydrated && access === "APPLICATION_ONLY") {
+      router.replace("/account-application/status");
+    }
+  }, [access, isHydrated, router]);
 
   const menuItems = [
     { name: "Dashboard", icon: LayoutDashboard, path: "/vendor-dashboard" },
@@ -192,6 +200,14 @@ export default function VendorDashboardShell({
     }
     return pathname === path || pathname.startsWith(`${path}/`);
   };
+
+  if (isHydrated && access === "APPLICATION_ONLY") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-black text-sm text-gray-300 light:bg-white light:text-gray-600">
+        Redirecting to application status…
+      </div>
+    );
+  }
 
   return (
     <PrivateRoute>

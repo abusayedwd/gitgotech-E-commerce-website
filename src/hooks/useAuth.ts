@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 interface AuthState {
   isLoggedIn: boolean;
   role: string | null;
+  access: string | null;
   isHydrated: boolean;
 }
 
@@ -33,19 +34,20 @@ export function consumeIntentionalLogoutFlag(): boolean {
 
 function readAuth(): AuthState {
   if (typeof window === "undefined") {
-    return { isLoggedIn: false, role: null, isHydrated: false };
+    return { isLoggedIn: false, role: null, access: null, isHydrated: false };
   }
   try {
     const raw = localStorage.getItem("user");
-    if (!raw) return { isLoggedIn: false, role: null, isHydrated: true };
+    if (!raw) return { isLoggedIn: false, role: null, access: null, isHydrated: true };
     const parsed = JSON.parse(raw);
     return {
       isLoggedIn: !!parsed?.isLoggedIn,
       role: parsed?.role ?? null,
+      access: parsed?.access ?? null,
       isHydrated: true,
     };
   } catch {
-    return { isLoggedIn: false, role: null, isHydrated: true };
+    return { isLoggedIn: false, role: null, access: null, isHydrated: true };
   }
 }
 
@@ -54,6 +56,7 @@ export function useAuth() {
   const [state, setState] = useState<AuthState>({
     isLoggedIn: false,
     role: null,
+    access: null,
     isHydrated: false,
   });
 
