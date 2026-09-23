@@ -1,5 +1,17 @@
 import { apiSlice } from "@/redux/api/apiSlice";
 
+export type ShowroomApplicationStatus = "SUBMITTED" | "APPROVED" | "REJECTED";
+
+export interface ShowroomApplication {
+    id: string;
+    status: ShowroomApplicationStatus;
+    attemptNumber: number;
+    rejectionReason?: string | null;
+    submittedAt?: string | null;
+    reviewedAt?: string | null;
+    canResubmit: boolean;
+    canResubmitAt?: string | null;
+}
 
 const showroomSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -38,6 +50,15 @@ const showroomSlice = apiSlice.injectEndpoints({
             invalidatesTags: [{type: "Showroom"}]
         }),
 
+        resubmitShowroom: builder.mutation({
+            query: ({data, id}: {data: FormData; id: string}) => ({
+                url: `/showroom/resubmit/${id}`,
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: [{type: "Showroom"}]
+        }),
+
         deleteShowroom: builder.mutation({
             query: (id) => ({
                 url: `/showroom/delete/${id}`,
@@ -58,6 +79,7 @@ export const {
     useGetShowroomQuery,
     useGetVendorShowroomsQuery,
     useUpdateShowroomMutation,
+    useResubmitShowroomMutation,
     useDeleteShowroomMutation,
     useGetShowroomByVendorQuery
 

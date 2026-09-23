@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
-import { Upload, X, Plus, MapPin } from 'lucide-react';
+import { Upload, X, Plus, MapPin, LoaderCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { useAddShowroomMutation } from '@/redux/features/vendor/showroomSlice/showroomSlice';
@@ -19,7 +19,7 @@ const defaultSchedule = DAYS.map((day) => ({
 
 export default function AddShowroom() {
   const router = useRouter();
-  const [addshoroom] = useAddShowroomMutation();
+  const [addshoroom, { isLoading: isSubmitting }] = useAddShowroomMutation();
   const [showMap, setShowMap] = useState(false);
 
   const [logo, setLogo] = useState<File | null>(null);
@@ -101,17 +101,38 @@ export default function AddShowroom() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!logo) {
+      toast.error('Business logo is required');
+      return;
+    }
+    if (!nidImage) {
+      toast.error('NID image is required');
+      return;
+    }
+    if (!ownerImage) {
+      toast.error('Owner image is required');
+      return;
+    }
+
+    const filteredCategories = categories
+      .map((category) => category.trim())
+      .filter(Boolean);
+    if (filteredCategories.length === 0) {
+      toast.error('Add at least one showroom category');
+      return;
+    }
+
     const fd = new FormData();
 
-    if (logo) fd.append('logo', logo);
-    if (nidImage) fd.append('nidImage', nidImage);
-    if (ownerImage) fd.append('ownerImage', ownerImage);
+    fd.append('logo', logo);
+    fd.append('nidImage', nidImage);
+    fd.append('ownerImage', ownerImage);
 
     fd.append('showroom_name', formData.showroom_name);
     fd.append('showroom_address', formData.showroom_address);
-    fd.append('referralCode', formData.referralCode);
+    const referralCode = formData.referralCode.trim();
+    if (referralCode) fd.append('referralCode', referralCode);
 
-    const filteredCategories = categories.filter((c) => c.trim());
     fd.append('showroom_category', JSON.stringify(filteredCategories));
 
     const locationPayload = {
@@ -122,6 +143,7 @@ export default function AddShowroom() {
 
     const schedulePayload = schedule.map((s) => ({
       day: s.day,
+      isOpen: s.isOpen,
       open: s.isOpen ? toISO(s.open) : toISO('00:00'),
       close: s.isOpen ? toISO(s.close) : toISO('00:00'),
     }));
@@ -161,7 +183,9 @@ export default function AddShowroom() {
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto mt-6 space-y-8">
         {/* Logo Upload */}
         <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-4">Business Logo</h2>
+          <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-4">
+            Business Logo <span className="text-red-400">*</span>
+          </h2>
           <div className="flex flex-col items-center">
             {logoPreview ? (
               <div className="relative">
@@ -328,12 +352,12 @@ export default function AddShowroom() {
           <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-4">Documents</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FileInput
-              label="NID Image"
+              label="NID Image *"
               file={nidImage}
               onChange={(e) => handleFileChange(setNidImage, e)}
             />
             <FileInput
-              label="Owner Image"
+              label="Owner Image *"
               file={ownerImage}
               onChange={(e) => handleFileChange(setOwnerImage, e)}
             />
@@ -384,10 +408,15 @@ export default function AddShowroom() {
         <div className="flex justify-center mt-8 pb-8">
           <button
             type="submit"
-            className="inline-flex items-center gap-2 px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-medium text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-purple-500/20"
+            disabled={isSubmitting}
+            className="inline-flex items-center gap-2 px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-medium text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-purple-500/20 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
           >
-            <Plus className="w-5 h-5" />
-            Create Showroom
+            {isSubmitting ? (
+              <LoaderCircle className="w-5 h-5 animate-spin" />
+            ) : (
+              <Plus className="w-5 h-5" />
+            )}
+            {isSubmitting ? 'Creating Showroom…' : 'Create Showroom'}
           </button>
         </div>
       </form>

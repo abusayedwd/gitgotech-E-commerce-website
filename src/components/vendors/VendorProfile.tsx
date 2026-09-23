@@ -565,10 +565,16 @@ export default function VendorProfilePage() {
                 <h3 className="text-white light:text-gray-900 font-semibold mb-1">
                   {showroom.showroom_name}
                 </h3>
-                {!showroom.isApprove && (
-                  <p className="text-yellow-400 text-xs mb-1">
-                    Pending Approval
-                  </p>
+                {(showroom.application?.status === "APPROVED" || showroom.isApprove) && (
+                  <p className="text-emerald-400 text-xs mb-1">Approved</p>
+                )}
+                {showroom.application?.status === "REJECTED" && (
+                  <p className="text-red-400 text-xs mb-1">Changes required</p>
+                )}
+                {!showroom.isApprove &&
+                  showroom.application?.status !== "REJECTED" &&
+                  showroom.application?.status !== "APPROVED" && (
+                  <p className="text-yellow-400 text-xs mb-1">Under review</p>
                 )}
                 <div className="flex items-center gap-1 text-gray-400 light:text-gray-500 text-xs mb-4">
                   <MapPin size={14} />

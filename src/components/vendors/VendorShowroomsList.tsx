@@ -2,7 +2,7 @@
 
 import { IMAGE_BASE_URL } from "@/lib/imageBaseUrl";
 import { useGetShowroomByVendorQuery } from "@/redux/features/vendor/showroomSlice/showroomSlice";
-import { CheckCircle, MapPin, Plus, Store } from "lucide-react";
+import { AlertCircle, CheckCircle, Clock3, MapPin, Plus, Store } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -18,6 +18,11 @@ export default function VendorShowroomsPage() {
 
   const { data: vendorShowroomData, isLoading } = useGetShowroomByVendorQuery(
     {},
+    {
+      pollingInterval: 30_000,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
+    },
   );
 
   // console.log(vendorShowroomData);
@@ -93,15 +98,24 @@ export default function VendorShowroomsPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                   {/* Approval Badge */}
-                  {showroom.isApprove && (
+                  {(showroom.application?.status === "APPROVED" || showroom.isApprove) && (
                     <div className="absolute top-3 right-3 bg-green-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
                       <CheckCircle className="w-3 h-3" />
                       Approved
                     </div>
                   )}
-                  {!showroom.isApprove && (
-                    <div className="absolute top-3 right-3 bg-yellow-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium">
-                      Pending
+                  {showroom.application?.status === "REJECTED" && (
+                    <div className="absolute top-3 right-3 bg-red-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3" />
+                      Changes required
+                    </div>
+                  )}
+                  {!showroom.isApprove &&
+                    showroom.application?.status !== "REJECTED" &&
+                    showroom.application?.status !== "APPROVED" && (
+                    <div className="absolute top-3 right-3 bg-yellow-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                      <Clock3 className="w-3 h-3" />
+                      Under review
                     </div>
                   )}
                 </div>
@@ -126,6 +140,12 @@ export default function VendorShowroomsPage() {
                       day: "numeric",
                     })}
                   </p>
+
+                  {showroom.application?.status === "REJECTED" && showroom.application?.rejectionReason && (
+                    <p className="mb-4 line-clamp-2 text-xs text-red-300 light:text-red-700">
+                      {showroom.application.rejectionReason}
+                    </p>
+                  )}
 
                   {/* View Details Button */}
                   <button className="w-full bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 hover:text-purple-300 py-2 rounded-lg text-sm font-medium transition-colors light:bg-purple-100 light:text-purple-700 light:hover:bg-purple-200">

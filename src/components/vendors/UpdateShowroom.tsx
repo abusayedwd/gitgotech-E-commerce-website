@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Upload, X, Plus, MapPin } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import { useGetShowroomDetailsQuery, useUpdateShowroomMutation } from '@/redux/features/vendor/showroomSlice/showroomSlice';
+import { useGetShowroomDetailsQuery, useResubmitShowroomMutation, useUpdateShowroomMutation } from '@/redux/features/vendor/showroomSlice/showroomSlice';
 import url from './../../redux/api/baseUrl.js';
 import toast from 'react-hot-toast';
 
@@ -21,16 +21,43 @@ const toISO = (time: string) => {
 const isoToTime = (iso: string) => iso?.slice(11, 16) ?? '00:00';
 const isClosed = (iso: string) => iso?.slice(11, 19) === '00:00:00';
 
+const getRemainingMs = (value?: string | null) => {
+  if (!value) return 0;
+  const target = new Date(value).getTime();
+  return Number.isFinite(target) ? Math.max(0, target - Date.now()) : 0;
+};
+
+const formatCountdown = (milliseconds: number) => {
+  const seconds = Math.max(0, Math.ceil(milliseconds / 1000));
+  const days = Math.floor(seconds / 86400);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const remainder = seconds % 60;
+  return [days ? `${days}d` : null, `${hours}h`, `${minutes}m`, `${remainder}s`]
+    .filter(Boolean)
+    .join(' ');
+};
+
 export default function UpdateShowroom() {
   const router = useRouter();
   const [id, setId] = useState('');
   const [showMap, setShowMap] = useState(false);
   const [ready, setReady] = useState(false);
 
-  const { data: showroomDetails } = useGetShowroomDetailsQuery(id, { skip: !id });
-  const [updateShowroom, { isLoading }] = useUpdateShowroomMutation();
+  const { data: showroomDetails, refetch } = useGetShowroomDetailsQuery(id, {
+    skip: !id,
+    pollingInterval: 30_000,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
+  });
+  const [updateShowroom, { isLoading: isUpdating }] = useUpdateShowroomMutation();
+  const [resubmitShowroom, { isLoading: isResubmitting }] = useResubmitShowroomMutation();
 
   const details = showroomDetails?.data;
+  const applicationStatus =
+    details?.application?.status || details?.approvalStatus || (details?.isApprove ? 'APPROVED' : 'SUBMITTED');
+  const isRejected = applicationStatus === 'REJECTED';
+  const isLoading = isUpdating || isResubmitting;
 
   const [logo, setLogo] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -48,6 +75,7 @@ export default function UpdateShowroom() {
   const [schedule, setSchedule] = useState(
     DAYS.map((day) => ({ day, open: '09:00', close: '18:00', isOpen: true }))
   );
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -79,7 +107,7 @@ export default function UpdateShowroom() {
           day: s.day,
           open: isoToTime(s.open),
           close: isoToTime(s.close),
-          isOpen: !isClosed(s.open),
+          isOpen: s.isOpen ?? !isClosed(s.open),
         }))
       );
     }
@@ -87,6 +115,36 @@ export default function UpdateShowroom() {
     setLogoPreview(details.logo ? `${url}/${details.logo}` : null);
     setReady(true);
   }, [details]);
+
+  useEffect(() => {
+    if (!isRejected || details?.application?.canResubmit || !details?.application?.canResubmitAt) {
+      setCooldownRemaining(0);
+      return;
+    }
+    const cooldownAt = details.application.canResubmitAt;
+    const update = () => setCooldownRemaining(getRemainingMs(cooldownAt));
+    update();
+    const interval = window.setInterval(update, 1000);
+    return () => window.clearInterval(interval);
+  }, [details?.application?.canResubmit, details?.application?.canResubmitAt, isRejected]);
+
+  useEffect(() => {
+    if (
+      isRejected &&
+      !details?.application?.canResubmit &&
+      details?.application?.canResubmitAt &&
+      cooldownRemaining === 0 &&
+      getRemainingMs(details.application.canResubmitAt) === 0
+    ) {
+      void refetch();
+    }
+  }, [cooldownRemaining, details?.application?.canResubmit, details?.application?.canResubmitAt, isRejected, refetch]);
+
+  useEffect(() => {
+    if (ready && applicationStatus === 'SUBMITTED') {
+      router.replace(`/v-profile/view-showroom?id=${id}`);
+    }
+  }, [applicationStatus, id, ready, router]);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -125,18 +183,22 @@ export default function UpdateShowroom() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (isRejected && !details?.application?.canResubmit) {
+      toast.error('Resubmission is not available yet');
+      return;
+    }
+
+    const filteredCategories = categories.map((category) => category.trim()).filter(Boolean);
+    if (filteredCategories.length === 0) {
+      toast.error('Add at least one showroom category');
+      return;
+    }
+
     const fd = new FormData();
 
     if (logo) fd.append('logo', logo);
     if (nidImage) fd.append('nidImage', nidImage);
     if (ownerImage) fd.append('ownerImage', ownerImage);
-
-    fd.append('showroom_name', formData.showroom_name);
-    fd.append('showroom_address', formData.showroom_address);
-    fd.append('referralCode', formData.referralCode);
-
-    const filteredCategories = categories.filter((c) => c.trim());
-    fd.append('showroom_category', JSON.stringify(filteredCategories));
 
     const locationPayload = {
       type: 'Point',
@@ -146,20 +208,45 @@ export default function UpdateShowroom() {
 
     const schedulePayload = schedule.map((s) => ({
       day: s.day,
+      isOpen: s.isOpen,
       open: s.isOpen ? toISO(s.open) : toISO('00:00'),
       close: s.isOpen ? toISO(s.close) : toISO('00:00'),
     }));
-    fd.append('showroom_schedule', JSON.stringify(schedulePayload));
+    const textPayload = {
+      showroom_name: formData.showroom_name.trim(),
+      showroom_category: filteredCategories,
+      showroom_address: formData.showroom_address.trim(),
+      location: locationPayload,
+      showroom_schedule: schedulePayload,
+      referralCode: formData.referralCode.trim() || null,
+    };
+
+    if (isRejected) {
+      fd.append('data', JSON.stringify(textPayload));
+    } else {
+      fd.append('showroom_name', textPayload.showroom_name);
+      fd.append('showroom_address', textPayload.showroom_address);
+      if (textPayload.referralCode) fd.append('referralCode', textPayload.referralCode);
+      fd.append('showroom_category', JSON.stringify(textPayload.showroom_category));
+      fd.append('location', JSON.stringify(textPayload.location));
+      fd.append('showroom_schedule', JSON.stringify(textPayload.showroom_schedule));
+    }
 
     try {
-      const res = await updateShowroom({ data: fd, id }).unwrap();
+      const res = isRejected
+        ? await resubmitShowroom({ data: fd, id }).unwrap()
+        : await updateShowroom({ data: fd, id }).unwrap();
       if (res?.success) {
-        toast.success(res?.message || 'Showroom updated successfully');
+        toast.success(
+          res?.message || (isRejected ? 'Showroom resubmitted successfully' : 'Showroom updated successfully'),
+        );
         router.push(`/v-profile/view-showroom?id=${id}`);
       }
     } catch (error: any) {
-      const msg = error?.data?.message || error?.data?.data || 'Failed to update showroom';
-      toast.error(typeof msg === 'string' ? msg : 'Failed to update showroom');
+      if (error?.status === 429) void refetch();
+      const fallback = isRejected ? 'Failed to resubmit showroom' : 'Failed to update showroom';
+      const msg = error?.data?.message || error?.data?.data || fallback;
+      toast.error(typeof msg === 'string' ? msg : fallback);
     }
   };
 
@@ -178,10 +265,29 @@ export default function UpdateShowroom() {
             </svg>
           </div>
         </button>
-        <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">Update Showroom</h1>
+        <h1 className="text-2xl font-semibold text-gray-300 light:text-gray-700 font-cormorant">
+          {isRejected ? 'Fix & Resubmit Showroom' : 'Update Showroom'}
+        </h1>
       </div>
 
       <form onSubmit={handleSubmit} className="max-w-4xl mx-auto mt-6 space-y-8">
+        {isRejected && (
+          <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-5">
+            <p className="font-semibold text-red-200 light:text-red-800">Changes required</p>
+            <p className="mt-2 whitespace-pre-line text-sm text-red-100/75 light:text-red-700">
+              {details?.application?.rejectionReason || 'Update the requested information and resubmit.'}
+            </p>
+            {!details?.application?.canResubmit && (
+              <p className="mt-3 text-sm text-amber-200 light:text-amber-800">
+                {cooldownRemaining > 0
+                  ? `Resubmission available in ${formatCountdown(cooldownRemaining)}.`
+                  : details?.application?.canResubmitAt
+                    ? 'Cooldown finished. Checking resubmission availability…'
+                    : 'Resubmission is currently unavailable.'}
+              </p>
+            )}
+          </div>
+        )}
         {/* Logo */}
         <div className="bg-gradient-to-br from-purple-900/30 via-gray-900/80 to-purple-900/20 light:from-purple-50 light:via-white light:to-purple-50 border border-purple-500/30 light:border-purple-200 rounded-2xl p-6 md:p-8 backdrop-blur-sm">
           <h2 className="text-lg font-semibold text-gray-300 light:text-gray-700 mb-4">Business Logo</h2>
@@ -404,10 +510,12 @@ export default function UpdateShowroom() {
         <div className="flex justify-center mt-8 pb-8">
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || (isRejected && !details?.application?.canResubmit)}
             className="inline-flex items-center gap-2 px-8 py-3 bg-purple-600 hover:bg-purple-700 rounded-full text-white font-medium text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg shadow-purple-500/20 disabled:opacity-50"
           >
-            {isLoading ? 'Saving...' : 'Save Changes'}
+            {isLoading
+              ? (isRejected ? 'Resubmitting…' : 'Saving…')
+              : (isRejected ? 'Resubmit Showroom' : 'Save Changes')}
           </button>
         </div>
       </form>

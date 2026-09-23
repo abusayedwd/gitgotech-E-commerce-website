@@ -8,10 +8,10 @@ import {
 } from "@/redux/features/home/homeSlice";
 import {
   useDeleteShowroomMutation,
+  useGetShowroomQuery,
   useGetShowroomDetailsQuery,
-  useGetVendorShowroomsQuery,
 } from "@/redux/features/vendor/showroomSlice/showroomSlice";
-import { Edit, Star, Store, Trash2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Clock3, Edit, Star, Store, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -33,22 +33,21 @@ const isClosed = (iso: string) => iso?.slice(11, 19) === "00:00:00";
 export default function ViewShowroomPage() {
   const router = useRouter();
   const [id, setId] = useState("");
-  const [vendorId, setVendorId] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const { data: categoriesRes } = useGetHomeCategoriesQuery({});
   const categories = categoriesRes?.data ?? [];
 
-  // Get vendor showrooms data using vendorId
   const { data: vendorShowroomData, isLoading: isLoadingShowrooms } =
-    useGetVendorShowroomsQuery(vendorId, {
-      skip: !vendorId,
+    useGetShowroomQuery({}, {
+      pollingInterval: 30_000,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
     });
 
   // console.log(vendorShowroomData);
-  const showrooms = vendorShowroomData?.data?.showrooms || [];
-  const vendorProfile = vendorShowroomData?.data?.vendorProfile;
+  const showrooms = vendorShowroomData?.data || [];
 
   // console.log(showrooms);
   // console.log(showrooms);
@@ -56,6 +55,9 @@ export default function ViewShowroomPage() {
   // Get showroom details for the selected showroom
   const { data: showroomDetails } = useGetShowroomDetailsQuery(id, {
     skip: !id,
+    pollingInterval: 30_000,
+    refetchOnFocus: true,
+    refetchOnReconnect: true,
   });
   const { data: showroomProducts } = useGetShowroomProductQuery(
     { id, product_category: selectedCategory },
@@ -70,16 +72,13 @@ export default function ViewShowroomPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const showroomId = params.get("id") || "";
-    const vId = params.get("vendorId") || "";
     setId(showroomId);
-    setVendorId(vId);
   }, []);
 
-  const handleNavigate = (showroomId: string) => {
-    router.push(
-      `/v-profile/view-showroom?id=${showroomId}&vendorId=${vendorId}`,
-    );
-  };
+  const applicationStatus =
+    details?.application?.status ||
+    details?.approvalStatus ||
+    (details?.isApprove ? "APPROVED" : "SUBMITTED");
 
   const handleDelete = async () => {
     try {
@@ -149,14 +148,26 @@ export default function ViewShowroomPage() {
               ))}
             </select>
 
-            <button
-              onClick={() => router.push(`/v-profile/update-showroom?id=${id}`)}
-              disabled={!id}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition"
-            >
-              <Edit className="w-4 h-4" />
-              Edit
-            </button>
+            {applicationStatus === "APPROVED" && (
+              <button
+                onClick={() => router.push(`/v-profile/update-showroom?id=${id}`)}
+                disabled={!id}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </button>
+            )}
+            {applicationStatus === "REJECTED" && (
+              <button
+                onClick={() => router.push(`/v-profile/update-showroom?id=${id}`)}
+                disabled={!id}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg text-sm font-medium transition"
+              >
+                <Edit className="w-4 h-4" />
+                Fix &amp; resubmit
+              </button>
+            )}
             <button
               onClick={() => setShowDeleteModal(true)}
               disabled={!id}
@@ -170,6 +181,43 @@ export default function ViewShowroomPage() {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
+        {details?.application && (
+          <div className={`rounded-xl border p-5 ${
+            applicationStatus === "REJECTED"
+              ? "border-red-500/30 bg-red-500/10"
+              : applicationStatus === "APPROVED"
+                ? "border-emerald-500/30 bg-emerald-500/10"
+                : "border-amber-500/30 bg-amber-500/10"
+          }`}>
+            <div className="flex items-start gap-3">
+              {applicationStatus === "REJECTED" ? (
+                <AlertCircle className="mt-0.5 size-6 shrink-0 text-red-400" />
+              ) : applicationStatus === "APPROVED" ? (
+                <CheckCircle2 className="mt-0.5 size-6 shrink-0 text-emerald-400" />
+              ) : (
+                <Clock3 className="mt-0.5 size-6 shrink-0 text-amber-400" />
+              )}
+              <div>
+                <p className="font-semibold">
+                  {applicationStatus === "REJECTED"
+                    ? "Changes required"
+                    : applicationStatus === "APPROVED"
+                      ? "Showroom approved"
+                      : "Application under review"}
+                </p>
+                <p className="mt-1 text-sm text-white/65 light:text-gray-600">
+                  Attempt {details.application.attemptNumber}
+                </p>
+                {applicationStatus === "REJECTED" && details.application.rejectionReason && (
+                  <p className="mt-2 whitespace-pre-line text-sm text-red-200 light:text-red-700">
+                    {details.application.rejectionReason}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Logo */}
         <div className="text-center">
           <h2 className="text-lg font-semibold mb-4 text-gray-300 light:text-gray-700">
@@ -207,7 +255,13 @@ export default function ViewShowroomPage() {
             />
             <InfoRow
               label="Status"
-              value={details?.isApprove ? "Approved" : "Pending Approval"}
+              value={
+                applicationStatus === "APPROVED"
+                  ? "Approved"
+                  : applicationStatus === "REJECTED"
+                    ? "Changes required"
+                    : "Under review"
+              }
             />
           </div>
         </div>
@@ -219,7 +273,7 @@ export default function ViewShowroomPage() {
           </h2>
           <div className="space-y-3">
             {(details?.showroom_schedule ?? []).map((slot: any) => {
-              const closed = isClosed(slot.open);
+              const closed = slot.isOpen === false || isClosed(slot.open);
               return (
                 <div
                   key={slot._id}
