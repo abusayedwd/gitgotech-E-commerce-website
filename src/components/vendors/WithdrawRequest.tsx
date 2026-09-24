@@ -244,7 +244,7 @@ export default function WithdrawRequest() {
         {/* Platform withdraw fee — role-based */}
         {withdrawFeeInfo && (
           <div className="bg-gradient-to-br from-purple-900/20 to-indigo-900/20 light:from-purple-50 light:to-white border border-purple-500/30 light:border-purple-200 rounded-xl p-4">
-            <h3 className="text-sm font-semibold text-purple-300 mb-1">
+            <h3 className="text-sm font-semibold text-purple-300 light:text-purple-700 mb-1">
               Platform Withdraw Fee
             </h3>
             <p className="text-xs text-gray-400 light:text-gray-500 mb-3">
@@ -443,7 +443,7 @@ export default function WithdrawRequest() {
                       </div>
                       <div>
                         <span className="text-gray-500 light:text-gray-400">Platform Fee:</span>
-                        <p className="text-yellow-400">₵{request.platformFee}</p>
+                        <p className="text-yellow-400 light:text-yellow-700">₵{request.platformFee}</p>
                       </div>
                       <div>
                         <span className="text-gray-500 light:text-gray-400">Country:</span>

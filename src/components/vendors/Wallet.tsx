@@ -243,10 +243,10 @@ export default function Wallett() {
                     <p
                       className={`text-xs font-medium ${
                         tx.status === "success"
-                          ? "text-green-400"
+                          ? "text-green-400 light:text-green-700"
                           : tx.status === "pending"
-                            ? "text-yellow-400"
-                            : "text-gray-500"
+                            ? "text-yellow-400 light:text-yellow-700"
+                            : "text-gray-500 light:text-gray-600"
                       }`}>
                       Status: <span className="capitalize">{tx.status}</span>
                     </p>
@@ -254,7 +254,7 @@ export default function Wallett() {
 
                   <div
                     className={`text-sm font-bold ${
-                      tx.type === "CREDIT" ? "text-green-400" : "text-red-400"
+                      tx.type === "CREDIT" ? "text-green-400 light:text-green-700" : "text-red-400 light:text-red-700"
                     }`}>
                     {tx.type === "CREDIT" ? "+" : "-"}
                     {formatCurrency(tx.amount)}

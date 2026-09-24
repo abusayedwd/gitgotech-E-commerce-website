@@ -264,8 +264,8 @@ export default function SignUpPage() {
               </button>
             </div>
             {userType === 'vendor' && (
-              <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
-                <p className="text-yellow-400 text-xs">
+              <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-lg light:bg-yellow-50 light:border-yellow-300">
+                <p className="text-yellow-400 text-xs light:text-yellow-700">
                   Note: Vendor accounts require admin approval. You'll receive an email once your application is reviewed.
                 </p>
               </div>
