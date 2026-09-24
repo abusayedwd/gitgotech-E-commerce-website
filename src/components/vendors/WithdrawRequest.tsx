@@ -370,7 +370,7 @@ export default function WithdrawRequest() {
             <button
               onClick={handleSubmit}
               disabled={isLoading || !amount || !selectedCardId}
-              className="w-full flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+              className="w-full flex cursor-pointer items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-white"
             >
               <ArrowDownRight className="w-5 h-5" />
               <span>{isLoading ? "Processing..." : "Withdraw"}</span>

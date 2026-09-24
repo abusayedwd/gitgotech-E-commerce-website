@@ -53,14 +53,10 @@ export default function PrivacyPolicyPage() {
             </div>
           ) : (
             <div className="space-y-6 text-sm text-gray-400 light:text-gray-600 leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
-              <p className="text-gray-300 light:text-gray-700 whitespace-pre-wrap">
-                {/* {privacyInfo?.value ||
-                  "No privacy policy content available."} */}
-                <div
+              <div
                 className="prose prose-invert light:prose-slate max-w-none text-gray-300 light:text-gray-700"
                 dangerouslySetInnerHTML={{ __html: privacyInfo?.value || 'No privacy policy content available.' }}
               />
-              </p>
             </div>
           )}
         </div>

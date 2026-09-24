@@ -336,7 +336,7 @@ export default function VendorProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="bg-gradient-to-r from-[#6100FF]/25 via-[#241F30] to-[#0f0924] light:from-purple-50 light:via-white light:to-white border border-purple-500/40 light:border-purple-200 rounded-2xl p-6 flex items-center justify-between">
             <div>
-              <p className="text-xs uppercase tracking-wider text-purple-300/80 mb-1">
+              <p className="text-xs uppercase tracking-wider text-purple-300/80 light:text-purple-700 mb-1">
                 Available balance
               </p>
               <p className="text-3xl md:text-4xl font-bold text-white light:text-gray-900 font-cormorant">
@@ -358,7 +358,7 @@ export default function VendorProfilePage() {
             className="bg-gradient-to-r cursor-pointer from-amber-500/20 via-[#241F30] to-[#0f0924] light:from-amber-50 light:via-white light:to-white border border-amber-500/40 light:border-amber-200 rounded-2xl p-6 flex items-center justify-between text-left hover:border-amber-400/70 transition-colors"
           >
             <div>
-              <p className="text-xs uppercase tracking-wider text-amber-300/80 mb-1">
+              <p className="text-xs uppercase tracking-wider text-amber-300/80 light:text-amber-700 mb-1">
                 Held balance
               </p>
               <p className="text-3xl md:text-4xl font-bold text-white light:text-gray-900 font-cormorant">
@@ -368,7 +368,7 @@ export default function VendorProfilePage() {
                   maximumFractionDigits: 2,
                 })}
               </p>
-              <p className="text-xs text-amber-200/70 mt-2">Tap to view holds</p>
+              <p className="text-xs text-amber-200/70 light:text-amber-700 mt-2">Tap to view holds</p>
             </div>
             <div className="w-14 h-14 rounded-full bg-amber-600/25 flex items-center justify-center">
               <Clock className="text-amber-300" size={26} />

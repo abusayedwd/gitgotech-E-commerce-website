@@ -193,7 +193,7 @@ export default function Wallett() {
           {userRole === "customer" && (
             <button
               onClick={() => setIsPaymentModalOpen(true)}
-              className="flex-1 flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] light:bg-purple-50 rounded-xl transition hover:bg-[#3a2f52] light:hover:bg-purple-100">
+              className="flex-1 flex items-center cursor-pointer justify-center border-2 border-[#42276e] gap-2 px-4 py-3 bg-[#6100FF] hover:bg-purple-700 rounded-xl transition text-white">
               <img src="/images/add-money.png" alt="" />
               <span>Add Money</span>
             </button>
@@ -201,14 +201,14 @@ export default function Wallett() {
 
           <button
             onClick={() => router.push("/v-profile/wallet/payment-method")}
-            className="flex-1 flex items-center cursor-pointer justify-center border shadow-[0_0_12px_rgba(34,211,238,0.35)] border-[#6100FF] text-[#6100FF] gap-2 px-4 py-3 bg-[#2F2643] light:bg-purple-50 rounded-xl transition hover:bg-[#3a2f52] light:hover:bg-purple-100">
+            className="flex-1 flex items-center cursor-pointer justify-center border-2 border-[#42276e] gap-2 px-4 py-3 bg-[#6100FF] hover:bg-purple-700 rounded-xl transition text-white">
             <img src="/images/method.png" alt="" />
             <span>Payment Method</span>
           </button>
 
           <button
             onClick={() => router.push("/v-profile/wallet/withdraw-request")}
-            className="flex-1 flex items-center cursor-pointer justify-center border-2 border-[#42276e] gap-2 px-4 py-3 bg-[#6100FF] hover:bg-purple-700 rounded-xl transition">
+            className="flex-1 flex items-center cursor-pointer justify-center border-2 border-[#42276e] gap-2 px-4 py-3 bg-[#6100FF] hover:bg-purple-700 rounded-xl transition text-white">
             <img src="/images/withdraw.png" alt="" />
             <span>Withdraw</span>
           </button>

@@ -129,7 +129,7 @@ const FashionSearchNav = () => {
                   onClick={() => handleTabClick(category)}
                   className={`${
                     activeTab === category._id
-                      ? tabColors[index % tabColors.length]
+                      ? `${tabColors[index % tabColors.length]} text-white`
                       : "border border-gray-700 light:border-gray-300 bg-[#080715] light:bg-white light:text-gray-700"
                   } px-3 sm:px-4 py-1.5 sm:py-2 rounded-md text-xs sm:text-sm font-medium whitespace-nowrap hover:opacity-90 transition-all flex-shrink-0`}
                 >

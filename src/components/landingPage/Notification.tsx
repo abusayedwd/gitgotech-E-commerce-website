@@ -161,7 +161,7 @@ export default function NotificationsPage() {
                   <div className="flex items-start gap-3">
                     {/* Icon */}
                     <div
-                      className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${getIconBgColor(type)}`}
+                      className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white ${getIconBgColor(type)}`}
                     >
                       {getNotificationIcon(type)}
                     </div>

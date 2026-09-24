@@ -68,16 +68,16 @@ export default function SettingsPage() {
               primary 
             />
 
-            <SettingButton 
-              onClick={() => router.push("/terms-condition")} 
-              icon={<FileText />} 
-              label="Terms & Conditions" 
+            <SettingButton
+              onClick={() => router.push("/terms-condition")}
+              icon={<FileText />}
+              label="Terms & Conditions"
             />
 
-            <SettingButton 
-              onClick={() => router.push("/privacy-policy")} 
-              icon={<Shield />} 
-              label="Privacy Policy" 
+            <SettingButton
+              onClick={() => router.push("/privacy-policy")}
+              icon={<Shield />}
+              label="Privacy Policy"
             />
 
             {/* <SettingButton 

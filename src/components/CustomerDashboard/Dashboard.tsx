@@ -237,8 +237,8 @@ export default function MyDashboard() {
         className="container mx-auto flex justify-end"
         onClick={() => router.push("/customer-dashboard/delivery-request")}
       >
-        <button className="bg-blue-600 px-4 py-1.5 rounded cursor-pointer">
-          Delivery 
+        <button className="bg-blue-600 px-4 py-1.5 rounded cursor-pointer text-white">
+          Delivery
           Request
         </button>
       </div>

@@ -260,7 +260,7 @@ const DeliveryRequest = () => {
                     {/* Status */}
                     <div className="flex items-center space-x-2">
                       <div
-                        className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(delivery.status)} flex items-center space-x-1`}
+                        className={`px-2 py-1 rounded-full text-xs font-medium text-white ${getStatusColor(delivery.status)} flex items-center space-x-1`}
                       >
                         {getStatusIcon(delivery.status)}
                         <span className="capitalize">{delivery.status}</span>
@@ -319,7 +319,7 @@ const DeliveryRequest = () => {
               {/* Status Badge */}
               <div className="flex items-center justify-center">
                 <div
-                  className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(selectedDelivery.status)} flex items-center space-x-2`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium text-white ${getStatusColor(selectedDelivery.status)} flex items-center space-x-2`}
                 >
                   {getStatusIcon(selectedDelivery.status)}
                   <span className="capitalize">{selectedDelivery.status}</span>
