@@ -1,16 +1,9 @@
 "use client";
 
 import FallbackScreen from "@/components/shared/FallbackScreen";
-import { Cormorant_Garamond } from "next/font/google";
+import { cormorantGaramond } from "@/lib/fonts";
 import { useEffect } from "react";
 import "./globals.css";
-
-const cormorantGaramond = Cormorant_Garamond({
-  variable: "--font-cormorant",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
 
 export default function GlobalError({
   error,
