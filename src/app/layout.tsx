@@ -55,7 +55,7 @@ export const metadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     images: [DEFAULT_OG_IMAGE],
   },
-  icons: { icon: DEFAULT_OG_IMAGE },
+  icons: { icon: "/images/icon.png" },
 };
 
 export default function RootLayout({

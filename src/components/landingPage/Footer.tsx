@@ -47,8 +47,8 @@ const Footer = () => {
           {/* Company Info */}
           <div>
             <div className="flex items-center space-x-2">
-              <div className="relative">
-                <img className="h-24" src="/images/logo.png" alt="" />
+              <div className="relative  rounded-lg inline-block">
+                <img className="h-24" src="/images/logoo.png" alt="" />
               </div>
             </div>
             <p className="text-gray-400 light:text-gray-600 text-sm leading-relaxed">
