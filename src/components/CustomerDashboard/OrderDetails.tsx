@@ -446,12 +446,6 @@ const OrderDetails = () => {
       hideOnPickup: true,
     },
     { label: "Weight charge", value: priceInfo?.weightCharge },
-    {
-      label: priceInfo?.taxPercentage
-        ? `Tax (${priceInfo.taxPercentage}%)`
-        : "Tax",
-      value: priceInfo?.tax,
-    },
     { label: "Driver tip", value: priceInfo?.tip },
   ].filter((row) => {
     if (row.always) return true;

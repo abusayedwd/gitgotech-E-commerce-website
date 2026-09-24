@@ -861,13 +861,6 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-400 light:text-gray-500">
-                  Tax ({platformSettings.taxPercentage}%)
-                </span>
-                <span className="font-medium">₵{tax.toFixed(2)}</span>
-              </div>
-
               {discount > 0 && (
                 <div className="flex justify-between text-sm text-green-400">
                   <span>Discount ({appliedCoupon?.name} - {appliedCoupon?.percentage}%)</span>

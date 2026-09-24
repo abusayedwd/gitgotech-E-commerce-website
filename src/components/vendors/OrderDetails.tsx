@@ -553,12 +553,6 @@ export default function OrderDetailsPage() {
       hideOnPickup: true,
     },
     { label: "Weight charge", value: price.weightCharge },
-    {
-      label: price.taxPercentage
-        ? `Tax (${price.taxPercentage}%)`
-        : "Tax",
-      value: price.tax,
-    },
     { label: "Tip", value: price.tip },
   ].filter((row) => {
     if (row.always) return true;
