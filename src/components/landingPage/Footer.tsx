@@ -17,7 +17,7 @@ const FACEBOOK_URL = 'https://www.facebook.com/share/1CgSqqRaiw/?mibextid=wwXIfr
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const { openSupport } = useSupportModal();
-  const { openPrivacy, openTerms } = usePrivacyTermsModal();
+  const { openPrivacy, openTerms, openRefund } = usePrivacyTermsModal();
 
   const { data: supportRes } = useGetSupportQuery({});
   const supportEmail = supportRes?.data?.value?.email || FALLBACK_SUPPORT_EMAIL;
@@ -175,6 +175,13 @@ const Footer = () => {
               className="text-gray-500 hover:text-white light:hover:text-black transition-colors"
             >
               Terms of Service
+            </button>
+            <button
+              type="button"
+              onClick={openRefund}
+              className="text-gray-500 hover:text-white light:hover:text-black transition-colors"
+            >
+              Refund Policy
             </button>
           </div>
         </div>

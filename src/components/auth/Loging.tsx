@@ -70,13 +70,15 @@ export default function LoginPage() {
         window.dispatchEvent(new Event("authChanged"));
         // console.log("[Login] dispatched authChanged. user:", userToStore);
 
-        if (
-          access === "APPLICATION_ONLY" &&
-          application?.status !== "APPROVED"
-        ) {
-          router.push("/account-application/status");
-        } else if (access === "FULL" || application?.status === "APPROVED" || role === "vendor") {
-          router.push("/vendor-dashboard");
+        if (role === "vendor") {
+          if (
+            access === "APPLICATION_ONLY" &&
+            application?.status !== "APPROVED"
+          ) {
+            router.push("/account-application/status");
+          } else {
+            router.push("/vendor-dashboard");
+          }
         } else {
           router.push("/");
         }

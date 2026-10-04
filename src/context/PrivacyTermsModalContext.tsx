@@ -2,12 +2,13 @@
 
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
-type PrivacyTermsType = 'privacy' | 'terms' | null;
+type PrivacyTermsType = 'privacy' | 'terms' | 'refund' | null;
 
 type PrivacyTermsModalContextValue = {
   activeModal: PrivacyTermsType;
   openPrivacy: () => void;
   openTerms: () => void;
+  openRefund: () => void;
   close: () => void;
 };
 
@@ -20,11 +21,12 @@ export function PrivacyTermsModalProvider({ children }: { children: React.ReactN
 
   const openPrivacy = useCallback(() => setActiveModal('privacy'), []);
   const openTerms = useCallback(() => setActiveModal('terms'), []);
+  const openRefund = useCallback(() => setActiveModal('refund'), []);
   const close = useCallback(() => setActiveModal(null), []);
 
   const value = useMemo(
-    () => ({ activeModal, openPrivacy, openTerms, close }),
-    [activeModal, openPrivacy, openTerms, close]
+    () => ({ activeModal, openPrivacy, openTerms, openRefund, close }),
+    [activeModal, openPrivacy, openTerms, openRefund, close]
   );
 
   return (

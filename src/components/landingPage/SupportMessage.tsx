@@ -12,7 +12,7 @@ import {
 import { useSupportModal } from '@/context/SupportModalContext';
 import { useSocket } from '@/components/providers/SocketProvider';
 import { IMAGE_BASE_URL } from '@/lib/imageBaseUrl';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 
 const SUPPORT_SIDE_ROLES = ['customer', 'vendor'];
@@ -62,6 +62,28 @@ const fileNameFromPath = (path: string) =>
 export default function SupportMessage() {
   const { isOpen, setIsOpen, closeSupport } = useSupportModal();
   const router = useRouter();
+  const pathname = usePathname();
+  const panelRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Close the chat whenever the user navigates to a different page.
+  useEffect(() => {
+    closeSupport();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+
+  // Close the chat on a click/tap outside the panel (and outside the toggle button).
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (panelRef.current?.contains(target)) return;
+      if (toggleButtonRef.current?.contains(target)) return;
+      closeSupport();
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, [isOpen, closeSupport]);
 
   // Support is only for logged-in customers/vendors. Read the token after mount
   // (localStorage is client-only) to avoid an SSR/hydration mismatch, and keep
@@ -350,6 +372,7 @@ export default function SupportMessage() {
     <>
       {/* Floating Button — always visible; guests get redirected to login on click */}
       <button
+        ref={toggleButtonRef}
         onClick={handleFloatingClick}
         className="fixed bottom-20 right-6 text-white p-0 rounded-full shadow-2xl z-50 cursor-pointer transition-all duration-300 transform hover:scale-110"
         aria-label={isLoggedIn ? 'Open support chat' : 'Sign in to use support chat'}
@@ -372,7 +395,7 @@ export default function SupportMessage() {
 
       {/* Chat Modal — only for logged-in users */}
       {isLoggedIn && isOpen && (
-        <div className="fixed bottom-20 inset-x-4 z-50 sm:inset-x-auto sm:right-6 sm:left-auto">
+        <div ref={panelRef} className="fixed bottom-20 inset-x-4 z-50 sm:inset-x-auto sm:right-6 sm:left-auto">
           <div className="bg-gray-900 rounded-2xl w-full max-w-[calc(100vw-2rem)] sm:w-96 sm:max-w-none h-[min(560px,calc(100vh-8rem))] flex flex-col shadow-2xl border border-gray-700 overflow-hidden">
 
             {/* Header */}

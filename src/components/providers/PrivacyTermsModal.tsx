@@ -3,6 +3,7 @@
 import { usePrivacyTermsModal } from '@/context/PrivacyTermsModalContext';
 import {
   useGetPrivacyQuery,
+  useGetRefundPolicyQuery,
   useGetTermsQuery,
 } from '@/redux/features/settings/settingsSlice';
 import { X } from 'lucide-react';
@@ -18,13 +19,31 @@ export default function PrivacyTermsModal() {
     {},
     { skip: activeModal !== 'terms' }
   );
+  const { data: refundData, isLoading: isRefundLoading } = useGetRefundPolicyQuery(
+    {},
+    { skip: activeModal !== 'refund' }
+  );
 
   if (!activeModal) return null;
 
-  const isPrivacy = activeModal === 'privacy';
-  const title = isPrivacy ? 'Privacy Policy' : 'Terms of Service';
-  const isLoading = isPrivacy ? isPrivacyLoading : isTermsLoading;
-  const content = isPrivacy ? privacyData?.data?.value : termsData?.data?.value;
+  const titles: Record<string, string> = {
+    privacy: 'Privacy Policy',
+    terms: 'Terms of Service',
+    refund: 'Refund Policy',
+  };
+  const title = titles[activeModal];
+  const isLoading =
+    activeModal === 'privacy'
+      ? isPrivacyLoading
+      : activeModal === 'terms'
+        ? isTermsLoading
+        : isRefundLoading;
+  const content =
+    activeModal === 'privacy'
+      ? privacyData?.data?.value
+      : activeModal === 'terms'
+        ? termsData?.data?.value
+        : refundData?.data?.value;
 
   return (
     <div
