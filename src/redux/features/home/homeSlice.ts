@@ -41,6 +41,16 @@ const homeSlice = apiSlice.injectEndpoints({
         `/home/top-vendors?searchTerm=${searchTerm}`,
     }),
 
+    // All vendors with pagination and search
+    getAllVendors: builder.query({
+      query: ({ page = 1, limit = 12, searchQ = "" }: {
+        page?: number;
+        limit?: number;
+        searchQ?: string;
+      } = {}) =>
+        `/vendor/get?page=${page}&limit=${limit}&searchQ=${encodeURIComponent(searchQ)}`,
+    }),
+
     // Home categories
     getHomeCategories: builder.query({
       query: () => `/home/category`,
@@ -108,6 +118,7 @@ export const {
   useGetProductDetailsforCustomerQuery,
   useGetNewestProductsQuery,
   useTopVendorsQuery,
+  useGetAllVendorsQuery,
   useGetTopProductsQuery,
   useGetHotDealsQuery,
   useGetHomeCategoriesQuery,

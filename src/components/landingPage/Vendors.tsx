@@ -1,7 +1,7 @@
 "use client";
 
 import url from '@/redux/api/baseUrl';
-import { useTopVendorsQuery } from "@/redux/features/home/homeSlice";
+import { useGetAllVendorsQuery } from "@/redux/features/home/homeSlice";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -11,13 +11,20 @@ import FooterPageBack from "@/components/landingPage/FooterPageBack";
 export default function VendorsPage() {
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  // console.log(searchQuery);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const { data: topVendorsRes } = useTopVendorsQuery(searchQuery);
-  const vendors = topVendorsRes?.data?.data ?? [];
+  const { data: vendorsRes, isLoading, isFetching, isError } =
+    useGetAllVendorsQuery({
+      page: currentPage,
+      limit: 12,
+      searchQ: searchQuery,
+    });
+  const vendors = vendorsRes?.data ?? [];
+  const pagination = vendorsRes?.pagination;
 
   const handleSearch = () => {
     setSearchQuery(searchInput.trim());
+    setCurrentPage(1);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -73,7 +80,15 @@ export default function VendorsPage() {
             All Vendors
           </h2>
 
-          {vendors.length === 0 ? (
+          {isLoading || isFetching ? (
+            <p className="text-gray-400 light:text-gray-500 text-center py-16">
+              Loading vendors...
+            </p>
+          ) : isError ? (
+            <p className="text-gray-400 light:text-gray-500 text-center py-16">
+              Failed to load vendors. Please try again later.
+            </p>
+          ) : vendors.length === 0 ? (
             <p className="text-gray-400 light:text-gray-500 text-center py-16">No vendors found.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
@@ -132,6 +147,34 @@ export default function VendorsPage() {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {!isLoading && !isFetching && !isError && (pagination?.totalPage ?? 0) > 1 && (
+            <div className="flex items-center justify-center gap-4 mt-8">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={currentPage === 1}
+                className="rounded-lg border border-[#414149] px-4 py-2 text-sm text-white light:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-400 light:text-gray-500">
+                Page {pagination?.currentPage ?? currentPage} of {pagination?.totalPage}
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentPage((page) =>
+                    Math.min(pagination?.totalPage ?? page, page + 1),
+                  )
+                }
+                disabled={currentPage === pagination?.totalPage}
+                className="rounded-lg border border-[#414149] px-4 py-2 text-sm text-white light:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                Next
+              </button>
             </div>
           )}
         </div>
