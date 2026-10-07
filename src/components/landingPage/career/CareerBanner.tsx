@@ -35,7 +35,7 @@ const CareerBanner = () => {
   <img
     src="/images/careerb.jpg"
     alt="Professional team handshake"
-    className="h-full w-full object-cover object-center"
+    className="h-full w-full object-center sm:object-cove"
   />
 
   {/* Gradient Overlay */}
