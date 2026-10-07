@@ -26,17 +26,19 @@ const CareerBanner = () => {
 
   return (
     <div className="relative mt-24 w-full h-[550px] overflow-hidden rounded-xl">
-      <div className="absolute top-4 left-4 z-20 rounded-lg bg-black/55 px-3 py-2 backdrop-blur-sm">
+      <div className="absolute top-4 left-4 z-20 rounded-lg bg-black/10 px-3 py-2 backdrop-blur-sm">
         <FooterPageBack />
       </div>
       {/* Background Image */}
-      <div className="absolute inset-0">
+      <div className="absolute inset-0 bg-black">
         <img
           src="/images/careerb.png"
           alt="Professional team handshake"
-          className="w-full  h-full object-cover"
+          className="w-full h-full object-cover object-top"
         />
         {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-black/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
       </div>
 
       {/* Content */}
