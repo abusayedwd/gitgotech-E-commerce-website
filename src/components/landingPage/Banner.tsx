@@ -57,7 +57,10 @@ export default function BannerSection() {
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
                 style={{
-                  backgroundImage: "url('/images/vendor.png')"
+                  backgroundImage: "url('/images/vendor.jpg')", 
+                  backgroundSize: 'cover',
+                  
+
                 }}
               />
               <div className="absolute inset-0 bg-black/40" />
