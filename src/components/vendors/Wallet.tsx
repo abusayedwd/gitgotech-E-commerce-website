@@ -6,7 +6,7 @@ import {
   useGetWalletTransactionsQuery,
 } from "@/redux/features/paymentTransaction/paymentTransactionSlice";
 import { useGetMyProfileQuery } from "@/redux/features/settings/settingsSlice";
-import { Clock, DollarSign, Wallet as WalletIcon, X } from "lucide-react";
+import { Clock, ReceiptCent, Wallet as WalletIcon, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -148,21 +148,6 @@ export default function Wallett() {
               <div className="text-white text-3xl md:text-5xl font-bold mb-6">
                 {formatCurrency(balance)}
               </div>
-
-              {userRole !== "vendor" && (
-                <div className="absolute right-6 top-1/2 -translate-y-1/2 hidden md:block">
-                  <div className="relative">
-                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center shadow-lg shadow-yellow-500/50">
-                      <DollarSign
-                        className="w-10 h-10 md:w-14 md:h-14 text-yellow-800"
-                        strokeWidth={3}
-                      />
-                    </div>
-                    <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-700 -z-10"></div>
-                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-20 h-20 md:w-24 md:h-24 rounded-full bg-gradient-to-br from-yellow-600 to-yellow-800 -z-20"></div>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
 
@@ -301,7 +286,8 @@ export default function Wallett() {
                   Amount
                 </label>
                 <div className="relative">
-                  <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" />
+                  {/* <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" /> */}
+                   <ReceiptCent className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-purple-400" />
                   <input
                     type="number"
                     value={paymentAmount}
