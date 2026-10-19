@@ -110,7 +110,7 @@ export default function LoginPage() {
           <div className="flex items-start justify-between mb-2">
             <div className="relative w-32 h-32">
               <Image
-                src="/images/logo.png"
+                src="/images/logoo.png"
                 alt="TeeKnit Logo"
                 fill
                 className="object-contain "

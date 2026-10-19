@@ -222,7 +222,7 @@ export default function SignUpPage() {
           {/* Logo placeholder */}
           <div className="flex items-start justify-between">
             <Image
-              src="/images/logo.png"
+              src="/images/logoo.png"
               alt="TeeKnit Logo"
               width={100}
               height={100}
