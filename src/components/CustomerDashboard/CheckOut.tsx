@@ -605,8 +605,8 @@ export default function CheckoutPage() {
                     />
 
                     {selectedLocation && (
-                      <div className="mt-3 p-3 bg-purple-900/20 border border-purple-500/30 rounded-lg space-y-1">
-                        <p className="text-xs text-gray-300">
+                      <div className="mt-3 p-3 bg-purple-900/20 light:bg-purple-50 border border-purple-500/30 light:border-purple-200 rounded-lg space-y-1">
+                        <p className="text-xs text-gray-300 light:text-gray-700">
                           <span className="font-medium">Selected:</span>{" "}
                           {selectedLocation.name}
                         </p>
@@ -615,20 +615,20 @@ export default function CheckoutPage() {
                           {selectedLocation.coordinates.latitude.toFixed(6)}]
                         </p>
                         {distanceKm !== null && (
-                          <p className="text-xs text-purple-300 font-medium">
+                          <p className="text-xs text-purple-300 light:text-purple-700 font-medium">
                             Distance fee ({distanceKm} km): ₵
                             {distanceDeliveryCharge.toFixed(2)}
                           </p>
                         )}
                         {totalWeightKg > 0 && (
-                          <p className="text-xs text-purple-300/90">
+                          <p className="text-xs text-purple-300/90 light:text-purple-700">
                             Weight fee ({totalWeightKg} kg): ₵
                             {weightDeliveryCharge.toFixed(2)}
                           </p>
                         )}
-                        <p className="text-xs text-gray-300">
+                        <p className="text-xs text-gray-300 light:text-gray-700">
                           Total delivery:{" "}
-                          <span className="font-semibold text-white">
+                          <span className="font-semibold text-white light:text-gray-900">
                             ₵{deliveryCharge.toFixed(2)}
                           </span>
                         </p>
@@ -777,7 +777,7 @@ export default function CheckoutPage() {
                           {item.quantity}
                         </p>
                         {item.product?.showroom?.showroom_name && (
-                          <p className="text-xs text-purple-300/70">
+                          <p className="text-xs text-purple-300/70 light:text-purple-700">
                             {item.product.showroom.showroom_name}
                           </p>
                         )}
@@ -829,7 +829,7 @@ export default function CheckoutPage() {
                     <span className="text-gray-400 light:text-gray-500">
                       Delivery (distance)
                       {distanceKm !== null && (
-                        <span className="ml-1 text-xs text-purple-300/70">
+                        <span className="ml-1 text-xs text-purple-300/70 light:text-purple-700">
                           ({distanceKm} km · ₵{ratePerKm}/km)
                         </span>
                       )}
@@ -840,7 +840,7 @@ export default function CheckoutPage() {
                     <span className="text-gray-400 light:text-gray-500">
                       Delivery (weight)
                       {totalWeightKg > 0 ? (
-                        <span className="ml-1 text-xs text-purple-300/70">
+                        <span className="ml-1 text-xs text-purple-300/70 light:text-purple-700">
                           ({totalWeightKg} kg · ₵{ratePerKg}/kg)
                         </span>
                       ) : (
@@ -850,14 +850,14 @@ export default function CheckoutPage() {
                     <span className="font-medium">₵{weightDeliveryCharge.toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-sm border-b border-gray-700/60 light:border-gray-200 pb-2">
-                    <span className="text-gray-300 font-medium">Delivery total</span>
-                    <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
+                    <span className="text-gray-300 light:text-gray-700 font-medium">Delivery total</span>
+                    <span className="font-semibold text-white light:text-gray-900">₵{deliveryCharge.toFixed(2)}</span>
                   </div>
                 </>
               ) : (
                 <div className="flex justify-between text-sm border-b border-gray-700/60 light:border-gray-200 pb-2">
-                  <span className="text-gray-300 font-medium">Delivery</span>
-                  <span className="font-semibold text-white">₵{deliveryCharge.toFixed(2)}</span>
+                  <span className="text-gray-300 light:text-gray-700 font-medium">Delivery</span>
+                  <span className="font-semibold text-white light:text-gray-900">₵{deliveryCharge.toFixed(2)}</span>
                 </div>
               )}
 
