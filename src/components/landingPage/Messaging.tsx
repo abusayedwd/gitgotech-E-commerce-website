@@ -73,9 +73,33 @@ interface BlockedUserEntry {
 
 
 const getUserImage = (image?: string) => {
-  if (!image) return 'https://i.pravatar.cc/150?img=2';
-  if (image.startsWith('http')) return image;
+  if (image?.startsWith('http')) return image;
   return `${url}/${image}`;
+};
+
+// Shows the real photo when one exists, otherwise a circular badge with the
+// user's first initial — avoids showing a generic stock placeholder avatar.
+const UserAvatar = ({
+  image,
+  name,
+  className,
+}: {
+  image?: string;
+  name?: string;
+  className?: string;
+}) => {
+  if (image) {
+    return <img src={getUserImage(image)} alt={name || ''} className={className} />;
+  }
+  const initial = name?.trim().charAt(0).toUpperCase() || '?';
+  return (
+    <div
+      className={`${className} flex items-center justify-center bg-purple-600 text-white font-semibold`}
+      aria-label={name}
+    >
+      {initial}
+    </div>
+  );
 };
  
 
@@ -382,8 +406,6 @@ const MessagesPage = () => {
   // ─── Render message bubble ────────────────────────────────────
   const renderMessageBubble = (msg: Message, index: number) => {
     const isMe = msg.senderId?._id === MY_USER_ID;
-    const myAvatar = getUserImage(msg.senderId?.image);
-    const otherAvatar = getUserImage(currentOtherUser?.image);
 
     return (
       <div
@@ -391,9 +413,9 @@ const MessagesPage = () => {
         className={`flex items-end gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}
       >
         {!isMe && (
-          <img
-            src={otherAvatar}
-            alt={currentOtherUser?.name}
+          <UserAvatar
+            image={currentOtherUser?.image}
+            name={currentOtherUser?.name}
             className="w-8 h-8 rounded-full flex-shrink-0 border-2 border-gray-700"
           />
         )}
@@ -429,8 +451,11 @@ const MessagesPage = () => {
         </div>
 
         {isMe && (
-          <img src={myAvatar} alt="Me"
-            className="w-8 h-8 rounded-full flex-shrink-0 border-2 border-purple-500" />
+          <UserAvatar
+            image={msg.senderId?.image}
+            name={msg.senderId?.name || 'Me'}
+            className="w-8 h-8 rounded-full flex-shrink-0 border-2 border-purple-500"
+          />
         )}
       </div>
     );
@@ -519,9 +544,9 @@ const MessagesPage = () => {
                   }`}
                 >
                   <div className="relative mr-3">
-                    <img
-                      src={getUserImage(otherUser.image)}
-                      alt={otherUser.name}
+                    <UserAvatar
+                      image={otherUser.image}
+                      name={otherUser.name}
                       className="w-12 h-12 rounded-full border-2 border-gray-700"
                     />
                     <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 bg-gray-500" />
@@ -569,9 +594,9 @@ const MessagesPage = () => {
                       key={entry._id}
                       className="flex items-center p-3 rounded-lg bg-gray-800/40 light:bg-gray-50 border border-gray-700/50 light:border-gray-200"
                     >
-                      <img
-                        src={getUserImage(user.image)}
-                        alt={user.name}
+                      <UserAvatar
+                        image={user.image}
+                        name={user.name}
                         className="w-12 h-12 rounded-full border-2 border-gray-700 mr-3 flex-shrink-0"
                       />
                       <div className="flex-1 min-w-0">
@@ -624,9 +649,9 @@ const MessagesPage = () => {
                 </svg>
               </button>
               <div className="relative mr-3">
-                <img
-                  src={getUserImage(currentOtherUser?.image)}
-                  alt={currentOtherUser?.name}
+                <UserAvatar
+                  image={currentOtherUser?.image}
+                  name={currentOtherUser?.name}
                   className="w-10 h-10 rounded-full border-2 border-purple-500"
                 />
                 <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-900 bg-gray-500" />
