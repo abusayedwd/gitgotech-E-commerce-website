@@ -657,6 +657,18 @@ export default function MapComponent({
     );
   };
 
+  // Auto-detect the user's current GPS location the first time the map is
+  // opened (mobile and desktop alike), instead of requiring a manual tap on
+  // the GPS button. Only runs once, and only if nothing has been picked yet.
+  const autoLocatedRef = useRef(false);
+  useEffect(() => {
+    if (isMapExpanded && !userLatLng && !autoLocatedRef.current) {
+      autoLocatedRef.current = true;
+      handleUseMyLocation();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMapExpanded]);
+
   // ── Confirm ─────────────────────────────────────────────────────────────────
   const handleConfirmLocation = () => {
     if (!userLatLng || !formattedAddress) {

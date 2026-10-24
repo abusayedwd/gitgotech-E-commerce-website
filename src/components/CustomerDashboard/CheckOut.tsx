@@ -967,7 +967,7 @@ export default function CheckoutPage() {
 
       {/* ── Coupon Modal ── */}
       {showCouponModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[10100]">
           <div className="relative bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
             <button
               onClick={() => setShowCouponModal(false)}
@@ -1030,7 +1030,7 @@ export default function CheckoutPage() {
 
       {/* ── Tip Modal ── */}
       {showTipModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-[10100]">
           <div className="relative bg-gradient-to-br from-gray-900 to-black border-2 border-purple-500/30 rounded-2xl p-6 max-w-md w-full">
             <button
               onClick={() => setShowTipModal(false)}
