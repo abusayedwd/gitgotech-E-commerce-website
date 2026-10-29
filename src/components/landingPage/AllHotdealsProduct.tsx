@@ -188,7 +188,7 @@ export default function AllHotdealsProduct({
                 >
                   OFF
                 </p>
-                 <button>go</button>
+                 
               </div>
             </div>
           )}

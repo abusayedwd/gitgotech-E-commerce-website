@@ -18,7 +18,6 @@
 /out/
 
 # dependencies
-.env
 
 /screens
 
@@ -41,3 +40,4 @@ yarn-error.log*
 
 
 
+config.bat
