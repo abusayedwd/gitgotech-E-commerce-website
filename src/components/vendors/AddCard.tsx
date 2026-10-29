@@ -1,11 +1,13 @@
 "use client";
 
+import { COUNTRIES } from "@/lib/countries";
 import { useStoreCardInfoMutation } from "@/redux/features/paymentTransaction/paymentTransactionSlice";
 import { Check, Wallet } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
+import CountrySelect from "./CountrySelect";
 
 export default function AddCardPage() {
   const [bankName, setBankName] = useState("");
@@ -160,7 +162,7 @@ export default function AddCardPage() {
             </div>
 
             {/* Country */}
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
                 Country
               </label>
@@ -179,7 +181,28 @@ export default function AddCardPage() {
                 <option value="UAE">United Arab Emirates</option>
                 <option value="SA">Saudi Arabia</option>
               </select>
-            </div>
+            </div> */}
+
+            {/* Country */}
+<CountrySelect value={country} onChange={setCountry} />
+
+            {/* <div>
+  <label className="block text-sm font-medium text-gray-300 light:text-gray-600 mb-2">
+    Country
+  </label>
+  <select
+    value={country}
+    onChange={(e) => setCountry(e.target.value)}
+    className="w-full bg-[#242428] light:bg-white rounded-lg px-4 py-3 text-white light:text-gray-900 placeholder-gray-500 light:placeholder-gray-400 focus:outline-none focus:border-purple-500 border border-transparent light:border-gray-300"
+  >
+    <option value="">Select Country</option>
+    {COUNTRIES.map((c) => (
+      <option key={c} value={c}>
+        {c}
+      </option>
+    ))}
+  </select>
+</div> */}
 
             {/* More Info (Optional) */}
             <div>

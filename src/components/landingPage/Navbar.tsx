@@ -32,6 +32,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   const cartCount = isLoggedIn ? cartData?.data?.length || 0 : guestCartCount;
+  console.log("cartCount", cartData?.data);
   const showCustomerLinks = !isLoggedIn || userRole === "customer";
 
   // Function to determine if link is active

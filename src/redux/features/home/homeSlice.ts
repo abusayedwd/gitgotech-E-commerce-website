@@ -37,8 +37,12 @@ const homeSlice = apiSlice.injectEndpoints({
 
     // Top vendors
     topVendors: builder.query({
-      query: (searchTerm = "") =>
-        `/home/top-vendors?searchTerm=${searchTerm}`,
+      query: ({ searchTerm = "", page = 1, limit = 10 }: {
+        searchTerm?: string;
+        page?: number;
+        limit?: number;
+      } = {}) =>
+        `/home/top-vendors?searchTerm=${encodeURIComponent(searchTerm)}&page=${page}&limit=${limit}`,
     }),
 
     // All vendors with pagination and search

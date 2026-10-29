@@ -1,0 +1,221 @@
+"use client";
+
+import url from '@/redux/api/baseUrl';
+import { useTopVendorsQuery } from "@/redux/features/home/homeSlice";
+import { Search, Crown } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { AiOutlineShoppingCart } from "react-icons/ai";
+import FooterPageBack from "@/components/landingPage/FooterPageBack";
+
+export default function TopVendorsPage() {
+  const [searchInput, setSearchInput] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const { data: topVendorsRes, isLoading, isFetching, isError } =
+    useTopVendorsQuery({
+      page: currentPage,
+      limit: 12,
+      searchTerm: searchQuery,
+    });
+  
+  const vendors = topVendorsRes?.data?.data ?? [];
+  const meta = topVendorsRes?.data?.meta;
+
+  const handleSearch = () => {
+    setSearchQuery(searchInput.trim());
+    setCurrentPage(1);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") handleSearch();
+  };
+
+  const getImageUrl = (image: string) => {
+    if (!image) return null;
+    if (image.startsWith("http")) return image;
+    return `${url}/${image}`;
+  };
+
+  return (
+    <div className="mt-16 md:mt-24 bg-gradient-to-r from-black via-[#0f0924] to-black light:from-white light:via-purple-50 light:to-white min-h-screen py-8 sm:py-10 md:py-12 px-2 sm:px-4">
+      <div className="container mx-auto">
+        <FooterPageBack className="mb-6 sm:mb-8" />
+        
+        {/* Header Section */}
+        <div className="text-center mb-8 sm:mb-10 md:mb-12">
+          <div className="flex items-center justify-center gap-2 mb-2 sm:mb-3">
+            <Crown className="w-6 h-6 sm:w-8 sm:h-8 text-amber-400" />
+            <h1 className="text-white light:text-gray-900 text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cormorant">
+              Top Vendors
+            </h1>
+            <Crown className="w-6 h-6 sm:w-8 sm:h-8 text-amber-400" />
+          </div>
+          <p className="text-gray-400 light:text-gray-500 text-xs sm:text-sm md:text-base mb-4 sm:mb-6 md:mb-8">
+            Discover Our Elite Designers & Featured Tailors
+          </p>
+
+          {/* Search Bar */}
+          <div className="max-w-full sm:max-w-2xl mx-auto px-2">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3">
+              <div className="flex-1 relative w-full">
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-400" />
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Search top vendors by name"
+                  className="w-full border border-[#414149] light:border-gray-300 bg-transparent text-white light:text-gray-900 rounded-lg pl-10 pr-4 py-2.5 sm:py-3 focus:outline-none focus:ring-2 focus:ring-purple-500 placeholder:text-gray-500 light:placeholder:text-gray-400"
+                />
+              </div>
+              <button
+                onClick={handleSearch}
+                className="bg-purple-600 hover:bg-purple-700 text-white px-4 sm:px-6 md:px-8 py-2.5 sm:py-3 rounded-lg font-medium transition-colors w-full sm:w-auto"
+              >
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Top Vendors Section */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-4 sm:mb-6 px-2">
+            <h2 className="text-white light:text-gray-900 text-xl font-cormorant sm:text-2xl font-semibold">
+              Featured Top Vendors
+            </h2>
+            {meta && (
+              <span className="text-gray-400 light:text-gray-500 text-sm">
+                {meta.total} {meta.total === 1 ? 'vendor' : 'vendors'}
+              </span>
+            )}
+          </div>
+
+          {isLoading || isFetching ? (
+            <p className="text-gray-400 light:text-gray-500 text-center py-16">
+              Loading top vendors...
+            </p>
+          ) : isError ? (
+            <p className="text-gray-400 light:text-gray-500 text-center py-16">
+              Failed to load top vendors. Please try again later.
+            </p>
+          ) : vendors.length === 0 ? (
+            <div className="text-center py-16">
+              <Crown className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <p className="text-gray-400 light:text-gray-500">
+                {searchQuery ? "No top vendors found matching your search." : "No top vendors available at the moment."}
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+              {vendors.map((vendor: any) => {
+                const imageUrl = getImageUrl(vendor.image);
+                return (
+                  <div
+                    key={vendor._id}
+                    className="bg-[#1B1B1F] light:bg-white backdrop-blur-sm rounded-lg sm:rounded-xl overflow-hidden group hover:bg-gray-800 light:hover:bg-gray-50 transition-all border border-amber-500/20 hover:border-amber-500/40"
+                  >
+                    {/* Vendor Image */}
+                    <div className="aspect-square overflow-hidden bg-[#2a2a2e] relative">
+                      {imageUrl ? (
+                        <img
+                          src={imageUrl}
+                          alt={vendor.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                            if (e.currentTarget.nextSibling) {
+                              (
+                                e.currentTarget.nextSibling as HTMLElement
+                              ).style.display = "flex";
+                            }
+                          }}
+                        />
+                      ) : null}
+                      {/* Fallback Avatar — always rendered, hidden if image loads */}
+                      <div
+                        className="w-full h-full items-center justify-center bg-[#2a2a2e]"
+                        style={{ display: imageUrl ? "none" : "flex" }}
+                      >
+                        <span className="text-6xl font-cormorant text-gray-400">
+                          {vendor.name?.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      
+                      {/* Top Vendor Badge */}
+                      <div className="absolute top-3 right-3 bg-amber-500/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 shadow-lg">
+                        <Crown className="w-3.5 h-3.5" />
+                        Top Vendor
+                      </div>
+
+                      {/* Verified Badge */}
+                      {vendor.isVerified && (
+                        <div className="absolute top-3 left-3 bg-green-500/90 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
+                          Verified
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Vendor Info */}
+                    <div className="p-3 sm:p-4 md:p-5">
+                      <h3 className="text-white light:text-gray-900 font-semibold text-base sm:text-lg mb-1">
+                        {vendor.name}
+                      </h3>
+                      <p className="text-gray-500 light:text-gray-400 text-xs mb-2">
+                        @{vendor.username}
+                      </p>
+                      
+                      {vendor.email && (
+                        <p className="text-gray-600 light:text-gray-500 text-xs mb-3 truncate">
+                          {vendor.email}
+                        </p>
+                      )}
+
+                      {/* View Showroom Button */}
+                      <Link href={`/vendors/showrooms?vendorId=${vendor._id}`}>
+                        <button className="w-full bg-gradient-to-r from-amber-500 to-purple-600 text-white py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 mt-auto hover:from-amber-600 hover:to-purple-700 shadow-md hover:shadow-lg">
+                          <AiOutlineShoppingCart className="w-3 sm:w-4 h-3 md:h-5 md:w-5 sm:h-4" />
+                          View Showroom
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {!isLoading && !isFetching && !isError && meta && meta.totalPages > 1 && (
+            <div className="flex items-center justify-center gap-4 mt-8">
+              <button
+                type="button"
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={currentPage === 1}
+                className="rounded-lg border border-[#414149] px-4 py-2 text-sm text-white light:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 hover:bg-purple-600/20 transition-colors"
+              >
+                Previous
+              </button>
+              <span className="text-sm text-gray-400 light:text-gray-500">
+                Page {meta.page} of {meta.totalPages}
+              </span>
+              <button
+                type="button"
+                onClick={() =>
+                  setCurrentPage((page) =>
+                    Math.min(meta.totalPages, page + 1),
+                  )
+                }
+                disabled={currentPage === meta.totalPages}
+                className="rounded-lg border border-[#414149] px-4 py-2 text-sm text-white light:text-gray-900 disabled:cursor-not-allowed disabled:opacity-40 hover:bg-purple-600/20 transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

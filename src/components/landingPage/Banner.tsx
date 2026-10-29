@@ -67,9 +67,9 @@ export default function BannerSection() {
 
             
 
-              <div onClick={() => router.push('/vendors')} className="absolute top-10 left- bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounde 
+              <div onClick={() => router.push('/top-vendors')} className="absolute top-10 left- bg-gradient-to-r from-[#6100FF] w-full px-4 py-2 rounde 
               "> 
-                <h3 className="text-white text-lg font-semibold font-cormorant text-[24px]">Top Vendors go</h3>
+                <h3 className="text-white text-lg font-semibold font-cormorant text-[24px]">Top Vendors</h3>
               </div>
             </div>
 
